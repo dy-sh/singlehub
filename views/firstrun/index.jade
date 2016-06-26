@@ -1,37 +1,24 @@
-extends ../empty_layout
+extends firstrun_layout
 
-block content
-	.ui.container
-		h2= title
-		.ui.ordered.steps
-			.step
-				.content
-					.title Database
-					.description Configure database
-			.step
-				.content
-					.title Gateway
-					.description Connect to gateway
-			.step
-				.content
-					.title User
-					.description Create Admin profile
-		.ui.divider
-		.ui.two.column.stackable.centered.grid
-			.column
-				.ui.raised.segments
-					.ui.secondary.segment
-						h4= title
-					.ui.attached.segment
-						h2.ui.header Welcome to MyNodes.NET
-						| This is the initial settings wizard.
-						br
-						| You will be offered the following steps:
-						.ui.bulleted.list
-							.item Configure database
-							.item Connect to gateway
-							.item Create Admin profile
-					.ui.center.aligned.attached.segment
-						.ui.buttons
-							a.ui.primary.button(href='/FirstRun/Database') Well, let's start
+
+block vars
+	- var title='Firtst Run'
+	- var activeStep=0
+
+
+block page
+	h2.ui.header Welcome to MyNodes.NET
+	| This is the initial settings wizard.
+	br
+	| You will be offered the following steps:
+	.ui.bulleted.list
+		.item Configure database
+		.item Connect to gateway
+		.item Create Admin profile
+
+
+block footer
+	.ui.center.aligned.attached.segment
+		.ui.buttons
+			a.ui.primary.button(href='/FirstRun/Database') Well, let's start
 

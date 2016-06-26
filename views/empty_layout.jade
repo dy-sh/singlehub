@@ -10,7 +10,7 @@ html
 		//link(href='/css/daterangepicker/daterangepicker.min.css', rel='stylesheet')
 		//link(href='/css/slider/nouislider.css', rel='stylesheet')
 		//link(href='/css/switch/switch.css', rel='stylesheet')
-		//link(rel='stylesheet', href='~/css/site.css')
+		link(href='/css/style.css',rel='stylesheet')
 		block styles
 	body
 		// Sidebar Menu
@@ -29,13 +29,8 @@ html
 				a.ui.item.fadebefore(href='Home/About')
 					h3 MyNodes.NET
 		.pusher
-			br
-			br
-			br
-			br
+			block vars
 			block content
-			br
-			br
 
 			script(src='/libs/jquery/dist/jquery.min.js')
 			script(src='/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js')
