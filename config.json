@@ -23,7 +23,7 @@
 	},
 	"nodesEngine": {
 		"enable": true,
-		"updateInterval": 10.0
+		"updateInterval": 10
 	},
 	"nodeEditor": {
 		"theme": 0

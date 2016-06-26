@@ -24,15 +24,9 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-// first run wizard
-if (config.firstRun == true)
-	app.get('/', function (req, res) {
-		res.redirect('/FirstRun/');
-	});
-else
-	app.use('/', require('./routes/index'));
+app.use('/', require('./routes/firstrun'));
 
-app.use('/FirstRun', require('./routes/firstrun'));
+app.use('/', require('./routes/index'));
 
 
 // catch 404 and forward to error handler
