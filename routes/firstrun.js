@@ -104,13 +104,21 @@ router.post('/FirstRun/Gateway/Serial', function (req, res, next) {
 
 
 router.get('/FirstRun/User', function (req, res, next) {
-	res.render('FirstRun/User/index', {canSkip: false});
-	//if (noDb)
-	//res.render('FirstRun/User/noDatabase');
+	if (config.dataBase.enable)
+		res.render('FirstRun/User/index', {canSkip: false});
+	else
+		res.render('FirstRun/User/noDatabase');
 });
 
 router.post('/FirstRun/User', function (req, res, next) {
 	//todo save user profile to db
+	res.redirect("/FirstRun/Complete")
+});
+
+
+router.get('/FirstRun/Complete', function (req, res, next) {
+	config.firstRun = false;
+	saveConfig();
 	res.redirect("/Dashboard")
 });
 
