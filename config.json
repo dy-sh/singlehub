@@ -1,0 +1,66 @@
+{
+	"firstRun": true,
+	"gateway": {
+		"mysensors": {
+			"serial": {
+				"enable": true,
+				"port": "COM3",
+				"baudRate": 115200
+			},
+			"ethernet": {
+				"enable": false,
+				"address": "192.168.1.3",
+				"port": 5003
+			},
+			"enableAutoAssignId": true
+		}
+	},
+	"dataBase": {
+		"enable": true,
+		"useInternalDb": true,
+		"externalDbConnectionString": "",
+		"writeInterval": 5000
+	},
+	"nodesEngine": {
+		"enable": true,
+		"updateInterval": 10.0
+	},
+	"nodeEditor": {
+		"theme": 0
+	},
+	"console": {
+		"showAllErrors": true,
+		"showGatewayState": true,
+		"showGatewayMessages": false,
+		"showGatewayDecodedMessages": false,
+		"showDataBaseState": false,
+		"showNodesEngineState": true,
+		"showNodesEngineNodes": false,
+		"showSystemState": true
+	},
+	"logs": {
+		"storeGatewayState": true,
+		"storeGatewayMessages": true,
+		"storeGatewayDecodedMessages": true,
+		"storeDataBaseState": true,
+		"storeNodesEngineState": true,
+		"storeNodesEngineNodes": true,
+		"storeSystemState": true,
+		"maxGatewayState": 1000,
+		"maxGatewayMessages": 1000,
+		"maxGatewayDecodedMessages": 1000,
+		"maxDataBaseState": 1000,
+		"maxNodesEngineState": 1000,
+		"maxNodesEngineNodes": 1000,
+		"maxSystemState": 1000
+	},
+	"webServer": {
+		"enable": true,
+		"port": "1312",
+		"rules": {
+			"allowFullAccessWithoutAuthorization": false,
+			"allowRegistrationOfNewUsers": false
+		},
+		"debug": false
+	}
+}

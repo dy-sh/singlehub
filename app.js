@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var config = require('./config');
+
 var app = express();
 
 // view engine setup
@@ -22,10 +24,14 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.get('/', function (req, res) {
-	res.redirect('/FirstRun/');
-});
-//app.use('/', require('./routes/index'));
+// first run wizard
+if (config.firstRun == true)
+	app.get('/', function (req, res) {
+		res.redirect('/FirstRun/');
+	});
+else
+	app.use('/', require('./routes/index'));
+
 app.use('/FirstRun', require('./routes/firstrun'));
 
 

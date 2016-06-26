@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var config = require('./../config');
 
 router.get('/', function (req, res, next) {
 	res.render('FirstRun/index');
@@ -50,8 +51,10 @@ router.get('/Gateway', function (req, res, next) {
 });
 
 router.get('/Gateway/Ethernet', function (req, res, next) {
-	//todo settings from db
-	res.render('FirstRun/Gateway/ethernet', {address: "192.168.1.3", port: 5003});
+	res.render('FirstRun/Gateway/ethernet', {
+		address: config.gateway.mysensors.ethernet.address,
+		port: config.gateway.mysensors.ethernet.port
+	});
 });
 
 router.post('/Gateway/Ethernet', function (req, res, next) {
@@ -62,8 +65,11 @@ router.post('/Gateway/Ethernet', function (req, res, next) {
 
 router.get('/Gateway/Serial', function (req, res, next) {
 	//todo get serial ports list
-	//todo settings from db
-	res.render('FirstRun/Gateway/serial', {ports: ["COM1", "COM3"], baudRate: 115200, currentPort: "COM3"});
+	res.render('FirstRun/Gateway/serial', {
+		ports: ["COM1", "COM3"],
+		baudRate: config.gateway.mysensors.serial.baudRate,
+		currentPort: config.gateway.mysensors.serial.port
+	});
 });
 
 
