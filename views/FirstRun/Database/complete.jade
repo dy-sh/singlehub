@@ -1,0 +1,18 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='Database'
+	- var activeStep=1
+
+
+block page
+	.ui.attached.segment
+		h2.ui.header Database is configured
+		| Database connection is established
+		br
+	.ui.center.aligned.attached.segment
+		.ui.buttons
+			a.ui.primary.button(href='/FirstRun/Gateway') OK
+
+

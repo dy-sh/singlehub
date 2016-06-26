@@ -1,9 +1,9 @@
-extends ../empty_layout
+extends ../simple_layout
 
 
 block content
 	.ui.container
-		h2= title
+		h2 First Run
 		.ui.ordered.steps
 			.step(class= {active: activeStep === 1, completed: activeStep > 1})
 				.content
@@ -21,9 +21,8 @@ block content
 		.ui.two.column.stackable.centered.grid
 			.column
 				.ui.raised.segments
-					.ui.secondary.segment
+					.ui.secondary.attached.segment
 						h4= title
-					.ui.attached.segment
-						block page
-					block footer
+					block page
+
 

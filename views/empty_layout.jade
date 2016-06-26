@@ -64,13 +64,11 @@ html
 					easing: 'swing', // unavailable - no need
 					speed: 500 // unavailable - no need
 				};
+
 				$(document)
 								.ready(function () {
 									// show dropdown
-									$('.ui.dropdown').dropdown({
-										on: 'click'
-									});
+									$('.ui.dropdown').dropdown({on: 'click'});
 									// create sidebar and attach to menu open
-									$('.ui.sidebar')
-													.sidebar('attach events', '.sidebar-button');
+									$('.ui.sidebar').sidebar('attach events', '.sidebar-button');
 								});

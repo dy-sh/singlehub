@@ -1,0 +1,21 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='Database'
+	- var activeStep=1
+
+
+block page
+	.ui.attached.segment
+		h2.ui.header External database
+		form.ui.form(method='Post')
+			.field
+				label Connection string
+				input(type="text", name="connectionString")
+	.ui.center.aligned.attached.segment
+		.ui.buttons
+			a.ui.button(href='/FirstRun/Database') Cancel
+			input.ui.button.primary(type='submit', value='Connect')
+
+

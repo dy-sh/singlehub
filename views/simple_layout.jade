@@ -1,0 +1,26 @@
+doctype html
+html
+	head
+		meta(charset='utf-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0')
+		title MyNodes.NET: #{title}
+
+		link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
+		link(href='/css/style.css',rel='stylesheet')
+		block styles
+
+	body
+		// Header Menu
+		.ui.fixed.big.borderless.main.menu
+			.ui.container
+				a.ui.item(href='Home/About')
+					h3 MyNodes.NET
+		.pusher
+			block vars
+			block content
+
+			script(src='/libs/jquery/dist/jquery.min.js')
+			script(src='/libs/semantic/dist/semantic.min.js')
+			block scripts
+
+
