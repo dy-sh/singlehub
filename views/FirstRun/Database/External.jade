@@ -7,15 +7,16 @@ block vars
 
 
 block page
-	.ui.attached.segment
+	.ui.basic.segment
 		h2.ui.header External database
-		form.ui.form(method='Post')
+	form.ui.form(method='Post')
+		.ui.attached.segment
 			.field
 				label Connection string
 				input(type="text", name="connectionString")
-	.ui.center.aligned.attached.segment
-		.ui.buttons
-			a.ui.button(href='/FirstRun/Database') Cancel
-			input.ui.button.primary(type='submit', value='Connect')
+		.ui.center.aligned.attached.segment
+			.ui.buttons
+				a.ui.button(href='/FirstRun/Database') Cancel
+				input.ui.button.primary(type='submit', value='Connect')
 
 

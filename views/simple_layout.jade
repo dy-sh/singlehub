@@ -22,5 +22,9 @@ html
 			script(src='/libs/jquery/dist/jquery.min.js')
 			script(src='/libs/semantic/dist/semantic.min.js')
 			block scripts
-
-
+			script.
+				$(document)
+								.ready(function () {
+									// show dropdown
+									$('.ui.dropdown').dropdown({on: 'click'});
+								});
