@@ -21,8 +21,13 @@ app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', require('./routes/index'));
+
+app.get('/', function (req, res) {
+	res.redirect('/FirstRun/');
+});
+//app.use('/', require('./routes/index'));
 app.use('/FirstRun', require('./routes/firstrun'));
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
