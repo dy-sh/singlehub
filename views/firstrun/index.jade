@@ -1,0 +1,40 @@
+extends ../empty_layout
+
+block content
+	br
+	.ui.container
+		h2 @ViewBag.Title
+		.ui.ordered.steps
+			.step
+				.content
+					.title Database
+					.description Configure database
+			.step
+				.content
+					.title Gateway
+					.description Connect to gateway
+			.step
+				.content
+					.title User
+					.description Create Admin profile
+		.ui.divider
+		.ui.two.column.stackable.centered.grid
+			.column
+				.ui.raised.segments
+					.ui.secondary.segment
+						h4 @ViewBag.Title
+					.ui.attached.segment
+						h2.ui.header Welcome to MyNodes.NET
+						| This is the initial settings wizard.
+						br
+						| You will be offered the following steps:
+						br
+						.ui.bulleted.list
+							.item Configure database
+							.item Connect to gateway
+							.item Create Admin profile
+					.ui.center.aligned.attached.segment
+						.ui.buttons
+							a.ui.primary.button(asp-action='DataBase') Well, let's start
+	br
+	br
