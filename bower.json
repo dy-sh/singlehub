@@ -1,20 +1,22 @@
 {
-	"name": "mynodes.js",
-	"description": "",
-	"main": "",
-	"authors": [
-		"derwish-pro <derwish.pro@gmail.com>"
-	],
-	"license": "GPL",
-	"homepage": "https://github.com/derwish-pro/mynodes.js",
-	"ignore": [
-		"**/.*",
-		"node_modules",
-		"bower_components",
-		"test",
-		"tests"
-	],
-	"dependencies": {
-		"semantic": "semantic-ui#^2.1.8"
-	}
+  "name": "mynodes.js",
+  "description": "",
+  "main": "",
+  "authors": [
+    "derwish-pro <derwish.pro@gmail.com>"
+  ],
+  "license": "GPL",
+  "homepage": "https://github.com/derwish-pro/mynodes.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "semantic": "semantic-ui#^2.1.8",
+    "animate.css": "^3.5.2",
+    "jquery": "^3.0.0"
+  }
 }
