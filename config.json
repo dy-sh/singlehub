@@ -4,13 +4,13 @@
 		"mysensors": {
 			"serial": {
 				"enable": true,
-				"port": "COM3",
-				"baudRate": 115200
+				"baudRate": "115200",
+				"port": "COM3"
 			},
 			"ethernet": {
 				"enable": false,
 				"address": "192.168.1.3",
-				"port": 5003
+				"port": "5003"
 			},
 			"enableAutoAssignId": true
 		}

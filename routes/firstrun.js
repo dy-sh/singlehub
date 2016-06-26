@@ -69,13 +69,18 @@ router.get('/FirstRun/Gateway/Ethernet', function (req, res, next) {
 
 router.post('/FirstRun/Gateway/Ethernet', function (req, res, next) {
 	//todo connect to ethernet gateway
+	config.gateway.mysensors.serial.enable = false;
+	config.gateway.mysensors.ethernet.enable = true;
+	config.gateway.mysensors.ethernet.address = req.body.address;
+	config.gateway.mysensors.ethernet.port = req.body.port;
 	saveConfig();
 	res.redirect("/FirstRun/User")
 });
 
+
 router.get('/FirstRun/Gateway/Serial', function (req, res, next) {
 	//todo get serial ports list
-	res.render('/FirstRunFirstRun/Gateway/serial', {
+	res.render('FirstRun/Gateway/serial', {
 		ports: ["COM1", "COM3"],
 		baudRate: config.gateway.mysensors.serial.baudRate,
 		currentPort: config.gateway.mysensors.serial.port
@@ -85,7 +90,12 @@ router.get('/FirstRun/Gateway/Serial', function (req, res, next) {
 
 router.post('/FirstRun/Gateway/Serial', function (req, res, next) {
 	//todo connect to serial gateway
-	//todo save settings to db
+	console.log(req.body);
+	config.gateway.mysensors.ethernet.enable = false;
+	config.gateway.mysensors.serial.enable = true;
+	config.gateway.mysensors.serial.baudRate = req.body.baudRate;
+	config.gateway.mysensors.serial.port = req.body.port;
+	saveConfig();
 	res.redirect("/FirstRun/User")
 });
 
