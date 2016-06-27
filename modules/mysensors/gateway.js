@@ -10,7 +10,7 @@ var split = require("split");
 var _ = require("lodash");
 
 var GATEWAY_ID = 0;
-var NEWNODE_ID = 255;
+var BROADCAST_ID = 255;
 var NODE_SELF_SENSOR_ID = 255;
 
 
@@ -108,12 +108,12 @@ Gateway.prototype._receiveGatewayMessage = function (message) {
 
 Gateway.prototype._receiveNodeMessage = function (message) {
 
-	//var nodeId = message.node_id;
 
-	// if (nodeId != NEWNODE_ID) {
-	// 	var node = this.getNode(nodeId);
-	// 	if (!node) node = this._registerNode(nodeId);
-	// }
+	if (message.node_id != BROADCAST_ID) {
+		var node = this.getNode(message.node_id);
+		if (!node) node = this._registerNode(message.node_id);
+		node.last_seen = new Date();
+	}
 
 	switch (message.message_type) {
 		case mys.message_type.C_PRESENTATION:
