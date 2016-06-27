@@ -1,3 +1,5 @@
+var debug = require('debug')('gateway:mys');
+
 function Gateway(port) {
 	this.port = port;
 	this.nodes = [];
@@ -12,25 +14,25 @@ module.exports.serialGateway = function (portName, baudRate) {
 	var port = new SerialPort(portName, {baudrate: baudRate}, false);
 
 	function connect() {
-		log("Connecting to " + portName + " at " + baudRate + " ...");
+		debug("Connecting to " + portName + " at " + baudRate + " ...");
 		port.open();
 	}
 
 	port.on("open", function () {
-		log("Connected");
+		debug("Connected");
 	});
 
 	port.on("error", function (err) {
-		log("Connection failed. " + err);
+		debug("Connection failed. " + err);
 		setTimeout(connect, 1000);
 	});
 
 	port.on("close", function () {
-		log("Connection closed. ");
+		debug("Connection closed. ");
 	});
 
 	port.on("disconnect", function (err) {
-		log("Disconnected. " + err);
+		debug("Disconnected. " + err);
 	});
 
 	connect();
@@ -40,9 +42,5 @@ module.exports.serialGateway = function (portName, baudRate) {
 
 
 function log(text) {
-	console.log("MYS GATEWAY: " + text);
-}
-
-function logError(text) {
-	console.log("MYS GATEWAY: " + text);
+	console.log(text);
 }

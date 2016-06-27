@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 
+
+//set DEBUG environment variable if nod defined
+if (!process.env.DEBUG)
+	process.env.DEBUG = "server:*,gateway:*";
+
 /**
  * Module dependencies.
  */
 
 var app = require('../app');
-var debug = require('debug')('mynodesjs:server');
+var debug = require('debug')('server:');
+var debugError = require('debug')('server:error');
 var http = require('http');
 
 /**
@@ -65,11 +71,11 @@ function onError(error) {
 	// handle specific listen errors with friendly messages
 	switch (error.code) {
 		case 'EACCES':
-			console.error(bind + ' requires elevated privileges');
+			debugError(bind + ' requires elevated privileges');
 			process.exit(1);
 			break;
 		case 'EADDRINUSE':
-			console.error(bind + ' is already in use');
+			debugError(bind + ' is already in use');
 			process.exit(1);
 			break;
 		default:
@@ -87,5 +93,5 @@ function onListening() {
 		? 'pipe ' + addr
 		: 'port ' + addr.port;
 	debug('Listening on ' + bind);
-	console.log("Server started on " + bind);
+	//console.log("Server started on " + bind);
 }
