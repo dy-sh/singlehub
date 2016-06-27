@@ -1,3 +1,5 @@
+var mys = require('./mysensors');
+
 var debug = require('debug')('gateway:mys');
 var debugLog = require('debug')('gateway:mys:log');
 var debugMes = require('debug')('gateway:mys:mes');
@@ -72,7 +74,8 @@ Gateway.prototype._readPortData = function (data) {
 	};
 
 	//log message
-	if (message.message_type == 3 && message.sub_type == 9)//internal/I_LOG_MESSAGE
+	if (message.message_type == mys.message_type.C_INTERNAL
+		&& message.sub_type == mys.internal.I_LOG_MESSAGE)
 		debugLog(data);
 	else
 		debugMes(data);
@@ -85,13 +88,13 @@ Gateway.prototype._readPortData = function (data) {
 
 
 Gateway.prototype._receiveGatewayMessage = function (message) {
-	if (message.message_type == 3 && message.sub_type == 14)
+	if (message.message_type == mys.message_type.C_INTERNAL
+		&& message.sub_type == mys.internal.I_GATEWAY_READY)
 		this.ready = true;
 
-	if (message.message_type == 3 && message.sub_type == 2)
+	if (message.message_type == mys.message_type.C_INTERNAL
+		&& message.sub_type == mys.internal.I_VERSION)
 		this.version = message.payload;
-
-	var self=this;
 };
 
 
