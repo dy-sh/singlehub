@@ -3,6 +3,10 @@ var debugErr = require('debug')('gateway:mys:[ERROR]');
 debugErr.color = 1;
 
 var split = require("split");
+var _ = require("lodash");
+
+var GATEWAY_ID = 0;
+var NEWNODE_ID = 255;
 
 
 module.exports.serialGateway = function (portName, baudRate) {
@@ -41,22 +45,22 @@ module.exports.serialGateway = function (portName, baudRate) {
 
 
 function Gateway(port) {
+
 	this.port = port;
 	this.nodes = [];
 
-	port.pipe(split()).on("data", this._readPortData);
+	port.pipe(split()).on("data", this._readPortData.bind(this));
 }
 
 
 Gateway.prototype._readPortData = function (data) {
 	debug(data);
-	var mess = data.split(";");
 
+	var mess = data.split(";");
 	if (mess.length < 5) {
 		debugErr("Can`t parse message: " + data);
 		return;
 	}
-	//debug(mess)
 
 	var message = {
 		node_id: mess[0],
@@ -67,5 +71,35 @@ Gateway.prototype._readPortData = function (data) {
 		payload: mess[5]
 	};
 
-	//debug(message)
+	this._receiveMessage(message);
+};
+
+Gateway.prototype._receiveMessage = function (message) {
+
+	var nodeId = message.node_id;
+	if (nodeId != GATEWAY_ID && nodeId != NEWNODE_ID) {
+		var node = this.getNode(nodeId);
+		if (!node) node = this._registerNode(nodeId);
+	}
+
+	console.log(this.nodes);
+};
+
+
+Gateway.prototype.getNode = function (node_id) {
+	return _.find(this.nodes, {'id': node_id})
+};
+
+
+Gateway.prototype._registerNode = function (node_id) {
+	var node = {
+		id: node_id,
+		sensors: [],
+		registered: new Date(),
+		last_seen: new Date()
+	};
+
+	this.nodes.push(node);
+
+	return node;
 };

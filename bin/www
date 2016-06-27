@@ -17,7 +17,7 @@ deb.formatArgs = function formatArgs() {
 
 	var c = this.color;
 
-	args[0] = (new Date).toLocaleString() +
+	args[0] = (new Date()).toLocaleString() +
 		'  \u001b[3' + c + 'm' + name + ' '
 		+ '\u001b[0m'
 		+ args[0] + '\u001b[3' + c + 'm'
