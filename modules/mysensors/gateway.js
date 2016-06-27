@@ -1,5 +1,7 @@
 var debug = require('debug')('gateway:mys');
-var debugErr = require('debug')('gateway:mys:[ERROR]');
+var debugLog = require('debug')('gateway:mys:log');
+var debugMes = require('debug')('gateway:mys:mes');
+var debugErr = require('debug')('gateway:mys:error');
 debugErr.color = 1;
 
 var split = require("split");
@@ -54,8 +56,6 @@ function Gateway(port) {
 
 
 Gateway.prototype._readPortData = function (data) {
-	debug(data);
-
 	var mess = data.split(";");
 	if (mess.length < 5) {
 		debugErr("Can`t parse message: " + data);
@@ -71,10 +71,31 @@ Gateway.prototype._readPortData = function (data) {
 		payload: mess[5]
 	};
 
-	this._receiveMessage(message);
+	//log message
+	if (message.message_type == 3 && message.sub_type == 9)//internal/I_LOG_MESSAGE
+		debugLog(data);
+	else
+		debugMes(data);
+
+	if (message.node_id == 0)
+		this._receiveGatewayMessage(message);
+	else
+		this._receiveNodeMessage(message);
 };
 
-Gateway.prototype._receiveMessage = function (message) {
+
+Gateway.prototype._receiveGatewayMessage = function (message) {
+	if (message.message_type == 3 && message.sub_type == 14)
+		this.ready = true;
+
+	if (message.message_type == 3 && message.sub_type == 2)
+		this.version = message.payload;
+
+	var self=this;
+};
+
+
+Gateway.prototype._receiveNodeMessage = function (message) {
 
 	var nodeId = message.node_id;
 	if (nodeId != GATEWAY_ID && nodeId != NEWNODE_ID) {
@@ -82,7 +103,6 @@ Gateway.prototype._receiveMessage = function (message) {
 		if (!node) node = this._registerNode(nodeId);
 	}
 
-	console.log(this.nodes);
 };
 
 
