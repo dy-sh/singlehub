@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var gateway = require('./modules/mysensors/gateway');
+
 var config = require('./config');
 
 var app = express();
@@ -63,3 +65,5 @@ app.use(function (err, req, res, next) {
 
 module.exports = app;
 
+
+gateway.serialGateway(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
