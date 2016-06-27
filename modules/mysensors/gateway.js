@@ -1,4 +1,7 @@
 var debug = require('debug')('gateway:mys');
+var debugErr = require('debug')('gateway:mys:[ERROR]');
+debugErr.color = 1;
+
 
 function Gateway(port) {
 	this.port = port;
@@ -23,7 +26,7 @@ module.exports.serialGateway = function (portName, baudRate) {
 	});
 
 	port.on("error", function (err) {
-		debug("Connection failed. " + err);
+		debugErr("Connection failed. " + err);
 		setTimeout(connect, 1000);
 	});
 
