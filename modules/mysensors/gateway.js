@@ -50,4 +50,22 @@ function Gateway(port) {
 
 Gateway.prototype._readPortData = function (data) {
 	debug(data);
+	var mess = data.split(";");
+
+	if (mess.length < 5) {
+		debugErr("Can`t parse message: " + data);
+		return;
+	}
+	//debug(mess)
+
+	var message = {
+		node_id: mess[0],
+		child_sensor_id: mess[1],
+		message_type: mess[2],
+		ack: mess[3],
+		sub_type: mess[4],
+		payload: mess[5]
+	};
+
+	//debug(message)
 };
