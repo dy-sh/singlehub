@@ -11,6 +11,7 @@ var _ = require("lodash");
 
 var GATEWAY_ID = 0;
 var NEWNODE_ID = 255;
+var NODE_SELF_SENSOR_ID = 255;
 
 
 module.exports.serialGateway = function (portName, baudRate) {
@@ -65,11 +66,11 @@ Gateway.prototype._readPortData = function (data) {
 	}
 
 	var message = {
-		node_id: mess[0],
-		child_sensor_id: mess[1],
-		message_type: mess[2],
-		ack: mess[3],
-		sub_type: mess[4],
+		node_id: +mess[0],
+		sensor_id: +mess[1],
+		message_type: +mess[2],
+		ack: +mess[3],
+		sub_type: +mess[4],
 		payload: mess[5]
 	};
 
@@ -80,7 +81,7 @@ Gateway.prototype._readPortData = function (data) {
 	else
 		debugMes(data);
 
-	if (message.node_id == 0)
+	if (message.node_id == GATEWAY_ID)
 		this._receiveGatewayMessage(message);
 	else
 		this._receiveNodeMessage(message);
@@ -88,24 +89,42 @@ Gateway.prototype._readPortData = function (data) {
 
 
 Gateway.prototype._receiveGatewayMessage = function (message) {
-	if (message.message_type == mys.message_type.C_INTERNAL
-		&& message.sub_type == mys.internal.I_GATEWAY_READY)
-		this.ready = true;
 
-	if (message.message_type == mys.message_type.C_INTERNAL
-		&& message.sub_type == mys.internal.I_VERSION)
-		this.version = message.payload;
+	switch (message.message_type) {
+		case mys.message_type.C_INTERNAL:
+			switch (message.sub_type) {
+
+				case mys.internal.I_GATEWAY_READY:
+					this.ready = true;
+					debug("Gateway is ready.");
+					break;
+				case mys.internal.I_VERSION:
+					this.version = message.payload;
+					break;
+			}
+	}
 };
 
 
 Gateway.prototype._receiveNodeMessage = function (message) {
 
-	var nodeId = message.node_id;
-	if (nodeId != GATEWAY_ID && nodeId != NEWNODE_ID) {
-		var node = this.getNode(nodeId);
-		if (!node) node = this._registerNode(nodeId);
-	}
+	//var nodeId = message.node_id;
 
+	// if (nodeId != NEWNODE_ID) {
+	// 	var node = this.getNode(nodeId);
+	// 	if (!node) node = this._registerNode(nodeId);
+	// }
+
+	switch (message.message_type) {
+		case mys.message_type.C_PRESENTATION:
+			this._proceedPresentstion(message);
+			break;
+
+		// case mys.message_type.C_INTERNAL:
+		// 	switch (message.sub_type) {
+		//
+		// 	}
+	}
 };
 
 
@@ -113,16 +132,60 @@ Gateway.prototype.getNode = function (node_id) {
 	return _.find(this.nodes, {'id': node_id})
 };
 
+Gateway.prototype.getSensor = function (node_id, sensor_id) {
+	var node = this.getNode(node_id);
+	if (!node) return;
+
+	return _.find(node.sensors, {'id': sensor_id});
+};
 
 Gateway.prototype._registerNode = function (node_id) {
-	var node = {
-		id: node_id,
-		sensors: [],
-		registered: new Date(),
-		last_seen: new Date()
-	};
+	var node = this.getNode(node_id);
 
-	this.nodes.push(node);
+	if (!node) {
+		node = {
+			id: node_id,
+			sensors: [],
+			registered: new Date(),
+			last_seen: new Date()
+		};
 
+		this.nodes.push(node);
+		debug(`Node[${node_id}] registered.`);
+	}
 	return node;
+};
+
+
+Gateway.prototype._registerSensor = function (node_id, sensor_id) {
+	var node = this.getNode(node_id);
+	if (!node) node = this._registerNode(node_id);
+
+	var sensor = _.find(node.sensors, {'id': sensor_id});
+	if (!sensor) {
+		sensor = {
+			id: sensor_id,
+			last_seen: new Date()
+		};
+
+		node.sensors.push(sensor);
+		debug(`Node[${node_id}] Sensor[${sensor_id}] registered.`);
+	}
+
+	return sensor;
+};
+
+
+Gateway.prototype._proceedPresentstion = function (message) {
+	if (message.sensor_id == NODE_SELF_SENSOR_ID) {
+
+	}
+	else {
+		var sensor = this.getSensor(message.node_id, message.sensor_id);
+		if (!sensor) sensor = this._registerSensor(message.node_id, message.sensor_id);
+		if (sensor.type !== message.sub_type) {
+			sensor.type = message.sub_type;
+			debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] presented: [${mys.presentation_key[message.sub_type]}]`);
+		}
+	}
 };
