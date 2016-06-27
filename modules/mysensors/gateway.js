@@ -169,7 +169,7 @@ Gateway.prototype._registerSensor = function (node_id, sensor_id) {
 		};
 
 		node.sensors.push(sensor);
-		debug(`Node[${node_id}] Sensor[${sensor_id}] registered.`);
+		//debug(`Node[${node_id}] Sensor[${sensor_id}] registered.`);
 	}
 
 	return sensor;
@@ -178,6 +178,21 @@ Gateway.prototype._registerSensor = function (node_id, sensor_id) {
 
 Gateway.prototype._proceedPresentstion = function (message) {
 	if (message.sensor_id == NODE_SELF_SENSOR_ID) {
+		if (message.sub_type == mys.presentation.S_ARDUINO_NODE ||
+			message.sub_type == mys.presentation.S_ARDUINO_REPEATER_NODE
+		) {
+			var node = this.getNode(message.node_id);
+			var isRepeater = message.sub_type == mys.presentation.S_ARDUINO_NODE;
+			var version = message.payload;
+
+			if (node.isRepeater !== isRepeater
+				|| node.version !== version
+			) {
+				node.isRepeater = isRepeater;
+				node.version = version;
+				debug(`Node[${node.id}] version: [${version}]`);
+			}
+		}
 
 	}
 	else {
