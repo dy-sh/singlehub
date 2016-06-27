@@ -2,11 +2,7 @@ var debug = require('debug')('gateway:mys');
 var debugErr = require('debug')('gateway:mys:[ERROR]');
 debugErr.color = 1;
 
-
-function Gateway(port) {
-	this.port = port;
-	this.nodes = [];
-}
+var split = require("split");
 
 
 module.exports.serialGateway = function (portName, baudRate) {
@@ -44,6 +40,14 @@ module.exports.serialGateway = function (portName, baudRate) {
 };
 
 
-function log(text) {
-	console.log(text);
+function Gateway(port) {
+	this.port = port;
+	this.nodes = [];
+
+	port.pipe(split()).on("data", this._readPortData);
 }
+
+
+Gateway.prototype._readPortData = function (data) {
+	debug(data);
+};
