@@ -6,10 +6,12 @@ var debugMes = require('debug')('gateway:mys:mes   ');
 var debugErr = require('debug')('gateway:mys:error ');
 debugErr.color = 1;
 
-var split = require("split");
 var _ = require("lodash");
+var eventEmitter = require("events");
+var util = require("util");
+var split = require("split");
 
-var GATEWAY_ID = 0;
+GATEWAY_ID = 0;
 var BROADCAST_ID = 255;
 var NODE_SELF_SENSOR_ID = 255;
 
@@ -50,13 +52,14 @@ module.exports.serialGateway = function (portName, baudRate) {
 
 
 function Gateway(port) {
+	eventEmitter.call(this);
 
 	this.port = port;
 	this.nodes = [];
 
 	port.pipe(split()).on("data", this._readPortData.bind(this));
 }
-
+util.inherits(Gateway, eventEmitter);
 
 Gateway.prototype._readPortData = function (data) {
 	var mess = data.split(";");
@@ -167,12 +170,15 @@ Gateway.prototype._proceedPresentstion = function (message) {
 		if (sensor.type !== message.sub_type) {
 			sensor.type = message.sub_type;
 			debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] presented: [${mys.presentation_key[message.sub_type]}]`);
+			var node = this.getNode(message.node_id);
+			this.emit("sensorUpdated", node, "sensor.type", sensor);
 		}
 	}
 };
 
 
 Gateway.prototype._proceedSet = function (message) {
+	var node = this.getNode(message.node_id);
 	var sensor = this.getSensor(message.node_id, message.node_id);
 
 	sensor.value = message.payload;
@@ -181,9 +187,12 @@ Gateway.prototype._proceedSet = function (message) {
 	if (sensor.type !== message.sub_type) {
 		sensor.type = message.sub_type;
 		debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] type updated: [${mys.presentation_key[message.sub_type]}]`);
+		this.emit("sensorUpdated", node, "sensor.type", sensor);
 	}
 
 	debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] updated: [${message.payload}]`);
+	this.emit("sensorUpdated", node, "sensor.value", sensor);
+
 };
 
 
@@ -223,6 +232,7 @@ Gateway.prototype._proceedInternal = function (message) {
 			if (node.sketchName !== message.payload) {
 				node.sketchName = message.payload;
 				debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] sketch name: [${message.payload}]`);
+				this.emit("nodeUpdated", node, "sketchName");
 			}
 			break;
 
@@ -231,6 +241,7 @@ Gateway.prototype._proceedInternal = function (message) {
 			if (node.sketchVersion !== message.payload) {
 				node.sketchVersion = message.payload;
 				debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] sketch version: [${message.payload}]`);
+				this.emit("nodeUpdated", node, "sketchVersion");
 			}
 			break;
 
@@ -238,6 +249,7 @@ Gateway.prototype._proceedInternal = function (message) {
 			var node = this.getNode(message.node_id);
 			node.batteryLevel = +message.payload;
 			debug(`Node[${message.node_id}] Sensor[${message.sensor_id}] battery level: [${message.payload}]`);
+			this.emit("nodeUpdated", node, "batteryLevel");
 			break;
 
 		case ( mys.internal.I_CONFIG):
@@ -275,7 +287,7 @@ Gateway.prototype.sendMessage = function (message) {
 
 	var mess = _.join(arr, ";");
 
-	debugMes("  > " + mess)
+	debugMes("  > " + mess);
 	this.port.write(mess + "\n");
 };
 
@@ -321,6 +333,7 @@ Gateway.prototype._registerNode = function (node_id) {
 
 		this.nodes.push(node);
 		debug(`Node[${node_id}] registered.`);
+		this.emit("nodeRegistered", node);
 	}
 	return node;
 };
@@ -338,6 +351,7 @@ Gateway.prototype._registerSensor = function (node_id, sensor_id) {
 
 		node.sensors.push(sensor);
 		debug(`Node[${node_id}] Sensor[${sensor_id}] registered.`);
+		this.emit("sensorRegistered", node, "sensor", sensor);
 	}
 
 	return sensor;
