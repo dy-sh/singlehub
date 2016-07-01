@@ -3,12 +3,14 @@
  */
 
 
-var signalRServerConnected;
+var socketConnected;
 
 
 var editor = new LiteGraph.Editor("main");
 window.graph = editor.graph;
-window.addEventListener("resize", function () { editor.graphcanvas.resize(); });
+window.addEventListener("resize", function () {
+	editor.graphcanvas.resize();
+});
 //getNodes();
 
 var START_POS = 50;
@@ -18,24 +20,46 @@ var NODE_WIDTH = 150;
 
 $(function () {
 
-	//configure signalr
-	var clientsHub = $.connection.nodeEditorHub;
+	//configure socket.io
+	var socket = io.connect('/nodeeditor');
 
-	clientsHub.client.OnGatewayConnected = function () {
-		noty({ text: 'Gateway is connected.', type: 'alert', timeout: false });
-	};
+	socket.on('connect', function () {
+		//todo socket.join(this_panel_id);
 
-	clientsHub.client.OnGatewayDisconnected = function () {
-		noty({ text: 'Gateway is disconnected!', type: 'error', timeout: false });
-	};
+		if (socketConnected == false) {
+			noty({text: 'Connected to web server.', type: 'alert'});
+			//waiting while server initialized and read db
+			setTimeout(function () {
+				getNodes();
+				getGatewayInfo();
+				$("#main").fadeIn(300);
+			}, 2000);
+		}
+		socketConnected = true;
+	});
 
-	clientsHub.client.OnRemoveAllNodesAndLinks = function () {
+	socket.on('disconnect', function () {
+		$("#main").fadeOut(300);
+		noty({text: 'Web server is not responding!', type: 'error'});
+		socketConnected = false;
+	});
+
+
+	socket.on('gatewayConnected', function () {
+		noty({text: 'Gateway connected.', type: 'alert', timeout: false});
+	});
+
+	socket.on('gatewayDisconnected', function () {
+		noty({text: 'Gateway disconnected!', type: 'error', timeout: false});
+	});
+
+	socket.on('removeAllNodesAndLinks', function () {
 		graph.clear();
 		window.location.replace("/NodeEditor/");
-		noty({ text: 'All nodes have been deleted!', type: 'error' });
-	};
+		noty({text: 'All nodes have been deleted!', type: 'error'});
+	});
 
-	clientsHub.client.OnNodeActivity = function (nodeId) {
+	socket.on('nodeActivity', function (nodeId) {
 		var node = graph.getNodeById(nodeId);
 		if (node == null)
 			return;
@@ -46,11 +70,10 @@ $(function () {
 			node.boxcolor = LiteGraph.NODE_DEFAULT_BOXCOLOR;
 			node.setDirtyCanvas(true, true);
 		}, 100);
-	};
+	});
 
 
-
-	clientsHub.client.OnRemoveNode = function (nodeId) {
+	socket.on('removeNode', function (nodeId) {
 		//if current panel removed
 		if (nodeId == this_panel_id) {
 			window.location = "/NodeEditor/";
@@ -62,26 +85,26 @@ $(function () {
 
 		graph.remove(node);
 		graph.setDirtyCanvas(true, true);
-	};
+	});
 
 
-	clientsHub.client.OnNodeUpdated = function (node) {
+	socket.on('nodeUpdated', function (node) {
 		if (node.panel_id != window.this_panel_id)
 			return;
 
 		createOrUpdateNode(node);
-	};
+	});
 
 
-	clientsHub.client.OnNewNode = function (node) {
+	socket.on('newNode', function (node) {
 		if (node.panel_id != window.this_panel_id)
 			return;
 
 		createOrUpdateNode(node);
-	};
+	});
 
 
-	clientsHub.client.OnRemoveLink = function (link) {
+	socket.on('removeLink', function (link) {
 		if (link.panel_id != window.this_panel_id)
 			return;
 
@@ -89,9 +112,9 @@ $(function () {
 		var targetNode = graph.getNodeById(link.target_id);
 		//node.disconnectOutput(link.target_slot, targetNode);
 		targetNode.disconnectInput(link.target_slot);
-	};
+	});
 
-	clientsHub.client.OnNewLink = function (link) {
+	socket.on('newLink', function (link) {
 		if (link.panel_id != window.this_panel_id)
 			return;
 
@@ -100,35 +123,8 @@ $(function () {
 		node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
 		//  graph.change();
 
-	};
-
-
-	$.connection.hub.start(
-		function () {
-			clientsHub.server.join(this_panel_id);
-		});
-
-	$.connection.hub.stateChanged(function (change) {
-		if (change.newState === $.signalR.connectionState.reconnecting) {
-			$("#main").fadeOut(300);
-			noty({ text: 'Web server is not responding!', type: 'error' });
-			signalRServerConnected = false;
-		}
-		else if (change.newState === $.signalR.connectionState.connected) {
-			if (signalRServerConnected == false) {
-				noty({ text: 'Connected to web server.', type: 'alert' });
-				//waiting while server initialized and read db
-				setTimeout(function () {
-					getNodes();
-					getGatewayInfo();
-					$("#main").fadeIn(300);
-				}, 2000);
-
-
-			}
-			signalRServerConnected = true;
-		}
 	});
+
 
 	getNodes();
 	getGatewayInfo();
@@ -137,19 +133,14 @@ $(function () {
 
 function getGatewayInfo() {
 	$.ajax({
-		url: "/GatewayAPI/GetGatewayInfo/",
-		type: "POST",
+		url: "/MySensorsAPI/GetGatewayInfo/",
 		success: function (gatewayInfo) {
 			if (gatewayInfo.state == 1 || gatewayInfo.state == 2) {
-				noty({ text: 'Gateway is not connected!', type: 'error', timeout: false });
+				noty({text: 'Gateway is not connected!', type: 'error', timeout: false});
 			}
 		}
 	});
 }
-
-
-
-
 
 
 $("#sendButton").click(function () {
@@ -158,13 +149,11 @@ $("#sendButton").click(function () {
 	$.ajax({
 		url: '/NodeEditorAPI/PutGraph',
 		type: 'POST',
-		data: { json: gr.toString() }
+		data: {json: gr.toString()}
 	}).done(function () {
 
 	});
 });
-
-
 
 
 $("#fullscreen-button").click(function () {
@@ -202,7 +191,7 @@ function send_create_link(link) {
 	$.ajax({
 		url: '/NodeEditorAPI/CreateLink',
 		type: 'POST',
-		data: { 'link': link }
+		data: {'link': link}
 	}).done(function () {
 
 	});
@@ -213,7 +202,7 @@ function send_remove_link(link) {
 	$.ajax({
 		url: '/NodeEditorAPI/RemoveLink',
 		type: 'POST',
-		data: { 'link': link }
+		data: {'link': link}
 	}).done(function () {
 
 	});
@@ -226,7 +215,7 @@ function send_create_node(node) {
 	$.ajax({
 		url: '/NodeEditorAPI/AddNode',
 		type: 'POST',
-		data: { 'node': serializedNode }
+		data: {'node': serializedNode}
 	}).done(function () {
 
 	});
@@ -236,7 +225,7 @@ function send_clone_node(node) {
 	$.ajax({
 		url: '/NodeEditorAPI/CloneNode',
 		type: 'POST',
-		data: { 'id': node.id }
+		data: {'id': node.id}
 	}).done(function () {
 
 	});
@@ -248,7 +237,7 @@ function send_remove_node(node) {
 	$.ajax({
 		url: '/NodeEditorAPI/RemoveNode',
 		type: 'POST',
-		data: { 'node': serializedNode }
+		data: {'node': serializedNode}
 	}).done(function () {
 
 	});
@@ -265,7 +254,7 @@ function send_remove_nodes(nodes) {
 	$.ajax({
 		url: '/NodeEditorAPI/RemoveNodes',
 		type: 'POST',
-		data: { 'nodes': array }
+		data: {'nodes': array}
 	}).done(function () {
 
 	});
@@ -277,7 +266,7 @@ function send_update_node(node) {
 	$.ajax({
 		url: '/NodeEditorAPI/UpdateNode',
 		type: 'POST',
-		data: { 'node': serializedNode }
+		data: {'node': serializedNode}
 	}).done(function () {
 
 	});
@@ -288,7 +277,6 @@ function getGraph() {
 
 	$.ajax({
 		url: "/NodeEditorAPI/GetGraph",
-		type: "POST",
 		success: function (loadedGraph) {
 			graph.configure(loadedGraph);
 		}
@@ -299,14 +287,12 @@ function getNodes() {
 
 	$.ajax({
 		url: "/NodeEditorAPI/GetNodesForPanel",
-		type: "POST",
-		data: { 'panelId': window.this_panel_id },
+		data: {'panelId': window.this_panel_id},
 		success: function (nodes) {
 			onReturnNodes(nodes);
 		}
 	});
 }
-
 
 
 function onReturnNodes(nodes) {
@@ -328,10 +314,10 @@ function createOrUpdateNode(node) {
 		//create new
 		var newNode = LiteGraph.createNode(node.type);
 
-		if (newNode==null) {
-			console.error("Can`t create node of type: ["+node.type+"]");
+		if (newNode == null) {
+			console.error("Can`t create node of type: [" + node.type + "]");
 			return;
-		};
+		}
 
 		newNode.title = node.title;
 
@@ -381,9 +367,9 @@ function createOrUpdateNode(node) {
 		//calculate pos
 
 		if (node.pos) {
-			if(!editor.graphcanvas.node_dragged)
+			if (!editor.graphcanvas.node_dragged)
 				oldNode.pos = node.pos;
-			else if(!editor.graphcanvas.selected_nodes[node.id])
+			else if (!editor.graphcanvas.selected_nodes[node.id])
 				oldNode.pos = node.pos;
 		}
 
@@ -392,19 +378,16 @@ function createOrUpdateNode(node) {
 }
 
 
-
 function getLinks() {
 
 	$.ajax({
 		url: "/NodeEditorAPI/GetLinks",
-		type: "POST",
-		data: { 'panelId': window.this_panel_id },
+		data: {'panelId': window.this_panel_id},
 		success: function (links) {
 			onReturnLinks(links);
 		}
 	});
 }
-
 
 
 function onReturnLinks(links) {
@@ -425,10 +408,6 @@ function createOrUpdateLink(link) {
 }
 
 
-
-
-
-
 function calculateNodeMinHeight(node) {
 
 	var slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
@@ -439,7 +418,6 @@ function calculateNodeMinHeight(node) {
 
 	return height + 5;
 }
-
 
 
 function findFreeSpaceY(node) {
