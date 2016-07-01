@@ -19,11 +19,11 @@ module.exports.listen = function (app) {
 	});
 
 	gateway.on('sensorUpdated', function (sensor, property) {
-		io.emit('sensorUpdated', sensor);
+		io.emit('sensorUpdated', sensor, property);
 	});
 
 	gateway.on('nodeUpdated', function (node, property) {
-		io.emit('nodeUpdated', node);
+		io.emit('nodeUpdated', node, property);
 	});
 
 	io.on('connection', function (socket) {

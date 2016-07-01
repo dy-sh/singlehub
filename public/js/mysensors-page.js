@@ -47,21 +47,14 @@ $(function () {
 		createOrUpdateNode(node);
 	});
 
-	socket.on('nodeLastSeenUpdated', function (node) {
-		lastSeens[node.id] = node.lastSeen;
-		updateLastSeen(node.id, node.lastSeen);
-	});
-
-	socket.on('nodeBatteryUpdated', function (node) {
-		updateBattery(node);
-	});
-
 	socket.on('sensorUpdated', function (sensor) {
 		createOrUpdateSensor(sensor);
+		updateLastSeen(sensor.nodeId, new Date());
 	});
 
 	socket.on('newSensor', function (sensor) {
 		createOrUpdateSensor(sensor);
+		updateLastSeen(sensor.nodeId, new Date());
 	});
 
 	socket.on('removeAllNodes', function () {
@@ -206,6 +199,8 @@ function createOrUpdateSensor(sensor) {
 
 
 function updateLastSeen(nodeId, lastSeen) {
+
+	lastSeens[nodeId] = lastSeen;
 
 	var date1 = new Date(lastSeen);
 	var date2 = new Date();
