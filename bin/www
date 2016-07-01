@@ -49,7 +49,8 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-//mysensors gateway socket.io
+
+// mysensors gateway socket.io
 var io = require('../modules/mysensors/gateway-io').listen(server);
 
 /**

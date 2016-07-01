@@ -3,14 +3,37 @@
  */
 
 var socketio = require('socket.io');
+var gateway = require('./gateway');
+var debug = require('debug')('server:io         ');
 
 module.exports.listen = function (app) {
-	io = socketio.listen(app);
+	io = socketio.listen(app).of('/mysensors');
 
-	users = io.of('/mysensors');
-	users.on('connection', function (socket) {
-		socket.emit('OnConnected', {hello: 'world'});
+
+	gateway.on('newNode', function (node) {
+		io.emit('newNode', node);
 	});
+
+	gateway.on('newSensor', function (node) {
+		io.emit('newSensor', node);
+	});
+
+	gateway.on('sensorUpdated', function (sensor, property) {
+		io.emit('sensorUpdated', sensor);
+	});
+
+	gateway.on('nodeUpdated', function (node, property) {
+		io.emit('nodeUpdated', node);
+	});
+
+	io.on('connection', function (socket) {
+		debug("new user connected");
+
+		socket.on('disconnect', function () {
+			debug("user disconnected");
+		});
+	});
+
 
 	return io
 };

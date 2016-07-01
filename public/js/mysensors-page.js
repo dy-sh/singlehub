@@ -13,14 +13,9 @@ var lastSeens;
 $(function () {
 
 	//configure socket.io
-	var socket = io.connect('/mysensors');
+	var socket = io.connect('http://localhost:1312/mysensors');
 
-	socket.on('disconnect', function (nodeId) {
-		noty({text: 'Web server is not responding!', type: 'error', timeout: false});
-		socketConnected = false;
-	});
-
-	socket.on('connect', function (nodeId) {
+	io.on('connect', function () {
 		if (socketConnected == false) {
 			noty({text: 'Connected to web server.', type: 'alert', timeout: false});
 			getNodes();
@@ -29,46 +24,51 @@ $(function () {
 		socketConnected = true;
 	});
 
+	io.on('disconnect', function () {
+		noty({text: 'Web server is not responding!', type: 'error', timeout: false});
+		socketConnected = false;
+	});
 
-	socket.on('OnConnected', function () {
+
+	io.on('gatewayConnected', function () {
 		noty({text: 'Gateway is connected.', type: 'alert', timeout: false});
 	});
 
-	socket.on('OnDisconnected', function () {
+	io.on('gatewayDisconnected', function () {
 		noty({text: 'Gateway is disconnected!', type: 'error', timeout: false});
 	});
 
 
-	socket.on('OnNewNode', function (node) {
+	io.on('newNode', function (node) {
 		createOrUpdateNode(node);
 	});
 
-	socket.on('OnNodeUpdated', function (node) {
+	io.on('nodeUpdated', function (node) {
 		createOrUpdateNode(node);
 	});
 
-	socket.on('OnNodeLastSeenUpdated', function (node) {
+	io.on('nodeLastSeenUpdated', function (node) {
 		lastSeens[node.id] = node.lastSeen;
 		updateLastSeen(node.id, node.lastSeen);
 	});
 
-	socket.on('OnNodeBatteryUpdated', function (node) {
+	io.on('nodeBatteryUpdated', function (node) {
 		updateBattery(node);
 	});
 
-	socket.on('OnSensorUpdated', function (sensor) {
+	io.on('sensorUpdated', function (sensor) {
 		createOrUpdateSensor(sensor);
 	});
 
-	socket.on('OnNewSensor', function (sensor) {
+	io.on('newSensor', function (sensor) {
 		createOrUpdateSensor(sensor);
 	});
 
-	socket.on('OnRemoveAllNodes', function () {
+	io.on('removeAllNodes', function () {
 		removeAllNodes();
 	});
 
-	socket.on('OnRemoveNode', function (nodeId) {
+	io.on('removeNode', function (nodeId) {
 		removeNode(nodeId);
 	});
 

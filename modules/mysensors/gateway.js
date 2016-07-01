@@ -181,7 +181,7 @@ Gateway.prototype._proceedPresentation = function (message) {
 			debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
 			console.log(sensor.dataType);
 			var node = this.getNode(message.nodeId);
-			this.emit("sensorUpdated", node, "sensor.type", sensor);
+			this.emit("sensorUpdated", sensor, "type");
 		}
 	}
 };
@@ -197,11 +197,11 @@ Gateway.prototype._proceedSet = function (message) {
 	if (sensor.dataType !== message.subType) {
 		sensor.dataType = message.subType;
 		debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] dataType updated: [${mys.sensorDataTypeKey[message.subType]}]`);
-		this.emit("sensorUpdated", node, "sensor.type", sensor);
+		this.emit("sensorUpdated", sensor, "type");
 	}
 
 	debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] updated: [${message.payload}]`);
-	this.emit("sensorUpdated", node, "sensor.state", sensor);
+	this.emit("sensorUpdated", sensor, "state");
 
 };
 
@@ -343,7 +343,7 @@ Gateway.prototype._registerNode = function (nodeId) {
 
 		this.nodes.push(node);
 		debug(`Node[${nodeId}] registered.`);
-		this.emit("nodeRegistered", node);
+		this.emit("newNode", node);
 	}
 	return node;
 };
@@ -362,7 +362,7 @@ Gateway.prototype._registerSensor = function (nodeId, sensorId) {
 
 		node.sensors.push(sensor);
 		debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
-		this.emit("sensorRegistered", node, "sensor", sensor);
+		this.emit("newSensor", sensor);
 	}
 
 	return sensor;
