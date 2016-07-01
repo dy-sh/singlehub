@@ -1,3 +1,7 @@
+/**
+ * Created by Derwish on 01.07.2016.
+ */
+
 var mys = require('./mysensors');
 
 var debug = require('debug')('gateway:mys       ');
@@ -11,7 +15,7 @@ var eventEmitter = require("events");
 var util = require("util");
 var split = require("split");
 
-GATEWAY_ID = 0;
+var GATEWAY_ID = 0;
 var BROADCAST_ID = 255;
 var NODE_SELF_SENSOR_ID = 255;
 
@@ -131,7 +135,7 @@ Gateway.prototype._receiveNodeMessage = function (message) {
 
 	switch (message.message_type) {
 		case mys.message_type.C_PRESENTATION:
-			this._proceedPresentstion(message);
+			this._proceedPresentation(message);
 			break;
 		case mys.message_type.C_SET:
 			this._proceedSet(message);
@@ -146,7 +150,7 @@ Gateway.prototype._receiveNodeMessage = function (message) {
 };
 
 
-Gateway.prototype._proceedPresentstion = function (message) {
+Gateway.prototype._proceedPresentation = function (message) {
 	if (message.sensor_id == NODE_SELF_SENSOR_ID) {
 		if (message.sub_type == mys.presentation.S_ARDUINO_NODE ||
 			message.sub_type == mys.presentation.S_ARDUINO_REPEATER_NODE

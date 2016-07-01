@@ -1,3 +1,7 @@
+/**
+ * Created by Derwish on 01.07.2016.
+ */
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -10,9 +14,6 @@ var gateway = require('./modules/mysensors/gateway');
 var config = require('./config');
 
 var app = express();
-
-
-
 
 
 // view engine setup
@@ -31,8 +32,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', require('./routes/firstrun'));
-
 app.use('/', require('./routes/index'));
+app.use('/Dashboard', require('./routes/dashboard'));
+app.use('/MySensors', require('./routes/mysensors'));
 
 
 // catch 404 and forward to error handler

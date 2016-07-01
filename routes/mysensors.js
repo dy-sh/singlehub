@@ -4,11 +4,11 @@
 
 var express = require('express');
 var router = express.Router();
+//var config = require('./../config');
 
-/* GET home page. */
+
 router.get('/', function (req, res, next) {
-	res.redirect('/mysensors/');
-	//res.render('index', { title: 'Express' });
+	res.render('mysensors');
 });
 
 module.exports = router;

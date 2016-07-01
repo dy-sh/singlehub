@@ -1,3 +1,7 @@
+/**
+ * Created by Derwish on 01.07.2016.
+ */
+
 module.exports.message_type =
 {
 	C_PRESENTATION: 0,

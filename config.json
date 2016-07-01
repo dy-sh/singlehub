@@ -16,7 +16,7 @@
 		}
 	},
 	"dataBase": {
-		"enable": false,
+		"enable": true,
 		"useInternalDb": true,
 		"externalDbConnectionString": "",
 		"writeInterval": 5000
