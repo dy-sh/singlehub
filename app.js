@@ -36,7 +36,7 @@ app.use('/', require('./routes/firstrun'));
 app.use('/', require('./routes/index'));
 app.use('/Dashboard', require('./routes/dashboard'));
 app.use('/MySensors', require('./routes/mysensors'));
-app.use('/MySensors-API', require('./routes/mysensors-api'));
+app.use('/MySensorsAPI', require('./routes/mysensors-api'));
 
 
 // catch 404 and forward to error handler

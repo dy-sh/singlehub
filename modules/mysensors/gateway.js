@@ -108,7 +108,7 @@ Gateway.prototype._receiveGatewayMessage = function (message) {
 
 				case mys.internal.I_GATEWAY_READY:
 					this.isConnected = true;
-					debug("Gateway connected");
+					debug("Gateway connected.");
 					this.sendGetGatewayVersion();
 					break;
 
@@ -355,6 +355,7 @@ Gateway.prototype._registerSensor = function (node_id, sensor_id) {
 	if (!sensor) {
 		sensor = {
 			id: sensor_id,
+			node_id: node_id,
 			last_seen: new Date()
 		};
 

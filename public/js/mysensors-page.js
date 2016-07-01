@@ -15,12 +15,12 @@ $(function () {
 	//configure socket.io
 	var socket = io.connect('/mysensors');
 
-	socket.on('disconnect', function (nodeId) {
+	socket.on('disconnect', function (node_id) {
 		noty({text: 'Web server is not responding!', type: 'error', timeout: false});
 		socketConnected = false;
 	});
 
-	socket.on('connect', function (nodeId) {
+	socket.on('connect', function (node_id) {
 		if (socketConnected == false) {
 			noty({text: 'Connected to web server.', type: 'alert', timeout: false});
 			getNodes();
@@ -48,8 +48,8 @@ $(function () {
 	});
 
 	socket.on('OnNodeLastSeenUpdated', function (node) {
-		lastSeens[node.Id] = node.lastSeen;
-		updateLastSeen(node.Id, node.lastSeen);
+		lastSeens[node.id] = node.lastSeen;
+		updateLastSeen(node.id, node.lastSeen);
 	});
 
 	socket.on('OnNodeBatteryUpdated', function (node) {
@@ -68,8 +68,8 @@ $(function () {
 		removeAllNodes();
 	});
 
-	socket.on('OnRemoveNode', function (nodeId) {
-		removeNode(nodeId);
+	socket.on('OnRemoveNode', function (node_id) {
+		removeNode(node_id);
 	});
 
 
@@ -82,8 +82,7 @@ $(function () {
 
 function getGatewayInfo() {
 	$.ajax({
-		url: "/GatewayAPI/GetGatewayInfo/",
-		type: "POST",
+		url: "/MySensorsAPI/GetGatewayInfo/",
 		success: function (gatewayInfo) {
 			if (gatewayInfo.state == 1 || gatewayInfo.state == 2) {
 				noty({text: 'Gateway is not connected!', type: 'error', timeout: false});
@@ -95,10 +94,12 @@ function getGatewayInfo() {
 
 function getNodes() {
 	$.ajax({
-		url: "/GatewayAPI/GetAllNodes/",
-		type: "POST",
+		url: "/MySensorsAPI/GetAllNodes/",
 		success: function (nodes) {
 			onReturnNodes(nodes);
+		},
+		error: function (error) {
+			console.log(error);
 		}
 	});
 }
@@ -114,7 +115,7 @@ function onReturnNodes(nodes) {
 	lastSeens = {};
 
 	for (var i = 0; i < nodes.length; i++) {
-		lastSeens[nodes[i].Id] = nodes[i].lastSeen;
+		lastSeens[nodes[i].id] = nodes[i].lastSeen;
 	}
 	updateAllLastSeens();
 }
@@ -137,7 +138,7 @@ Handlebars.registerHelper("yes-no", function (boolean) {
 });
 
 Handlebars.registerHelper("sensor-id", function (sensor) {
-	return sensor.nodeId + "-" + sensor.sensorId;
+	return sensor.node_id + "-" + sensor.id;
 });
 
 
@@ -160,7 +161,7 @@ function getDataType(sensor) {
 }
 
 function createOrUpdateNode(node) {
-	var nodePanel = $('#nodePanel' + node.Id);
+	var nodePanel = $('#nodePanel' + node.id);
 
 	if (nodePanel.length == 0) {
 		//create new
@@ -177,7 +178,7 @@ function createOrUpdateNode(node) {
 
 
 function updateBattery(node) {
-	var nodeBattery = $('#nodeBattery' + node.Id);
+	var nodeBattery = $('#nodeBattery' + node.id);
 
 	if (nodeBattery.length == 0)
 		createOrUpdateNode(node);
@@ -186,11 +187,11 @@ function updateBattery(node) {
 
 
 function createOrUpdateSensor(sensor) {
-	var id = sensor.nodeId + "-" + sensor.sensorId;
+	var id = sensor.node_id + "-" + sensor.id;
 
 	if ($('#sensorPanel' + id).length == 0) {
 		//create new
-		$(sensorTemplate(sensor)).hide().appendTo("#sensorsContainer" + sensor.nodeId).fadeIn(elementsFadeTime);
+		$(sensorTemplate(sensor)).hide().appendTo("#sensorsContainer" + sensor.node_id).fadeIn(elementsFadeTime);
 	}
 
 
@@ -204,7 +205,7 @@ function createOrUpdateSensor(sensor) {
 }
 
 
-function updateLastSeen(nodeId, lastSeen) {
+function updateLastSeen(node_id, lastSeen) {
 
 	var date1 = new Date(lastSeen);
 	var date2 = new Date();
@@ -232,7 +233,7 @@ function updateLastSeen(nodeId, lastSeen) {
 	else
 		elapsed = seconds + "s";
 
-	$('#nodeLastSeen' + nodeId)
+	$('#nodeLastSeen' + node_id)
 		.html(elapsed);
 
 }
@@ -243,8 +244,8 @@ function updateAllLastSeens(sensor) {
 	}
 }
 
-function removeNode(nodeId) {
-	$('#nodePanel' + nodeId).fadeOut(elementsFadeTime, function () {
+function removeNode(node_id) {
+	$('#nodePanel' + node_id).fadeOut(elementsFadeTime, function () {
 		$(this).remove();
 	});
 }
