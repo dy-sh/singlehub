@@ -13,9 +13,9 @@ var lastSeens;
 $(function () {
 
 	//configure socket.io
-	var socket = io.connect('http://localhost:1312/mysensors');
+	var socket = io.connect('/mysensors');
 
-	io.on('connect', function () {
+	socket.on('connect', function () {
 		if (socketConnected == false) {
 			noty({text: 'Connected to web server.', type: 'alert', timeout: false});
 			getNodes();
@@ -24,51 +24,51 @@ $(function () {
 		socketConnected = true;
 	});
 
-	io.on('disconnect', function () {
+	socket.on('disconnect', function () {
 		noty({text: 'Web server is not responding!', type: 'error', timeout: false});
 		socketConnected = false;
 	});
 
 
-	io.on('gatewayConnected', function () {
+	socket.on('gatewayConnected', function () {
 		noty({text: 'Gateway is connected.', type: 'alert', timeout: false});
 	});
 
-	io.on('gatewayDisconnected', function () {
+	socket.on('gatewayDisconnected', function () {
 		noty({text: 'Gateway is disconnected!', type: 'error', timeout: false});
 	});
 
 
-	io.on('newNode', function (node) {
+	socket.on('newNode', function (node) {
 		createOrUpdateNode(node);
 	});
 
-	io.on('nodeUpdated', function (node) {
+	socket.on('nodeUpdated', function (node) {
 		createOrUpdateNode(node);
 	});
 
-	io.on('nodeLastSeenUpdated', function (node) {
+	socket.on('nodeLastSeenUpdated', function (node) {
 		lastSeens[node.id] = node.lastSeen;
 		updateLastSeen(node.id, node.lastSeen);
 	});
 
-	io.on('nodeBatteryUpdated', function (node) {
+	socket.on('nodeBatteryUpdated', function (node) {
 		updateBattery(node);
 	});
 
-	io.on('sensorUpdated', function (sensor) {
+	socket.on('sensorUpdated', function (sensor) {
 		createOrUpdateSensor(sensor);
 	});
 
-	io.on('newSensor', function (sensor) {
+	socket.on('newSensor', function (sensor) {
 		createOrUpdateSensor(sensor);
 	});
 
-	io.on('removeAllNodes', function () {
+	socket.on('removeAllNodes', function () {
 		removeAllNodes();
 	});
 
-	io.on('removeNode', function (nodeId) {
+	socket.on('removeNode', function (nodeId) {
 		removeNode(nodeId);
 	});
 
