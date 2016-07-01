@@ -35,6 +35,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', require('./routes/firstrun'));
 app.use('/', require('./routes/index'));
 app.use('/Dashboard', require('./routes/dashboard'));
+app.use('/NodeEditor', require('./routes/node-editor'));
+app.use('/NodeEditorAPI', require('./routes/node-editor-api'));
 app.use('/MySensors', require('./routes/mysensors'));
 app.use('/MySensorsAPI', require('./routes/mysensors-api'));
 
