@@ -138,7 +138,7 @@ Handlebars.registerHelper("yes-no", function (boolean) {
 });
 
 Handlebars.registerHelper("sensor-id", function (sensor) {
-	return sensor.nodeId + "-" + sensor.id;
+	return sensor.nodeId + "-" + sensor.sensorId;
 });
 
 
@@ -187,7 +187,7 @@ function updateBattery(node) {
 
 
 function createOrUpdateSensor(sensor) {
-	var id = sensor.nodeId + "-" + sensor.id;
+	var id = sensor.nodeId + "-" + sensor.sensorId;
 
 	if ($('#sensorPanel' + id).length == 0) {
 		//create new

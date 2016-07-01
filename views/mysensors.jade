@@ -3,8 +3,6 @@ extends layout
 
 block vars
 	- var title='MySensors Hardware'
-	- var activeStep=3
-	//- var canSkip=true
 
 
 block content
@@ -18,23 +16,24 @@ block content
 
 
 	script#nodeTemplate(type='text/x-handlebars-template').
-		<div class="column" id="nodePanel{{Id}}" style="min-width: 290px;">
-		<h4 class="ui top attached inverted header" id="nodeTitle{{Id}}">
+		<div class="column" id="nodePanel{{id}}" style="min-width: 290px;">
+		<h4 class="ui top attached inverted header" id="nodeTitle{{id}}">
 		<span class="ui floated left">
-		Node {{Id}}
+		Node {{id}}
 		</span>
 		</h4>
 		<div class="ui attached segment">
-		<div id="nodeBody{{Id}}">
-		{{#if name}} Name: {{name}} <br /> {{/if}}
-		{{#if version}} Version: {{version}} <br />{{/if}}
+		<div id="nodeBody{{id}}">
+		{{#if sketchName}} Sketch Name: {{sketchName}} <br /> {{/if}}
+		{{#if sketchVersion}} Sketch Version: {{sketchVersion}} <br /> {{/if}}
+		{{#if version}} Protocol version: {{version}} <br />{{/if}}
 		{{#if registered}} Registered: {{fullDate registered}} <br />{{/if}}
-		{{#if lastSeen}} Last seen: <span id="nodeLastSeen{{Id}}"> {{fullDate lastSeen}} </span><br />{{/if}}
+		{{#if lastSeen}} Last seen: <span id="nodeLastSeen{{id}}"> {{fullDate lastSeen}} </span><br />{{/if}}
 		Repeating: {{yes-no isRepeatingNode}}<br />
-		{{#if batteryLevel}} Battery: <span id="nodeBattery{{Id}}"> {{batteryLevel}} </span><br />{{/if}}
+		{{#if batteryLevel}} Battery: <span id="nodeBattery{{id}}"> {{batteryLevel}} </span><br />{{/if}}
 		</div>
 		<br />
-		<div class="ui segments" id="sensorsContainer{{Id}}"></div>
+		<div class="ui segments" id="sensorsContainer{{id}}"></div>
 		</div>
 		</div>
 	script#sensorTemplate(type='text/x-handlebars-template').

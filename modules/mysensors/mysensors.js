@@ -106,6 +106,48 @@ var sensorTypeKey = [
 module.exports.sensorTypeKey = sensorTypeKey;
 
 
+var sensorSimpleType = {
+	"Door": 0,
+	"Motion": 1,
+	"Smoke": 2,
+	//  S_LIGHT": 3,
+	"Binary": 3,
+	"Dimmer": 4,
+	"Cover": 5,
+	"Temperature": 6,
+	"Humidity": 7,
+	"Baro": 8,
+	"Wind": 9,
+	"Rain": 10,
+	"UV": 11,
+	"Weight": 12,
+	"Power": 13,
+	"Heater": 14,
+	"Distance": 15,
+	"Light level": 16,
+	"Non-repeater node": 17,
+	"Repeater node": 18,
+	"Lock": 19,
+	"IR": 20,
+	"Water": 21,
+	"Air quality": 22,
+	"Custom": 23,
+	"Dust": 24,
+	"Scene controller": 25,
+	"RGB Light": 26,
+	"RGBW Light": 27,
+	"Color sensor": 28,
+	"HVAC": 29,
+	"Multimiter": 30,
+	"Sprinkler": 31,
+	"Water leak": 32,
+	"Sound": 33,
+	"Vibration": 34,
+	"Moisture": 35
+};
+module.exports.sensorSimpleType = sensorSimpleType;
+
+
 var sensorDataType = {
 	V_TEMP: 0,
 	V_HUM: 1,
@@ -155,7 +197,7 @@ var sensorDataType = {
 	V_HVAC_SETPOINT_HEAT: 45,
 	V_HVAC_FLOW_MOD: 46
 };
-module.exports.sensorType = sensorDataType;
+module.exports.sensorDataType = sensorDataType;
 
 
 var sensorDataTypeKey = [
@@ -207,49 +249,7 @@ var sensorDataTypeKey = [
 	"V_HVAC_SETPOINT_HEAT",
 	"V_HVAC_FLOW_MODE"
 ];
-module.exports.sensorTypeKey = sensorDataType;
-
-
-var sensorType = {
-	"Door": 0,
-	"Motion": 1,
-	"Smoke": 2,
-	//  S_LIGHT": 3,
-	"Binary": 3,
-	"Dimmer": 4,
-	"Cover": 5,
-	"Temperature": 6,
-	"Humidity": 7,
-	"Baro": 8,
-	"Wind": 9,
-	"Rain": 10,
-	"UV": 11,
-	"Weight": 12,
-	"Power": 13,
-	"Heater": 14,
-	"Distance": 15,
-	"Light level": 16,
-	"Non-repeater node": 17,
-	"Repeater node": 18,
-	"Lock": 19,
-	"IR": 20,
-	"Water": 21,
-	"Air quality": 22,
-	"Custom": 23,
-	"Dust": 24,
-	"Scene controller": 25,
-	"RGB Light": 26,
-	"RGBW Light": 27,
-	"Color sensor": 28,
-	"HVAC": 29,
-	"Multimiter": 30,
-	"Sprinkler": 31,
-	"Water leak": 32,
-	"Sound": 33,
-	"Vibration": 34,
-	"Moisture": 35
-};
-module.exports.sensorType = sensorType;
+module.exports.sensorDataTypeKey = sensorDataTypeKey;
 
 
 var internalDataType = {
@@ -275,7 +275,7 @@ var internalDataType = {
 module.exports.internalDataType = internalDataType;
 
 
-var internal_key = [
+var internalDataTypeKey = [
 	"I_BATTERY_LEVEL",
 	"I_TIME",
 	"I_VERSION",
@@ -295,7 +295,7 @@ var internal_key = [
 	"I_GET_NONCE",
 	"I_GET_NONCE_RESPONSE"
 ];
-module.exports.internal_key = internal_key;
+module.exports.internalDataTypeKey = internalDataTypeKey;
 
 
 var stream = {
@@ -320,8 +320,8 @@ var streamKey = [
 module.exports.streamKey = streamKey;
 
 
-module.exports.getDefaultDataType = function (sensorType) {
-	switch (sensorType) {
+module.exports.getDefaultDataType = function (sensor_type) {
+	switch (sensor_type) {
 		case sensorType.S_DOOR:
 			return sensorDataType.V_TRIPPED;
 			break;
