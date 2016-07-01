@@ -5,11 +5,10 @@
 var express = require('express');
 var router = express.Router();
 //var config = require('./../config');
-
+var gateway = require('../modules/mysensors/gateway');
 
 router.get('/IsConnected', function (req, res) {
-	var gateway = require('../modules/mysensors/gateway').gateway;
-	res.json(gateway.ready === true);
+	res.json(gateway.isConnected === true);
 });
 
 module.exports = router;

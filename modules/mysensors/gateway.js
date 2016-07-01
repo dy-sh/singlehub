@@ -19,53 +19,56 @@ var GATEWAY_ID = 0;
 var BROADCAST_ID = 255;
 var NODE_SELF_SENSOR_ID = 255;
 
+var gateway = new Gateway;
 
-module.exports.serialGateway = function (portName, baudRate) {
+module.exports = gateway;
+
+
+function Gateway() {
+	eventEmitter.call(this);
+
+	this.nodes = [];
+	this.isConnected = false;
+}
+util.inherits(Gateway, eventEmitter);
+
+
+Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
 	if (!portName) throw new Error("portName is not defined!");
 	baudRate = baudRate || 115200;
 
 	var SerialPort = require("serialport").SerialPort;
-	var port = new SerialPort(portName, {baudrate: baudRate}, false);
+	this.port = new SerialPort(portName, {baudrate: baudRate}, false);
 
-	function connect() {
-		debug("Connecting to " + portName + " at " + baudRate + " ...");
-		port.open();
-	}
-
-	port.on("open", function () {
-		debug("Connected");
+	this.port.on("open", function () {
+		debug("Port connected");
 	});
 
-	port.on("error", function (err) {
+	this.port.on("error", function (err) {
 		debugErr("Connection failed. " + err);
-		setTimeout(connect, 1000);
+		setTimeout(this.connect, 1000);
 	});
 
-	port.on("close", function () {
-		debug("Connection closed. ");
+	this.port.on("close", function () {
+		debug("Port closed. ");
 	});
 
-	port.on("disconnect", function (err) {
-		debug("Disconnected. " + err);
+	this.port.on("disconnect", function (err) {
+		debug("Port disconnected. " + err);
+		d
 	});
 
-	connect();
+	this.port.pipe(split()).on("data", this._readPortData.bind(this));
 
-	var gateway = new Gateway(port);
-	module.exports.gateway = gateway;
-	return gateway;
+	this.connect = function () {
+		debug("Connecting to " + portName + " at " + baudRate + " ...");
+		var self = this;
+		this.port.open();
+	};
+
+	this.connect();
 };
 
-
-function Gateway(port) {
-	eventEmitter.call(this);
-
-	this.port = port;
-	this.nodes = [];
-
-	port.pipe(split()).on("data", this._readPortData.bind(this));
-}
-util.inherits(Gateway, eventEmitter);
 
 Gateway.prototype._readPortData = function (data) {
 	var mess = data.split(";");
@@ -104,8 +107,8 @@ Gateway.prototype._receiveGatewayMessage = function (message) {
 			switch (message.sub_type) {
 
 				case mys.internal.I_GATEWAY_READY:
-					this.ready = true;
-					debug("Gateway is ready.");
+					this.isConnected = true;
+					debug("Gateway connected");
 					this.sendGetGatewayVersion();
 					break;
 

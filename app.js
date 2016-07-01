@@ -14,7 +14,7 @@ var config = require('./config');
 
 //mysensors gateway
 var mys_gateway = require('./modules/mysensors/gateway');
-mys_gateway.serialGateway(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
+mys_gateway.connectToSerialPort(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
 
 
 // view engine setup
