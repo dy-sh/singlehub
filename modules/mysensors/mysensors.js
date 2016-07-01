@@ -2,7 +2,7 @@
  * Created by Derwish on 01.07.2016.
  */
 
-module.exports.message_type =
+var messageType =
 {
 	C_PRESENTATION: 0,
 	C_SET: 1,
@@ -10,17 +10,103 @@ module.exports.message_type =
 	C_INTERNAL: 3,
 	C_STREAM: 4
 };
+module.exports.messageType = messageType;
 
-module.exports.message_type_key = [
+
+var messageTypeKey = [
 	"C_PRESENTATION",
 	"C_SET",
 	"C_REQ",
 	"C_INTERNAL",
 	"C_STREAM"
 ];
+module.exports.messageTypeKey = messageTypeKey;
 
 
-module.exports.seq_req = {
+var sensorType = {
+	S_DOOR: 0,
+	S_MOTION: 1,
+	S_SMOKE: 2,
+	S_LIGHT: 3,
+	S_DIMMER: 4,
+	S_COVER: 5,
+	S_TEMP: 6,
+	S_HUM: 7,
+	S_BARO: 8,
+	S_WIND: 9,
+	S_RAIN: 10,
+	S_UV: 11,
+	S_WEIGHT: 12,
+	S_POWER: 13,
+	S_HEATER: 14,
+	S_DISTANCE: 15,
+	S_LIGHT_LEVEL: 16,
+	S_ARDUINO_NODE: 17,
+	S_ARDUINO_REPEATER_NODE: 18,
+	S_LOCK: 19,
+	S_IR: 20,
+	S_WATER: 21,
+	S_AIR_QUALITY: 22,
+	S_CUSTOM: 23,
+	S_DUST: 24,
+	S_SCENE_CONTROLLER: 25,
+	S_RGB_LIGHT: 26,
+	S_RGBW_LIGHT: 27,
+	S_COLOR_SENSOR: 28,
+	S_HVAC: 29,
+	S_MULTIMETER: 30,
+	S_SPRINKLER: 31,
+	S_WATER_LEAK: 32,
+	S_SOUND: 33,
+	S_VIBRATION: 34,
+	S_MOISTUR: 35
+};
+module.exports.sensorType = sensorType;
+
+
+var sensorTypeKey = [
+	"S_DOOR",
+	"S_MOTION",
+	"S_SMOKE",
+	"S_LIGHT",
+	"S_BINARY",
+	"S_DIMMER",
+	"S_COVER",
+	"S_TEMP",
+	"S_HUM",
+	"S_BARO",
+	"S_WIND",
+	"S_RAIN",
+	"S_UV",
+	"S_WEIGHT",
+	"S_POWER",
+	"S_HEATER",
+	"S_DISTANCE",
+	"S_LIGHT_LEVEL",
+	"S_ARDUINO_NODE",
+	"S_ARDUINO_REPEATER_NODE",
+	"S_LOCK",
+	"S_IR",
+	"S_WATER",
+	"S_AIR_QUALITY",
+	"S_CUSTOM",
+	"S_DUST",
+	"S_SCENE_CONTROLLER",
+	"S_RGB_LIGHT",
+	"S_RGBW_LIGHT",
+	"S_COLOR_SENSOR",
+	"S_HVAC",
+	"S_MULTIMETER",
+	"S_SPRINKLER",
+	"S_WATER_LEAK",
+	"S_SOUND",
+	"S_VIBRATION",
+	"S_MOISTURE"
+];
+module.exports.sensorTypeKey = sensorTypeKey;
+
+
+var sensorDataType = {
 	V_TEMP: 0,
 	V_HUM: 1,
 	V_LIGHT: 2,
@@ -69,8 +155,10 @@ module.exports.seq_req = {
 	V_HVAC_SETPOINT_HEAT: 45,
 	V_HVAC_FLOW_MOD: 46
 };
+module.exports.sensorType = sensorDataType;
 
-module.exports.seq_req_key = [
+
+var sensorDataTypeKey = [
 	"V_TEMP",
 	"V_HUM",
 	"V_STATUS",
@@ -119,9 +207,52 @@ module.exports.seq_req_key = [
 	"V_HVAC_SETPOINT_HEAT",
 	"V_HVAC_FLOW_MODE"
 ];
+module.exports.sensorTypeKey = sensorDataType;
 
 
-module.exports.internal = {
+var sensorType = {
+	"Door": 0,
+	"Motion": 1,
+	"Smoke": 2,
+	//  S_LIGHT": 3,
+	"Binary": 3,
+	"Dimmer": 4,
+	"Cover": 5,
+	"Temperature": 6,
+	"Humidity": 7,
+	"Baro": 8,
+	"Wind": 9,
+	"Rain": 10,
+	"UV": 11,
+	"Weight": 12,
+	"Power": 13,
+	"Heater": 14,
+	"Distance": 15,
+	"Light level": 16,
+	"Non-repeater node": 17,
+	"Repeater node": 18,
+	"Lock": 19,
+	"IR": 20,
+	"Water": 21,
+	"Air quality": 22,
+	"Custom": 23,
+	"Dust": 24,
+	"Scene controller": 25,
+	"RGB Light": 26,
+	"RGBW Light": 27,
+	"Color sensor": 28,
+	"HVAC": 29,
+	"Multimiter": 30,
+	"Sprinkler": 31,
+	"Water leak": 32,
+	"Sound": 33,
+	"Vibration": 34,
+	"Moisture": 35
+};
+module.exports.sensorType = sensorType;
+
+
+var internalDataType = {
 	I_BATTERY_LEVEL: 0,
 	I_TIME: 1,
 	I_VERSION: 2,
@@ -141,89 +272,33 @@ module.exports.internal = {
 	I_GET_NONCE: 16,
 	I_GET_NONCE_RESPONSE: 17
 };
+module.exports.internalDataType = internalDataType;
 
-module.exports.internal_key = ["I_BATTERY_LEVEL", "I_TIME", "I_VERSION", "I_ID_REQUEST", "I_ID_RESPONSE", "I_INCLUSION_MODE", "I_CONFIG", "I_FIND_PARENT", "I_FIND_PARENT_RESPONSE", "I_LOG_MESSAGE", "I_CHILDREN", "I_SKETCH_NAME", "I_SKETCH_VERSION", "I_REBOOT", "I_GATEWAY_READY", "I_REQUEST_SIGNING", "I_GET_NONCE", "I_GET_NONCE_RESPONSE"];
 
-module.exports.presentation = {
-	S_DOOR: 0,
-	S_MOTION: 1,
-	S_SMOKE: 2,
-	S_LIGHT: 3,
-	S_DIMMER: 4,
-	S_COVER: 5,
-	S_TEMP: 6,
-	S_HUM: 7,
-	S_BARO: 8,
-	S_WIND: 9,
-	S_RAIN: 10,
-	S_UV: 11,
-	S_WEIGHT: 12,
-	S_POWER: 13,
-	S_HEATER: 14,
-	S_DISTANCE: 15,
-	S_LIGHT_LEVEL: 16,
-	S_ARDUINO_NODE: 17,
-	S_ARDUINO_REPEATER_NODE: 18,
-	S_LOCK: 19,
-	S_IR: 20,
-	S_WATER: 21,
-	S_AIR_QUALITY: 22,
-	S_CUSTOM: 23,
-	S_DUST: 24,
-	S_SCENE_CONTROLLER: 25,
-	S_RGB_LIGHT: 26,
-	S_RGBW_LIGHT: 27,
-	S_COLOR_SENSOR: 28,
-	S_HVAC: 29,
-	S_MULTIMETER: 30,
-	S_SPRINKLER: 31,
-	S_WATER_LEAK: 32,
-	S_SOUND: 33,
-	S_VIBRATION: 34,
-	S_MOISTUR: 35
-};
-
-module.exports.presentation_key = [
-	"S_DOOR",
-	"S_MOTION",
-	"S_SMOKE",
-	"S_LIGHT",
-	"S_BINARY",
-	"S_DIMMER",
-	"S_COVER",
-	"S_TEMP",
-	"S_HUM",
-	"S_BARO",
-	"S_WIND",
-	"S_RAIN",
-	"S_UV",
-	"S_WEIGHT",
-	"S_POWER",
-	"S_HEATER",
-	"S_DISTANCE",
-	"S_LIGHT_LEVEL",
-	"S_ARDUINO_NODE",
-	"S_ARDUINO_REPEATER_NODE",
-	"S_LOCK",
-	"S_IR",
-	"S_WATER",
-	"S_AIR_QUALITY",
-	"S_CUSTOM",
-	"S_DUST",
-	"S_SCENE_CONTROLLER",
-	"S_RGB_LIGHT",
-	"S_RGBW_LIGHT",
-	"S_COLOR_SENSOR",
-	"S_HVAC",
-	"S_MULTIMETER",
-	"S_SPRINKLER",
-	"S_WATER_LEAK",
-	"S_SOUND",
-	"S_VIBRATION",
-	"S_MOISTURE"
+var internal_key = [
+	"I_BATTERY_LEVEL",
+	"I_TIME",
+	"I_VERSION",
+	"I_ID_REQUEST",
+	"I_ID_RESPONSE",
+	"I_INCLUSION_MODE",
+	"I_CONFIG",
+	"I_FIND_PARENT",
+	"I_FIND_PARENT_RESPONSE",
+	"I_LOG_MESSAGE",
+	"I_CHILDREN",
+	"I_SKETCH_NAME",
+	"I_SKETCH_VERSION",
+	"I_REBOOT",
+	"I_GATEWAY_READY",
+	"I_REQUEST_SIGNING",
+	"I_GET_NONCE",
+	"I_GET_NONCE_RESPONSE"
 ];
+module.exports.internal_key = internal_key;
 
-module.exports.stream = {
+
+var stream = {
 	ST_FIRMWARE_CONFIG_REQUEST: 0,
 	ST_FIRMWARE_CONFIG_RESPONSE: 1,
 	ST_FIRMWARE_REQUEST: 2,
@@ -231,8 +306,10 @@ module.exports.stream = {
 	ST_SOUND: 4,
 	ST_IMAGE: 5
 };
+module.exports.stream = stream;
 
-module.exports.stream_key = [
+
+var streamKey = [
 	"ST_FIRMWARE_CONFIG_REQUEST",
 	"ST_FIRMWARE_CONFIG_RESPONSE",
 	"ST_FIRMWARE_REQUEST",
@@ -240,3 +317,119 @@ module.exports.stream_key = [
 	"ST_SOUND",
 	"ST_IMAGE"
 ];
+module.exports.streamKey = streamKey;
+
+
+module.exports.getDefaultDataType = function (sensorType) {
+	switch (sensorType) {
+		case sensorType.S_DOOR:
+			return sensorDataType.V_TRIPPED;
+			break;
+		case sensorType.S_MOTION:
+			return sensorDataType.V_TRIPPED;
+			break;
+		case sensorType.S_SMOKE:
+			return sensorDataType.V_TRIPPED;
+			break;
+		case sensorType.S_BINARY:
+			return sensorDataType.V_STATUS;
+			break;
+		case sensorType.S_DIMMER:
+			return sensorDataType.V_DIMMER;
+			break;
+		case sensorType.S_COVER:
+			return sensorDataType.V_PERCENTAGE;
+			break;
+		case sensorType.S_TEMP:
+			return sensorDataType.V_TEMP;
+			break;
+		case sensorType.S_HUM:
+			return sensorDataType.V_HUM;
+			break;
+		case sensorType.S_BARO:
+			return sensorDataType.V_PRESSURE;
+			break;
+		case sensorType.S_WIND:
+			return sensorDataType.V_WIND;
+			break;
+		case sensorType.S_RAIN:
+			return sensorDataType.V_RAIN;
+			break;
+		case sensorType.S_UV:
+			return sensorDataType.V_UV;
+			break;
+		case sensorType.S_WEIGHT:
+			return sensorDataType.V_WEIGHT;
+			break;
+		case sensorType.S_POWER:
+			return sensorDataType.V_WATT;
+			break;
+		case sensorType.S_HEATER:
+			return sensorDataType.V_TEMP;
+			break;
+		case sensorType.S_DISTANCE:
+			return sensorDataType.V_DISTANCE;
+			break;
+		case sensorType.S_LIGHT_LEVEL:
+			return sensorDataType.V_LIGHT_LEVEL;
+			break;
+		case sensorType.S_ARDUINO_NODE:
+			return null;
+			break;
+		case sensorType.S_ARDUINO_REPEATER_NODE:
+			return null;
+			break;
+		case sensorType.S_LOCK:
+			return sensorDataType.V_LOCK_STATUS;
+			break;
+		case sensorType.S_IR:
+			return sensorDataType.V_IR_SEND;
+			break;
+		case sensorType.S_WATER:
+			return sensorDataType.V_VOLUME;
+			break;
+		case sensorType.S_AIR_QUALITY:
+			return sensorDataType.V_LEVEL;
+			break;
+		case sensorType.S_CUSTOM:
+			return null;
+			break;
+		case sensorType.S_DUST:
+			return sensorDataType.V_LEVEL;
+			break;
+		case sensorType.S_SCENE_CONTROLLER:
+			return sensorDataType.V_SCENE_ON;
+			break;
+		case sensorType.S_RGB_LIGHT:
+			return sensorDataType.V_RGB;
+			break;
+		case sensorType.S_RGBW_LIGHT:
+			return sensorDataType.V_RGBW;
+			break;
+		case sensorType.S_COLOR_SENSOR:
+			return sensorDataType.V_RGB;
+			break;
+		case sensorType.S_HVAC:
+			return sensorDataType.V_HVAC_SETPOINT_HEAT;
+			break;
+		case sensorType.S_MULTIMETER:
+			return sensorDataType.V_VOLTAGE;
+			break;
+		case sensorType.S_SPRINKLER:
+			return sensorDataType.V_STATUS;
+			break;
+		case sensorType.S_WATER_LEAK:
+			return sensorDataType.V_TRIPPED;
+			break;
+		case sensorType.S_SOUND:
+			return sensorDataType.V_LEVEL;
+			break;
+		case sensorType.S_VIBRATION:
+			return sensorDataType.V_LEVEL;
+			break;
+		case sensorType.S_MOISTURE:
+			return sensorDataType.V_LEVEL;
+			break;
+	}
+};
+

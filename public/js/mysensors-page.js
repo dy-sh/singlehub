@@ -15,12 +15,12 @@ $(function () {
 	//configure socket.io
 	var socket = io.connect('/mysensors');
 
-	socket.on('disconnect', function (node_id) {
+	socket.on('disconnect', function (nodeId) {
 		noty({text: 'Web server is not responding!', type: 'error', timeout: false});
 		socketConnected = false;
 	});
 
-	socket.on('connect', function (node_id) {
+	socket.on('connect', function (nodeId) {
 		if (socketConnected == false) {
 			noty({text: 'Connected to web server.', type: 'alert', timeout: false});
 			getNodes();
@@ -68,8 +68,8 @@ $(function () {
 		removeAllNodes();
 	});
 
-	socket.on('OnRemoveNode', function (node_id) {
-		removeNode(node_id);
+	socket.on('OnRemoveNode', function (nodeId) {
+		removeNode(nodeId);
 	});
 
 
@@ -138,7 +138,7 @@ Handlebars.registerHelper("yes-no", function (boolean) {
 });
 
 Handlebars.registerHelper("sensor-id", function (sensor) {
-	return sensor.node_id + "-" + sensor.id;
+	return sensor.nodeId + "-" + sensor.id;
 });
 
 
@@ -187,11 +187,11 @@ function updateBattery(node) {
 
 
 function createOrUpdateSensor(sensor) {
-	var id = sensor.node_id + "-" + sensor.id;
+	var id = sensor.nodeId + "-" + sensor.id;
 
 	if ($('#sensorPanel' + id).length == 0) {
 		//create new
-		$(sensorTemplate(sensor)).hide().appendTo("#sensorsContainer" + sensor.node_id).fadeIn(elementsFadeTime);
+		$(sensorTemplate(sensor)).hide().appendTo("#sensorsContainer" + sensor.nodeId).fadeIn(elementsFadeTime);
 	}
 
 
@@ -205,7 +205,7 @@ function createOrUpdateSensor(sensor) {
 }
 
 
-function updateLastSeen(node_id, lastSeen) {
+function updateLastSeen(nodeId, lastSeen) {
 
 	var date1 = new Date(lastSeen);
 	var date2 = new Date();
@@ -233,7 +233,7 @@ function updateLastSeen(node_id, lastSeen) {
 	else
 		elapsed = seconds + "s";
 
-	$('#nodeLastSeen' + node_id)
+	$('#nodeLastSeen' + nodeId)
 		.html(elapsed);
 
 }
@@ -244,8 +244,8 @@ function updateAllLastSeens(sensor) {
 	}
 }
 
-function removeNode(node_id) {
-	$('#nodePanel' + node_id).fadeOut(elementsFadeTime, function () {
+function removeNode(nodeId) {
+	$('#nodePanel' + nodeId).fadeOut(elementsFadeTime, function () {
 		$(this).remove();
 	});
 }
