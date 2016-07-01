@@ -7,8 +7,9 @@ var router = express.Router();
 //var config = require('./../config');
 
 
-router.get('/', function (req, res, next) {
-	res.render('mysensors');
+router.get('/IsConnected', function (req, res) {
+	var gateway = require('../modules/mysensors/gateway').gateway;
+	res.json(gateway.ready === true);
 });
 
 module.exports = router;

@@ -8,12 +8,13 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
-var gateway = require('./modules/mysensors/gateway');
+var app = express();
 
 var config = require('./config');
 
-var app = express();
+//mysensors gateway
+var mys_gateway = require('./modules/mysensors/gateway');
+mys_gateway.serialGateway(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
 
 
 // view engine setup
@@ -35,9 +36,7 @@ app.use('/', require('./routes/firstrun'));
 app.use('/', require('./routes/index'));
 app.use('/Dashboard', require('./routes/dashboard'));
 app.use('/MySensors', require('./routes/mysensors'));
-
-
-
+app.use('/MySensors-API', require('./routes/mysensors-api'));
 
 
 // catch 404 and forward to error handler
@@ -73,6 +72,3 @@ app.use(function (err, req, res, next) {
 
 
 module.exports = app;
-
-
-gateway.serialGateway(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);

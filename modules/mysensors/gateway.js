@@ -51,7 +51,9 @@ module.exports.serialGateway = function (portName, baudRate) {
 
 	connect();
 
-	return new Gateway(port);
+	var gateway = new Gateway(port);
+	module.exports.gateway = gateway;
+	return gateway;
 };
 
 
