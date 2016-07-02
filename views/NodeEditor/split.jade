@@ -1,0 +1,7 @@
+doctype html
+html
+	head
+		title MyNodes.NET
+	frameset(cols='400px,*')
+		frame(name='dashboard', src='/Dashboard/#{route}', scrolling='AUTO')
+		frame(name='editor', src='/NodeEditor/#{route}?split=true', scrolling='AUTO')

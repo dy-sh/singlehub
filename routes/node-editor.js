@@ -15,8 +15,8 @@ router.get('/', function (req, res) {
 	//	res.render("Error", "Nodes Engine is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
 
 
-	res.render('node-editor', {
-		split: req.params.split,
+	res.render('NodeEditor/index', {
+		split: req.query.split,
 		panelId: MAIN_PANEL_ID,
 		theme: config.nodeEditor.theme
 	});
@@ -28,10 +28,10 @@ router.get('/Panel', function (req, res) {
 	//todo if (engine.isNotStarted)
 	//	res.render("Error", "Nodes Engine is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
 
-	if (!req.params.panelId || req.params.panelId == MAIN_PANEL_ID)
+	if (!req.query.id || req.query.id == MAIN_PANEL_ID)
 		res.redirect("/NodeEditor");
 
-	var panel = engine.getPanelNode(req.params.panelId);
+	var panel = engine.getPanelNode(req.query.id);
 	if (!panel)
 		res.status(404).send('Panel not found!');
 
@@ -44,9 +44,9 @@ router.get('/Panel', function (req, res) {
 		p = engine.getPanelNode(p.panelId);
 	}
 
-	res.render('node-editor', {
-		split: req.params.split,
-		panelId: panel.Id,
+	res.render('NodeEditor/index', {
+		split: req.query.split,
+		panelId: panel.id,
 		ownerPanelId: panel.panelId,
 		panelsStack: panelsStack,
 		theme: config.nodeEditor.theme
@@ -58,9 +58,9 @@ router.get('/Split', function (req, res) {
 	//todo if (engine.isNotStarted)
 	//	res.render("Error", "Nodes Engine is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
 
-	var route = req.params.panelId ? "Panel/" + req.params.panelId : "";
+	var route = req.query.id ? "Panel/" + req.query.id : "";
 
-	res.render('split', {route: route});
+	res.render('NodeEditor/split', {route: route});
 });
 
 

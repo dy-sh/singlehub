@@ -2,10 +2,10 @@ doctype html
 
 - var theme = 1;
 - var title = "Node Editor";
-- var panelId = "Main";
-- var ownerPanelId = "";
-- var split = false;
-- var panelsStack = {1:"Panel 1",2:"Panel 2"}
+//- var panelId = "Main";
+//- var ownerPanelId = "";
+//- var split = false;
+//- var panelsStack = {1:"Panel 1",2:"Panel 2"}
 
 
 html
@@ -45,8 +45,9 @@ html
 							a.ui.inverted.small.basic.right.floated.button(href='/NodeEditor/Split?id=#{panelId}', target='_top') Split
 				.ui.tiny.buttons
 					a.ui.inverted.tiny.basic.button(href='/NodeEditor') Main Panel
-					each val, key in panelsStack
-						a.ui.inverted.tiny.basic.button(href='/NodeEditor/Panel?id=#{key}')= val
+					if panelsStack
+						each val, key in panelsStack
+							a.ui.inverted.tiny.basic.button(href='/NodeEditor/Panel?id=#{key}')= val
 		br
 		#main
 		#node-settings-panel.ui.small.modal
