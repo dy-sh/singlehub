@@ -45,8 +45,7 @@ Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
 	});
 
 	this.port.on("error", function (err) {
-		debugErr("Connection failed. " + err);
-		setTimeout(this.connect, 1000);
+		debugErr(err);
 	});
 
 	this.port.on("close", function () {
@@ -59,13 +58,8 @@ Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
 
 	this.port.pipe(split()).on("data", this._readPortData.bind(this));
 
-	this.connect = function () {
-		debug("Connecting to " + portName + " at " + baudRate + " ...");
-		var self = this;
-		this.port.open();
-	};
-
-	this.connect();
+	debug("Connecting to " + portName + " at " + baudRate + " ...");
+	this.port.open();
 };
 
 
