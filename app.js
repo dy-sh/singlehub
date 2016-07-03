@@ -12,10 +12,6 @@ var app = express();
 
 var config = require('./config');
 
-//mysensors gateway
-var mys_gateway = require('./modules/mysensors/gateway');
-mys_gateway.connectToSerialPort(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,7 +20,11 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+
+if (config.webServer.debug) {
+	app.use(logger('dev'));
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());

@@ -1,124 +1,24 @@
 #!/usr/bin/env node
 
 
-//set DEBUG environment variable if nod defined
-if (!process.env.DEBUG)
-	process.env.DEBUG = "server:*,gateway:*,-gateway:mys:log*";
-
-process.env.DEBUG_DIFF = 0;
-
-//set debug format (added time stamp)
-var deb = require('debug');
-deb.formatArgs = function formatArgs() {
-	var args = arguments;
-	var useColors = this.useColors;
-	var name = this.namespace;
+require('../modules/debug/configure');
+var config = require('../config');
 
 
-	var c = this.color;
-
-	args[0] = (new Date()).toLocaleString() +
-		'  \u001b[3' + c + 'm' + name + ' '
-		+ '\u001b[0m'
-		+ args[0] + '\u001b[3' + c + 'm'
-		+ ' +' + deb.humanize(this.diff) + '\u001b[0m';
-
-	return args;
-};
-
-
-/**
- * Module dependencies.
- */
-
-var app = require('../app');
-var debug = require('debug')('server:           ');
-var debugError = require('debug')('server:error      ');
-var http = require('http');
-
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '1312');
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-
-// mysensors gateway socket.io
-var io = require('../modules/mysensors/gateway-io').listen(server);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-	var port = parseInt(val, 10);
-
-	if (isNaN(port)) {
-		// named pipe
-		return val;
-	}
-
-	if (port >= 0) {
-		// port number
-		return port;
-	}
-
-	return false;
+if (config.webServer.enable) {
+	require('../modules/web-server/configure');
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
 
-function onError(error) {
-	if (error.syscall !== 'listen') {
-		throw error;
-	}
-
-	var bind = typeof port === 'string'
-		? 'Pipe ' + port
-		: 'Port ' + port;
-
-	// handle specific listen errors with friendly messages
-	switch (error.code) {
-		case 'EACCES':
-			debugError(bind + ' requires elevated privileges');
-			process.exit(1);
-			break;
-		case 'EADDRINUSE':
-			debugError(bind + ' is already in use');
-			process.exit(1);
-			break;
-		default:
-			throw error;
-	}
+//mysensors gateway
+if (config.gateway.mysensors.serial.enable) {
+	var mys_gateway = require('../modules/mysensors/gateway');
+	mys_gateway.connectToSerialPort(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
 
-function onListening() {
-	var addr = server.address();
-	var bind = typeof addr === 'string'
-		? 'pipe ' + addr
-		: 'port ' + addr.port;
-	debug('Listening on ' + bind);
-	//console.log("Server started on " + bind);
+//nodes engine
+if (config.nodesEngine.enable) {
+	//require('../modules/nodes/nodes-engine');
+	//require('../modules/nodes/base-nodes');
 }
