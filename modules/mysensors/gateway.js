@@ -19,10 +19,6 @@ var GATEWAY_ID = 0;
 var BROADCAST_ID = 255;
 var NODE_SELF_SENSOR_ID = 255;
 
-var gateway = new Gateway;
-
-module.exports = gateway;
-
 
 function Gateway() {
 	eventEmitter.call(this);
@@ -373,4 +369,5 @@ Gateway.prototype._getNewNodeId = function () {
 	debugErr('Can`t register new node. There are no available id.');
 };
 
+module.exports = new Gateway;
 
