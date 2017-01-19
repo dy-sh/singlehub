@@ -1,0 +1,113 @@
+doctype html
+
+- var theme = 1;
+- var title = "Node Editor";
+//- var panelId = "Main";
+//- var ownerPanelId = "";
+//- var split = false;
+//- var panelsStack = {1:"Panel 1",2:"Panel 2"}
+
+
+html
+	head
+		meta(charset='utf-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0')
+		title MyNodes.NET: #{title}
+		link(href='/libs/animate.css/animate.min.css', rel='stylesheet')
+		link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
+		link(rel='stylesheet', type='text/css', href='/css/litegraph.css')
+		link(rel='stylesheet', type='text/css', href='/css/litegraph-editor.css')
+		link(rel='stylesheet', type='text/css', href="/css/litegraph-theme#{theme}.css")
+		link(rel='stylesheet', type='text/css', href='/css/node-editor.css')
+	body
+		// Header Menu
+		.ui.inverted.fixed.big.borderless.main.menu
+			.ui.container
+				a.ui.item.fadebefore(href='/Home/About')
+					h3 MyNodes.NET
+				.right.menu
+		br
+		br
+		br
+		.ui.container
+			p
+				if (panelId == "Main")
+					a.ui.inverted.small.basic.right.floated.button(href='/Dashboard', target='_top') Dashboard
+						if (split)
+							a.ui.inverted.small.basic.right.floated.button(href='/NodeEditor', target='_top') Split
+						else
+							a.ui.inverted.small.basic.right.floated.button(href='/NodeEditor/Split', target='_top') Split
+				else
+					a.ui.inverted.small.basic.right.floated.button(asp-controller='Dashboard', asp-action='Panel', asp-route-id='@ViewBag.panelId', target='_top') Dashboard
+						if (split)
+							a.ui.inverted.small.basic.right.floated.button(href='/NodeEditor/Panel?id=#{panelId}', target='_top') Split
+						else
+							a.ui.inverted.small.basic.right.floated.button(href='/NodeEditor/Split?id=#{panelId}', target='_top') Split
+				.ui.tiny.buttons
+					a.ui.inverted.tiny.basic.button(href='/NodeEditor') Main Panel
+					if panelsStack
+						each val, key in panelsStack
+							a.ui.inverted.tiny.basic.button(href='/NodeEditor/Panel?id=#{key}')= val
+		br
+		#main
+		#node-settings-panel.ui.small.modal
+			#node-settings-title.header
+			.content
+				#node-settings-body.ui.form
+			.actions
+				.ui.cancel.button Cancel
+				.ui.ok.blue.button OK
+		#import-panel.ui.small.modal
+			#import-panel-title.header
+			#import-panel-body.content
+				form.ui.form(name='uploadForm')
+					.fields
+						.field
+							| File:
+							input#uploadFile(type='file', name='uploadFile')
+			#import-panel-message.content
+			.actions
+				.ui.cancel.button Cancel
+		#modal-panel.ui.small.modal
+			#modal-panel-title.header
+			.content
+				form#modal-panel-form.ui.form
+				#modal-panel-message.ui.message(style='display: none')
+			.actions
+				.ui.cancel.button Cancel
+				#modal-panel-submit.ui.button(style='display: none') OK
+		script#textSettingTemplate(type='text/x-handlebars-template').
+			<div class="field">
+			<label> {{Label}} </label>
+			<input type="text" id="node-setting-{{Key}}" value="{{Value}}">
+			</div>
+		script#numberSettingTemplate(type='text/x-handlebars-template').
+			<div class="field">
+			<label> {{Label}} </label>
+			<input type="number" id="node-setting-{{Key}}" value="{{Value}}">
+			</div>
+		script#checkboxSettingTemplate(type='text/x-handlebars-template').
+			<div class="field">
+			<div class="ui toggle checkbox">
+			<input type="checkbox" name="public" id="node-setting-{{Key}}" value="true">
+			<label> {{Label}} </label>
+			</div>
+			</div>
+		script.
+			//this var used in litegraph.js
+			var this_panel_id = "#{panelId}";
+			var owner_panel_id = "#{ownerPanelId}";
+
+		script(src='/libs/jquery/dist/jquery.min.js')
+		script(src='/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js')
+		script(src='/libs/moment/min/moment.min.js')
+		script(src='/libs/handlebars/handlebars.min.js')
+		script(src='/libs/semantic/dist/semantic.min.js')
+		script(src='/socket.io/socket.io.js')
+
+		script(type='text/javascript', src='/js/node-editor/litegraph.js')
+		script(type='text/javascript', src='/js/node-editor/litegraph-editor.js')
+		script(type='text/javascript', src='/js/node-editor/node-editor-theme#{theme}.js')
+		script(type='text/javascript', src='/js/node-editor/node-editor-list.js')
+		script(type='text/javascript', src='/js/node-editor/node-editor-socket.js')
+

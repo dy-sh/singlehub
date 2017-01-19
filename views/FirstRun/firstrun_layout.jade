@@ -1,0 +1,28 @@
+extends ../simple_layout
+
+
+block content
+	.ui.container
+		h2 First Run
+		.ui.ordered.steps
+			.step(class= {active: activeStep === 1, completed: activeStep > 1})
+				.content
+					.title Database
+					.description Configure database
+			.step(class= {active: activeStep === 2, completed: activeStep > 2})
+				.content
+					.title Gateway
+					.description Connect to gateway
+			.step(class= {active: activeStep === 3, completed: activeStep > 3})
+				.content
+					.title User
+					.description Create Admin profile
+		.ui.divider
+		.ui.two.column.stackable.centered.grid
+			.column
+				.ui.raised.segments
+					.ui.secondary.attached.segment
+						h4= title
+					block page
+
+

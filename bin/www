@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+
+require('../modules/debug/configure');
+var config = require('../config');
+
+
+if (config.webServer.enable) {
+	require('../modules/web-server/configure');
+}
+
+
+//mysensors gateway
+if (config.gateway.mysensors.serial.enable) {
+	var mys_gateway = require('../modules/mysensors/gateway');
+	mys_gateway.connectToSerialPort(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
+}
+
+
+//nodes engine
+if (config.nodesEngine.enable) {
+	require('../modules/nodes/nodes-engine');
+	require('../modules/nodes/nodes/base');
+	require('../modules/nodes/nodes/math');
+	require('../modules/nodes/test').test();
+}

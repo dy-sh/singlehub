@@ -1,0 +1,23 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='User'
+	- var activeStep=4
+
+
+block page
+	.ui.attached.segment
+		h2.ui.header User authorization is disabled
+		p User authentication is not available because you are not using a database.
+		p Any user will have full access without authorization.
+		p In addition, without a database, the system will not be able to store the changes.
+		p Every time after server restart, you will lose all your changes.
+	.ui.center.aligned.attached.segment
+		.ui.buttons
+			a.ui.primary.button(href='/FirstRun/Complete') OK
+
+
+
+
+
