@@ -1,406 +1,399 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
-
-// namespace MyNodes {
-
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../nodes"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    // namespace MyNodes {
     let debug = require('debug')('nodes:            ');
     let debugLog = require('debug')('nodes:log         ');
     let debugMes = require('debug')('modes:mes         ');
     let debugErr = require('debug')('nodes:error       ');
-
-import {Nodes as nodes, Node} from "./../nodes";
-
-//
-// //Converter
-// 	class Converter {
-//         constructor() {
-//             this.addInput("in", "*");
-//             this.size = [60, 20];
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             if (v == null)
-//                 return;
-//
-//             if (this.outputs)
-//                 for (let i = 0; i < this.outputs.length; i++) {
-//                     let output = this.outputs[i];
-//                     if (!output.links || !output.links.length)
-//                         continue;
-//
-//                     let result = null;
-//                     switch (output.name) {
-//                         case "number":
-//                             result = v.length ? v[0] : parseFloat(v);
-//                             break;
-//                         case "vec2":
-//                         case "vec3":
-//                         case "vec4":
-//                             let result = null;
-//                             let count = 1;
-//                             switch (output.name) {
-//                                 case "vec2":
-//                                     count = 2;
-//                                     break;
-//                                 case "vec3":
-//                                     count = 3;
-//                                     break;
-//                                 case "vec4":
-//                                     count = 4;
-//                                     break;
-//                             }
-//
-//                             let result = new Float32Array(count);
-//                             if (v.length) {
-//                                 for (let j = 0; j < v.length && j < result.length; j++)
-//                                     result[j] = v[j];
-//                             }
-//                             else
-//                                 result[0] = parseFloat(v);
-//                             break;
-//                     }
-//                     this.setOutputData(i, result);
-//                 }
-//         }
-//
-//         onGetOutputs() {
-//             return [["number", "number"], ["vec2", "vec2"], ["vec3", "vec3"], ["vec4", "vec4"]];
-//         }
-//     }
-//
-// 	Converter.title = "Converter";
-// 	Converter.desc = "type A to type B";
-//
-//     nodes.registerNodeType("math/converter", Converter);
-//
-//
-// //Bypass
-// 	class Bypass {
-//         constructor() {
-//             this.addInput("in");
-//             this.addOutput("out");
-//             this.size = [60, 20];
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             this.setOutputData(0, v);
-//         }
-//     }
-//
-// 	Bypass.title = "Bypass";
-// 	Bypass.desc = "removes the type";
-//
-//     nodes.registerNodeType("math/bypass", Bypass);
-//
-//
-// 	class MathRange {
-//         constructor() {
-//             this.addInput("in", "number", {locked: true});
-//             this.addOutput("out", "number", {locked: true});
-//             this.properties = {"in": 0, in_min: 0, in_max: 1, out_min: 0, out_max: 1};
-//         }
-//
-//         onExecute() {
-//             if (this.inputs)
-//                 for (let i = 0; i < this.inputs.length; i++) {
-//                     let input = this.inputs[i];
-//                     let v = this.getInputData(i);
-//                     if (v === undefined)
-//                         continue;
-//                     this.properties[input.name] = v;
-//                 }
-//
-//             let v = this.properties["in"];
-//             if (v === undefined || v === null || v.constructor !== Number)
-//                 v = 0;
-//
-//             let in_min = this.properties.in_min;
-//             let in_max = this.properties.in_max;
-//             let out_min = this.properties.out_min;
-//             let out_max = this.properties.out_max;
-//
-//             this._last_v = ((v - in_min) / (in_max - in_min)) * (out_max - out_min) + out_min;
-//             this.setOutputData(0, this._last_v);
-//         }
-//
-//         onDrawBackground(ctx) {
-//             //show the current value
-//             if (this._last_v)
-//                 this.outputs[0].label = this._last_v.toFixed(3);
-//             else
-//                 this.outputs[0].label = "?";
-//         }
-//
-//         onGetInputs() {
-//             return [["in_min", "number"], ["in_max", "number"], ["out_min", "number"], ["out_max", "number"]];
-//         }
-//     }
-//
-// 	MathRange.title = "Range";
-// 	MathRange.desc = "Convert a number from one range to another";
-//
-//     nodes.registerNodeType("math/range", MathRange);
-//
-//
-// 	class MathRand {
-//         constructor() {
-//             this.addOutput("value", "number");
-//             this.properties = {min: 0, max: 1};
-//             this.size = [60, 20];
-//         }
-//
-//         onExecute() {
-//             if (this.inputs)
-//                 for (let i = 0; i < this.inputs.length; i++) {
-//                     let input = this.inputs[i];
-//                     let v = this.getInputData(i);
-//                     if (v === undefined)
-//                         continue;
-//                     this.properties[input.name] = v;
-//                 }
-//
-//             let min = this.properties.min;
-//             let max = this.properties.max;
-//             this._last_v = Math.random() * (max - min) + min;
-//             this.setOutputData(0, this._last_v);
-//         }
-//
-//         onDrawBackground(ctx) {
-//             //show the current value
-//             if (this._last_v)
-//                 this.outputs[0].label = this._last_v.toFixed(3);
-//             else
-//                 this.outputs[0].label = "?";
-//         }
-//
-//         onGetInputs() {
-//             return [["min", "number"], ["max", "number"]];
-//         }
-//     }
-//
-// 	MathRand.title = "Rand";
-// 	MathRand.desc = "Random number";
-//
-//     nodes.registerNodeType("math/rand", MathRand);
-//
-// //Math clamp
-// 	class MathClamp {
-//         constructor() {
-//             this.addInput("in", "number");
-//             this.addOutput("out", "number");
-//             this.size = [60, 20];
-//             this.properties = {min: 0, max: 1};
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             if (v == null) return;
-//             v = Math.max(this.properties.min, v);
-//             v = Math.min(this.properties.max, v);
-//             this.setOutputData(0, v);
-//         }
-//
-//         getCode(lang) {
-//             let code = "";
-//             if (this.isInputConnected(0))
-//                 code += "clamp({{0}}," + this.properties.min + "," + this.properties.max + ")";
-//             return code;
-//         }
-//     }
-//
-// 	MathClamp.title = "Clamp";
-// 	MathClamp.desc = "Clamp number between min and max";
-// 	MathClamp.filter = "shader";
-//
-//     nodes.registerNodeType("math/clamp", MathClamp);
-//
-//
-// //Math ABS
-// 	class MathAbs {
-//         constructor() {
-//             this.addInput("in", "number");
-//             this.addOutput("out", "number");
-//             this.size = [60, 20];
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             if (v == null) return;
-//             this.setOutputData(0, Math.abs(v));
-//         }
-//     }
-//
-// 	MathAbs.title = "Abs";
-// 	MathAbs.desc = "Absolute";
-//
-//     nodes.registerNodeType("math/abs", MathAbs);
-//
-//
-// //Math Floor
-// 	class MathFloor {
-//         constructor() {
-//             this.addInput("in", "number");
-//             this.addOutput("out", "number");
-//             this.size = [60, 20];
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             if (v == null) return;
-//             this.setOutputData(0, Math.floor(v));
-//         }
-//     }
-//
-// 	MathFloor.title = "Floor";
-// 	MathFloor.desc = "Floor number to remove fractional part";
-//
-//     nodes.registerNodeType("math/floor", MathFloor);
-//
-//
-// //Math frac
-// 	class MathFrac {
-//         constructor() {
-//             this.addInput("in", "number");
-//             this.addOutput("out", "number");
-//             this.size = [60, 20];
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             if (v == null)
-//                 return;
-//             this.setOutputData(0, v % 1);
-//         }
-//     }
-//
-// 	MathFrac.title = "Frac";
-// 	MathFrac.desc = "Returns fractional part";
-//
-//     nodes.registerNodeType("math/frac", MathFrac);
-//
-//
-// //Math Floor
-// 	class MathSmoothStep {
-//         constructor() {
-//             this.addInput("in", "number");
-//             this.addOutput("out", "number");
-//             this.size = [60, 20];
-//             this.properties = {A: 0, B: 1};
-//         }
-//
-//         onExecute() {
-//             let v = this.getInputData(0);
-//             if (v === undefined)
-//                 return;
-//
-//             let edge0 = this.properties.A;
-//             let edge1 = this.properties.B;
-//
-//             // Scale, bias and saturate x to 0..1 range
-//             v = Math.clamp((v - edge0) / (edge1 - edge0), 0.0, 1.0);
-//             // Evaluate polynomial
-//             v = v * v * (3 - 2 * v);
-//
-//             this.setOutputData(0, v);
-//         }
-//     }
-//
-// 	MathSmoothStep.title = "Smoothstep";
-// 	MathSmoothStep.desc = "Smoothstep";
-//
-//     nodes.registerNodeType("math/smoothstep", MathSmoothStep);
-//
-// //Math scale
-// 	class MathScale {
-//         constructor() {
-//             this.addInput("in", "number", {label: ""});
-//             this.addOutput("out", "number", {label: ""});
-//             this.size = [60, 20];
-//             this.properties = {"factor": 1};
-//         }
-//
-//         onExecute() {
-//             let value = this.getInputData(0);
-//             if (value != null)
-//                 this.setOutputData(0, value * this.properties.factor);
-//         }
-//     }
-//
-// 	MathScale.title = "Scale";
-// 	MathScale.desc = "v * factor";
-//
-//     nodes.registerNodeType("math/scale", MathScale);
-//
-//
-//Math operation
-        class MathOperation extends Node {
-
-
-            constructor() {
-                super();
-
-                this.title = "Operation";
-                this.desc = "Easy math operators";
-                this["@OP"] = {type: "enum", title: "operation", values: ["+", "-", "*", "/", "%", "^"]};
-
-
-                this.addInput("A", "number");
-                this.addInput("B", "number");
-                this.addOutput("=", "number");
-                this.properties = {A: 1.0, B: 1.0, OP: "+"};
-            }
-
-            setValue(v) {
-                if (typeof(v) == "string") v = parseFloat(v);
-                this.properties["value"] = v;
-            }
-
-            onExecute() {
-                let A = this.getInputData(0);
-                let B = this.getInputData(1);
-                if (A != null)
-                    this.properties["A"] = A;
-                else
-                    A = this.properties["A"];
-
-                if (B != null)
-                    this.properties["B"] = B;
-                else
-                    B = this.properties["B"];
-
-                let result = 0;
-                switch (this.properties.OP) {
-                    case '+':
-                        result = A + B;
-                        break;
-                    case '-':
-                        result = A - B;
-                        break;
-                    case '/':
-                        result = A / B;
-                        break;
-                    case '%':
-                        result = A % B;
-                        break;
-                    case '^':
-                        result = Math.pow(A, B);
-                        break;
-                }
-                this.setOutputData(0, result);
-            }
-
-            onDrawBackground(ctx) {
-                this.outputs[0].label = "A" + this.properties.OP + "B";
-            }
+    const nodes_1 = require("../nodes");
+    //
+    // //Converter
+    // 	class Converter {
+    //         constructor() {
+    //             this.addInput("in", "*");
+    //             this.size = [60, 20];
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             if (v == null)
+    //                 return;
+    //
+    //             if (this.outputs)
+    //                 for (let i = 0; i < this.outputs.length; i++) {
+    //                     let output = this.outputs[i];
+    //                     if (!output.links || !output.links.length)
+    //                         continue;
+    //
+    //                     let result = null;
+    //                     switch (output.name) {
+    //                         case "number":
+    //                             result = v.length ? v[0] : parseFloat(v);
+    //                             break;
+    //                         case "vec2":
+    //                         case "vec3":
+    //                         case "vec4":
+    //                             let result = null;
+    //                             let count = 1;
+    //                             switch (output.name) {
+    //                                 case "vec2":
+    //                                     count = 2;
+    //                                     break;
+    //                                 case "vec3":
+    //                                     count = 3;
+    //                                     break;
+    //                                 case "vec4":
+    //                                     count = 4;
+    //                                     break;
+    //                             }
+    //
+    //                             let result = new Float32Array(count);
+    //                             if (v.length) {
+    //                                 for (let j = 0; j < v.length && j < result.length; j++)
+    //                                     result[j] = v[j];
+    //                             }
+    //                             else
+    //                                 result[0] = parseFloat(v);
+    //                             break;
+    //                     }
+    //                     this.setOutputData(i, result);
+    //                 }
+    //         }
+    //
+    //         onGetOutputs() {
+    //             return [["number", "number"], ["vec2", "vec2"], ["vec3", "vec3"], ["vec4", "vec4"]];
+    //         }
+    //     }
+    //
+    // 	Converter.title = "Converter";
+    // 	Converter.desc = "type A to type B";
+    //
+    //     nodes.registerNodeType("math/converter", Converter);
+    //
+    //
+    // //Bypass
+    // 	class Bypass {
+    //         constructor() {
+    //             this.addInput("in");
+    //             this.addOutput("out");
+    //             this.size = [60, 20];
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             this.setOutputData(0, v);
+    //         }
+    //     }
+    //
+    // 	Bypass.title = "Bypass";
+    // 	Bypass.desc = "removes the type";
+    //
+    //     nodes.registerNodeType("math/bypass", Bypass);
+    //
+    //
+    // 	class MathRange {
+    //         constructor() {
+    //             this.addInput("in", "number", {locked: true});
+    //             this.addOutput("out", "number", {locked: true});
+    //             this.properties = {"in": 0, in_min: 0, in_max: 1, out_min: 0, out_max: 1};
+    //         }
+    //
+    //         onExecute() {
+    //             if (this.inputs)
+    //                 for (let i = 0; i < this.inputs.length; i++) {
+    //                     let input = this.inputs[i];
+    //                     let v = this.getInputData(i);
+    //                     if (v === undefined)
+    //                         continue;
+    //                     this.properties[input.name] = v;
+    //                 }
+    //
+    //             let v = this.properties["in"];
+    //             if (v === undefined || v === null || v.constructor !== Number)
+    //                 v = 0;
+    //
+    //             let in_min = this.properties.in_min;
+    //             let in_max = this.properties.in_max;
+    //             let out_min = this.properties.out_min;
+    //             let out_max = this.properties.out_max;
+    //
+    //             this._last_v = ((v - in_min) / (in_max - in_min)) * (out_max - out_min) + out_min;
+    //             this.setOutputData(0, this._last_v);
+    //         }
+    //
+    //         onDrawBackground(ctx) {
+    //             //show the current value
+    //             if (this._last_v)
+    //                 this.outputs[0].label = this._last_v.toFixed(3);
+    //             else
+    //                 this.outputs[0].label = "?";
+    //         }
+    //
+    //         onGetInputs() {
+    //             return [["in_min", "number"], ["in_max", "number"], ["out_min", "number"], ["out_max", "number"]];
+    //         }
+    //     }
+    //
+    // 	MathRange.title = "Range";
+    // 	MathRange.desc = "Convert a number from one range to another";
+    //
+    //     nodes.registerNodeType("math/range", MathRange);
+    //
+    //
+    // 	class MathRand {
+    //         constructor() {
+    //             this.addOutput("value", "number");
+    //             this.properties = {min: 0, max: 1};
+    //             this.size = [60, 20];
+    //         }
+    //
+    //         onExecute() {
+    //             if (this.inputs)
+    //                 for (let i = 0; i < this.inputs.length; i++) {
+    //                     let input = this.inputs[i];
+    //                     let v = this.getInputData(i);
+    //                     if (v === undefined)
+    //                         continue;
+    //                     this.properties[input.name] = v;
+    //                 }
+    //
+    //             let min = this.properties.min;
+    //             let max = this.properties.max;
+    //             this._last_v = Math.random() * (max - min) + min;
+    //             this.setOutputData(0, this._last_v);
+    //         }
+    //
+    //         onDrawBackground(ctx) {
+    //             //show the current value
+    //             if (this._last_v)
+    //                 this.outputs[0].label = this._last_v.toFixed(3);
+    //             else
+    //                 this.outputs[0].label = "?";
+    //         }
+    //
+    //         onGetInputs() {
+    //             return [["min", "number"], ["max", "number"]];
+    //         }
+    //     }
+    //
+    // 	MathRand.title = "Rand";
+    // 	MathRand.desc = "Random number";
+    //
+    //     nodes.registerNodeType("math/rand", MathRand);
+    //
+    // //Math clamp
+    // 	class MathClamp {
+    //         constructor() {
+    //             this.addInput("in", "number");
+    //             this.addOutput("out", "number");
+    //             this.size = [60, 20];
+    //             this.properties = {min: 0, max: 1};
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             if (v == null) return;
+    //             v = Math.max(this.properties.min, v);
+    //             v = Math.min(this.properties.max, v);
+    //             this.setOutputData(0, v);
+    //         }
+    //
+    //         getCode(lang) {
+    //             let code = "";
+    //             if (this.isInputConnected(0))
+    //                 code += "clamp({{0}}," + this.properties.min + "," + this.properties.max + ")";
+    //             return code;
+    //         }
+    //     }
+    //
+    // 	MathClamp.title = "Clamp";
+    // 	MathClamp.desc = "Clamp number between min and max";
+    // 	MathClamp.filter = "shader";
+    //
+    //     nodes.registerNodeType("math/clamp", MathClamp);
+    //
+    //
+    // //Math ABS
+    // 	class MathAbs {
+    //         constructor() {
+    //             this.addInput("in", "number");
+    //             this.addOutput("out", "number");
+    //             this.size = [60, 20];
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             if (v == null) return;
+    //             this.setOutputData(0, Math.abs(v));
+    //         }
+    //     }
+    //
+    // 	MathAbs.title = "Abs";
+    // 	MathAbs.desc = "Absolute";
+    //
+    //     nodes.registerNodeType("math/abs", MathAbs);
+    //
+    //
+    // //Math Floor
+    // 	class MathFloor {
+    //         constructor() {
+    //             this.addInput("in", "number");
+    //             this.addOutput("out", "number");
+    //             this.size = [60, 20];
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             if (v == null) return;
+    //             this.setOutputData(0, Math.floor(v));
+    //         }
+    //     }
+    //
+    // 	MathFloor.title = "Floor";
+    // 	MathFloor.desc = "Floor number to remove fractional part";
+    //
+    //     nodes.registerNodeType("math/floor", MathFloor);
+    //
+    //
+    // //Math frac
+    // 	class MathFrac {
+    //         constructor() {
+    //             this.addInput("in", "number");
+    //             this.addOutput("out", "number");
+    //             this.size = [60, 20];
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             if (v == null)
+    //                 return;
+    //             this.setOutputData(0, v % 1);
+    //         }
+    //     }
+    //
+    // 	MathFrac.title = "Frac";
+    // 	MathFrac.desc = "Returns fractional part";
+    //
+    //     nodes.registerNodeType("math/frac", MathFrac);
+    //
+    //
+    // //Math Floor
+    // 	class MathSmoothStep {
+    //         constructor() {
+    //             this.addInput("in", "number");
+    //             this.addOutput("out", "number");
+    //             this.size = [60, 20];
+    //             this.properties = {A: 0, B: 1};
+    //         }
+    //
+    //         onExecute() {
+    //             let v = this.getInputData(0);
+    //             if (v === undefined)
+    //                 return;
+    //
+    //             let edge0 = this.properties.A;
+    //             let edge1 = this.properties.B;
+    //
+    //             // Scale, bias and saturate x to 0..1 range
+    //             v = Math.clamp((v - edge0) / (edge1 - edge0), 0.0, 1.0);
+    //             // Evaluate polynomial
+    //             v = v * v * (3 - 2 * v);
+    //
+    //             this.setOutputData(0, v);
+    //         }
+    //     }
+    //
+    // 	MathSmoothStep.title = "Smoothstep";
+    // 	MathSmoothStep.desc = "Smoothstep";
+    //
+    //     nodes.registerNodeType("math/smoothstep", MathSmoothStep);
+    //
+    // //Math scale
+    // 	class MathScale {
+    //         constructor() {
+    //             this.addInput("in", "number", {label: ""});
+    //             this.addOutput("out", "number", {label: ""});
+    //             this.size = [60, 20];
+    //             this.properties = {"factor": 1};
+    //         }
+    //
+    //         onExecute() {
+    //             let value = this.getInputData(0);
+    //             if (value != null)
+    //                 this.setOutputData(0, value * this.properties.factor);
+    //         }
+    //     }
+    //
+    // 	MathScale.title = "Scale";
+    // 	MathScale.desc = "v * factor";
+    //
+    //     nodes.registerNodeType("math/scale", MathScale);
+    //
+    //
+    //Math operation
+    class MathOperation extends nodes_1.Node {
+        constructor() {
+            super();
+            this.title = "Operation";
+            this.desc = "Easy math operators";
+            this["@OP"] = { type: "enum", title: "operation", values: ["+", "-", "*", "/", "%", "^"] };
+            this.addInput("A", "number");
+            this.addInput("B", "number");
+            this.addOutput("=", "number");
+            this.properties = { A: 1.0, B: 1.0, OP: "+" };
         }
-
-
-
-        nodes.registerNodeType("math/operation", MathOperation);
-
+        setValue(v) {
+            if (typeof (v) == "string")
+                v = parseFloat(v);
+            this.properties["value"] = v;
+        }
+        onExecute() {
+            let A = this.getInputData(0);
+            let B = this.getInputData(1);
+            if (A != null)
+                this.properties["A"] = A;
+            else
+                A = this.properties["A"];
+            if (B != null)
+                this.properties["B"] = B;
+            else
+                B = this.properties["B"];
+            let result = 0;
+            switch (this.properties.OP) {
+                case '+':
+                    result = A + B;
+                    break;
+                case '-':
+                    result = A - B;
+                    break;
+                case '/':
+                    result = A / B;
+                    break;
+                case '%':
+                    result = A % B;
+                    break;
+                case '^':
+                    result = Math.pow(A, B);
+                    break;
+            }
+            this.setOutputData(0, result);
+        }
+        onDrawBackground(ctx) {
+            this.outputs[0].label = "A" + this.properties.OP + "B";
+        }
+    }
+    nodes_1.Nodes.registerNodeType("math/operation", MathOperation);
+});
 //
 // //Math compare
 // 	class MathCompare {
@@ -892,6 +885,5 @@ import {Nodes as nodes, Node} from "./../nodes";
 //
 // 	} //glMatrix
 //
-
-
-// }
+// } 
+//# sourceMappingURL=math.js.map

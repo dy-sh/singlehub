@@ -5,7 +5,7 @@
 var express = require('express');
 var router = express.Router();
 var config = require('./../config');
-var engine = require('../modules/nodes/nodes-engine');
+var engine = require('./../public/nodes/nodes-engine');
 
 var MAIN_PANEL_ID = "Main";
 

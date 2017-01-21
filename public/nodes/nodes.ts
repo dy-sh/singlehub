@@ -31,29 +31,72 @@ const config = require('../../config');
 
 export const Nodes: any = {
 
+        MAIN_PANEL_ID: "Main",
 
         NODE_TITLE_HEIGHT: 16,
         NODE_SLOT_HEIGHT: 15,
-        NODE_WIDTH: 140,
+        //derwish edit
+        NODE_WIDTH: 150,
         NODE_MIN_WIDTH: 50,
         NODE_COLLAPSED_RADIUS: 10,
-        NODE_COLLAPSED_WIDTH: 80,
+        //derwish edit
+        NODE_COLLAPSED_WIDTH: 150,
         CANVAS_GRID_SIZE: 10,
         NODE_TITLE_COLOR: "#222",
-        NODE_DEFAULT_COLOR: "#999",
-        NODE_DEFAULT_BGCOLOR: "#444",
-        NODE_DEFAULT_BOXCOLOR: "#AEF",
+
+        NODE_DEFAULT_COLOR: "#777",
+        NODE_DEFAULT_BGCOLOR: "#373737",
+
+        PANEL_NODE_COLOR: "#777",
+        PANEL_NODE_BGCOLOR: "#373737",
+
+        IO_NODE_COLOR: "#777",
+        IO_NODE_BGCOLOR: "#373737",
+
+        NODE_DEFAULT_IO_COLOR: "#999",
+        NODE_OPTIONAL_IO_COLOR: "#777",
+        // NODE_DEFAULT_BOXCOLOR: "#373737",
+        NODE_ACTIVE_BOXCOLOR: "#AEF",
         NODE_DEFAULT_SHAPE: "box",
+        TITLE_TEXT_FONT: "bold 13px Arial",
+        INNER_TEXT_FONT: "normal 12px Arial",
+        SHADOWS_WIDTH: 2,
+        MENU_TEXT_COLOR: "#BBD",
+        MENU_BG_COLOR: "#353535",
+        BG_IMAGE: "/images/litegraph/grid.png",
         MAX_NUMBER_OF_NODES: 1000, //avoid infinite loops
-        DEFAULT_POSITION: [100, 100],//default node position
+        DEFAULT_POSITION: [100, 100], //default node position
         node_images_path: "",
+
+        RENDER_CONNECTION_ARROWS: true,
+        CONNECTIONS_WIDTH: 4,
+        CONNECTIONS_SHADOW: 4,
+
+        SELECTION_COLOR: "#FFF",
+        SELECTION_WIDTH: 2,
+
+        DataType: {
+            Text: 0,
+            Number: 1,
+            Logical: 2
+        },
+
+        DataTypeColor: {
+            0: "#AAA",
+            1: "#AAA",
+            2: "#AAA"
+        },
+        NEW_LINK_COLOR: "#CCC",
 
         proxy: null, //used to redirect calls
 
-        debug: config.nodesEngine.debugEngine,
+
         throw_errors: true,
-        registered_node_types: {}, //nodetypes by string
-        Nodes: {}, //node types by classname
+        registered_node_types: {},
+        Nodes: {},
+
+        debug: false,
+        //   debug: config.nodesEngine.debugEngine,
 
         /**
          * Register a node class so it can be listed when the user wants to create a new one
@@ -132,6 +175,8 @@ export const Nodes: any = {
                 for (let i in options)
                     node[i] = options[i];
             }
+
+            node.id = this.guid();
 
             return node;
         },
@@ -235,6 +280,18 @@ export const Nodes: any = {
 
         getTime: function () {
             return (typeof(performance) != "undefined") ? performance.now() : Date.now();
+        },
+
+
+        guid() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
         }
     };
 
@@ -1049,7 +1106,7 @@ export class Node {
 
         this.setDirtyCanvas(false, true);
         if (this.graph)
-        this.graph.connectionChange(this);
+            this.graph.connectionChange(this);
         return true;
     }
 

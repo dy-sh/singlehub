@@ -3,8 +3,8 @@
  */
 
 
-import {Nodes as nodes, Node} from "./nodes";
-import {NodesEngine} from "./nodes-engine";
+import {Nodes as nodes, Node} from "../public/nodes/nodes";
+import {NodesEngine} from "../public/nodes/nodes-engine";
 
 let nodesEngine = new NodesEngine();
 
@@ -13,9 +13,7 @@ module.exports.test = function () {
 
 	//graph.start(1);
 
-	setInterval(function () {
-		nodesEngine.runStep(1);
-	}, 2000);
+
 
 	let node_const_A = nodes.createNode("basic/const");
 	node_const_A.pos = [200, 200];
@@ -47,7 +45,11 @@ module.exports.test = function () {
 	node_math.connect(0, node_watch, 0);
 	// node_math.connect(0, node_watch2, 0);
 
+	nodesEngine.runStep(1);
 
+	setInterval(function () {
+		nodesEngine.runStep(1);
+	}, 1000);
 };
 
 

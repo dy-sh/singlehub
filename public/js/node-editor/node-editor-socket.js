@@ -20,6 +20,10 @@ var NODE_WIDTH = 150;
 
 $(function () {
 
+	//----test----
+
+
+return;
 	//configure socket.io
 	var socket = io.connect('/nodeeditor');
 

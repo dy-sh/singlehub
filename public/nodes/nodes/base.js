@@ -1,21 +1,25 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
-
-// namespace MyNodes {
-
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../nodes"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    // namespace MyNodes {
     let debug = require('debug')('nodes:            ');
     let debugLog = require('debug')('nodes:log         ');
     let debugMes = require('debug')('modes:mes         ');
     let debugErr = require('debug')('nodes:error       ');
     // let nodes = require('./../nodes').MyNodes.Nodes;
     //let Node = require('./../nodes').MyNodes.Node;
-
-import {Nodes as nodes, Node} from "./../nodes";
-
-
-//Show value inside the debug console
-    export class Console extends Node {
+    const nodes_1 = require("../nodes");
+    //Show value inside the debug console
+    class Console extends nodes_1.Node {
         constructor() {
             super();
             this.title = "Console";
@@ -23,54 +27,42 @@ import {Nodes as nodes, Node} from "./../nodes";
             this.size = [60, 20];
             this.addInput("data");
         }
-
         onExecute() {
             console.log("CONSOLE NODE: " + this.getInputData(0));
         }
     }
-
-    nodes.registerNodeType("basic/console", Console);
-
-
-
-
-//Constant
-        class Constant extends Node {
-            constructor() {
-                super();
-                this.title = "Const";
-                this.desc = "Constant value";
-                this.addOutput("value", "number");
-                this.properties = {value: 1.0};
-                this.editable = {property: "value", type: "number"};
-            }
-
-            setValue(v) {
-                if (typeof(v) == "string") v = parseFloat(v);
-                this.properties["value"] = v;
-            }
-
-            onExecute() {
-                this.setOutputData(0, parseFloat(this.properties["value"]));
-            }
-
-            onDrawBackground(ctx) {
-                //show the current value
-                this.outputs[0].label = this.properties["value"].toFixed(3);
-            }
-
-            onWidget(e, widget) {
-                if (widget.name == "value")
-                    this.setValue(widget.value);
-            }
+    exports.Console = Console;
+    nodes_1.Nodes.registerNodeType("basic/console", Console);
+    //Constant
+    class Constant extends nodes_1.Node {
+        constructor() {
+            super();
+            this.title = "Const";
+            this.desc = "Constant value";
+            this.addOutput("value", "number");
+            this.properties = { value: 1.0 };
+            this.editable = { property: "value", type: "number" };
         }
-
-
-
-
-        nodes.registerNodeType("basic/const", Constant);
+        setValue(v) {
+            if (typeof (v) == "string")
+                v = parseFloat(v);
+            this.properties["value"] = v;
+        }
+        onExecute() {
+            this.setOutputData(0, parseFloat(this.properties["value"]));
+        }
+        onDrawBackground(ctx) {
+            //show the current value
+            this.outputs[0].label = this.properties["value"].toFixed(3);
+        }
+        onWidget(e, widget) {
+            if (widget.name == "value")
+                this.setValue(widget.value);
+        }
+    }
+    nodes_1.Nodes.registerNodeType("basic/const", Constant);
+});
 //
-
 //
 //
 // //Subgraph: a node that contains a graph
@@ -362,8 +354,5 @@ import {Nodes as nodes, Node} from "./../nodes";
 //         Watch.desc = "Show value of input";
 //
 //         nodes.registerNodeType("basic/watch", Watch);
-
-
-
-
-// }
+// } 
+//# sourceMappingURL=base.js.map

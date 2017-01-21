@@ -19,9 +19,9 @@ if (config.gateway.mysensors.serial.enable) {
 
 //nodes engine
 if (config.nodesEngine.enable) {
-	require('../modules/nodes/nodes-engine');
-	require('../modules/nodes/nodes');
-	require('../modules/nodes/nodes/base');
-	require('../modules/nodes/nodes/math');
-	require('../modules/nodes/test').test();
+	require('./../public/nodes/nodes-engine');
+	require('./../public/nodes/nodes');
+	require('./../public/nodes/nodes/base');
+	require('./../public/nodes/nodes/math');
+	require('../modules/test').test();
 }
