@@ -1,9 +1,9 @@
 {
-	"firstRun": false,
+	"firstRun": true,
 	"gateway": {
 		"mysensors": {
 			"serial": {
-				"enable": true,
+				"enable": false,
 				"baudRate": "115200",
 				"port": "COM3"
 			},
