@@ -1,13 +1,16 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
-"use strict";
+
 // namespace MyNodes {
-let debug = require('debug')('nodes:            ');
-let debugLog = require('debug')('nodes:log         ');
-let debugMes = require('debug')('modes:mes         ');
-let debugErr = require('debug')('nodes:error       ');
-const nodes_1 = require("./../nodes");
+
+    let debug = require('debug')('nodes:            ');
+    let debugLog = require('debug')('nodes:log         ');
+    let debugMes = require('debug')('modes:mes         ');
+    let debugErr = require('debug')('nodes:error       ');
+
+import {Nodes as nodes, Node} from "./../nodes";
+
 //
 // //Converter
 // 	class Converter {
@@ -333,58 +336,71 @@ const nodes_1 = require("./../nodes");
 //
 //
 //Math operation
-class MathOperation extends nodes_1.Node {
-    constructor() {
-        super();
-        this.title = "Operation";
-        this.desc = "Easy math operators";
-        this["@OP"] = { type: "enum", title: "operation", values: ["+", "-", "*", "/", "%", "^"] };
-        this.addInput("A", "number");
-        this.addInput("B", "number");
-        this.addOutput("=", "number");
-        this.properties = { A: 1.0, B: 1.0, OP: "+" };
-    }
-    setValue(v) {
-        if (typeof (v) == "string")
-            v = parseFloat(v);
-        this.properties["value"] = v;
-    }
-    onExecute() {
-        let A = this.getInputData(0);
-        let B = this.getInputData(1);
-        if (A != null)
-            this.properties["A"] = A;
-        else
-            A = this.properties["A"];
-        if (B != null)
-            this.properties["B"] = B;
-        else
-            B = this.properties["B"];
-        let result = 0;
-        switch (this.properties.OP) {
-            case '+':
-                result = A + B;
-                break;
-            case '-':
-                result = A - B;
-                break;
-            case '/':
-                result = A / B;
-                break;
-            case '%':
-                result = A % B;
-                break;
-            case '^':
-                result = Math.pow(A, B);
-                break;
+        class MathOperation extends Node {
+
+
+            constructor() {
+                super();
+
+                this.title = "Operation";
+                this.desc = "Easy math operators";
+                this["@OP"] = {type: "enum", title: "operation", values: ["+", "-", "*", "/", "%", "^"]};
+
+
+                this.addInput("A", "number");
+                this.addInput("B", "number");
+                this.addOutput("=", "number");
+                this.properties = {A: 1.0, B: 1.0, OP: "+"};
+            }
+
+            setValue(v) {
+                if (typeof(v) == "string") v = parseFloat(v);
+                this.properties["value"] = v;
+            }
+
+            onExecute() {
+                let A = this.getInputData(0);
+                let B = this.getInputData(1);
+                if (A != null)
+                    this.properties["A"] = A;
+                else
+                    A = this.properties["A"];
+
+                if (B != null)
+                    this.properties["B"] = B;
+                else
+                    B = this.properties["B"];
+
+                let result = 0;
+                switch (this.properties.OP) {
+                    case '+':
+                        result = A + B;
+                        break;
+                    case '-':
+                        result = A - B;
+                        break;
+                    case '/':
+                        result = A / B;
+                        break;
+                    case '%':
+                        result = A % B;
+                        break;
+                    case '^':
+                        result = Math.pow(A, B);
+                        break;
+                }
+                this.setOutputData(0, result);
+            }
+
+            onDrawBackground(ctx) {
+                this.outputs[0].label = "A" + this.properties.OP + "B";
+            }
         }
-        this.setOutputData(0, result);
-    }
-    onDrawBackground(ctx) {
-        this.outputs[0].label = "A" + this.properties.OP + "B";
-    }
-}
-nodes_1.Nodes.registerNodeType("math/operation", MathOperation);
+
+
+
+        nodes.registerNodeType("math/operation", MathOperation);
+
 //
 // //Math compare
 // 	class MathCompare {
@@ -876,5 +892,6 @@ nodes_1.Nodes.registerNodeType("math/operation", MathOperation);
 //
 // 	} //glMatrix
 //
-// } 
-//# sourceMappingURL=math.js.map
+
+
+// }
