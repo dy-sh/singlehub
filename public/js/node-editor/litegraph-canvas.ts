@@ -18,15 +18,15 @@ interface IgetExtraMenuOptions {
 	(any): any;
 }
 
-class LGraphCanvas {
+export class LGraphCanvas {
 	private max_zoom: number;
 	private min_zoom: number;
 	private frame: number;
 	private last_draw_time: number;
 	private render_time: number;
 	private fps: number;
-	private scale: number;
-	private offset: [number, number];
+	scale: number;
+	offset: [number, number];
 	private selected_nodes: Array<Node>|any;
 	private node_dragged: any;
 	private node_over: any;
@@ -206,7 +206,7 @@ class LGraphCanvas {
 	* @method setGraph
 	* @param {LGraph} graph
 	*/
-	setGraph(graph, skip_clear) {
+	setGraph(graph?, skip_clear?) {
 		if (this.graph == graph)
 			return;
 
@@ -1299,7 +1299,7 @@ class LGraphCanvas {
 		return visible_nodes;
 	}
 
-	draw(force_canvas, force_bgcanvas) {
+	draw(force_canvas?:boolean, force_bgcanvas?:boolean) {
 		//fps counting
 		let now = LiteGraph.getTime();
 		this.render_time = (now - this.last__time) * 0.001;
@@ -2028,7 +2028,7 @@ class LGraphCanvas {
 		this.draw(true,true);
 	}
 	*/
-	resize(width, height) {
+	resize(width?:number, height?:number) {
 		if (!width && !height) {
 			let parent = this.canvas.parentNode;
 			width = parent.offsetWidth;

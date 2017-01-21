@@ -1960,6 +1960,7 @@
         static send_clone_node(node) {
         }
     }
+    exports.LGraphCanvas = LGraphCanvas;
     //API *************************************************
     //function roundRect(ctx, x, y, width, height, radius, radius_low) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, radius_low) {
