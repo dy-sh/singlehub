@@ -2326,7 +2326,7 @@ export class LGraphCanvas {
             let node_types = Nodes.getNodeTypesInCategory(category);
             let values = [];
             for (let i in node_types)
-                values.push({content: node_types[i].title, value: node_types[i].type});
+                values.push({content: node_types[i].name, value: node_types[i].type});
 
             canvas.createContextualMenu(values, {event: e, callback: inner_create, from: menu}, window);
             return false;
@@ -2350,7 +2350,7 @@ export class LGraphCanvas {
                     node.panel_id = window.this_panel_id;//this_panel_id initialized from ViewBag
 
 
-                this.editor.socket.send_create_node(node);
+                canvas.editor.socket.send_create_node(node);
             }
         }
 

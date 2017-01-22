@@ -4,69 +4,65 @@
 
 // namespace MyNodes {
 
-    // let debug = require('debug')('nodes:            ');
-    // let debugLog = require('debug')('nodes:log         ');
-    // let debugMes = require('debug')('modes:mes         ');
-    // let debugErr = require('debug')('nodes:error       ');
+// let debug = require('debug')('nodes:            ');
+// let debugLog = require('debug')('nodes:log         ');
+// let debugMes = require('debug')('modes:mes         ');
+// let debugErr = require('debug')('nodes:error       ');
 
 import {Nodes, Node} from "../nodes";
 
 
 //Show value inside the debug console
-    export class Console extends Node {
-        constructor() {
-            super();
-            this.title = "Console";
-            this.desc = "Show value inside the console";
-            this.size = [60, 20];
-            this.addInput("data");
-        }
-
-        onExecute=function() {
-            console.log("CONSOLE NODE: " + this.getInputData(0));
-        }
+export class Console extends Node {
+    constructor() {
+        super();
+        this.title = "Console";
+        this.desc = "Show value inside the console";
+        this.size = [60, 20];
+        this.addInput("data");
     }
 
-    Nodes.registerNodeType("basic/console", Console);
+    onExecute = function () {
+        console.log("CONSOLE NODE: " + this.getInputData(0));
+    }
+}
 
-
+Nodes.registerNodeType("basic/console", Console);
 
 
 //Constant
-      export class Constant extends Node {
-            constructor() {
-                super();
-                this.title = "Const";
-                this.desc = "Constant value";
-                this.addOutput("value", "number");
-                this.properties = {value: 1.0};
-                this.editable = {property: "value", type: "number"};
-            }
+export class Constant extends Node {
+    constructor() {
+        super();
+        this.title = "Const";
+        this.desc = "Constant value";
+        this.addOutput("value", "number");
+        this.properties = {value: 1.0};
+        this.editable = {property: "value", type: "number"};
+    }
 
-            setValue= function(v) {
-                if (typeof(v) == "string") v = parseFloat(v);
-                this.properties["value"] = v;
-            }
+    setValue = function (v) {
+        if (typeof(v) == "string") v = parseFloat(v);
+        this.properties["value"] = v;
+    }
 
-            onExecute=function() {
-                this.setOutputData(0, parseFloat(this.properties["value"]));
-            }
+    onExecute = function () {
+        this.setOutputData(0, parseFloat(this.properties["value"]));
+    }
 
-            onDrawBackground=function(ctx) {
-                //show the current value
-                this.outputs[0].label = this.properties["value"].toFixed(3);
-            }
+    onDrawBackground = function (ctx) {
+        //show the current value
+        this.outputs[0].label = this.properties["value"].toFixed(3);
+    }
 
-            onWidget(e, widget) {
-                if (widget.name == "value")
-                    this.setValue(widget.value);
-            }
-        }
-
-
+    onWidget(e, widget) {
+        if (widget.name == "value")
+            this.setValue(widget.value);
+    }
+}
 
 
-        Nodes.registerNodeType("basic/const", Constant);
+Nodes.registerNodeType("basic/const", Constant);
 //
 
 //
@@ -360,8 +356,6 @@ import {Nodes, Node} from "../nodes";
 //         Watch.desc = "Show value of input";
 //
 //         nodes.registerNodeType("basic/watch", Watch);
-
-
 
 
 // }
