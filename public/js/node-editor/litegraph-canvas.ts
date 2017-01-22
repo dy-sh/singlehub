@@ -2373,24 +2373,24 @@ export class LGraphCanvas {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                this.editor.importPanelFromFile(pos);
+                canvas.editor.importPanelFromFile(pos);
             }
 
             if (v.value == "Panel from script") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                this.editor.importPanelFromScript(pos);
+                canvas.editor.importPanelFromScript(pos);
             }
 
             if (v.value == "Panel from URL") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                this.editor.importPanelFromURL(pos);
+                canvas.editor.importPanelFromURL(pos);
             }
 
-            this.closeAllContextualMenus();
+            canvas.closeAllContextualMenus();
 
             return false;
         }

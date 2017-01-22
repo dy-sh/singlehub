@@ -20,13 +20,13 @@
     class Console extends nodes_1.Node {
         constructor() {
             super();
+            this.onExecute = function () {
+                console.log("CONSOLE NODE: " + this.getInputData(0));
+            };
             this.title = "Console";
             this.desc = "Show value inside the console";
             this.size = [60, 20];
             this.addInput("data");
-        }
-        onExecute() {
-            console.log("CONSOLE NODE: " + this.getInputData(0));
         }
     }
     exports.Console = Console;
@@ -35,6 +35,14 @@
     class Constant extends nodes_1.Node {
         constructor() {
             super();
+            this.setValue = function (v) {
+                if (typeof (v) == "string")
+                    v = parseFloat(v);
+                this.properties["value"] = v;
+            };
+            this.onExecute = function () {
+                this.setOutputData(0, parseFloat(this.properties["value"]));
+            };
             this.onDrawBackground = function (ctx) {
                 //show the current value
                 this.outputs[0].label = this.properties["value"].toFixed(3);
@@ -44,14 +52,6 @@
             this.addOutput("value", "number");
             this.properties = { value: 1.0 };
             this.editable = { property: "value", type: "number" };
-        }
-        setValue(v) {
-            if (typeof (v) == "string")
-                v = parseFloat(v);
-            this.properties["value"] = v;
-        }
-        onExecute() {
-            this.setOutputData(0, parseFloat(this.properties["value"]));
         }
         onWidget(e, widget) {
             if (widget.name == "value")

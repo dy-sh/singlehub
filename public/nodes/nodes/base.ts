@@ -22,7 +22,7 @@ import {Nodes, Node} from "../nodes";
             this.addInput("data");
         }
 
-        onExecute() {
+        onExecute=function() {
             console.log("CONSOLE NODE: " + this.getInputData(0));
         }
     }
@@ -43,12 +43,12 @@ import {Nodes, Node} from "../nodes";
                 this.editable = {property: "value", type: "number"};
             }
 
-            setValue(v) {
+            setValue= function(v) {
                 if (typeof(v) == "string") v = parseFloat(v);
                 this.properties["value"] = v;
             }
 
-            onExecute() {
+            onExecute=function() {
                 this.setOutputData(0, parseFloat(this.properties["value"]));
             }
 
