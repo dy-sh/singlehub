@@ -4,10 +4,10 @@
 
 // namespace MyNodes {
 
-    let debug = require('debug')('nodes:            ');
-    let debugLog = require('debug')('nodes:log         ');
-    let debugMes = require('debug')('modes:mes         ');
-    let debugErr = require('debug')('nodes:error       ');
+    // let debug = require('debug')('nodes:            ');
+    // let debugLog = require('debug')('nodes:log         ');
+    // let debugMes = require('debug')('modes:mes         ');
+    // let debugErr = require('debug')('nodes:error       ');
 
 import {Nodes as nodes, Node} from "../nodes";
 

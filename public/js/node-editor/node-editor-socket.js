@@ -6,24 +6,13 @@
 var socketConnected;
 
 
-var editor = new LiteGraph.Editor("main");
-window.graph = editor.graph;
-window.addEventListener("resize", function () {
-	editor.graphcanvas.resize();
-});
-//getNodes();
-
-var START_POS = 50;
-var FREE_SPACE_UNDER = 30;
-var NODE_WIDTH = 150;
 
 
 $(function () {
 
-	//----test----
+	//todo temp
+	return;
 
-
-return;
 	//configure socket.io
 	var socket = io.connect('/nodeeditor');
 

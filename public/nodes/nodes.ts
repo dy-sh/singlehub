@@ -4,14 +4,16 @@
 
 // export namespace MyNodes {
 
-const debug = require('debug')('nodes-engine:     ');
-const debugLog = require('debug')('nodes-engine:log  ');
-const debugMes = require('debug')('modes-engine:mes  ');
-const debugErr = require('debug')('nodes-engine:error');
-const nodeDebug = require('debug')('nodes:     ');
-const nodeDebugErr = require('debug')('nodes:error');
+//todo
+// const debug = require('debug')('nodes-engine:     ');
+// const debugLog = require('debug')('nodes-engine:log  ');
+// const debugMes = require('debug')('modes-engine:mes  ');
+// const debugErr = require('debug')('nodes-engine:error');
+// const nodeDebug = require('debug')('nodes:     ');
+// const nodeDebugErr = require('debug')('nodes:error');
+//
+// const config = require('../../config');
 
-const config = require('../../config');
 // *************************************************************
 //   Nodes CLASS                                     *******
 // *************************************************************
@@ -95,7 +97,6 @@ export const Nodes: any = {
         registered_node_types: {},
         Nodes: {},
 
-        debug: false,
         //   debug: config.nodesEngine.debugEngine,
 
         /**
@@ -105,13 +106,19 @@ export const Nodes: any = {
          * @param {Class} base_class class containing the structure of a node
          */
 
+        debug:function (mess) {
+            console.log(mess)
+        },
+        debugErr:function (mess) {
+            console.log(mess)
+        },
+
         registerNodeType: function (type, base_class) {
             if (!base_class.prototype)
                 throw("Cannot register a simple object, it must be a class with a prototype");
             base_class.type = type;
 
-            if (Nodes.debug)
-                debug("Node registered: " + type);
+                this.debug("Node registered: " + type);
 
             let categories = type.split("/");
 
@@ -153,7 +160,7 @@ export const Nodes: any = {
         createNode: function (type: string, title: string, options: any): Node {
             let base_class = this.registered_node_types[type];
             if (!base_class) {
-                debugLog("Can`t create node. Node type \"" + type + "\" not registered.");
+                this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
                 return null;
             }
 
@@ -248,8 +255,7 @@ export const Nodes: any = {
                     continue;
 
                 try {
-                    if (Nodes.debug)
-                        debug("Reloading: " + src);
+                        this.debug("Reloading: " + src);
                     let dynamicScript = document.createElement("script");
                     dynamicScript.type = "text/javascript";
                     dynamicScript.src = src;
@@ -259,12 +265,11 @@ export const Nodes: any = {
                 catch (err) {
                     if (Nodes.throw_errors)
                         throw err;
-                    debugErr("Error while reloading " + src);
+                   this.debugErr("Error while reloading " + src);
                 }
             }
 
-            if (Nodes.debug)
-                debug("Nodes reloaded");
+                this.debug("Nodes reloaded");
         },
 
         //separated just to improve if it doesnt work
@@ -389,6 +394,13 @@ export class Node {
         });
 
         this.id = -1; //not know till not added
+    }
+
+    debug (mess) {
+    console.log(mess)
+    }
+    debugErr (mess) {
+    console.log(mess)
     }
 
 //
@@ -907,12 +919,12 @@ export class Node {
         if (typeof slot == "string") {
             slot = this.findOutputSlot(slot);
             if (slot == -1) {
-                debugErr("Connect: Error, no slot of name " + slot);
+                this.debugErr("Connect: Error, no slot of name " + slot);
                 return false;
             }
         }
         else if (!this.outputs || slot >= this.outputs.length) {
-            debugErr("Connect: Error, slot number not found");
+            this.debugErr("Connect: Error, slot number not found");
             return false;
         }
 
@@ -929,12 +941,12 @@ export class Node {
         if (typeof target_slot == "string") {
             target_slot = node.findInputSlot(target_slot);
             if (target_slot == -1) {
-                debugErr("Connect: Error, no slot of name " + target_slot);
+                this.debugErr("Connect: Error, no slot of name " + target_slot);
                 return false;
             }
         }
         else if (!node.inputs || target_slot >= node.inputs.length) {
-            debugErr("Connect: Error, slot number not found");
+            this.debugErr("Connect: Error, slot number not found");
             return false;
         }
 
@@ -1067,12 +1079,12 @@ export class Node {
         if (typeof slot == "string") {
             slot = this.findInputSlot(slot);
             if (slot == -1) {
-                debugErr("Connect: Error, no slot of name " + slot);
+                this.debugErr("Connect: Error, no slot of name " + slot);
                 return false;
             }
         }
         else if (!this.inputs || slot >= this.inputs.length) {
-            debugErr("Connect: Error, slot number not found");
+            this.debugErr("Connect: Error, slot number not found");
             return false;
         }
 

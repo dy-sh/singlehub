@@ -11,12 +11,10 @@
 })(function (require, exports) {
     "use strict";
     // namespace MyNodes {
-    let debug = require('debug')('nodes:            ');
-    let debugLog = require('debug')('nodes:log         ');
-    let debugMes = require('debug')('modes:mes         ');
-    let debugErr = require('debug')('nodes:error       ');
-    // let nodes = require('./../nodes').MyNodes.Nodes;
-    //let Node = require('./../nodes').MyNodes.Node;
+    // let debug = require('debug')('nodes:            ');
+    // let debugLog = require('debug')('nodes:log         ');
+    // let debugMes = require('debug')('modes:mes         ');
+    // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
     //Show value inside the debug console
     class Console extends nodes_1.Node {
@@ -60,6 +58,7 @@
                 this.setValue(widget.value);
         }
     }
+    exports.Constant = Constant;
     nodes_1.Nodes.registerNodeType("basic/const", Constant);
 });
 //

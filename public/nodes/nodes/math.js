@@ -11,10 +11,10 @@
 })(function (require, exports) {
     "use strict";
     // namespace MyNodes {
-    let debug = require('debug')('nodes:            ');
-    let debugLog = require('debug')('nodes:log         ');
-    let debugMes = require('debug')('modes:mes         ');
-    let debugErr = require('debug')('nodes:error       ');
+    // let debug = require('debug')('nodes:            ');
+    // let debugLog = require('debug')('nodes:log         ');
+    // let debugMes = require('debug')('modes:mes         ');
+    // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
     //
     // //Converter

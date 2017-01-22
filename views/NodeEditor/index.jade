@@ -19,6 +19,7 @@ html
 		link(rel='stylesheet', type='text/css', href='/css/litegraph-editor.css')
 		link(rel='stylesheet', type='text/css', href="/css/litegraph-theme#{theme}.css")
 		link(rel='stylesheet', type='text/css', href='/css/node-editor.css')
+
 	body
 		// Header Menu
 		.ui.inverted.fixed.big.borderless.main.menu
@@ -104,10 +105,12 @@ html
 		script(src='/libs/handlebars/handlebars.min.js')
 		script(src='/libs/semantic/dist/semantic.min.js')
 		script(src='/socket.io/socket.io.js')
-		//script(src='/js/node-editor/litegraph.js')
-		script(src='/js/node-editor/litegraph-canvas.js')
-		script(src='/js/node-editor/litegraph-editor.js')
+		//script(src='/js/node-editor/litegraph-canvas.js')
+		//script(src='/js/node-editor/litegraph-editor.js')
 		//script(src='/js/node-editor/node-editor-theme#{theme}.js')
 		//script(type='text/javascript', src='/js/node-editor/node-editor-list.js')
-		script(src='/js/node-editor/node-editor-socket.js')
+		//script(src='/js/node-editor/node-editor-socket.js')
+		//script(src='/js/node-editor/litegraph.js')
 
+
+		script(src='/js/require.js' data-main="/js/node-editor/litegraph")

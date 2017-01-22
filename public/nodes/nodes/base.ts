@@ -4,12 +4,10 @@
 
 // namespace MyNodes {
 
-    let debug = require('debug')('nodes:            ');
-    let debugLog = require('debug')('nodes:log         ');
-    let debugMes = require('debug')('modes:mes         ');
-    let debugErr = require('debug')('nodes:error       ');
-    // let nodes = require('./../nodes').MyNodes.Nodes;
-    //let Node = require('./../nodes').MyNodes.Node;
+    // let debug = require('debug')('nodes:            ');
+    // let debugLog = require('debug')('nodes:log         ');
+    // let debugMes = require('debug')('modes:mes         ');
+    // let debugErr = require('debug')('nodes:error       ');
 
 import {Nodes as nodes, Node} from "../nodes";
 
@@ -35,7 +33,7 @@ import {Nodes as nodes, Node} from "../nodes";
 
 
 //Constant
-        class Constant extends Node {
+      export class Constant extends Node {
             constructor() {
                 super();
                 this.title = "Const";

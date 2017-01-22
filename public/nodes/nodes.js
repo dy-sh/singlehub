@@ -11,13 +11,15 @@
 })(function (require, exports) {
     "use strict";
     // export namespace MyNodes {
-    const debug = require('debug')('nodes-engine:     ');
-    const debugLog = require('debug')('nodes-engine:log  ');
-    const debugMes = require('debug')('modes-engine:mes  ');
-    const debugErr = require('debug')('nodes-engine:error');
-    const nodeDebug = require('debug')('nodes:     ');
-    const nodeDebugErr = require('debug')('nodes:error');
-    const config = require('../../config');
+    //todo
+    // const debug = require('debug')('nodes-engine:     ');
+    // const debugLog = require('debug')('nodes-engine:log  ');
+    // const debugMes = require('debug')('modes-engine:mes  ');
+    // const debugErr = require('debug')('nodes-engine:error');
+    // const nodeDebug = require('debug')('nodes:     ');
+    // const nodeDebugErr = require('debug')('nodes:error');
+    //
+    // const config = require('../../config');
     // *************************************************************
     //   Nodes CLASS                                     *******
     // *************************************************************
@@ -84,7 +86,6 @@
         throw_errors: true,
         registered_node_types: {},
         Nodes: {},
-        debug: false,
         //   debug: config.nodesEngine.debugEngine,
         /**
          * Register a node class so it can be listed when the user wants to create a new one
@@ -92,12 +93,17 @@
          * @param {String} type name of the node and path
          * @param {Class} base_class class containing the structure of a node
          */
+        debug: function (mess) {
+            console.log(mess);
+        },
+        debugErr: function (mess) {
+            console.log(mess);
+        },
         registerNodeType: function (type, base_class) {
             if (!base_class.prototype)
                 throw ("Cannot register a simple object, it must be a class with a prototype");
             base_class.type = type;
-            if (exports.Nodes.debug)
-                debug("Node registered: " + type);
+            this.debug("Node registered: " + type);
             let categories = type.split("/");
             let pos = type.lastIndexOf("/");
             base_class.category = type.substr(0, pos);
@@ -132,7 +138,7 @@
         createNode: function (type, title, options) {
             let base_class = this.registered_node_types[type];
             if (!base_class) {
-                debugLog("Can`t create node. Node type \"" + type + "\" not registered.");
+                this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
                 return null;
             }
             let prototype = base_class.prototype || base_class;
@@ -212,8 +218,7 @@
                 if (!src || src.substr(0, folder_wildcard.length) != folder_wildcard)
                     continue;
                 try {
-                    if (exports.Nodes.debug)
-                        debug("Reloading: " + src);
+                    this.debug("Reloading: " + src);
                     let dynamicScript = document.createElement("script");
                     dynamicScript.type = "text/javascript";
                     dynamicScript.src = src;
@@ -223,11 +228,10 @@
                 catch (err) {
                     if (exports.Nodes.throw_errors)
                         throw err;
-                    debugErr("Error while reloading " + src);
+                    this.debugErr("Error while reloading " + src);
                 }
             }
-            if (exports.Nodes.debug)
-                debug("Nodes reloaded");
+            this.debug("Nodes reloaded");
         },
         //separated just to improve if it doesnt work
         cloneObject: function (obj, target) {
@@ -311,6 +315,12 @@
                 enumerable: true
             });
             this.id = -1; //not know till not added
+        }
+        debug(mess) {
+            console.log(mess);
+        }
+        debugErr(mess) {
+            console.log(mess);
         }
         //
         //     /**
@@ -812,12 +822,12 @@
             if (typeof slot == "string") {
                 slot = this.findOutputSlot(slot);
                 if (slot == -1) {
-                    debugErr("Connect: Error, no slot of name " + slot);
+                    this.debugErr("Connect: Error, no slot of name " + slot);
                     return false;
                 }
             }
             else if (!this.outputs || slot >= this.outputs.length) {
-                debugErr("Connect: Error, slot number not found");
+                this.debugErr("Connect: Error, slot number not found");
                 return false;
             }
             if (node && node.constructor === Number)
@@ -831,12 +841,12 @@
             if (typeof target_slot == "string") {
                 target_slot = node.findInputSlot(target_slot);
                 if (target_slot == -1) {
-                    debugErr("Connect: Error, no slot of name " + target_slot);
+                    this.debugErr("Connect: Error, no slot of name " + target_slot);
                     return false;
                 }
             }
             else if (!node.inputs || target_slot >= node.inputs.length) {
-                debugErr("Connect: Error, slot number not found");
+                this.debugErr("Connect: Error, slot number not found");
                 return false;
             }
             //if there is something already plugged there, disconnect
@@ -958,12 +968,12 @@
             if (typeof slot == "string") {
                 slot = this.findInputSlot(slot);
                 if (slot == -1) {
-                    debugErr("Connect: Error, no slot of name " + slot);
+                    this.debugErr("Connect: Error, no slot of name " + slot);
                     return false;
                 }
             }
             else if (!this.inputs || slot >= this.inputs.length) {
-                debugErr("Connect: Error, slot number not found");
+                this.debugErr("Connect: Error, slot number not found");
                 return false;
             }
             let input = this.inputs[slot];

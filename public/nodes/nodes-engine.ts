@@ -2,17 +2,20 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-// export namespace MyNodes {
 
-    let debug = require('debug')('nodes-engine:     ');
-    let debugLog = require('debug')('nodes-engine:log  ');
-    let debugMes = require('debug')('modes-engine:mes  ');
-    let debugErr = require('debug')('nodes-engine:error');
-    const nodeDebug = require('debug')('nodes:     ');
-    const nodeDebugErr = require('debug')('nodes:error');
-    let config = require('./../../config');
+//todo
+// if (!(<any>window)) {
+//     let debug = require('debug')('nodes-engine:     ');
+//     let debugLog = require('debug')('nodes-engine:log  ');
+//     let debugMes = require('debug')('modes-engine:mes  ');
+//     let debugErr = require('debug')('nodes-engine:error');
+//     const nodeDebug = require('debug')('nodes:     ');
+//     const nodeDebugErr = require('debug')('nodes:error');
+//     let config = require('./../../config');
+// }
 
-    import {Nodes, Node} from "./nodes";
+
+import {Nodes, Node} from "./nodes";
 
 // start: function () {
 // 	this._started = true;
@@ -50,133 +53,139 @@
 // }
 
 
-    export class NodesEngine {
+export class NodesEngine {
 
-        //default supported types
-        static supported_types: ["number", "string", "boolean"];
-        supported_types: ["number", "string", "boolean"];
+    //default supported types
+    static supported_types: ["number", "string", "boolean"];
+    supported_types: ["number", "string", "boolean"];
 
-        static STATUS_STOPPED: 1;
-        static NodesEngine: 2;
-        debug: any;
-        list_of_graphcanvas: any;
-        status: any;
-        last_node_id: number;
-        _nodes: Array<Node>;
-        _nodes_by_id: {};
-        last_link_id: number;
-        links: {};
-        iteration: number;
-        config: {
-            align_to_grid?:boolean;
-        };
-        globaltime: number;
-        runningtime: number;
-        fixedtime: number;
-        fixedtime_lapse: number;
-        elapsed_time: number;
-        starttime: number;
-        global_inputs: {};
-        global_outputs: {};
-        execution_timer_id: any;
-        _nodes_in_order: any;
-        errors_in_execution: boolean;
+    static STATUS_STOPPED: 1;
+    static NodesEngine: 2;
+    list_of_graphcanvas: any;
+    status: any;
+    last_node_id: number;
+    _nodes: Array<Node>;
+    _nodes_by_id: {};
+    last_link_id: number;
+    links: {};
+    iteration: number;
+    config: {
+        align_to_grid?: boolean;
+    };
+    globaltime: number;
+    runningtime: number;
+    fixedtime: number;
+    fixedtime_lapse: number;
+    elapsed_time: number;
+    starttime: number;
+    global_inputs: {};
+    global_outputs: {};
+    execution_timer_id: any;
+    _nodes_in_order: any;
+    errors_in_execution: boolean;
 
-        M: any;
+    M: any;
 
-        onStopEvent: any;
-        on_change: any;
-        onNodeAdded: any;
-        onExecuteStep: any;
-        onAfterExecute: any;
-        onConnectionChange: any;
-
+    onStopEvent: any;
+    on_change: any;
+    onNodeAdded: any;
+    onExecuteStep: any;
+    onAfterExecute: any;
+    onConnectionChange: any;
 
 
+    /**
+     * NodesEngine is the class that contain a full graph. We instantiate one and add nodes to it, and then we can run the execution loop.
+     *
+     * @class NodesEngine
+     * @constructor
+     */
+    constructor() {
 
-        /**
-         * NodesEngine is the class that contain a full graph. We instantiate one and add nodes to it, and then we can run the execution loop.
-         *
-         * @class NodesEngine
-         * @constructor
-         */
-        constructor() {
+        //todo
+        // this.debug = config.nodesEngine.debugEngine;
+        // if (this.debug)
+        //     debug("Nodes engine created");
 
-            this.debug = config.nodesEngine.debugEngine;
-            if (this.debug)
-                debug("Nodes engine created");
-
-            this.list_of_graphcanvas = null;
-            this.clear();
-        }
+        this.list_of_graphcanvas = null;
+        this.clear();
+    }
 
 //used to know which types of connections support this graph (some graphs do not allow certain types)
-        getSupportedTypes() {
-            return this.supported_types || NodesEngine.supported_types;
-        }
+    getSupportedTypes() {
+        return this.supported_types || NodesEngine.supported_types;
+    }
 
 
+    debug(mess) {
+        console.log(mess)
+    }
 
-        /**
-         * Removes all nodes from this graph
-         * @method clear
-         */
-        clear() {
-            this.stop();
-            this.status = NodesEngine.STATUS_STOPPED;
-            this.last_node_id = 0;
+    debugErr(mess) {
+        console.log(mess)
+    }
 
-            //nodes
-            this._nodes = [];
-            this._nodes_by_id = {};
 
-            //links
-            this.last_link_id = 0;
-            this.links = {}; //container with all the links
+    /**
+     * Removes all nodes from this graph
+     * @method clear
+     */
+    clear() {
+        this.stop();
+        this.status = NodesEngine.STATUS_STOPPED;
+        this.last_node_id = 0;
 
-            //iterations
-            this.iteration = 0;
+        //nodes
+        this._nodes = [];
+        this._nodes_by_id = {};
 
-            this.config = {};
+        //links
+        this.last_link_id = 0;
+        this.links = {}; //container with all the links
 
-            //timing
-            this.globaltime = 0;
-            this.runningtime = 0;
-            this.fixedtime = 0;
-            this.fixedtime_lapse = 0.01;
-            this.elapsed_time = 0.01;
-            this.starttime = 0;
+        //iterations
+        this.iteration = 0;
 
-            //globals
-            this.global_inputs = {};
-            this.global_outputs = {};
+        this.config = {};
 
-            //this.graph = {};
+        //timing
+        this.globaltime = 0;
+        this.runningtime = 0;
+        this.fixedtime = 0;
+        this.fixedtime_lapse = 0.01;
+        this.elapsed_time = 0.01;
+        this.starttime = 0;
 
-            this.change();
+        //globals
+        this.global_inputs = {};
+        this.global_outputs = {};
 
-            this.sendActionToCanvas("clear");
-        }
+        //this.graph = {};
 
-        /**
-         * Stops the execution loop of the graph
-         * @method stop execution
-         */
-        stop() {
-            if (this.status == NodesEngine.STATUS_STOPPED)
-                return;
+        this.change();
 
-            this.status = NodesEngine.STATUS_STOPPED;
+        this.sendActionToCanvas("clear");
+    }
 
-            if (this.onStopEvent)
-                this.onStopEvent();
+    /**
+     * Stops the execution loop of the graph
+     * @method stop execution
+     */
+    stop() {
+        if (this.status == NodesEngine.STATUS_STOPPED)
+            return;
 
-            if (this.execution_timer_id != null)
-                clearInterval(this.execution_timer_id);
-            this.execution_timer_id = null;
+        this.status = NodesEngine.STATUS_STOPPED;
 
-            this.sendEventToAllNodes("onStop");
-        }
+        if (this.onStopEvent)
+            this.onStopEvent();
+
+        if (this.execution_timer_id != null)
+            clearInterval(this.execution_timer_id);
+        this.execution_timer_id = null;
+
+        this.sendEventToAllNodes("onStop");
+    }
 
 //
 //     /**
@@ -244,7 +253,7 @@
      * @method runStep
      * @param {number} num number of steps to run, default is 1
      */
-    runStep(num:number=1) {
+    runStep(num: number = 1) {
 
         let start = Nodes.getTime();
         this.globaltime = 0.001 * (start - this.starttime);
@@ -265,7 +274,7 @@
             this.errors_in_execution = true;
             if (Nodes.throw_errors)
                 throw err;
-            debugErr("Error during execution: " + err);
+            this.debugErr("NodesEngine: Error during execution: " + err);
             this.stop();
         }
 
@@ -356,7 +365,7 @@
             L.push(M[i]);
 
         if (L.length != this._nodes.length)
-            debugErr("something went wrong, nodes missing");
+            this.debug("NodesEngine: something went wrong, nodes missing");
 
         //save order number in the node
         for (let i in L)
@@ -392,89 +401,90 @@
     getElapsedTime() {
         return this.elapsed_time;
     }
+
 //
-        /**
-         * Sends an event to all the nodes, useful to trigger stuff
-         * @method sendEventToAllNodes
-         * @param {String} eventname the name of the event (function to be called)
-         * @param {Array} params parameters in array format
-         */
-        sendEventToAllNodes(eventname: string, params?: Array<any>) {
-            let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
-            if (!nodes)
-                return;
+    /**
+     * Sends an event to all the nodes, useful to trigger stuff
+     * @method sendEventToAllNodes
+     * @param {String} eventname the name of the event (function to be called)
+     * @param {Array} params parameters in array format
+     */
+    sendEventToAllNodes(eventname: string, params?: Array<any>) {
+        let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
+        if (!nodes)
+            return;
 
-            for (let i = 0; i < nodes.length; ++i) {
-                let node = nodes[i];
-                if (node[eventname]) {
-                    if (params === undefined)
-                        node[eventname]();
-                    else if (params && params.constructor === Array)
-                        node[eventname].apply(this.M[i], params);
-                    else
-                        node[eventname](params);
-                }
+        for (let i = 0; i < nodes.length; ++i) {
+            let node = nodes[i];
+            if (node[eventname]) {
+                if (params === undefined)
+                    node[eventname]();
+                else if (params && params.constructor === Array)
+                    node[eventname].apply(this.M[i], params);
+                else
+                    node[eventname](params);
             }
         }
+    }
 
-        sendActionToCanvas(action: string, params?: Array<any>) {
-            if (!this.list_of_graphcanvas)
-                return;
+    sendActionToCanvas(action: string, params?: Array<any>) {
+        if (!this.list_of_graphcanvas)
+            return;
 
-            for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-                let c = this.list_of_graphcanvas[i];
-                if (c[action])
-                    c[action].apply(c, params);
-            }
+        for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
+            let c = this.list_of_graphcanvas[i];
+            if (c[action])
+                c[action].apply(c, params);
         }
+    }
 
 
-        /**
-         * Adds a new node instasnce to this graph
-         * @method add
-         * @param {Node} node the instance of the node
+    /**
+     * Adds a new node instasnce to this graph
+     * @method add
+     * @param {Node} node the instance of the node
+     */
+    add(node: Node, skip_compute_order?: boolean) {
+        if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
+            return; //already added
+
+        if (this._nodes.length >= Nodes.MAX_NUMBER_OF_NODES)
+            throw("Nodes: max number of nodes in a graph reached");
+
+        //give him an id
+        if (node.id == null || node.id == -1)
+            node.id = this.last_node_id++;
+
+        node.graph = this;
+
+        this._nodes.push(node);
+        this._nodes_by_id[node.id] = node;
+
+        /*
+         // rendering stuf...
+         if(node.bgImageUrl)
+         node.bgImage = node.loadImage(node.bgImageUrl);
          */
-        add(node: Node, skip_compute_order?: boolean) {
-            if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
-                return; //already added
 
-            if (this._nodes.length >= Nodes.MAX_NUMBER_OF_NODES)
-                throw("Nodes: max number of nodes in a graph reached");
+        if (node.onAdded)
+            node.onAdded();
 
-            //give him an id
-            if (node.id == null || node.id == -1)
-                node.id = this.last_node_id++;
+        if (this.config.align_to_grid)
+            node.alignToGrid();
 
-            node.graph = this;
+        if (!skip_compute_order)
+            this.updateExecutionOrder();
 
-            this._nodes.push(node);
-            this._nodes_by_id[node.id] = node;
-
-            /*
-             // rendering stuf...
-             if(node.bgImageUrl)
-             node.bgImage = node.loadImage(node.bgImageUrl);
-             */
-
-            if (node.onAdded)
-                node.onAdded();
-
-            if (this.config.align_to_grid)
-                node.alignToGrid();
-
-            if (!skip_compute_order)
-                this.updateExecutionOrder();
-
-            if (this.onNodeAdded)
-                this.onNodeAdded(node);
+        if (this.onNodeAdded)
+            this.onNodeAdded(node);
 
 
-            this.setDirtyCanvas(true);
+        this.setDirtyCanvas(true);
 
-            this.change();
+        this.change();
 
-            return node; //to chain actions
-        }
+        return node; //to chain actions
+    }
 
 //
 //     /**
@@ -549,6 +559,7 @@
         if (id == null) return null;
         return this._nodes_by_id[id];
     }
+
 //
 //     /**
 //      * Returns a list of nodes that matches a class
@@ -799,12 +810,13 @@
 //             nodes[i].setTrigger(func);
 //     }
 //
-    connectionChange(node:Node) {
+    connectionChange(node: Node) {
         this.updateExecutionOrder();
         if (this.onConnectionChange)
             this.onConnectionChange(node);
         this.sendActionToCanvas("onConnectionChange");
     }
+
 //
 //     /**
 //      * returns if the graph is in live mode
@@ -822,18 +834,19 @@
 //         return false;
 //     }
 //
-        /* Called when something visually changed */
-        change() {
-            this.sendActionToCanvas("setDirty", [true, true]);
+    /* Called when something visually changed */
+    change() {
+        this.sendActionToCanvas("setDirty", [true, true]);
 
-            if (this.on_change)
-                this.on_change(this);
-        }
+        if (this.on_change)
+            this.on_change(this);
+    }
 
 
-    setDirtyCanvas(fg?:boolean, bg?:boolean) {
+    setDirtyCanvas(fg?: boolean, bg?: boolean) {
         this.sendActionToCanvas("setDirty", [fg, bg]);
     }
+
 //
 //     /**
 //      * Creates a Object containing all the info about this graph, it can be serialized
@@ -903,9 +916,8 @@
 //         this.setDirtyCanvas(true, true);
 //         return error;
 //     }
-    }
+}
 
 
 
 
-// }

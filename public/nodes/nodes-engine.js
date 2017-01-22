@@ -10,14 +10,16 @@
     }
 })(function (require, exports) {
     "use strict";
-    // export namespace MyNodes {
-    let debug = require('debug')('nodes-engine:     ');
-    let debugLog = require('debug')('nodes-engine:log  ');
-    let debugMes = require('debug')('modes-engine:mes  ');
-    let debugErr = require('debug')('nodes-engine:error');
-    const nodeDebug = require('debug')('nodes:     ');
-    const nodeDebugErr = require('debug')('nodes:error');
-    let config = require('./../../config');
+    //todo
+    // if (!(<any>window)) {
+    //     let debug = require('debug')('nodes-engine:     ');
+    //     let debugLog = require('debug')('nodes-engine:log  ');
+    //     let debugMes = require('debug')('modes-engine:mes  ');
+    //     let debugErr = require('debug')('nodes-engine:error');
+    //     const nodeDebug = require('debug')('nodes:     ');
+    //     const nodeDebugErr = require('debug')('nodes:error');
+    //     let config = require('./../../config');
+    // }
     const nodes_1 = require("./nodes");
     // start: function () {
     // 	this._started = true;
@@ -61,15 +63,22 @@
          * @constructor
          */
         constructor() {
-            this.debug = config.nodesEngine.debugEngine;
-            if (this.debug)
-                debug("Nodes engine created");
+            //todo
+            // this.debug = config.nodesEngine.debugEngine;
+            // if (this.debug)
+            //     debug("Nodes engine created");
             this.list_of_graphcanvas = null;
             this.clear();
         }
         //used to know which types of connections support this graph (some graphs do not allow certain types)
         getSupportedTypes() {
             return this.supported_types || NodesEngine.supported_types;
+        }
+        debug(mess) {
+            console.log(mess);
+        }
+        debugErr(mess) {
+            console.log(mess);
         }
         /**
          * Removes all nodes from this graph
@@ -199,7 +208,7 @@
                 this.errors_in_execution = true;
                 if (nodes_1.Nodes.throw_errors)
                     throw err;
-                debugErr("Error during execution: " + err);
+                this.debugErr("NodesEngine: Error during execution: " + err);
                 this.stop();
             }
             let elapsed = nodes_1.Nodes.getTime() - start;
@@ -277,7 +286,7 @@
             for (let i in M)
                 L.push(M[i]);
             if (L.length != this._nodes.length)
-                debugErr("something went wrong, nodes missing");
+                this.debug("NodesEngine: something went wrong, nodes missing");
             //save order number in the node
             for (let i in L)
                 L[i].order = i;
@@ -732,5 +741,4 @@
     }
     exports.NodesEngine = NodesEngine;
 });
-// } 
 //# sourceMappingURL=nodes-engine.js.map
