@@ -35,6 +35,10 @@
     class Constant extends nodes_1.Node {
         constructor() {
             super();
+            this.onDrawBackground = function (ctx) {
+                //show the current value
+                this.outputs[0].label = this.properties["value"].toFixed(3);
+            };
             this.title = "Const";
             this.desc = "Constant value";
             this.addOutput("value", "number");
@@ -48,10 +52,6 @@
         }
         onExecute() {
             this.setOutputData(0, parseFloat(this.properties["value"]));
-        }
-        onDrawBackground(ctx) {
-            //show the current value
-            this.outputs[0].label = this.properties["value"].toFixed(3);
         }
         onWidget(e, widget) {
             if (widget.name == "value")

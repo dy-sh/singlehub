@@ -25,283 +25,271 @@
  * @constructor
  */
 
-    //todo export enum SUPPORTED_TYPES{
-    //     number,
-    //     string,
-    //     boolean
-    // }
 
-export const Nodes: any = {
+export class NodesOptions{
+    MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
+    DEFAULT_POSITION = [100, 100]; //default node position
+    START_POS = 50;
+    FREE_SPACE_UNDER = 30;
 
-        MAIN_PANEL_ID: "Main",
+    NODE_TITLE_HEIGHT = 16;
+    NODE_SLOT_HEIGHT = 15;
+    NODE_WIDTH = 150;
+    NODE_MIN_WIDTH = 50;
+    NODE_COLLAPSED_RADIUS = 10;
+    NODE_COLLAPSED_WIDTH = 150;
+    CANVAS_GRID_SIZE = 10;
+    NODE_TITLE_COLOR = "#222";
+    NODE_DEFAULT_COLOR = "#777";
+    NODE_DEFAULT_BGCOLOR = "#373737";
+    PANEL_NODE_COLOR = "#777";
+    PANEL_NODE_BGCOLOR = "#373737";
+    IO_NODE_COLOR = "#777";
+    IO_NODE_BGCOLOR = "#373737";
+    NODE_DEFAULT_IO_COLOR = "#999";
+    NODE_OPTIONAL_IO_COLOR = "#777";
+    NODE_DEFAULT_BOXCOLOR= "#373737";
+    NODE_ACTIVE_BOXCOLOR = "#AEF";
+    NODE_DEFAULT_SHAPE = "box";
+    TITLE_TEXT_FONT = "bold 13px Arial";
+    INNER_TEXT_FONT = "normal 12px Arial";
+    SHADOWS_WIDTH = 2;
+    MENU_TEXT_COLOR = "#BBD";
+    MENU_BG_COLOR = "#353535";
+    BG_IMAGE = "/images/litegraph/grid.png";
+    node_images_path = "";
 
-        NODE_TITLE_HEIGHT: 16,
-        NODE_SLOT_HEIGHT: 15,
-        //derwish edit
-        NODE_WIDTH: 150,
-        NODE_MIN_WIDTH: 50,
-        NODE_COLLAPSED_RADIUS: 10,
-        //derwish edit
-        NODE_COLLAPSED_WIDTH: 150,
-        CANVAS_GRID_SIZE: 10,
-        NODE_TITLE_COLOR: "#222",
+    RENDER_CONNECTION_ARROWS = true;
+    CONNECTIONS_WIDTH = 4;
+    CONNECTIONS_SHADOW = 4;
 
-        NODE_DEFAULT_COLOR: "#777",
-        NODE_DEFAULT_BGCOLOR: "#373737",
-
-        PANEL_NODE_COLOR: "#777",
-        PANEL_NODE_BGCOLOR: "#373737",
-
-        IO_NODE_COLOR: "#777",
-        IO_NODE_BGCOLOR: "#373737",
-
-        NODE_DEFAULT_IO_COLOR: "#999",
-        NODE_OPTIONAL_IO_COLOR: "#777",
-        // NODE_DEFAULT_BOXCOLOR: "#373737",
-        NODE_ACTIVE_BOXCOLOR: "#AEF",
-        NODE_DEFAULT_SHAPE: "box",
-        TITLE_TEXT_FONT: "bold 13px Arial",
-        INNER_TEXT_FONT: "normal 12px Arial",
-        SHADOWS_WIDTH: 2,
-        MENU_TEXT_COLOR: "#BBD",
-        MENU_BG_COLOR: "#353535",
-        BG_IMAGE: "/images/litegraph/grid.png",
-        MAX_NUMBER_OF_NODES: 1000, //avoid infinite loops
-        DEFAULT_POSITION: [100, 100], //default node position
-        START_POS: 50,
-        FREE_SPACE_UNDER: 30,
-        node_images_path: "",
-
-        RENDER_CONNECTION_ARROWS: true,
-        CONNECTIONS_WIDTH: 4,
-        CONNECTIONS_SHADOW: 4,
-
-        SELECTION_COLOR: "#FFF",
-        SELECTION_WIDTH: 2,
-
-        DataType: {
-            Text: 0,
-            Number: 1,
-            Logical: 2
-        },
-
-        DataTypeColor: {
-            0: "#AAA",
-            1: "#AAA",
-            2: "#AAA"
-        },
-        NEW_LINK_COLOR: "#CCC",
-
-        proxy: null, //used to redirect calls
-
-
-        throw_errors: true,
-        registered_node_types: {},
-        Nodes: {},
-
-
-        //   debug: config.nodesEngine.debugEngine,
-
-        /**
-         * Register a node class so it can be listed when the user wants to create a new one
-         * @method registerNodeType
-         * @param {String} type name of the node and path
-         * @param {Class} base_class class containing the structure of a node
-         */
-
-        debug: function (mess) {
-            console.log(mess)
-        },
-        debugErr: function (mess) {
-            console.log(mess)
-        },
-
-        registerNodeType: function (type, base_class) {
-            if (!base_class.prototype)
-                throw("Cannot register a simple object, it must be a class with a prototype");
-            base_class.type = type;
-
-            this.debug("Node registered: " + type);
-
-            let categories = type.split("/");
-
-            let pos = type.lastIndexOf("/");
-            base_class.category = type.substr(0, pos);
-            //info.name = name.substr(pos+1,name.length - pos);
-
-            //extend class
-            if (base_class.prototype) //is a class
-                for (let i in Node.prototype)
-                    if (!base_class.prototype[i])
-                        base_class.prototype[i] = Node.prototype[i];
-
-            this.registered_node_types[type] = base_class;
-            if (base_class.constructor.name)
-                this.Nodes[base_class.constructor.name] = base_class;
-        },
-
-        /**
-         * Adds this method to all nodetypes, existing and to be created
-         * (You can add it to LGraphNode.prototype but then existing node types wont have it)
-         * @method addNodeMethod
-         * @param {Function} func
-         */
-        addNodeMethod: function (name, func) {
-            Node.prototype[name] = func;
-            for (let i in this.registered_node_types)
-                this.registered_node_types[i].prototype[name] = func;
-        },
-
-        /**
-         * Create a node of a given type with a name. The node is not attached to any graph yet.
-         * @method createNode
-         * @param {String} type full name of the node class. p.e. "math/sin"
-         * @param {String} name a name to distinguish from other nodes
-         * @param {Object} options to set options
-         */
-
-        createNode: function (type: string, title: string, options: any): Node {
-            let base_class = this.registered_node_types[type];
-            if (!base_class) {
-                this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
-                return null;
-            }
-
-            let prototype = base_class.prototype || base_class;
-
-            title = title || base_class.title || type;
-
-            let node = new base_class(title);
-
-            node.type = type;
-            if (!node.title) node.title = title;
-            if (!node.properties) node.properties = {};
-            if (!node.flags) node.flags = {};
-            if (!node.size) node.size = node.computeSize();
-            if (!node.pos) node.pos = Nodes.DEFAULT_POSITION.concat();
-
-            //extra options
-            if (options) {
-                for (let i in options)
-                    node[i] = options[i];
-            }
-
-            node.id = this.guid();
-
-            return node;
-        },
-
-        /**
-         * Returns a registered node type with a given name
-         * @method getNodeType
-         * @param {String} type full name of the node class. p.e. "math/sin"
-         * @return {Class} the node class
-         */
-
-        getNodeType: function (type) {
-            return this.registered_node_types[type];
-        },
-
-
-        /**
-         * Returns a list of node types matching one category
-         * @method getNodeType
-         * @param {String} category category name
-         * @return {Array} array with all the node classes
-         */
-
-        getNodeTypesInCategory: function (category) {
-            let r = [];
-            for (let i in this.registered_node_types)
-                if (category == "") {
-                    if (this.registered_node_types[i].category == null)
-                        r.push(this.registered_node_types[i]);
-                }
-                else if (this.registered_node_types[i].category == category)
-                    r.push(this.registered_node_types[i]);
-
-            return r;
-        },
-
-        /**
-         * Returns a list with all the node type categories
-         * @method getNodeTypesCategories
-         * @return {Array} array with all the names of the categories
-         */
-
-        getNodeTypesCategories: function () {
-            let categories = {"": 1};
-            for (let i in this.registered_node_types)
-                if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
-                    categories[this.registered_node_types[i].category] = 1;
-            let result = [];
-            for (let i in categories)
-                result.push(i);
-            return result;
-        },
-
-        //debug purposes: reloads all the js scripts that matches a wilcard
-        reloadNodes: function (folder_wildcard) {
-            let tmp = document.getElementsByTagName("script");
-            //weird, this array changes by its own, so we use a copy
-            let script_files = [];
-            for (let i in tmp)
-                script_files.push(tmp[i]);
-
-
-            let docHeadObj = document.getElementsByTagName("head")[0];
-            folder_wildcard = document.location.href + folder_wildcard;
-
-            for (let i in script_files) {
-                let src = script_files[i].src;
-                if (!src || src.substr(0, folder_wildcard.length) != folder_wildcard)
-                    continue;
-
-                try {
-                    this.debug("Reloading: " + src);
-                    let dynamicScript = document.createElement("script");
-                    dynamicScript.type = "text/javascript";
-                    dynamicScript.src = src;
-                    docHeadObj.appendChild(dynamicScript);
-                    docHeadObj.removeChild(script_files[i]);
-                }
-                catch (err) {
-                    if (Nodes.throw_errors)
-                        throw err;
-                    this.debugErr("Error while reloading " + src);
-                }
-            }
-
-            this.debug("Nodes reloaded");
-        },
-
-        //separated just to improve if it doesnt work
-        cloneObject: function (obj, target) {
-            if (obj == null) return null;
-            let r = JSON.parse(JSON.stringify(obj));
-            if (!target) return r;
-
-            for (let i in r)
-                target[i] = r[i];
-            return target;
-        },
-
-        getTime: function () {
-            return (typeof(performance) != "undefined") ? performance.now() : Date.now();
-        },
-
-
-        guid() {
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            }
-
-            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                s4() + '-' + s4() + s4() + s4();
-        }
+    SELECTION_COLOR = "#FFF";
+    SELECTION_WIDTH = 2;
+    DataTypeColor = {
+        0: "#AAA",
+        1: "#AAA",
+        2: "#AAA"
     };
+    NEW_LINK_COLOR = "#CCC";
+}
+
+export class Nodes {
+   static options=new NodesOptions;
+
+
+    static MAIN_PANEL_ID= "Main";
+
+
+    static DataType= {
+        Text: 0,
+        Number: 1,
+        Logical: 2
+    };
+
+
+    static proxy= null; //used to redirect calls
+
+
+    static throw_errors= true;
+    static registered_node_types= {};
+    static Nodes= {};
+
+
+    //   debug: config.nodesEngine.debugEngine,
+
+    /**
+     * Register a node class so it can be listed when the user wants to create a new one
+     * @method registerNodeType
+     * @param {String} type name of the node and path
+     * @param {Class} base_class class containing the structure of a node
+     */
+
+    static debug (mess) {
+        console.log(mess)
+    };
+    static debugErr (mess) {
+        console.log(mess)
+    };
+
+    static registerNodeType (type, base_class) {
+        if (!base_class.prototype)
+            throw("Cannot register a simple object, it must be a class with a prototype");
+        base_class.type = type;
+
+        this.debug("Node registered: " + type);
+
+        let categories = type.split("/");
+
+        let pos = type.lastIndexOf("/");
+        base_class.category = type.substr(0, pos);
+        //info.name = name.substr(pos+1,name.length - pos);
+
+        //extend class
+        if (base_class.prototype) //is a class
+            for (let i in Node.prototype)
+                if (!base_class.prototype[i])
+                    base_class.prototype[i] = Node.prototype[i];
+
+        this.registered_node_types[type] = base_class;
+        if (base_class.constructor.name)
+            this.Nodes[base_class.constructor.name] = base_class;
+    };
+
+    /**
+     * Adds this method to all nodetypes, existing and to be created
+     * (You can add it to LGraphNode.prototype but then existing node types wont have it)
+     * @method addNodeMethod
+     * @param {Function} func
+     */
+    static addNodeMethod (name, func) {
+        Node.prototype[name] = func;
+        for (let i in this.registered_node_types)
+            this.registered_node_types[i].prototype[name] = func;
+    };
+
+    /**
+     * Create a node of a given type with a name. The node is not attached to any graph yet.
+     * @method createNode
+     * @param {String} type full name of the node class. p.e. "math/sin"
+     * @param {String} name a name to distinguish from other nodes
+     * @param {Object} options to set options
+     */
+
+    static createNode (type: string, title?: string, options?: any): Node {
+        let base_class = this.registered_node_types[type];
+        if (!base_class) {
+            this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
+            return null;
+        }
+
+        let prototype = base_class.prototype || base_class;
+
+        title = title || base_class.title || type;
+
+        let node = new base_class(title);
+        node.nodes=this;
+
+        node.type = type;
+        if (!node.title) node.title = title;
+        if (!node.properties) node.properties = {};
+        if (!node.flags) node.flags = {};
+      //  if (!node.size) node.size = [this.NODE_WIDTH, 60];
+        if (!node.size) node.size = node.computeSize();
+        if (!node.pos) node.pos = this.options.DEFAULT_POSITION.concat();
+
+        //extra options
+        if (options) {
+            for (let i in options)
+                node[i] = options[i];
+        }
+
+        node.id = this.guid();
+
+        return node;
+    };
+
+    /**
+     * Returns a registered node type with a given name
+     * @method getNodeType
+     * @param {String} type full name of the node class. p.e. "math/sin"
+     * @return {Class} the node class
+     */
+
+    static getNodeType (type) {
+        return this.registered_node_types[type];
+    };
+
+
+    /**
+     * Returns a list of node types matching one category
+     * @method getNodeType
+     * @param {String} category category name
+     * @return {Array} array with all the node classes
+     */
+
+    static getNodeTypesInCategory (category) {
+        let r = [];
+        for (let i in this.registered_node_types)
+            if (category == "") {
+                if (this.registered_node_types[i].category == null)
+                    r.push(this.registered_node_types[i]);
+            }
+            else if (this.registered_node_types[i].category == category)
+                r.push(this.registered_node_types[i]);
+
+        return r;
+    };
+
+    /**
+     * Returns a list with all the node type categories
+     * @method getNodeTypesCategories
+     * @return {Array} array with all the names of the categories
+     */
+
+    static getNodeTypesCategories () {
+        let categories = {"": 1};
+        for (let i in this.registered_node_types)
+            if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
+                categories[this.registered_node_types[i].category] = 1;
+        let result = [];
+        for (let i in categories)
+            result.push(i);
+        return result;
+    };
+
+    //debug purposes: reloads all the js scripts that matches a wilcard
+    static reloadNodes (folder_wildcard) {
+        let tmp = document.getElementsByTagName("script");
+        //weird, this array changes by its own, so we use a copy
+        let script_files = [];
+        for (let i in tmp)
+            script_files.push(tmp[i]);
+
+
+        let docHeadObj = document.getElementsByTagName("head")[0];
+        folder_wildcard = document.location.href + folder_wildcard;
+
+        for (let i in script_files) {
+            let src = script_files[i].src;
+            if (!src || src.substr(0, folder_wildcard.length) != folder_wildcard)
+                continue;
+
+            try {
+                this.debug("Reloading: " + src);
+                let dynamicScript = document.createElement("script");
+                dynamicScript.type = "text/javascript";
+                dynamicScript.src = src;
+                docHeadObj.appendChild(dynamicScript);
+                docHeadObj.removeChild(script_files[i]);
+            }
+            catch (err) {
+                if (this.throw_errors)
+                    throw err;
+                this.debugErr("Error while reloading " + src);
+            }
+        }
+
+        this.debug("Nodes reloaded");
+    };
+
+
+
+    static getTime () {
+        return (typeof(performance) != "undefined") ? performance.now() : Date.now();
+    };
+
+
+    static guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+    }
+};
 
 
 // *************************************************************
@@ -349,6 +337,7 @@ export const Nodes: any = {
 
 export class Node {
 
+    panel_id:string;
     title: string;
     desc: string;
     size: [number, number];
@@ -385,13 +374,11 @@ export class Node {
     shape: any;
     onSerialize: any;
 
-    pos:[number, number]=[10, 10];
-
+    pos: [number, number] = [10, 10];
 
 
     constructor(title: string = "Unnamed") {
         this.title = title;
-        this.size = [Nodes.NODE_WIDTH, 60];
         this.id = -1; //not know till not added
     }
 
@@ -402,6 +389,16 @@ export class Node {
     debugErr(mess) {
         console.log(mess)
     }
+
+    cloneObject (obj, target?) {
+        if (obj == null) return null;
+        let r = JSON.parse(JSON.stringify(obj));
+        if (!target) return r;
+
+        for (let i in r)
+            target[i] = r[i];
+        return target;
+    };
 
 //
 //     /**
@@ -475,18 +472,18 @@ export class Node {
             pos: this.pos,
             size: this.size,
             data: this.data,
-            flags: Nodes.cloneObject(this.flags),
+            lags: this.cloneObject(this.flags),
             inputs: this.inputs,
             outputs: this.outputs,
-            properties:null,
-            color:null,
-            bgcolor:null,
-            boxcolor:null,
-            shape:null
+            properties: null,
+            color: null,
+            bgcolor: null,
+            boxcolor: null,
+            shape: null
         };
 
         if (this.properties)
-            o.properties = Nodes.cloneObject(this.properties);
+            o.properties = this.cloneObject(this.properties);
 
         //todo ES6
         // if (!o.type)
@@ -506,6 +503,7 @@ export class Node {
 
         return o;
     }
+
 //
 // 	/* Creates a clone of this node */
 //     clone() {
@@ -811,7 +809,7 @@ export class Node {
             }
 
         size[0] = Math.max(input_width + output_width + 10, title_width);
-        size[0] = Math.max(size[0], Nodes.NODE_WIDTH);
+        //todo ES5 size[0] = Math.max(size[0], Nodes.NODE_WIDTH);
 
         function compute_text_size(text) {
             if (!text)
@@ -829,9 +827,8 @@ export class Node {
      * @return {Float32Array[4]} the total size
      */
     getBounding() {
-        return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.NODE_TITLE_HEIGHT]);
+        return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT]);
     }
-
 
 
     isInsideRectangle(x, y, left, top, width, height) {
@@ -854,7 +851,7 @@ export class Node {
         let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
         if (this.flags.collapsed) {
             //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
-            if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.NODE_TITLE_HEIGHT - margin, Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.NODE_TITLE_HEIGHT + 2 * margin))
+            if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT - margin, Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))
                 return true;
         }
         else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
@@ -862,6 +859,7 @@ export class Node {
             return true;
         return false;
     }
+
     //
     // /**
     //  * checks if a point is inside a node slot, and returns info about which slot
@@ -1148,9 +1146,9 @@ export class Node {
     getConnectionPos(is_input, slot_number) {
         if (this.flags.collapsed) {
             if (is_input)
-                return [this.pos[0], this.pos[1] - Nodes.NODE_TITLE_HEIGHT * 0.5];
+                return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
             else
-                return [this.pos[0] + Nodes.NODE_COLLAPSED_WIDTH, this.pos[1] - Nodes.NODE_TITLE_HEIGHT * 0.5];
+                return [this.pos[0] + Nodes.options.NODE_COLLAPSED_WIDTH, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
             //return [this.pos[0] + this.size[0] * 0.5, this.pos[1] + this.size[1] * 0.5];
         }
 
@@ -1164,16 +1162,16 @@ export class Node {
             return [this.pos[0] + this.outputs[slot_number].pos[0], this.pos[1] + this.outputs[slot_number].pos[1]];
 
         if (!is_input) //output
-            return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * Nodes.NODE_SLOT_HEIGHT];
-        return [this.pos[0], this.pos[1] + 10 + slot_number * Nodes.NODE_SLOT_HEIGHT];
+            return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
+        return [this.pos[0], this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
     }
 
 //connections
 
     /* Force align to grid */
     alignToGrid() {
-        this.pos[0] = Nodes.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.CANVAS_GRID_SIZE);
-        this.pos[1] = Nodes.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.CANVAS_GRID_SIZE);
+        this.pos[0] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.options.CANVAS_GRID_SIZE);
+        this.pos[1] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.options.CANVAS_GRID_SIZE);
     }
 
 //

@@ -1,5 +1,5 @@
-import {Nodes as LiteGraph,Node} from "../../nodes/nodes"
-import {NodesEngine as LGraph} from "../../nodes/nodes-engine"
+import {Nodes,Node} from "../../nodes/nodes"
+import {NodesEngine} from "../../nodes/nodes-engine"
 import {LGraphCanvas} from "./litegraph-canvas"
 import {NodeEditorSocket} from "./node-editor-socket";
 
@@ -7,9 +7,10 @@ import {NodeEditorSocket} from "./node-editor-socket";
 
 export class Editor {
 	private root: HTMLDivElement;
-	graph: LGraph;
+	graph: NodesEngine;
 	graphcanvas: LGraphCanvas;
 	socket: NodeEditorSocket;
+	//nodes: Nodes;
 
 	constructor(container_id, options?) {
 		//fill container
@@ -22,14 +23,19 @@ export class Editor {
 
 		let canvas = root.querySelector(".graphcanvas");
 
-		//create graph
-		let graph = this.graph = new LGraph();
-		let graphcanvas = this.graphcanvas = new LGraphCanvas(canvas, graph);
-	   // graphcanvas.background_image = "/images/litegraph/grid.png";
-		graph.onAfterExecute = function () { graphcanvas.draw(true) };
+		//create nodes
+		//this.nodes=new Nodes();
 
 		//create socket
 		this.socket = new NodeEditorSocket();
+
+		//create graph
+		let graph = this.graph = new NodesEngine();
+		let graphcanvas = this.graphcanvas = new LGraphCanvas(canvas, this.socket,graph);
+	   // graphcanvas.background_image = "/images/litegraph/grid.png";
+		graph.onAfterExecute = function () { graphcanvas.draw(true) };
+
+
 
 
 
@@ -58,7 +64,7 @@ export class Editor {
 		miniwindow.innerHTML = "<canvas class='graphcanvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
 		let canvas = miniwindow.querySelector("canvas");
 
-		let graphcanvas = new LGraphCanvas(canvas, this.graph);
+		let graphcanvas = new LGraphCanvas(canvas, this.socket,this.graph);
 		//  graphcanvas.background_image = "images/litegraph/grid.png";
 		//derwish edit
 		graphcanvas.scale = 0.1;

@@ -67,8 +67,11 @@
             // this.debug = config.nodesEngine.debugEngine;
             // if (this.debug)
             //     debug("Nodes engine created");
-            //default supported types
             this.supported_types = ["number", "string", "boolean"];
+            this._nodes_by_id = {};
+            this.links = {};
+            this.global_inputs = {};
+            this.global_outputs = {};
             this.list_of_graphcanvas = null;
             this.clear();
         }
@@ -350,7 +353,7 @@
         add(node, skip_compute_order) {
             if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
                 return; //already added
-            if (this._nodes.length >= nodes_1.Nodes.MAX_NUMBER_OF_NODES)
+            if (this._nodes.length >= nodes_1.Nodes.options.MAX_NUMBER_OF_NODES)
                 throw ("Nodes: max number of nodes in a graph reached");
             //give him an id
             if (node.id == null || node.id == -1)
@@ -715,6 +718,7 @@
             this.sendActionToCanvas("setDirty", [fg, bg]);
         }
     }
+    NodesEngine.NodesEngine = 2;
     exports.NodesEngine = NodesEngine;
 });
 //# sourceMappingURL=nodes-engine.js.map

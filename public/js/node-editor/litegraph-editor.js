@@ -11,6 +11,7 @@
     const litegraph_canvas_1 = require("./litegraph-canvas");
     const node_editor_socket_1 = require("./node-editor-socket");
     class Editor {
+        //nodes: Nodes;
         constructor(container_id, options) {
             //fill container
             let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
@@ -19,13 +20,15 @@
             root.className = "litegraph-editor";
             root.innerHTML = html;
             let canvas = root.querySelector(".graphcanvas");
-            //create graph
-            let graph = this.graph = new nodes_engine_1.NodesEngine();
-            let graphcanvas = this.graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, graph);
-            // graphcanvas.background_image = "/images/litegraph/grid.png";
-            graph.onAfterExecute = function () { graphcanvas.draw(true); };
+            //create nodes
+            //this.nodes=new Nodes();
             //create socket
             this.socket = new node_editor_socket_1.NodeEditorSocket();
+            //create graph
+            let graph = this.graph = new nodes_engine_1.NodesEngine();
+            let graphcanvas = this.graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.socket, graph);
+            // graphcanvas.background_image = "/images/litegraph/grid.png";
+            graph.onAfterExecute = function () { graphcanvas.draw(true); };
             //add stuff
             this.addMiniWindow(200, 200);
             //append to DOM
@@ -43,7 +46,7 @@
             miniwindow.className = "litegraph miniwindow";
             miniwindow.innerHTML = "<canvas class='graphcanvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
             let canvas = miniwindow.querySelector("canvas");
-            let graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.graph);
+            let graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.socket, this.graph);
             //  graphcanvas.background_image = "images/litegraph/grid.png";
             //derwish edit
             graphcanvas.scale = 0.1;

@@ -20,7 +20,7 @@
         * @param {HTMLCanvas} canvas the canvas where you want to render (it accepts a selector in string format or the canvas itself)
         * @param {LGraph} graph [optional]
         */
-        constructor(canvas, graph, skip_render) {
+        constructor(canvas, socket, graph, skip_render) {
             //if(graph === undefined)
             //	throw ("No graph assigned");
             this.link_type_colors = { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
@@ -33,6 +33,7 @@
             };
             if (canvas && canvas.constructor === String)
                 canvas = document.querySelector(canvas);
+            this.socket = socket;
             //derwish edit
             this.max_zoom = 2;
             this.min_zoom = 0.1;
@@ -66,7 +67,7 @@
             this.editor_alpha = 1; //used for transition
             this.pause_rendering = false;
             this.render_shadows = true;
-            this.shadows_width = nodes_1.Nodes.SHADOWS_WIDTH;
+            this.shadows_width = nodes_1.Nodes.options.SHADOWS_WIDTH;
             this.clear_background = true;
             this.render_only_selected = true;
             this.live_mode = false;
@@ -79,14 +80,14 @@
             this.node_in_panel = null;
             this.last_mouse = [0, 0];
             this.last_mouseclick = 0;
-            this.title_text_font = nodes_1.Nodes.TITLE_TEXT_FONT;
-            this.inner_text_font = nodes_1.Nodes.INNER_TEXT_FONT;
+            this.title_text_font = nodes_1.Nodes.options.TITLE_TEXT_FONT;
+            this.inner_text_font = nodes_1.Nodes.options.INNER_TEXT_FONT;
             this.render_connections_shadows = false; //too much cpu
             this.render_connections_border = true;
             this.render_curved_connections = true;
-            this.render_connection_arrows = nodes_1.Nodes.RENDER_CONNECTION_ARROWS;
-            this.connections_width = nodes_1.Nodes.CONNECTIONS_WIDTH;
-            this.connections_shadow = nodes_1.Nodes.CONNECTIONS_SHADOW;
+            this.render_connection_arrows = nodes_1.Nodes.options.RENDER_CONNECTION_ARROWS;
+            this.connections_width = nodes_1.Nodes.options.CONNECTIONS_WIDTH;
+            this.connections_shadow = nodes_1.Nodes.options.CONNECTIONS_SHADOW;
             if (this.onClear)
                 this.onClear();
             //this.UIinit();
@@ -395,7 +396,7 @@
             let n = this.graph.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
             let skip_dragging = false;
             //derwish added
-            nodes_1.Nodes.closeAllContextualMenus();
+            this.closeAllContextualMenus();
             if (e.which == 1) {
                 if (!e.shiftKey) {
                     //derwish edit
@@ -444,7 +445,7 @@
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         //derwish added
-                                        nodes_1.Nodes.Editor.socket.send_remove_link(this.graph.links[input.link]);
+                                        this.socket.send_remove_link(this.graph.links[input.link]);
                                         skip_action = true;
                                     }
                                 }
@@ -458,7 +459,7 @@
                         }
                     }
                     //Search for corner
-                    if (!skip_action && isInsideRectangle(e.canvasX, e.canvasY, n.pos[0], n.pos[1] - nodes_1.Nodes.NODE_TITLE_HEIGHT, nodes_1.Nodes.NODE_TITLE_HEIGHT, nodes_1.Nodes.NODE_TITLE_HEIGHT)) {
+                    if (!skip_action && isInsideRectangle(e.canvasX, e.canvasY, n.pos[0], n.pos[1] - nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT)) {
                         n.collapse();
                         skip_action = true;
                     }
@@ -611,8 +612,8 @@
                     let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
                     //	if(this.resizing_node.size[1] < max_slots * LiteGraph.NODE_SLOT_HEIGHT + 4)
                     //		this.resizing_node.size[1] = max_slots * LiteGraph.NODE_SLOT_HEIGHT + 4;
-                    if (this.resizing_node.size[0] < nodes_1.Nodes.NODE_MIN_WIDTH)
-                        this.resizing_node.size[0] = nodes_1.Nodes.NODE_MIN_WIDTH;
+                    if (this.resizing_node.size[0] < nodes_1.Nodes.options.NODE_MIN_WIDTH)
+                        this.resizing_node.size[0] = nodes_1.Nodes.options.NODE_MIN_WIDTH;
                     this.canvas.style.cursor = "se-resize";
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
@@ -655,7 +656,7 @@
                             if (slot != -1) {
                                 //derwish added
                                 let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: slot };
-                                nodes_1.Nodes.Editor.socket.send_create_link(link);
+                                this.socket.send_create_link(link);
                             }
                             else {
                                 let input = node.getInputInfo(0);
@@ -665,7 +666,7 @@
                                 //derwish added
                                 if (input != null) {
                                     let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: 0 };
-                                    nodes_1.Nodes.Editor.socket.send_create_link(link);
+                                    this.socket.send_create_link(link);
                                 }
                             }
                         }
@@ -680,7 +681,7 @@
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
                     //derwish added
-                    nodes_1.Nodes.Editor.socket.send_update_node(this.resizing_node);
+                    this.socket.send_update_node(this.resizing_node);
                     this.resizing_node = null;
                 }
                 else if (this.node_dragged) {
@@ -695,7 +696,7 @@
                         //derwish added
                         this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                         this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                        nodes_1.Nodes.Editor.socket.send_update_node(this.selected_nodes[i]);
+                        this.socket.send_update_node(this.selected_nodes[i]);
                     }
                     this.node_dragged = null;
                 }
@@ -1059,7 +1060,7 @@
                 //current connection
                 if (this.connecting_pos != null) {
                     ctx.lineWidth = this.connections_width;
-                    let link_color = nodes_1.Nodes.NEW_LINK_COLOR;
+                    let link_color = nodes_1.Nodes.options.NEW_LINK_COLOR;
                     //this.connecting_output.type == 'node' ? "#F85" : "#AFA";
                     this.renderLink(ctx, this.connecting_pos, [this.canvas_mouse[0], this.canvas_mouse[1]], link_color);
                     ctx.beginPath();
@@ -1121,13 +1122,13 @@
                 ctx.scale(this.scale, this.scale);
                 ctx.translate(this.offset[0], this.offset[1]);
                 //render BG
-                if (nodes_1.Nodes.BG_IMAGE && this.scale > 0.5) {
+                if (nodes_1.Nodes.options.BG_IMAGE && this.scale > 0.5) {
                     ctx.globalAlpha = (1.0 - 0.5 / this.scale) * this.editor_alpha;
                     ctx.imageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
-                    if (!this._bg_img || this._bg_img.name != nodes_1.Nodes.BG_IMAGE) {
+                    if (!this._bg_img || this._bg_img.name != nodes_1.Nodes.options.BG_IMAGE) {
                         this._bg_img = new Image();
-                        this._bg_img.name = nodes_1.Nodes.BG_IMAGE;
-                        this._bg_img.src = nodes_1.Nodes.BG_IMAGE;
+                        this._bg_img.name = nodes_1.Nodes.options.BG_IMAGE;
+                        this._bg_img.src = nodes_1.Nodes.options.BG_IMAGE;
                         let that = this;
                         this._bg_img.onload = function () {
                             that.draw(true, true);
@@ -1180,11 +1181,11 @@
         /* Renders the LGraphNode on the canvas */
         drawNode(node, ctx) {
             let glow = false;
-            let color = node.color || nodes_1.Nodes.NODE_DEFAULT_COLOR;
+            let color = node.color || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
             if (node.type == "Main/Panel")
-                color = nodes_1.Nodes.PANEL_NODE_COLOR;
+                color = nodes_1.Nodes.options.PANEL_NODE_COLOR;
             else if (node.type == "Main/Panel Input" || node.type == "Main/Panel Output")
-                color = nodes_1.Nodes.IO_NODE_COLOR;
+                color = nodes_1.Nodes.options.IO_NODE_COLOR;
             //if (this.selected) color = "#88F";
             let render_title = true;
             if (node.flags.skip_title_render || node.graph.isLive())
@@ -1195,10 +1196,10 @@
             if (node.mouseOver)
                 glow = true;
             if (node.selected) {
-                ctx.shadowColor = nodes_1.Nodes.SELECTION_COLOR;
+                ctx.shadowColor = nodes_1.Nodes.options.SELECTION_COLOR;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 0;
-                ctx.shadowBlur = nodes_1.Nodes.SELECTION_WIDTH;
+                ctx.shadowBlur = nodes_1.Nodes.options.SELECTION_WIDTH;
             }
             else if (this.render_shadows) {
                 ctx.shadowColor = "rgba(0,0,0,0.5)";
@@ -1231,10 +1232,10 @@
             let editor_alpha = this.editor_alpha;
             ctx.globalAlpha = editor_alpha;
             //clip if required (mask)
-            let shape = node.shape || nodes_1.Nodes.NODE_DEFAULT_SHAPE;
+            let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
             let size = new Float32Array(node.size);
             if (node.flags.collapsed) {
-                size[0] = nodes_1.Nodes.NODE_COLLAPSED_WIDTH;
+                size[0] = nodes_1.Nodes.options.NODE_COLLAPSED_WIDTH;
                 size[1] = 0;
             }
             //Start clipping
@@ -1273,7 +1274,7 @@
                         //hide self inputs
                         if (this.connecting_node == node)
                             ctx.globalAlpha = 0.4 * editor_alpha;
-                        ctx.fillStyle = slot.link != null ? "#7F7" : nodes_1.Nodes.DataTypeColor[slot.type];
+                        ctx.fillStyle = slot.link != null ? "#7F7" : nodes_1.Nodes.options.DataTypeColor[slot.type];
                         let pos = node.getConnectionPos(true, i);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
@@ -1287,7 +1288,7 @@
                         if (render_text) {
                             let text = slot.label != null ? slot.label : slot.name;
                             if (text) {
-                                ctx.fillStyle = slot.isOptional ? nodes_1.Nodes.NODE_OPTIONAL_IO_COLOR : nodes_1.Nodes.NODE_DEFAULT_IO_COLOR;
+                                ctx.fillStyle = slot.isOptional ? nodes_1.Nodes.options.NODE_OPTIONAL_IO_COLOR : nodes_1.Nodes.options.NODE_DEFAULT_IO_COLOR;
                                 ctx.fillText(text, pos[0] + 10, pos[1] + 5);
                             }
                         }
@@ -1304,7 +1305,7 @@
                         let pos = node.getConnectionPos(false, i);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
-                        ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : nodes_1.Nodes.DataTypeColor[slot.type];
+                        ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : nodes_1.Nodes.options.DataTypeColor[slot.type];
                         ctx.beginPath();
                         //ctx.rect( node.size[0] - 14,i*14,10,10);
                         if (1 || slot.round)
@@ -1321,7 +1322,7 @@
                         if (render_text) {
                             let text = slot.label != null ? slot.label : slot.name;
                             if (text) {
-                                ctx.fillStyle = nodes_1.Nodes.NODE_DEFAULT_IO_COLOR;
+                                ctx.fillStyle = nodes_1.Nodes.options.NODE_DEFAULT_IO_COLOR;
                                 ctx.fillText(text, pos[0] - 10, pos[1] + 5);
                             }
                         }
@@ -1338,15 +1339,15 @@
         /* Renders the node shape */
         drawNodeShape(node, ctx, size, fgcolor, bgcolor, no_title, selected) {
             //bg rect
-            ctx.strokeStyle = fgcolor || nodes_1.Nodes.NODE_DEFAULT_COLOR;
-            ctx.fillStyle = bgcolor || nodes_1.Nodes.NODE_DEFAULT_BGCOLOR;
+            ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
+            ctx.fillStyle = bgcolor || nodes_1.Nodes.options.NODE_DEFAULT_BGCOLOR;
             if (node.type == "Main/Panel") {
-                ctx.strokeStyle = fgcolor || nodes_1.Nodes.PANEL_NODE_COLOR;
-                ctx.fillStyle = bgcolor || nodes_1.Nodes.PANEL_NODE_BGCOLOR;
+                ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.PANEL_NODE_COLOR;
+                ctx.fillStyle = bgcolor || nodes_1.Nodes.options.PANEL_NODE_BGCOLOR;
             }
             else if (node.type == "Main/Panel Input" || node.type == "Main/Panel Output") {
-                ctx.strokeStyle = fgcolor || nodes_1.Nodes.IO_NODE_COLOR;
-                ctx.fillStyle = bgcolor || nodes_1.Nodes.IO_NODE_BGCOLOR;
+                ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.IO_NODE_COLOR;
+                ctx.fillStyle = bgcolor || nodes_1.Nodes.options.IO_NODE_BGCOLOR;
             }
             /* gradient test
             let grad = ctx.createLinearGradient(0,0,0,node.size[1]);
@@ -1355,9 +1356,9 @@
             grad.addColorStop(1, bgcolor || LiteGraph.NODE_DEFAULT_BGCOLOR);
             ctx.fillStyle = grad;
             //*/
-            let title_height = nodes_1.Nodes.NODE_TITLE_HEIGHT;
+            let title_height = nodes_1.Nodes.options.NODE_TITLE_HEIGHT;
             //render depending on shape
-            let shape = node.shape || nodes_1.Nodes.NODE_DEFAULT_SHAPE;
+            let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
             if (shape == "box") {
                 ctx.beginPath();
                 ctx.rect(0, no_title ? 0 : -title_height, size[0] + 1, no_title ? size[1] : size[1] + title_height);
@@ -1382,7 +1383,7 @@
                 node.onDrawBackground(ctx);
             //title bg
             if (!no_title) {
-                ctx.fillStyle = fgcolor || nodes_1.Nodes.NODE_DEFAULT_COLOR;
+                ctx.fillStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
                 let old_alpha = ctx.globalAlpha;
                 //ctx.globalAlpha = 0.5 * old_alpha;
                 if (shape == "box") {
@@ -1401,7 +1402,7 @@
                     ctx.fill();
                 }
                 //box
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 if (shape == "round" || shape == "circle")
                     ctx.arc(title_height * 0.5, title_height * -0.5, (title_height - 6) * 0.5, 0, Math.PI * 2);
@@ -1413,7 +1414,7 @@
                 ctx.font = this.title_text_font;
                 let title = node.getTitle();
                 if (title && this.scale > 0.5) {
-                    ctx.fillStyle = nodes_1.Nodes.NODE_TITLE_COLOR;
+                    ctx.fillStyle = nodes_1.Nodes.options.NODE_TITLE_COLOR;
                     ctx.fillText(title, 16, 13 - title_height);
                 }
             }
@@ -1421,18 +1422,18 @@
         /* Renders the node when collapsed */
         drawNodeCollapsed(node, ctx, fgcolor, bgcolor) {
             //draw default collapsed shape
-            ctx.strokeStyle = fgcolor || nodes_1.Nodes.NODE_DEFAULT_COLOR;
-            ctx.fillStyle = bgcolor || nodes_1.Nodes.NODE_DEFAULT_BGCOLOR;
-            let collapsed_radius = nodes_1.Nodes.NODE_COLLAPSED_RADIUS;
+            ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
+            ctx.fillStyle = bgcolor || nodes_1.Nodes.options.NODE_DEFAULT_BGCOLOR;
+            let collapsed_radius = nodes_1.Nodes.options.NODE_COLLAPSED_RADIUS;
             //circle shape
-            let shape = node.shape || nodes_1.Nodes.NODE_DEFAULT_SHAPE;
+            let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
             if (shape == "circle") {
                 ctx.beginPath();
                 ctx.roundRect(node.size[0] * 0.5 - collapsed_radius, node.size[1] * 0.5 - collapsed_radius, 2 * collapsed_radius, 2 * collapsed_radius, 5);
                 ctx.fill();
                 ctx.shadowColor = "rgba(0,0,0,0)";
                 ctx.stroke();
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 ctx.roundRect(node.size[0] * 0.5 - collapsed_radius * 0.5, node.size[1] * 0.5 - collapsed_radius * 0.5, collapsed_radius, collapsed_radius, 2);
                 ctx.fill();
@@ -1443,7 +1444,7 @@
                 ctx.fill();
                 ctx.shadowColor = "rgba(0,0,0,0)";
                 ctx.stroke();
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 ctx.roundRect(node.size[0] * 0.5 - collapsed_radius * 0.5, node.size[1] * 0.5 - collapsed_radius * 0.5, collapsed_radius, collapsed_radius, 2);
                 ctx.fill();
@@ -1455,7 +1456,7 @@
                 ctx.fill();
                 ctx.shadowColor = "rgba(0,0,0,0)";
                 ctx.stroke();
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 //ctx.rect(node.size[0] * 0.5 - collapsed_radius*0.5, uiNode.size[1] * 0.5 - collapsed_radius*0.5, collapsed_radius,collapsed_radius);
                 ctx.rect(collapsed_radius * 0.5, collapsed_radius * 0.5, collapsed_radius, collapsed_radius);
@@ -1742,7 +1743,7 @@
             //show menu
             if (!menu_info)
                 return;
-            let menu = nodes_1.Nodes.createContextualMenu(menu_info, options, win);
+            let menu = this.createContextualMenu(menu_info, options, win);
             function inner_option_clicked(v, e) {
                 if (!v)
                     return;
@@ -1774,14 +1775,14 @@
             for (let i in values)
                 if (values[i])
                     entries[i] = { value: values[i], content: values[i], is_menu: true };
-            let menu = nodes_1.Nodes.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
+            let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
             function inner_clicked(v, e) {
                 let category = v.value;
                 let node_types = nodes_1.Nodes.getNodeTypesInCategory(category);
                 let values = [];
                 for (let i in node_types)
                     values.push({ content: node_types[i].title, value: node_types[i].type });
-                nodes_1.Nodes.createContextualMenu(values, { event: e, callback: inner_create, from: menu }, window);
+                this.createContextualMenu(values, { event: e, callback: inner_create, from: menu }, window);
                 return false;
             }
             function inner_create(v, e) {
@@ -1796,7 +1797,7 @@
                     //derwish added
                     if (window.this_panel_id != null)
                         node.panel_id = window.this_panel_id; //this_panel_id initialized from ViewBag
-                    nodes_1.Nodes.Editor.socket.send_create_node(node);
+                    this.editor.socket.send_create_node(node);
                 }
             }
             return false;
@@ -1807,7 +1808,7 @@
             entries[0] = { value: "Panel from file", content: "Panel from file", is_menu: false };
             entries[1] = { value: "Panel from script", content: "Panel from script", is_menu: false };
             entries[2] = { value: "Panel from URL", content: "Panel from URL", is_menu: false };
-            let menu = nodes_1.Nodes.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
+            let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
             function inner_clicked(v, e) {
                 if (v.value == "Panel from file") {
                     let pos = canvas.convertEventToCanvas(first_event);
@@ -1827,7 +1828,7 @@
                     pos[1] = Math.round(pos[1]);
                     this.editor.importPanelFromURL(pos);
                 }
-                nodes_1.Nodes.closeAllContextualMenus();
+                this.closeAllContextualMenus();
                 return false;
             }
             return false;
@@ -1851,7 +1852,7 @@
                         label = entry[2].label;
                     entries.push({ content: label, value: entry });
                 }
-                let menu = nodes_1.Nodes.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
+                let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
             }
             function inner_clicked(v) {
                 if (!node)
@@ -1878,7 +1879,7 @@
                     entries.push({ content: label, value: entry });
                 }
                 if (entries.length) {
-                    let menu = nodes_1.Nodes.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
+                    let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
                 }
             }
             function inner_clicked(v) {
@@ -1889,7 +1890,7 @@
                     let entries = [];
                     for (let i in value)
                         entries.push({ content: i, value: value[i] });
-                    nodes_1.Nodes.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
+                    this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
                     return false;
                 }
                 else
@@ -1911,7 +1912,7 @@
                 let value = { value: i, content: "<span style='display: block; color:" + color.color + "; background-color:" + color.bgcolor + "'>" + i + "</span>" };
                 values.push(value);
             }
-            nodes_1.Nodes.createContextualMenu(values, { event: e, callback: inner_clicked, from: prev_menu });
+            this.createContextualMenu(values, { event: e, callback: inner_clicked, from: prev_menu });
             function inner_clicked(v) {
                 if (!node)
                     return;
@@ -1925,7 +1926,7 @@
             return false;
         }
         onMenuNodeShapes(node, e) {
-            nodes_1.Nodes.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
+            this.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
             function inner_clicked(v) {
                 if (!node)
                     return;
@@ -1937,9 +1938,9 @@
         onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
             //if (node.removable == false) return;
             if (node.id in canvas.selected_nodes)
-                nodes_1.Nodes.Editor.socket.send_remove_nodes(canvas.selected_nodes);
+                this.socket.send_remove_nodes(canvas.selected_nodes);
             else
-                nodes_1.Nodes.Editor.socket.send_remove_node(node);
+                this.socket.send_remove_node(node);
             //derwish remove
             //node.graph.remove(uiNode);
             //node.setDirtyCanvas(true, true);
@@ -1954,7 +1955,164 @@
             //node.graph.add(newnode);
             //node.setDirtyCanvas(true, true);
             //derwish added
-            nodes_1.Nodes.Editor.socket.send_clone_node(node);
+            this.socket.send_clone_node(node);
+        }
+        createContextualMenu(values, options, ref_window) {
+            options = options || {};
+            this.options = options;
+            //allows to create graph canvas in separate window
+            ref_window = ref_window || window;
+            if (!options.from)
+                this.closeAllContextualMenus();
+            else {
+                //closing submenus
+                //derwish edit
+                let menus = document.querySelectorAll(".graphcontextualmenu");
+                for (let key in menus) {
+                }
+            }
+            let root = ref_window.document.createElement("div");
+            root.className = "graphcontextualmenu graphmenubar-panel";
+            this.root = root;
+            let style = root.style;
+            style.minWidth = "100px";
+            style.minHeight = "20px";
+            style.position = "fixed";
+            style.top = "100px";
+            style.left = "100px";
+            style.color = nodes_1.Nodes.options.MENU_TEXT_COLOR;
+            style.padding = "2px";
+            style.borderBottom = "1px solid " + nodes_1.Nodes.options.MENU_TEXT_COLOR;
+            style.backgroundColor = nodes_1.Nodes.options.MENU_BG_COLOR;
+            //title
+            if (options.title) {
+                let element = document.createElement("div");
+                element.className = "graphcontextualmenu-title";
+                element.innerHTML = options.title;
+                root.appendChild(element);
+            }
+            //avoid a context menu in a context menu
+            root.addEventListener("contextmenu", function (e) { e.preventDefault(); return false; });
+            for (let i in values) {
+                let item = values[i];
+                let element = ref_window.document.createElement("div");
+                element.className = "graphmenu-entry";
+                if (item == null) {
+                    element.className = "graphmenu-entry separator";
+                    root.appendChild(element);
+                    continue;
+                }
+                if (item.is_menu)
+                    element.className += " submenu";
+                if (item.disabled)
+                    element.className += " disabled";
+                element.style.cursor = "pointer";
+                element.dataset["value"] = typeof (item) == "string" ? item : item.value;
+                element.data = item;
+                if (typeof (item) == "string")
+                    element.innerHTML = values.constructor == Array ? values[i] : i;
+                else
+                    element.innerHTML = item.content ? item.content : i;
+                element.addEventListener("click", on_click);
+                root.appendChild(element);
+            }
+            root.addEventListener("mouseover", function (e) {
+                this.mouse_inside = true;
+            });
+            root.addEventListener("mouseout", function (e) {
+                //console.log("OUT!");
+                //check if mouse leave a inner element
+                let aux = e.relatedTarget || e.toElement;
+                while (aux != this && aux != ref_window.document)
+                    aux = aux.parentNode;
+                if (aux == this)
+                    return;
+                this.mouse_inside = false;
+                //derwish remove
+                //if (!this.block_close)
+                //    this.closeMenu();
+            });
+            //insert before checking position
+            ref_window.document.body.appendChild(root);
+            let root_rect = root.getClientRects()[0];
+            //link menus
+            if (options.from) {
+                options.from.block_close = true;
+            }
+            let left = options.left || 0;
+            let top = options.top || 0;
+            if (options.event) {
+                left = (options.event.pageX - 10);
+                top = (options.event.pageY - 10);
+                if (options.left)
+                    left = options.left;
+                let rect = ref_window.document.body.getClientRects()[0];
+                if (options.from) {
+                    let parent_rect = options.from.getClientRects()[0];
+                    left = parent_rect.left + parent_rect.width;
+                }
+                if (left > (rect.width - root_rect.width - 10))
+                    left = (rect.width - root_rect.width - 10);
+                if (top > (rect.height - root_rect.height - 10))
+                    top = (rect.height - root_rect.height - 10);
+            }
+            root.style.left = left + "px";
+            root.style.top = top + "px";
+            function on_click(e) {
+                let value = this.dataset["value"];
+                let close = true;
+                if (options.callback) {
+                    let ret = options.callback.call(root, this.data, e);
+                    if (ret !== undefined)
+                        close = ret;
+                }
+                if (close)
+                    this.closeAllContextualMenus();
+                //root.closeMenu();
+            }
+            root.closeMenu = function () {
+                if (options.from) {
+                    options.from.block_close = false;
+                    if (!options.from.mouse_inside)
+                        options.from.closeMenu();
+                }
+                if (this.parentNode)
+                    ref_window.document.body.removeChild(this);
+            };
+            return root;
+        }
+        closeAllContextualMenus() {
+            let elements = document.querySelectorAll(".graphcontextualmenu");
+            if (!elements.length)
+                return;
+            let result = [];
+            for (let i = 0; i < elements.length; i++)
+                result.push(elements[i]);
+            for (let i in result)
+                if (result[i].parentNode)
+                    result[i].parentNode.removeChild(result[i]);
+        }
+        extendClass(target, origin) {
+            for (let i in origin) {
+                if (target.hasOwnProperty(i))
+                    continue;
+                target[i] = origin[i];
+            }
+            if (origin.prototype)
+                for (let i in origin.prototype) {
+                    if (!origin.prototype.hasOwnProperty(i))
+                        continue;
+                    if (target.prototype.hasOwnProperty(i))
+                        continue;
+                    //copy getters
+                    if (origin.prototype.__lookupGetter__(i))
+                        target.prototype.__defineGetter__(i, origin.prototype.__lookupGetter__(i));
+                    else
+                        target.prototype[i] = origin.prototype[i];
+                    //and setters
+                    if (origin.prototype.__lookupSetter__(i))
+                        target.prototype.__defineSetter__(i, origin.prototype.__lookupSetter__(i));
+                }
         }
     }
     exports.LGraphCanvas = LGraphCanvas;
@@ -2056,171 +2214,6 @@
         }
         return (hex);
     }
-    /* LiteGraph GUI elements *************************************/
-    nodes_1.Nodes.createContextualMenu = function (values, options, ref_window) {
-        options = options || {};
-        this.options = options;
-        //allows to create graph canvas in separate window
-        ref_window = ref_window || window;
-        if (!options.from)
-            nodes_1.Nodes.closeAllContextualMenus();
-        else {
-            //closing submenus
-            //derwish edit
-            let menus = document.querySelectorAll(".graphcontextualmenu");
-            for (let key in menus) {
-            }
-        }
-        let root = ref_window.document.createElement("div");
-        root.className = "graphcontextualmenu graphmenubar-panel";
-        this.root = root;
-        let style = root.style;
-        style.minWidth = "100px";
-        style.minHeight = "20px";
-        style.position = "fixed";
-        style.top = "100px";
-        style.left = "100px";
-        style.color = nodes_1.Nodes.MENU_TEXT_COLOR;
-        style.padding = "2px";
-        style.borderBottom = "1px solid " + nodes_1.Nodes.MENU_TEXT_COLOR;
-        style.backgroundColor = nodes_1.Nodes.MENU_BG_COLOR;
-        //title
-        if (options.title) {
-            let element = document.createElement("div");
-            element.className = "graphcontextualmenu-title";
-            element.innerHTML = options.title;
-            root.appendChild(element);
-        }
-        //avoid a context menu in a context menu
-        root.addEventListener("contextmenu", function (e) { e.preventDefault(); return false; });
-        for (let i in values) {
-            let item = values[i];
-            let element = ref_window.document.createElement("div");
-            element.className = "graphmenu-entry";
-            if (item == null) {
-                element.className = "graphmenu-entry separator";
-                root.appendChild(element);
-                continue;
-            }
-            if (item.is_menu)
-                element.className += " submenu";
-            if (item.disabled)
-                element.className += " disabled";
-            element.style.cursor = "pointer";
-            element.dataset["value"] = typeof (item) == "string" ? item : item.value;
-            element.data = item;
-            if (typeof (item) == "string")
-                element.innerHTML = values.constructor == Array ? values[i] : i;
-            else
-                element.innerHTML = item.content ? item.content : i;
-            element.addEventListener("click", on_click);
-            root.appendChild(element);
-        }
-        root.addEventListener("mouseover", function (e) {
-            this.mouse_inside = true;
-        });
-        root.addEventListener("mouseout", function (e) {
-            //console.log("OUT!");
-            //check if mouse leave a inner element
-            let aux = e.relatedTarget || e.toElement;
-            while (aux != this && aux != ref_window.document)
-                aux = aux.parentNode;
-            if (aux == this)
-                return;
-            this.mouse_inside = false;
-            //derwish remove
-            //if (!this.block_close)
-            //    this.closeMenu();
-        });
-        //insert before checking position
-        ref_window.document.body.appendChild(root);
-        let root_rect = root.getClientRects()[0];
-        //link menus
-        if (options.from) {
-            options.from.block_close = true;
-        }
-        let left = options.left || 0;
-        let top = options.top || 0;
-        if (options.event) {
-            left = (options.event.pageX - 10);
-            top = (options.event.pageY - 10);
-            if (options.left)
-                left = options.left;
-            let rect = ref_window.document.body.getClientRects()[0];
-            if (options.from) {
-                let parent_rect = options.from.getClientRects()[0];
-                left = parent_rect.left + parent_rect.width;
-            }
-            if (left > (rect.width - root_rect.width - 10))
-                left = (rect.width - root_rect.width - 10);
-            if (top > (rect.height - root_rect.height - 10))
-                top = (rect.height - root_rect.height - 10);
-        }
-        root.style.left = left + "px";
-        root.style.top = top + "px";
-        function on_click(e) {
-            let value = this.dataset["value"];
-            let close = true;
-            if (options.callback) {
-                let ret = options.callback.call(root, this.data, e);
-                if (ret !== undefined)
-                    close = ret;
-            }
-            if (close)
-                nodes_1.Nodes.closeAllContextualMenus();
-            //root.closeMenu();
-        }
-        root.closeMenu = function () {
-            if (options.from) {
-                options.from.block_close = false;
-                if (!options.from.mouse_inside)
-                    options.from.closeMenu();
-            }
-            if (this.parentNode)
-                ref_window.document.body.removeChild(this);
-        };
-        return root;
-    };
-    nodes_1.Nodes.closeAllContextualMenus = function () {
-        let elements = document.querySelectorAll(".graphcontextualmenu");
-        if (!elements.length)
-            return;
-        let result = [];
-        for (let i = 0; i < elements.length; i++)
-            result.push(elements[i]);
-        for (let i in result)
-            if (result[i].parentNode)
-                result[i].parentNode.removeChild(result[i]);
-    };
-    nodes_1.Nodes.extendClass = function (target, origin) {
-        for (let i in origin) {
-            if (target.hasOwnProperty(i))
-                continue;
-            target[i] = origin[i];
-        }
-        if (origin.prototype)
-            for (let i in origin.prototype) {
-                if (!origin.prototype.hasOwnProperty(i))
-                    continue;
-                if (target.prototype.hasOwnProperty(i))
-                    continue;
-                //copy getters 
-                if (origin.prototype.__lookupGetter__(i))
-                    target.prototype.__defineGetter__(i, origin.prototype.__lookupGetter__(i));
-                else
-                    target.prototype[i] = origin.prototype[i];
-                //and setters
-                if (origin.prototype.__lookupSetter__(i))
-                    target.prototype.__defineSetter__(i, origin.prototype.__lookupSetter__(i));
-            }
-    };
-    /*
-    LiteGraph.createNodetypeWrapper = function( class_object )
-    {
-        //create Nodetype object
-    }
-    //LiteGraph.registerNodeType("scene/global", LGraphGlobal );
-    */
     if (!window["requestAnimationFrame"]) {
         window.requestAnimationFrame = window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||

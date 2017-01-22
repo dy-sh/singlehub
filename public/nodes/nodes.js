@@ -29,65 +29,53 @@
      * @class Nodes
      * @constructor
      */
-    //todo export enum SUPPORTED_TYPES{
-    //     number,
-    //     string,
-    //     boolean
-    // }
-    exports.Nodes = {
-        MAIN_PANEL_ID: "Main",
-        NODE_TITLE_HEIGHT: 16,
-        NODE_SLOT_HEIGHT: 15,
-        //derwish edit
-        NODE_WIDTH: 150,
-        NODE_MIN_WIDTH: 50,
-        NODE_COLLAPSED_RADIUS: 10,
-        //derwish edit
-        NODE_COLLAPSED_WIDTH: 150,
-        CANVAS_GRID_SIZE: 10,
-        NODE_TITLE_COLOR: "#222",
-        NODE_DEFAULT_COLOR: "#777",
-        NODE_DEFAULT_BGCOLOR: "#373737",
-        PANEL_NODE_COLOR: "#777",
-        PANEL_NODE_BGCOLOR: "#373737",
-        IO_NODE_COLOR: "#777",
-        IO_NODE_BGCOLOR: "#373737",
-        NODE_DEFAULT_IO_COLOR: "#999",
-        NODE_OPTIONAL_IO_COLOR: "#777",
-        // NODE_DEFAULT_BOXCOLOR: "#373737",
-        NODE_ACTIVE_BOXCOLOR: "#AEF",
-        NODE_DEFAULT_SHAPE: "box",
-        TITLE_TEXT_FONT: "bold 13px Arial",
-        INNER_TEXT_FONT: "normal 12px Arial",
-        SHADOWS_WIDTH: 2,
-        MENU_TEXT_COLOR: "#BBD",
-        MENU_BG_COLOR: "#353535",
-        BG_IMAGE: "/images/litegraph/grid.png",
-        MAX_NUMBER_OF_NODES: 1000,
-        DEFAULT_POSITION: [100, 100],
-        START_POS: 50,
-        FREE_SPACE_UNDER: 30,
-        node_images_path: "",
-        RENDER_CONNECTION_ARROWS: true,
-        CONNECTIONS_WIDTH: 4,
-        CONNECTIONS_SHADOW: 4,
-        SELECTION_COLOR: "#FFF",
-        SELECTION_WIDTH: 2,
-        DataType: {
-            Text: 0,
-            Number: 1,
-            Logical: 2
-        },
-        DataTypeColor: {
-            0: "#AAA",
-            1: "#AAA",
-            2: "#AAA"
-        },
-        NEW_LINK_COLOR: "#CCC",
-        proxy: null,
-        throw_errors: true,
-        registered_node_types: {},
-        Nodes: {},
+    class NodesOptions {
+        constructor() {
+            this.MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
+            this.DEFAULT_POSITION = [100, 100]; //default node position
+            this.START_POS = 50;
+            this.FREE_SPACE_UNDER = 30;
+            this.NODE_TITLE_HEIGHT = 16;
+            this.NODE_SLOT_HEIGHT = 15;
+            this.NODE_WIDTH = 150;
+            this.NODE_MIN_WIDTH = 50;
+            this.NODE_COLLAPSED_RADIUS = 10;
+            this.NODE_COLLAPSED_WIDTH = 150;
+            this.CANVAS_GRID_SIZE = 10;
+            this.NODE_TITLE_COLOR = "#222";
+            this.NODE_DEFAULT_COLOR = "#777";
+            this.NODE_DEFAULT_BGCOLOR = "#373737";
+            this.PANEL_NODE_COLOR = "#777";
+            this.PANEL_NODE_BGCOLOR = "#373737";
+            this.IO_NODE_COLOR = "#777";
+            this.IO_NODE_BGCOLOR = "#373737";
+            this.NODE_DEFAULT_IO_COLOR = "#999";
+            this.NODE_OPTIONAL_IO_COLOR = "#777";
+            this.NODE_DEFAULT_BOXCOLOR = "#373737";
+            this.NODE_ACTIVE_BOXCOLOR = "#AEF";
+            this.NODE_DEFAULT_SHAPE = "box";
+            this.TITLE_TEXT_FONT = "bold 13px Arial";
+            this.INNER_TEXT_FONT = "normal 12px Arial";
+            this.SHADOWS_WIDTH = 2;
+            this.MENU_TEXT_COLOR = "#BBD";
+            this.MENU_BG_COLOR = "#353535";
+            this.BG_IMAGE = "/images/litegraph/grid.png";
+            this.node_images_path = "";
+            this.RENDER_CONNECTION_ARROWS = true;
+            this.CONNECTIONS_WIDTH = 4;
+            this.CONNECTIONS_SHADOW = 4;
+            this.SELECTION_COLOR = "#FFF";
+            this.SELECTION_WIDTH = 2;
+            this.DataTypeColor = {
+                0: "#AAA",
+                1: "#AAA",
+                2: "#AAA"
+            };
+            this.NEW_LINK_COLOR = "#CCC";
+        }
+    }
+    exports.NodesOptions = NodesOptions;
+    class Nodes {
         //   debug: config.nodesEngine.debugEngine,
         /**
          * Register a node class so it can be listed when the user wants to create a new one
@@ -95,13 +83,15 @@
          * @param {String} type name of the node and path
          * @param {Class} base_class class containing the structure of a node
          */
-        debug: function (mess) {
+        static debug(mess) {
             console.log(mess);
-        },
-        debugErr: function (mess) {
+        }
+        ;
+        static debugErr(mess) {
             console.log(mess);
-        },
-        registerNodeType: function (type, base_class) {
+        }
+        ;
+        static registerNodeType(type, base_class) {
             if (!base_class.prototype)
                 throw ("Cannot register a simple object, it must be a class with a prototype");
             base_class.type = type;
@@ -118,18 +108,20 @@
             this.registered_node_types[type] = base_class;
             if (base_class.constructor.name)
                 this.Nodes[base_class.constructor.name] = base_class;
-        },
+        }
+        ;
         /**
          * Adds this method to all nodetypes, existing and to be created
          * (You can add it to LGraphNode.prototype but then existing node types wont have it)
          * @method addNodeMethod
          * @param {Function} func
          */
-        addNodeMethod: function (name, func) {
+        static addNodeMethod(name, func) {
             Node.prototype[name] = func;
             for (let i in this.registered_node_types)
                 this.registered_node_types[i].prototype[name] = func;
-        },
+        }
+        ;
         /**
          * Create a node of a given type with a name. The node is not attached to any graph yet.
          * @method createNode
@@ -137,7 +129,7 @@
          * @param {String} name a name to distinguish from other nodes
          * @param {Object} options to set options
          */
-        createNode: function (type, title, options) {
+        static createNode(type, title, options) {
             let base_class = this.registered_node_types[type];
             if (!base_class) {
                 this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
@@ -146,6 +138,7 @@
             let prototype = base_class.prototype || base_class;
             title = title || base_class.title || type;
             let node = new base_class(title);
+            node.nodes = this;
             node.type = type;
             if (!node.title)
                 node.title = title;
@@ -153,10 +146,11 @@
                 node.properties = {};
             if (!node.flags)
                 node.flags = {};
+            //  if (!node.size) node.size = [this.NODE_WIDTH, 60];
             if (!node.size)
                 node.size = node.computeSize();
             if (!node.pos)
-                node.pos = exports.Nodes.DEFAULT_POSITION.concat();
+                node.pos = this.options.DEFAULT_POSITION.concat();
             //extra options
             if (options) {
                 for (let i in options)
@@ -164,23 +158,25 @@
             }
             node.id = this.guid();
             return node;
-        },
+        }
+        ;
         /**
          * Returns a registered node type with a given name
          * @method getNodeType
          * @param {String} type full name of the node class. p.e. "math/sin"
          * @return {Class} the node class
          */
-        getNodeType: function (type) {
+        static getNodeType(type) {
             return this.registered_node_types[type];
-        },
+        }
+        ;
         /**
          * Returns a list of node types matching one category
          * @method getNodeType
          * @param {String} category category name
          * @return {Array} array with all the node classes
          */
-        getNodeTypesInCategory: function (category) {
+        static getNodeTypesInCategory(category) {
             let r = [];
             for (let i in this.registered_node_types)
                 if (category == "") {
@@ -190,13 +186,14 @@
                 else if (this.registered_node_types[i].category == category)
                     r.push(this.registered_node_types[i]);
             return r;
-        },
+        }
+        ;
         /**
          * Returns a list with all the node type categories
          * @method getNodeTypesCategories
          * @return {Array} array with all the names of the categories
          */
-        getNodeTypesCategories: function () {
+        static getNodeTypesCategories() {
             let categories = { "": 1 };
             for (let i in this.registered_node_types)
                 if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
@@ -205,9 +202,10 @@
             for (let i in categories)
                 result.push(i);
             return result;
-        },
+        }
+        ;
         //debug purposes: reloads all the js scripts that matches a wilcard
-        reloadNodes: function (folder_wildcard) {
+        static reloadNodes(folder_wildcard) {
             let tmp = document.getElementsByTagName("script");
             //weird, this array changes by its own, so we use a copy
             let script_files = [];
@@ -228,28 +226,19 @@
                     docHeadObj.removeChild(script_files[i]);
                 }
                 catch (err) {
-                    if (exports.Nodes.throw_errors)
+                    if (this.throw_errors)
                         throw err;
                     this.debugErr("Error while reloading " + src);
                 }
             }
             this.debug("Nodes reloaded");
-        },
-        //separated just to improve if it doesnt work
-        cloneObject: function (obj, target) {
-            if (obj == null)
-                return null;
-            let r = JSON.parse(JSON.stringify(obj));
-            if (!target)
-                return r;
-            for (let i in r)
-                target[i] = r[i];
-            return target;
-        },
-        getTime: function () {
+        }
+        ;
+        static getTime() {
             return (typeof (performance) != "undefined") ? performance.now() : Date.now();
-        },
-        guid() {
+        }
+        ;
+        static guid() {
             function s4() {
                 return Math.floor((1 + Math.random()) * 0x10000)
                     .toString(16)
@@ -258,7 +247,20 @@
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                 s4() + '-' + s4() + s4() + s4();
         }
+    }
+    Nodes.options = new NodesOptions;
+    Nodes.MAIN_PANEL_ID = "Main";
+    Nodes.DataType = {
+        Text: 0,
+        Number: 1,
+        Logical: 2
     };
+    Nodes.proxy = null; //used to redirect calls
+    Nodes.throw_errors = true;
+    Nodes.registered_node_types = {};
+    Nodes.Nodes = {};
+    exports.Nodes = Nodes;
+    ;
     // *************************************************************
     //   Node CLASS                                          *******
     // *************************************************************
@@ -303,7 +305,6 @@
         constructor(title = "Unnamed") {
             this.pos = [10, 10];
             this.title = title;
-            this.size = [exports.Nodes.NODE_WIDTH, 60];
             this.id = -1; //not know till not added
         }
         debug(mess) {
@@ -312,6 +313,17 @@
         debugErr(mess) {
             console.log(mess);
         }
+        cloneObject(obj, target) {
+            if (obj == null)
+                return null;
+            let r = JSON.parse(JSON.stringify(obj));
+            if (!target)
+                return r;
+            for (let i in r)
+                target[i] = r[i];
+            return target;
+        }
+        ;
         //
         //     /**
         //      * configure a node from an object containing the serialized info
@@ -384,7 +396,7 @@
                 pos: this.pos,
                 size: this.size,
                 data: this.data,
-                flags: exports.Nodes.cloneObject(this.flags),
+                lags: this.cloneObject(this.flags),
                 inputs: this.inputs,
                 outputs: this.outputs,
                 properties: null,
@@ -394,7 +406,7 @@
                 shape: null
             };
             if (this.properties)
-                o.properties = exports.Nodes.cloneObject(this.properties);
+                o.properties = this.cloneObject(this.properties);
             //todo ES6
             // if (!o.type)
             //     o.type = this.constructor.type;
@@ -702,7 +714,7 @@
                         output_width = text_width;
                 }
             size[0] = Math.max(input_width + output_width + 10, title_width);
-            size[0] = Math.max(size[0], exports.Nodes.NODE_WIDTH);
+            //todo ES5 size[0] = Math.max(size[0], Nodes.NODE_WIDTH);
             function compute_text_size(text) {
                 if (!text)
                     return 0;
@@ -716,7 +728,7 @@
          * @return {Float32Array[4]} the total size
          */
         getBounding() {
-            return new Float32Array([this.pos[0] - 4, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + exports.Nodes.NODE_TITLE_HEIGHT]);
+            return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT]);
         }
         isInsideRectangle(x, y, left, top, width, height) {
             if (left < x && (left + width) > x &&
@@ -736,7 +748,7 @@
             let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
             if (this.flags.collapsed) {
                 //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
-                if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT - margin, exports.Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, exports.Nodes.NODE_TITLE_HEIGHT + 2 * margin))
+                if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT - margin, Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))
                     return true;
             }
             else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
@@ -1008,9 +1020,9 @@
         getConnectionPos(is_input, slot_number) {
             if (this.flags.collapsed) {
                 if (is_input)
-                    return [this.pos[0], this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT * 0.5];
+                    return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
                 else
-                    return [this.pos[0] + exports.Nodes.NODE_COLLAPSED_WIDTH, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT * 0.5];
+                    return [this.pos[0] + Nodes.options.NODE_COLLAPSED_WIDTH, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
             }
             if (is_input && slot_number == -1) {
                 return [this.pos[0] + 10, this.pos[1] + 10];
@@ -1020,14 +1032,14 @@
             else if (!is_input && this.outputs.length > slot_number && this.outputs[slot_number].pos)
                 return [this.pos[0] + this.outputs[slot_number].pos[0], this.pos[1] + this.outputs[slot_number].pos[1]];
             if (!is_input)
-                return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * exports.Nodes.NODE_SLOT_HEIGHT];
-            return [this.pos[0], this.pos[1] + 10 + slot_number * exports.Nodes.NODE_SLOT_HEIGHT];
+                return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
+            return [this.pos[0], this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
         }
         //connections
         /* Force align to grid */
         alignToGrid() {
-            this.pos[0] = exports.Nodes.CANVAS_GRID_SIZE * Math.round(this.pos[0] / exports.Nodes.CANVAS_GRID_SIZE);
-            this.pos[1] = exports.Nodes.CANVAS_GRID_SIZE * Math.round(this.pos[1] / exports.Nodes.CANVAS_GRID_SIZE);
+            this.pos[0] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.options.CANVAS_GRID_SIZE);
+            this.pos[1] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.options.CANVAS_GRID_SIZE);
         }
         //
         // 	/* Console output */

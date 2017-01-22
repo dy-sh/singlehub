@@ -9,7 +9,7 @@
     // let debugMes = require('debug')('modes:mes         ');
     // let debugErr = require('debug')('nodes:error       ');
 
-import {Nodes as nodes, Node} from "../nodes";
+import {Nodes, Node} from "../nodes";
 
 
 //Show value inside the debug console
@@ -27,7 +27,7 @@ import {Nodes as nodes, Node} from "../nodes";
         }
     }
 
-    nodes.registerNodeType("basic/console", Console);
+    Nodes.registerNodeType("basic/console", Console);
 
 
 
@@ -52,7 +52,7 @@ import {Nodes as nodes, Node} from "../nodes";
                 this.setOutputData(0, parseFloat(this.properties["value"]));
             }
 
-            onDrawBackground(ctx) {
+            onDrawBackground=function(ctx) {
                 //show the current value
                 this.outputs[0].label = this.properties["value"].toFixed(3);
             }
@@ -66,7 +66,7 @@ import {Nodes as nodes, Node} from "../nodes";
 
 
 
-        nodes.registerNodeType("basic/const", Constant);
+        Nodes.registerNodeType("basic/const", Constant);
 //
 
 //

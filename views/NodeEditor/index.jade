@@ -98,6 +98,7 @@ html
 			//this var used in litegraph.js
 			var this_panel_id = "#{panelId}";
 			var owner_panel_id = "#{ownerPanelId}";
+			var theme = "#{theme}"
 
 		script(src='/libs/jquery/dist/jquery.min.js')
 		script(src='/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js')
@@ -105,12 +106,5 @@ html
 		script(src='/libs/handlebars/handlebars.min.js')
 		script(src='/libs/semantic/dist/semantic.min.js')
 		script(src='/libs/socket.io-client/dist/socket.io.js')
-		//script(src='/js/node-editor/litegraph-canvas.js')
-		//script(src='/js/node-editor/litegraph-editor.js')
-		//script(src='/js/node-editor/node-editor-theme#{theme}.js')
-		//script(type='text/javascript', src='/js/node-editor/node-editor-list.js')
-		//script(src='/js/node-editor/node-editor-socket.js')
-		//script(src='/js/node-editor/litegraph.js')
-
-
 		script(src='/libs/requirejs/require.js' data-main="/js/node-editor/litegraph")
+		//script(src='/js/node-editor/node-editor-theme#{theme}.js')

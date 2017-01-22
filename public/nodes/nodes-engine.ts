@@ -55,18 +55,17 @@ import {Nodes, Node} from "./nodes";
 
 export class NodesEngine {
 
-    //default supported types
 
-    supported_types:any= ["number", "string", "boolean"];
+    supported_types= ["number", "string", "boolean"];
 
-    static NodesEngine: 2;
+    static NodesEngine= 2;
     list_of_graphcanvas: any;
     isRunning: boolean;
     last_node_id: number;
     _nodes: Array<Node>;
-    _nodes_by_id: {};
+    _nodes_by_id= {};
     last_link_id: number;
-    links: {};
+    links= {};
     iteration: number;
     config: {
         align_to_grid?: boolean;
@@ -78,8 +77,8 @@ export class NodesEngine {
     fixedtime_lapse: number;
     elapsed_time: number;
     starttime: number;
-    global_inputs: {};
-    global_outputs: {};
+    global_inputs= {};
+    global_outputs= {};
     execution_timer_id: any;
     _nodes_in_order: any;
     errors_in_execution: boolean;
@@ -452,7 +451,7 @@ export class NodesEngine {
         if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
             return; //already added
 
-        if (this._nodes.length >= Nodes.MAX_NUMBER_OF_NODES)
+        if (this._nodes.length >= Nodes.options.MAX_NUMBER_OF_NODES)
             throw("Nodes: max number of nodes in a graph reached");
 
         //give him an id

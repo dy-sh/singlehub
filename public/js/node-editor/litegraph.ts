@@ -1,8 +1,8 @@
 
 
-import {Nodes as nodes, Node} from "../../nodes/nodes"
-import {LGraphCanvas} from "./litegraph-canvas"
-import {NodesEngine} from "../../nodes/nodes-engine"
+// import {Nodes, Node} from "../../nodes/nodes"
+// import {LGraphCanvas} from "./litegraph-canvas"
+// import {NodesEngine} from "../../nodes/nodes-engine"
 
 import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
@@ -12,11 +12,7 @@ import {Editor} from "./litegraph-editor";
 
 
 
-
-
-
-var editor = new Editor("main");
-nodes.Editor=editor;
+let editor = new Editor("main");
 
 (<any>window).graph = editor.graph;
 window.addEventListener("resize", function () {
@@ -30,23 +26,23 @@ let nodesEngine=editor.graph;
 
 
 
-let node_const_A = nodes.createNode("basic/const");
+let node_const_A = this.nodes.createNode("basic/const");
 node_const_A.pos = [200, 200];
 nodesEngine.add(node_const_A);
 node_const_A.setValue(5);
 
-let node_const_B = nodes.createNode("basic/const");
+let node_const_B =  this.nodes.createNode("basic/const");
 node_const_B.pos = [200, 300];
 nodesEngine.add(node_const_B);
 node_const_B.setValue(10);
 
-let node_math = nodes.createNode("math/operation");
+let node_math =  this.nodes.createNode("math/operation");
 node_math.pos = [400, 200];
 node_math.properties.OP = "-";
 node_math.addOutput("A-B");
 nodesEngine.add(node_math);
 
-let node_watch = nodes.createNode("basic/console");
+let node_watch =  this.nodes.createNode("basic/console");
 node_watch.pos = [700, 200];
 nodesEngine.add(node_watch);
 
@@ -68,7 +64,15 @@ nodesEngine.start(1000);
 //     nodesEngine.runStep(1);
 // }, 1000);
 
-editor.graphcanvas.draw(true,true);
+
+
+if ((<any>window).theme){
+    let theme=(<any>window).theme;
+    $.getScript(`/js/node-editor/node-editor-theme${theme}.js`, function(){
+
+
+    });
+}
 
 console.log("ok");
 
