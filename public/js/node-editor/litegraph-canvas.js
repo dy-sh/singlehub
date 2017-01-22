@@ -2083,6 +2083,7 @@
             }
             root.style.left = left + "px";
             root.style.top = top + "px";
+            let that = this;
             function on_click(e) {
                 let value = this.dataset["value"];
                 let close = true;
@@ -2092,7 +2093,7 @@
                         close = ret;
                 }
                 if (close) {
-                    this.closeAllContextualMenus();
+                    that.closeAllContextualMenus();
                 }
                 //root.closeMenu();
             }

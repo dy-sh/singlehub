@@ -2677,6 +2677,7 @@ export class LGraphCanvas {
         root.style.left = left + "px";
         root.style.top = top + "px";
 
+        let that=this;
         function on_click(e) {
             let value = this.dataset["value"];
             let close = true;
@@ -2686,7 +2687,7 @@ export class LGraphCanvas {
             }
 
             if (close) {
-                this.closeAllContextualMenus();
+                that.closeAllContextualMenus();
 
             }
             //root.closeMenu();
