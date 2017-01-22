@@ -3,13 +3,15 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes-engine", "./litegraph-canvas", "./node-editor-socket"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./litegraph-canvas", "./node-editor-socket", "./node-editor-themes"], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     const litegraph_canvas_1 = require("./litegraph-canvas");
     const node_editor_socket_1 = require("./node-editor-socket");
+    const node_editor_themes_1 = require("./node-editor-themes");
     class Editor {
         //nodes: Nodes;
         constructor(container_id, options) {
@@ -20,8 +22,9 @@
             root.className = "litegraph-editor";
             root.innerHTML = html;
             let canvas = root.querySelector(".graphcanvas");
-            //create nodes
-            //this.nodes=new Nodes();
+            //nodes options theme
+            if (window.theme)
+                nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
             //create socket
             this.socket = new node_editor_socket_1.NodeEditorSocket();
             //create graph

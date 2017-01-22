@@ -60,18 +60,26 @@
             this.MENU_TEXT_COLOR = "#BBD";
             this.MENU_BG_COLOR = "#353535";
             this.BG_IMAGE = "/images/litegraph/grid.png";
-            this.node_images_path = "";
+            this.NODE_IMAGES_PATH = "";
             this.RENDER_CONNECTION_ARROWS = true;
             this.CONNECTIONS_WIDTH = 4;
             this.CONNECTIONS_SHADOW = 4;
             this.SELECTION_COLOR = "#FFF";
             this.SELECTION_WIDTH = 2;
-            this.DataTypeColor = {
+            this.DATATYPE_COLOR = {
                 0: "#AAA",
                 1: "#AAA",
                 2: "#AAA"
             };
             this.NEW_LINK_COLOR = "#CCC";
+            this.LINK_TYPE_COLORS = { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
+            this.LINK_COLORS = ["#AAC", "#ACA", "#CAA"];
+            this.NODE_COLORS = {
+                "red": { color: "#FAA", bgcolor: "#A44" },
+                "green": { color: "#AFA", bgcolor: "#4A4" },
+                "blue": { color: "#AAF", bgcolor: "#44A" },
+                "white": { color: "#FFF", bgcolor: "#AAA" }
+            };
         }
     }
     exports.NodesOptions = NodesOptions;

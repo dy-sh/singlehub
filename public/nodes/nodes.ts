@@ -57,7 +57,7 @@ export class NodesOptions{
     MENU_TEXT_COLOR = "#BBD";
     MENU_BG_COLOR = "#353535";
     BG_IMAGE = "/images/litegraph/grid.png";
-    node_images_path = "";
+    NODE_IMAGES_PATH = "";
 
     RENDER_CONNECTION_ARROWS = true;
     CONNECTIONS_WIDTH = 4;
@@ -65,12 +65,22 @@ export class NodesOptions{
 
     SELECTION_COLOR = "#FFF";
     SELECTION_WIDTH = 2;
-    DataTypeColor = {
+    DATATYPE_COLOR = {
         0: "#AAA",
         1: "#AAA",
         2: "#AAA"
     };
     NEW_LINK_COLOR = "#CCC";
+    LINK_TYPE_COLORS ={ 0: "#AAC", 1: "#AAC", 2: "#AAC" };
+
+    LINK_COLORS=["#AAC", "#ACA", "#CAA"];
+
+    NODE_COLORS ={
+        "red": { color: "#FAA", bgcolor: "#A44" },
+        "green": { color: "#AFA", bgcolor: "#4A4" },
+        "blue": { color: "#AAF", bgcolor: "#44A" },
+        "white": { color: "#FFF", bgcolor: "#AAA" }
+    };
 }
 
 export class Nodes {

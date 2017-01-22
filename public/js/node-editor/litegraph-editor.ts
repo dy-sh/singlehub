@@ -2,7 +2,7 @@ import {Nodes,Node} from "../../nodes/nodes"
 import {NodesEngine} from "../../nodes/nodes-engine"
 import {LGraphCanvas} from "./litegraph-canvas"
 import {NodeEditorSocket} from "./node-editor-socket";
-
+import {themes} from "./node-editor-themes"
 
 
 export class Editor {
@@ -23,8 +23,9 @@ export class Editor {
 
 		let canvas = root.querySelector(".graphcanvas");
 
-		//create nodes
-		//this.nodes=new Nodes();
+		//nodes options theme
+		if ((<any>window).theme)
+			Nodes.options=themes[(<any>window).theme];
 
 		//create socket
 		this.socket = new NodeEditorSocket();

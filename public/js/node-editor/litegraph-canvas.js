@@ -23,14 +23,6 @@
         constructor(canvas, socket, graph, skip_render) {
             //if(graph === undefined)
             //	throw ("No graph assigned");
-            this.link_type_colors = { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
-            this.link_colors = ["#AAC", "#ACA", "#CAA"];
-            this.node_colors = {
-                "red": { color: "#FAA", bgcolor: "#A44" },
-                "green": { color: "#AFA", bgcolor: "#4A4" },
-                "blue": { color: "#AAF", bgcolor: "#44A" },
-                "white": { color: "#FFF", bgcolor: "#AAA" }
-            };
             if (canvas && canvas.constructor === String)
                 canvas = document.querySelector(canvas);
             this.socket = socket;
@@ -44,7 +36,6 @@
             this.clear();
             if (!skip_render)
                 this.startRendering();
-            console.log(this.link_type_colors);
         }
         /**
         * clears all the data inside
@@ -1274,7 +1265,7 @@
                         //hide self inputs
                         if (this.connecting_node == node)
                             ctx.globalAlpha = 0.4 * editor_alpha;
-                        ctx.fillStyle = slot.link != null ? "#7F7" : nodes_1.Nodes.options.DataTypeColor[slot.type];
+                        ctx.fillStyle = slot.link != null ? "#7F7" : nodes_1.Nodes.options.DATATYPE_COLOR[slot.type];
                         let pos = node.getConnectionPos(true, i);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
@@ -1305,7 +1296,7 @@
                         let pos = node.getConnectionPos(false, i);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
-                        ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : nodes_1.Nodes.options.DataTypeColor[slot.type];
+                        ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : nodes_1.Nodes.options.DATATYPE_COLOR[slot.type];
                         ctx.beginPath();
                         //ctx.rect( node.size[0] - 14,i*14,10,10);
                         if (1 || slot.round)
@@ -1491,9 +1482,9 @@
                             start_node_slotpos = [start_node.pos[0] + 10, start_node.pos[1] + 10];
                         else
                             start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
-                        let color = this.link_type_colors[node.inputs[i].type];
+                        let color = nodes_1.Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
                         if (color == null)
-                            color = this.link_colors[node.id % this.link_colors.length];
+                            color = nodes_1.Nodes.options.LINK_COLORS[node.id % nodes_1.Nodes.options.LINK_COLORS.length];
                         this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
                     }
             }
@@ -1907,8 +1898,8 @@
         }
         onMenuNodeColors(node, e, prev_menu) {
             let values = [];
-            for (let i in this.node_colors) {
-                let color = this.node_colors[i];
+            for (let i in nodes_1.Nodes.options.NODE_COLORS) {
+                let color = nodes_1.Nodes.options.NODE_COLORS[i];
                 let value = { value: i, content: "<span style='display: block; color:" + color.color + "; background-color:" + color.bgcolor + "'>" + i + "</span>" };
                 values.push(value);
             }

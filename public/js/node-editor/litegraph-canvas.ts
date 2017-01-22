@@ -104,16 +104,7 @@ export class LGraphCanvas {
 	enableWebGLCanvas:IenableWebGLCanvas;
 	getExtraMenuOptions: IgetExtraMenuOptions;
 
-	link_type_colors : any={ 0: "#AAC", 1: "#AAC", 2: "#AAC" };
 
-	 link_colors :any=["#AAC", "#ACA", "#CAA"];
-
-	 node_colors : any={
-		"red": { color: "#FAA", bgcolor: "#A44" },
-		"green": { color: "#AFA", bgcolor: "#4A4" },
-		"blue": { color: "#AAF", bgcolor: "#44A" },
-		"white": { color: "#FFF", bgcolor: "#AAA" }
-	};
 	options: any;
 	root: HTMLDivElement;
 
@@ -150,7 +141,6 @@ export class LGraphCanvas {
 		if (!skip_render)
 			this.startRendering();
 
-		console.log(this.link_type_colors)
 	}
 
 	/**
@@ -1672,7 +1662,7 @@ export class LGraphCanvas {
 					if (this.connecting_node == node)
 						ctx.globalAlpha = 0.4 * editor_alpha;
 
-					ctx.fillStyle = slot.link != null ? "#7F7" : Nodes.options.DataTypeColor[slot.type];
+					ctx.fillStyle = slot.link != null ? "#7F7" : Nodes.options.DATATYPE_COLOR[slot.type];
 
 					let pos = node.getConnectionPos(true, i);
 					pos[0] -= node.pos[0];
@@ -1713,7 +1703,7 @@ export class LGraphCanvas {
 					pos[0] -= node.pos[0];
 					pos[1] -= node.pos[1];
 
-					ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : Nodes.options.DataTypeColor[slot.type];
+					ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : Nodes.options.DATATYPE_COLOR[slot.type];
 					ctx.beginPath();
 					//ctx.rect( node.size[0] - 14,i*14,10,10);
 
@@ -1940,9 +1930,9 @@ export class LGraphCanvas {
 					else
 						start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
 
-					let color = this.link_type_colors[node.inputs[i].type];
+					let color = Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
 					if (color == null)
-						color = this.link_colors[node.id % this.link_colors.length];
+						color = Nodes.options.LINK_COLORS[node.id % Nodes.options.LINK_COLORS.length];
 					this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
 				}
 		}
@@ -2471,8 +2461,8 @@ export class LGraphCanvas {
 
 	 onMenuNodeColors(node, e, prev_menu) {
 		let values = [];
-		for (let i in this.node_colors) {
-			let color = this.node_colors[i];
+		for (let i in Nodes.options.NODE_COLORS) {
+			let color = Nodes.options.NODE_COLORS[i];
 			let value = { value: i, content: "<span style='display: block; color:" + color.color + "; background-color:" + color.bgcolor + "'>" + i + "</span>" };
 			values.push(value);
 		}
