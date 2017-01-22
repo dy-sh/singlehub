@@ -32,7 +32,11 @@ export class Editor {
 
 		//create graph
 		let graph = this.graph = new NodesEngine();
-		let graphcanvas = this.graphcanvas = new LGraphCanvas(canvas, this.socket,graph);
+		let graphcanvas = this.graphcanvas = new LGraphCanvas(
+			canvas,
+			this.socket,
+			this,
+			graph);
 	   // graphcanvas.background_image = "/images/litegraph/grid.png";
 		graph.onAfterExecute = function () { graphcanvas.draw(true) };
 
@@ -65,7 +69,7 @@ export class Editor {
 		miniwindow.innerHTML = "<canvas class='graphcanvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
 		let canvas = miniwindow.querySelector("canvas");
 
-		let graphcanvas = new LGraphCanvas(canvas, this.socket,this.graph);
+		let graphcanvas = new LGraphCanvas(canvas, this.socket,this,this.graph);
 		//  graphcanvas.background_image = "images/litegraph/grid.png";
 		//derwish edit
 		graphcanvas.scale = 0.1;
