@@ -62,7 +62,7 @@ export class NodesEngine {
     static STATUS_STOPPED: 1;
     static NodesEngine: 2;
     list_of_graphcanvas: any;
-    status: any;
+    isRunning: boolean;
     last_node_id: number;
     _nodes: Array<Node>;
     _nodes_by_id: {};
@@ -94,6 +94,7 @@ export class NodesEngine {
     onAfterExecute: any;
     onConnectionChange: any;
      onNodeRemoved: any;
+     onPlayEvent: any;
 
 
     /**
@@ -134,7 +135,7 @@ export class NodesEngine {
      */
     clear() {
         this.stop();
-        this.status = NodesEngine.STATUS_STOPPED;
+        this.isRunning=false;
         this.last_node_id = 0;
 
         //nodes
@@ -174,10 +175,10 @@ export class NodesEngine {
      * @method stop execution
      */
     stop() {
-        if (this.status == NodesEngine.STATUS_STOPPED)
+        if (!this.isRunning)
             return;
 
-        this.status = NodesEngine.STATUS_STOPPED;
+        this.isRunning=true;
 
         if (this.onStopEvent)
             this.onStopEvent();
@@ -223,30 +224,32 @@ export class NodesEngine {
         this.list_of_graphcanvas.splice(pos, 1);
     }
 
-    // /**
-    //  * Starts running this graph every interval milliseconds.
-    //  * @method start
-    //  * @param {number} interval amount of milliseconds between executions, default is 1
-    //  */
-    // start(interval) {
-    //     if (this.status == NodesEngine.STATUS_RUNNING) return;
-    //     this.status = NodesEngine.STATUS_RUNNING;
-    //
-    //     if (this.onPlayEvent)
-    //         this.onPlayEvent();
-    //
-    //     this.sendEventToAllNodes("onStart");
-    //
-    //     //launch
-    //     this.starttime = Nodes.getTime();
-    //     interval = interval || 1;
-    //     let that = this;
-    //
-    //     this.execution_timer_id = setInterval(function () {
-    //         //execute
-    //         that.runStep(1);
-    //     }, interval);
-    // }
+    /**
+     * Starts running this graph every interval milliseconds.
+     * @method start
+     * @param {number} interval amount of milliseconds between executions, default is 1
+     */
+    start(interval:number) {
+        if (this.isRunning)
+            return;
+
+        this.isRunning = true;
+
+        if (this.onPlayEvent)
+            this.onPlayEvent();
+
+        this.sendEventToAllNodes("onStart");
+
+        //launch
+        this.starttime = Nodes.getTime();
+        interval = interval || 1;
+        let that = this;
+
+        this.execution_timer_id = setInterval(function () {
+            //execute
+            that.runStep(1);
+        }, interval);
+    }
 
 
 

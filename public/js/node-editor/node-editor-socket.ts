@@ -4,11 +4,12 @@
 
 import {Nodes as graph} from "../../nodes/nodes"
 
-var socketConnected;
+
 
 
 export class NodeEditorSocket {
 
+	socketConnected:boolean;
 	socket:any;
 
 	constructor() {
@@ -19,7 +20,7 @@ export class NodeEditorSocket {
 		this.socket.on('connect', function () {
 			//todo socket.join(this_panel_id);
 
-			if (socketConnected == false) {
+			if (this.socketConnected == false) {
 				noty({text: 'Connected to web server.', type: 'alert'});
 				//waiting while server initialized and read db
 				setTimeout(function () {
@@ -28,13 +29,13 @@ export class NodeEditorSocket {
 					$("#main").fadeIn(300);
 				}, 2000);
 			}
-			socketConnected = true;
+			this.socketConnected = true;
 		});
 
 		this.socket.on('disconnect', function () {
 			$("#main").fadeOut(300);
 			noty({text: 'Web server is not responding!', type: 'error'});
-			socketConnected = false;
+			this.socketConnected = false;
 		});
 
 

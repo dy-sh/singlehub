@@ -46,10 +46,12 @@
     node_const_B.connect(0, node_math, 1);
     node_math.connect(0, node_watch, 0);
     // node_math.connect(0, node_watch2, 0);
-    nodesEngine.runStep(1);
-    setInterval(function () {
-        nodesEngine.runStep(1);
-    }, 1000);
+    nodesEngine.start(1000);
+    // nodesEngine.runStep(1);
+    //
+    // setInterval(function () {
+    //     nodesEngine.runStep(1);
+    // }, 1000);
     console.log("ok");
 });
 //# sourceMappingURL=litegraph.js.map

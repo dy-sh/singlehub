@@ -11,14 +11,13 @@
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
-    var socketConnected;
     class NodeEditorSocket {
         constructor() {
             //configure socket.io
             this.socket = io.connect('/nodeeditor');
             this.socket.on('connect', function () {
                 //todo socket.join(this_panel_id);
-                if (socketConnected == false) {
+                if (this.socketConnected == false) {
                     noty({ text: 'Connected to web server.', type: 'alert' });
                     //waiting while server initialized and read db
                     setTimeout(function () {
@@ -27,12 +26,12 @@
                         $("#main").fadeIn(300);
                     }, 2000);
                 }
-                socketConnected = true;
+                this.socketConnected = true;
             });
             this.socket.on('disconnect', function () {
                 $("#main").fadeOut(300);
                 noty({ text: 'Web server is not responding!', type: 'error' });
-                socketConnected = false;
+                this.socketConnected = false;
             });
             this.socket.on('gatewayConnected', function () {
                 noty({ text: 'Gateway connected.', type: 'alert', timeout: false });

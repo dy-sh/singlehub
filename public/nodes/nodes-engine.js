@@ -86,7 +86,7 @@
          */
         clear() {
             this.stop();
-            this.status = NodesEngine.STATUS_STOPPED;
+            this.isRunning = false;
             this.last_node_id = 0;
             //nodes
             this._nodes = [];
@@ -116,9 +116,9 @@
          * @method stop execution
          */
         stop() {
-            if (this.status == NodesEngine.STATUS_STOPPED)
+            if (!this.isRunning)
                 return;
-            this.status = NodesEngine.STATUS_STOPPED;
+            this.isRunning = true;
             if (this.onStopEvent)
                 this.onStopEvent();
             if (this.execution_timer_id != null)
@@ -155,30 +155,27 @@
             graphcanvas.graph = null;
             this.list_of_graphcanvas.splice(pos, 1);
         }
-        // /**
-        //  * Starts running this graph every interval milliseconds.
-        //  * @method start
-        //  * @param {number} interval amount of milliseconds between executions, default is 1
-        //  */
-        // start(interval) {
-        //     if (this.status == NodesEngine.STATUS_RUNNING) return;
-        //     this.status = NodesEngine.STATUS_RUNNING;
-        //
-        //     if (this.onPlayEvent)
-        //         this.onPlayEvent();
-        //
-        //     this.sendEventToAllNodes("onStart");
-        //
-        //     //launch
-        //     this.starttime = Nodes.getTime();
-        //     interval = interval || 1;
-        //     let that = this;
-        //
-        //     this.execution_timer_id = setInterval(function () {
-        //         //execute
-        //         that.runStep(1);
-        //     }, interval);
-        // }
+        /**
+         * Starts running this graph every interval milliseconds.
+         * @method start
+         * @param {number} interval amount of milliseconds between executions, default is 1
+         */
+        start(interval) {
+            if (this.isRunning)
+                return;
+            this.isRunning = true;
+            if (this.onPlayEvent)
+                this.onPlayEvent();
+            this.sendEventToAllNodes("onStart");
+            //launch
+            this.starttime = nodes_1.Nodes.getTime();
+            interval = interval || 1;
+            let that = this;
+            this.execution_timer_id = setInterval(function () {
+                //execute
+                that.runStep(1);
+            }, interval);
+        }
         /**
          * Run N steps (cycles) of the graph
          * @method runStep
