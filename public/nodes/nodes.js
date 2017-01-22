@@ -720,66 +720,63 @@
             }
             return size;
         }
+        /**
+         * returns the bounding of the object, used for rendering purposes
+         * @method getBounding
+         * @return {Float32Array[4]} the total size
+         */
+        getBounding() {
+            return new Float32Array([this.pos[0] - 4, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + exports.Nodes.NODE_TITLE_HEIGHT]);
+        }
+        // /**
+        //  * checks if a point is inside the shape of a node
+        //  * @method isPointInsideNode
+        //  * @param {number} x
+        //  * @param {number} y
+        //  * @return {boolean}
+        //  */
+        // isPointInsideNode(x, y, margin) {
+        //     margin = margin || 0;
         //
-        //     /**
-        //      * returns the bounding of the object, used for rendering purposes
-        //      * @method getBounding
-        //      * @return {Float32Array[4]} the total size
-        //      */
-        //     getBounding() {
-        //         return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + NodesEngine.NODE_TITLE_HEIGHT]);
-        //     }
-        //
-        //     /**
-        //      * checks if a point is inside the shape of a node
-        //      * @method isPointInsideNode
-        //      * @param {number} x
-        //      * @param {number} y
-        //      * @return {boolean}
-        //      */
-        //     isPointInsideNode(x, y, margin) {
-        //         margin = margin || 0;
-        //
-        //         let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
-        //         if (this.flags.collapsed) {
-        //             //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
-        //             if (isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.NODE_TITLE_HEIGHT - margin, Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.NODE_TITLE_HEIGHT + 2 * margin))
-        //                 return true;
-        //         }
-        //         else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
-        //             && (this.pos[1] - margin_top - margin) < y && (this.pos[1] + this.size[1] + margin) > y)
+        //     let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
+        //     if (this.flags.collapsed) {
+        //         //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
+        //         if (isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.NODE_TITLE_HEIGHT - margin, Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.NODE_TITLE_HEIGHT + 2 * margin))
         //             return true;
-        //         return false;
         //     }
+        //     else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
+        //         && (this.pos[1] - margin_top - margin) < y && (this.pos[1] + this.size[1] + margin) > y)
+        //         return true;
+        //     return false;
+        // }
         //
-        //     /**
-        //      * checks if a point is inside a node slot, and returns info about which slot
-        //      * @method getSlotInPosition
-        //      * @param {number} x
-        //      * @param {number} y
-        //      * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
-        //      */
-        //     getSlotInPosition(x, y) {
-        //         //search for inputs
-        //         if (this.inputs)
-        //             for (let i = 0, l = this.inputs.length; i < l; ++i) {
-        //                 let input = this.inputs[i];
-        //                 let link_pos = this.getConnectionPos(true, i);
-        //                 if (isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-        //                     return {input: input, slot: i, link_pos: link_pos, locked: input.locked};
-        //             }
+        // /**
+        //  * checks if a point is inside a node slot, and returns info about which slot
+        //  * @method getSlotInPosition
+        //  * @param {number} x
+        //  * @param {number} y
+        //  * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
+        //  */
+        // getSlotInPosition(x, y) {
+        //     //search for inputs
+        //     if (this.inputs)
+        //         for (let i = 0, l = this.inputs.length; i < l; ++i) {
+        //             let input = this.inputs[i];
+        //             let link_pos = this.getConnectionPos(true, i);
+        //             if (isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
+        //                 return {input: input, slot: i, link_pos: link_pos, locked: input.locked};
+        //         }
         //
-        //         if (this.outputs)
-        //             for (let i = 0, l = this.outputs.length; i < l; ++i) {
-        //                 let output = this.outputs[i];
-        //                 let link_pos = this.getConnectionPos(false, i);
-        //                 if (isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-        //                     return {output: output, slot: i, link_pos: link_pos, locked: output.locked};
-        //             }
+        //     if (this.outputs)
+        //         for (let i = 0, l = this.outputs.length; i < l; ++i) {
+        //             let output = this.outputs[i];
+        //             let link_pos = this.getConnectionPos(false, i);
+        //             if (isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
+        //                 return {output: output, slot: i, link_pos: link_pos, locked: output.locked};
+        //         }
         //
-        //         return null;
-        //     }
-        //
+        //     return null;
+        // }
         /**
          * returns the input slot with a given name (used for dynamic slots), -1 if not found
          * @method findInputSlot
@@ -1006,38 +1003,32 @@
             return true;
         }
         //
-        //     /**
-        //      * returns the center of a connection point in canvas coords
-        //      * @method getConnectionPos
-        //      * @param {boolean} is_input true if if a input slot, false if it is an output
-        //      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
-        //      * @return {[x,y]} the position
-        //      **/
-        //     getConnectionPos(is_input, slot_number) {
-        //         if (this.flags.collapsed) {
-        //             if (is_input)
-        //                 return [this.pos[0], this.pos[1] - Nodes.NODE_TITLE_HEIGHT * 0.5];
-        //             else
-        //                 return [this.pos[0] + Nodes.NODE_COLLAPSED_WIDTH, this.pos[1] - Nodes.NODE_TITLE_HEIGHT * 0.5];
-        //             //return [this.pos[0] + this.size[0] * 0.5, this.pos[1] + this.size[1] * 0.5];
-        //         }
-        //
-        //         if (is_input && slot_number == -1) {
-        //             return [this.pos[0] + 10, this.pos[1] + 10];
-        //         }
-        //
-        //         if (is_input && this.inputs.length > slot_number && this.inputs[slot_number].pos)
-        //             return [this.pos[0] + this.inputs[slot_number].pos[0], this.pos[1] + this.inputs[slot_number].pos[1]];
-        //         else if (!is_input && this.outputs.length > slot_number && this.outputs[slot_number].pos)
-        //             return [this.pos[0] + this.outputs[slot_number].pos[0], this.pos[1] + this.outputs[slot_number].pos[1]];
-        //
-        //         if (!is_input) //output
-        //             return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * Nodes.NODE_SLOT_HEIGHT];
-        //         return [this.pos[0], this.pos[1] + 10 + slot_number * Nodes.NODE_SLOT_HEIGHT];
-        //     }
-        //
-        // //connections
-        //
+        /**
+         * returns the center of a connection point in canvas coords
+         * @method getConnectionPos
+         * @param {boolean} is_input true if if a input slot, false if it is an output
+         * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
+         * @return {[x,y]} the position
+         **/
+        getConnectionPos(is_input, slot_number) {
+            if (this.flags.collapsed) {
+                if (is_input)
+                    return [this.pos[0], this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT * 0.5];
+                else
+                    return [this.pos[0] + exports.Nodes.NODE_COLLAPSED_WIDTH, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT * 0.5];
+            }
+            if (is_input && slot_number == -1) {
+                return [this.pos[0] + 10, this.pos[1] + 10];
+            }
+            if (is_input && this.inputs.length > slot_number && this.inputs[slot_number].pos)
+                return [this.pos[0] + this.inputs[slot_number].pos[0], this.pos[1] + this.inputs[slot_number].pos[1]];
+            else if (!is_input && this.outputs.length > slot_number && this.outputs[slot_number].pos)
+                return [this.pos[0] + this.outputs[slot_number].pos[0], this.pos[1] + this.outputs[slot_number].pos[1]];
+            if (!is_input)
+                return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * exports.Nodes.NODE_SLOT_HEIGHT];
+            return [this.pos[0], this.pos[1] + 10 + slot_number * exports.Nodes.NODE_SLOT_HEIGHT];
+        }
+        //connections
         /* Force align to grid */
         alignToGrid() {
             this.pos[0] = exports.Nodes.CANVAS_GRID_SIZE * Math.round(this.pos[0] / exports.Nodes.CANVAS_GRID_SIZE);

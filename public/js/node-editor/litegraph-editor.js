@@ -3,11 +3,10 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./litegraph-canvas"], factory);
+        define(["require", "exports", "../../nodes/nodes-engine", "./litegraph-canvas"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     const litegraph_canvas_1 = require("./litegraph-canvas");
     class Editor {
@@ -305,6 +304,7 @@
             });
         }
     }
+    exports.Editor = Editor;
     let minimap_opened = false;
     // noty settings
     $.noty.defaults.layout = 'bottomRight';
@@ -374,6 +374,6 @@
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
     }
-    nodes_1.Nodes.Editor = Editor;
 });
+// LiteGraph.Editor = Editor; 
 //# sourceMappingURL=litegraph-editor.js.map

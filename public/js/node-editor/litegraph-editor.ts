@@ -4,12 +4,12 @@ import {LGraphCanvas} from "./litegraph-canvas"
 
 
 
-class Editor {
+export class Editor {
 	private root: HTMLDivElement;
-	private graph: LGraph;
-	private graphcanvas: LGraphCanvas;
+	graph: LGraph;
+	graphcanvas: LGraphCanvas;
 
-	constructor(container_id, options) {
+	constructor(container_id, options?) {
 		//fill container
 		let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
 
@@ -456,4 +456,4 @@ function NodeSettings(node) {
 }
 
 
-LiteGraph.Editor = Editor;
+// LiteGraph.Editor = Editor;

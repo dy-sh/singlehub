@@ -5,6 +5,7 @@
 //*********************************************************************************
 
 import {Nodes as LiteGraph,Node} from "../../nodes/nodes"
+import {NodesEngine} from "../../nodes/nodes-engine"
 
 interface IgetMenuOptions {
 	(): Array<any>;
@@ -19,81 +20,81 @@ interface IgetExtraMenuOptions {
 }
 
 export class LGraphCanvas {
-	private max_zoom: number;
-	private min_zoom: number;
-	private frame: number;
-	private last_draw_time: number;
-	private render_time: number;
-	private fps: number;
+	max_zoom: number;
+	min_zoom: number;
+	frame: number;
+	last_draw_time: number;
+	render_time: number;
+	fps: number;
 	scale: number;
 	offset: [number, number];
-	private selected_nodes: Array<Node>|any;
-	private node_dragged: any;
-	private node_over: any;
-	private node_capturing_input: any;
-	private connecting_node: any;
-	private highquality_render: boolean;
-	private editor_alpha: number;
-	private pause_rendering: boolean;
-	private render_shadows: boolean;
-	private shadows_width: any;
-	private clear_background: boolean;
-	private render_only_selected: boolean;
-	private live_mode: boolean;
-	private show_info: boolean;
-	private allow_dragcanvas: boolean;
-	private allow_dragnodes: boolean;
-	private dirty_canvas: boolean;
-	private dirty_bgcanvas: boolean;
-	private dirty_area: any;
-	private node_in_panel: any;
-	private last_mouse: [number, number];
-	private last_mouseclick: number;
-	private title_text_font: any;
-	private inner_text_font: any;
-	private render_connections_shadows: boolean;
-	private render_connections_border: boolean;
-	private render_curved_connections: boolean;
-	private render_connection_arrows: any;
-	private connections_width: any;
-	private connections_shadow: any;
-	private onClear: any;
-	private graph: any;
-	private _graph_stack: any;
-	private canvas: any;
-	private bgcanvas: any;
-	private ctx: any;
-	private _mousemove_callback: any;
-	private _mouseup_callback: any;
-	private _events_binded: any;
-	private _mousedown_callback: any;
-	private _mousewheel_callback: any;
-	private _key_callback: any;
-	private _ondrop_callback: any;
-	private GL: any;
-	private gl: any;
-	private is_rendering: any;
-	private visible_nodes: any;
-	private connecting_output: any;
-	private connecting_pos: any;
-	private connecting_slot: number;
-	private resizing_node: any;
-	private dragging_canvas: boolean;
-	private canvas_mouse: [any, any];
-	private _highlight_input: [number, number];
-	private onDropItem: any;
-	private onNodeSelected: any;
-	private onNodeDeselected: any;
-	private onShowNodePanel: any;
-	private onNodeDblClicked: any;
-	private visible_area: any;
-	private last__time: number;
-	private onRender: any;
-	private bgctx: any;
-	private _bg_img: any;
-	private _pattern: any;
-	private _pattern_img: any;
-	private onBackgroundRender: any;
+	selected_nodes: Array<Node>|any;
+	node_dragged: any;
+	node_over: any;
+	node_capturing_input: any;
+	connecting_node: any;
+	highquality_render: boolean;
+	editor_alpha: number;
+	pause_rendering: boolean;
+	render_shadows: boolean;
+	shadows_width: any;
+	clear_background: boolean;
+	render_only_selected: boolean;
+	live_mode: boolean;
+	show_info: boolean;
+	allow_dragcanvas: boolean;
+	allow_dragnodes: boolean;
+	dirty_canvas: boolean;
+	dirty_bgcanvas: boolean;
+	dirty_area: any;
+	node_in_panel: any;
+	last_mouse: [number, number];
+	last_mouseclick: number;
+	title_text_font: any;
+	inner_text_font: any;
+	render_connections_shadows: boolean;
+	render_connections_border: boolean;
+	render_curved_connections: boolean;
+	render_connection_arrows: any;
+	connections_width: any;
+	connections_shadow: any;
+	onClear: any;
+	graph: NodesEngine;
+	_graph_stack: any;
+	canvas: any;
+	bgcanvas: any;
+	ctx: any;
+	_mousemove_callback: any;
+	_mouseup_callback: any;
+	_events_binded: any;
+	_mousedown_callback: any;
+	_mousewheel_callback: any;
+	_key_callback: any;
+	_ondrop_callback: any;
+	GL: any;
+	gl: any;
+	is_rendering: any;
+	visible_nodes: any;
+	connecting_output: any;
+	connecting_pos: any;
+	connecting_slot: number;
+	resizing_node: any;
+	dragging_canvas: boolean;
+	canvas_mouse: [any, any];
+	_highlight_input: [number, number];
+	onDropItem: any;
+	onNodeSelected: any;
+	onNodeDeselected: any;
+	onShowNodePanel: any;
+	onNodeDblClicked: any;
+	visible_area: any;
+	last__time: number;
+	onRender: any;
+	bgctx: any;
+	_bg_img: any;
+	_pattern: any;
+	_pattern_img: any;
+	onBackgroundRender: any;
 	getMenuOptions:IgetMenuOptions;
 	enableWebGLCanvas:IenableWebGLCanvas;
 	getExtraMenuOptions: IgetExtraMenuOptions;
@@ -108,6 +109,7 @@ export class LGraphCanvas {
 		"blue": { color: "#AAF", bgcolor: "#44A" },
 		"white": { color: "#FFF", bgcolor: "#AAA" }
 	};
+
 
 
 	/**

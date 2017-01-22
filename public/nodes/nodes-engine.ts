@@ -71,6 +71,7 @@ export class NodesEngine {
     iteration: number;
     config: {
         align_to_grid?: boolean;
+        links_ontop?:any;
     };
     globaltime: number;
     runningtime: number;
@@ -92,6 +93,7 @@ export class NodesEngine {
     onExecuteStep: any;
     onAfterExecute: any;
     onConnectionChange: any;
+     onNodeRemoved: any;
 
 
     /**
@@ -187,65 +189,65 @@ export class NodesEngine {
         this.sendEventToAllNodes("onStop");
     }
 
-//
-//     /**
-//      * Attach Canvas to this graph
-//      * @method attachCanvas
-//      * @param {GraphCanvas} graph_canvas
-//      */
-//     attachCanvas(graphcanvas) {
-//         if (graphcanvas.constructor != NodesCanvas)
-//             throw("attachCanvas expects a NodesCanvas instance");
-//         if (graphcanvas.graph && graphcanvas.graph != this)
-//             graphcanvas.graph.detachCanvas(graphcanvas);
-//
-//         graphcanvas.graph = this;
-//         if (!this.list_of_graphcanvas)
-//             this.list_of_graphcanvas = [];
-//         this.list_of_graphcanvas.push(graphcanvas);
-//     }
-//
-//     /**
-//      * Detach Canvas from this graph
-//      * @method detachCanvas
-//      * @param {GraphCanvas} graph_canvas
-//      */
-//     detachCanvas(graphcanvas) {
-//         if (!this.list_of_graphcanvas)
-//             return;
-//
-//         let pos = this.list_of_graphcanvas.indexOf(graphcanvas);
-//         if (pos == -1)
-//             return;
-//         graphcanvas.graph = null;
-//         this.list_of_graphcanvas.splice(pos, 1);
-//     }
-//
-//     /**
-//      * Starts running this graph every interval milliseconds.
-//      * @method start
-//      * @param {number} interval amount of milliseconds between executions, default is 1
-//      */
-//     start(interval) {
-//         if (this.status == NodesEngine.STATUS_RUNNING) return;
-//         this.status = NodesEngine.STATUS_RUNNING;
-//
-//         if (this.onPlayEvent)
-//             this.onPlayEvent();
-//
-//         this.sendEventToAllNodes("onStart");
-//
-//         //launch
-//         this.starttime = Nodes.getTime();
-//         interval = interval || 1;
-//         let that = this;
-//
-//         this.execution_timer_id = setInterval(function () {
-//             //execute
-//             that.runStep(1);
-//         }, interval);
-//     }
-//
+
+    /**
+     * Attach Canvas to this graph
+     * @method attachCanvas
+     * @param {GraphCanvas} graph_canvas
+     */
+    attachCanvas(graphcanvas) {
+        // if (graphcanvas.constructor != NodesCanvas)
+        //     throw("attachCanvas expects a NodesCanvas instance");
+        if (graphcanvas.graph && graphcanvas.graph != this)
+            graphcanvas.graph.detachCanvas(graphcanvas);
+
+        graphcanvas.graph = this;
+        if (!this.list_of_graphcanvas)
+            this.list_of_graphcanvas = [];
+        this.list_of_graphcanvas.push(graphcanvas);
+    }
+
+    /**
+     * Detach Canvas from this graph
+     * @method detachCanvas
+     * @param {GraphCanvas} graph_canvas
+     */
+    detachCanvas(graphcanvas) {
+        if (!this.list_of_graphcanvas)
+            return;
+
+        let pos = this.list_of_graphcanvas.indexOf(graphcanvas);
+        if (pos == -1)
+            return;
+        graphcanvas.graph = null;
+        this.list_of_graphcanvas.splice(pos, 1);
+    }
+
+    // /**
+    //  * Starts running this graph every interval milliseconds.
+    //  * @method start
+    //  * @param {number} interval amount of milliseconds between executions, default is 1
+    //  */
+    // start(interval) {
+    //     if (this.status == NodesEngine.STATUS_RUNNING) return;
+    //     this.status = NodesEngine.STATUS_RUNNING;
+    //
+    //     if (this.onPlayEvent)
+    //         this.onPlayEvent();
+    //
+    //     this.sendEventToAllNodes("onStart");
+    //
+    //     //launch
+    //     this.starttime = Nodes.getTime();
+    //     interval = interval || 1;
+    //     let that = this;
+    //
+    //     this.execution_timer_id = setInterval(function () {
+    //         //execute
+    //         that.runStep(1);
+    //     }, interval);
+    // }
+
 
 
     /**
@@ -486,70 +488,70 @@ export class NodesEngine {
         return node; //to chain actions
     }
 
-//
-//     /**
-//      * Removes a node from the graph
-//      * @method remove
-//      * @param {Node} node the instance of the node
-//      */
-//     remove(node) {
-//         if (this._nodes_by_id[node.id] == null)
-//             return; //not found
-//
-//         if (node.ignore_remove)
-//             return; //cannot be removed
-//
-//         //disconnect inputs
-//         if (node.inputs)
-//             for (let i = 0; i < node.inputs.length; i++) {
-//                 let slot = node.inputs[i];
-//                 if (slot.link != null)
-//                     node.disconnectInput(i);
-//             }
-//
-//         //disconnect outputs
-//         if (node.outputs)
-//             for (let i = 0; i < node.outputs.length; i++) {
-//                 let slot = node.outputs[i];
-//                 if (slot.links != null && slot.links.length)
-//                     node.disconnectOutput(i);
-//             }
-//
-//         //node.id = -1; //why?
-//
-//         //callback
-//         if (node.onRemoved)
-//             node.onRemoved();
-//
-//         node.graph = null;
-//
-//         //remove from canvas render
-//         if (this.list_of_graphcanvas) {
-//             for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-//                 let canvas = this.list_of_graphcanvas[i];
-//                 if (canvas.selected_nodes[node.id])
-//                     delete canvas.selected_nodes[node.id];
-//                 if (canvas.node_dragged == node)
-//                     canvas.node_dragged = null;
-//             }
-//         }
-//
-//         //remove from containers
-//         let pos = this._nodes.indexOf(node);
-//         if (pos != -1)
-//             this._nodes.splice(pos, 1);
-//         delete this._nodes_by_id[node.id];
-//
-//         if (this.onNodeRemoved)
-//             this.onNodeRemoved(node);
-//
-//         this.setDirtyCanvas(true, true);
-//
-//         this.change();
-//
-//         this.updateExecutionOrder();
-//     }
-//
+
+    /**
+     * Removes a node from the graph
+     * @method remove
+     * @param {Node} node the instance of the node
+     */
+    remove(node) {
+        if (this._nodes_by_id[node.id] == null)
+            return; //not found
+
+        if (node.ignore_remove)
+            return; //cannot be removed
+
+        //disconnect inputs
+        if (node.inputs)
+            for (let i = 0; i < node.inputs.length; i++) {
+                let slot = node.inputs[i];
+                if (slot.link != null)
+                    node.disconnectInput(i);
+            }
+
+        //disconnect outputs
+        if (node.outputs)
+            for (let i = 0; i < node.outputs.length; i++) {
+                let slot = node.outputs[i];
+                if (slot.links != null && slot.links.length)
+                    node.disconnectOutput(i);
+            }
+
+        //node.id = -1; //why?
+
+        //callback
+        if (node.onRemoved)
+            node.onRemoved();
+
+        node.graph = null;
+
+        //remove from canvas render
+        if (this.list_of_graphcanvas) {
+            for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
+                let canvas = this.list_of_graphcanvas[i];
+                if (canvas.selected_nodes[node.id])
+                    delete canvas.selected_nodes[node.id];
+                if (canvas.node_dragged == node)
+                    canvas.node_dragged = null;
+            }
+        }
+
+        //remove from containers
+        let pos = this._nodes.indexOf(node);
+        if (pos != -1)
+            this._nodes.splice(pos, 1);
+        delete this._nodes_by_id[node.id];
+
+        if (this.onNodeRemoved)
+            this.onNodeRemoved(node);
+
+        this.setDirtyCanvas(true, true);
+
+        this.change();
+
+        this.updateExecutionOrder();
+    }
+
     /**
      * Returns a node by its id.
      * @method getNodeById
@@ -604,23 +606,23 @@ export class NodesEngine {
 //         return result;
 //     }
 //
-//     /**
-//      * Returns the top-most node in this position of the canvas
-//      * @method getNodeOnPos
-//      * @param {number} x the x coordinate in canvas space
-//      * @param {number} y the y coordinate in canvas space
-//      * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the graph
-//      * @return {Array} a list with all the nodes that intersect this coordinate
-//      */
-//     getNodeOnPos(x, y, nodes_list) {
-//         nodes_list = nodes_list || this._nodes;
-//         for (let i = nodes_list.length - 1; i >= 0; i--) {
-//             let n = nodes_list[i];
-//             if (n.isPointInsideNode(x, y, 2))
-//                 return n;
-//         }
-//         return null;
-//     }
+    /**
+     * Returns the top-most node in this position of the canvas
+     * @method getNodeOnPos
+     * @param {number} x the x coordinate in canvas space
+     * @param {number} y the y coordinate in canvas space
+     * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the graph
+     * @return {Array} a list with all the nodes that intersect this coordinate
+     */
+    getNodeOnPos(x, y, nodes_list?) {
+        nodes_list = nodes_list || this._nodes;
+        for (let i = nodes_list.length - 1; i >= 0; i--) {
+            let n = nodes_list[i];
+            if (n.isPointInsideNode(x, y, 2))
+                return n;
+        }
+        return null;
+    }
 //
 // // ********** GLOBALS *****************
 //

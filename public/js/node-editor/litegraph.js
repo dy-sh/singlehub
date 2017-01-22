@@ -3,7 +3,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/nodes/base", "../../nodes/nodes/math"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/nodes/base", "../../nodes/nodes/math", "./litegraph-editor"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -11,18 +11,18 @@
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     require("../../nodes/nodes/base");
     require("../../nodes/nodes/math");
+    const litegraph_editor_1 = require("./litegraph-editor");
     let nodesEngine = new nodes_engine_1.NodesEngine();
-    //
-    // var editor = new nodes.Editor("main");
-    // (<any>window).graph = editor.graph;
-    // window.addEventListener("resize", function () {
-    //     editor.graphcanvas.resize();
-    // });
-    // //getNodes();
-    //
-    // var START_POS = 50;
-    // var FREE_SPACE_UNDER = 30;
-    // var NODE_WIDTH = 150;
+    var editor = new litegraph_editor_1.Editor("main");
+    nodes_1.Nodes.Editor = editor;
+    window.graph = editor.graph;
+    window.addEventListener("resize", function () {
+        editor.graphcanvas.resize();
+    });
+    //getNodes();
+    var START_POS = 50;
+    var FREE_SPACE_UNDER = 30;
+    var NODE_WIDTH = 150;
     let node_const_A = nodes_1.Nodes.createNode("basic/const");
     node_const_A.pos = [200, 200];
     nodesEngine.add(node_const_A);

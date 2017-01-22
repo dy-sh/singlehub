@@ -7,23 +7,26 @@ import {NodesEngine} from "../../nodes/nodes-engine"
 import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
 
+import {Editor} from "./litegraph-editor";
+
 
 let nodesEngine = new NodesEngine();
 
 
 
 
-//
-// var editor = new nodes.Editor("main");
-// (<any>window).graph = editor.graph;
-// window.addEventListener("resize", function () {
-//     editor.graphcanvas.resize();
-// });
-// //getNodes();
-//
-// var START_POS = 50;
-// var FREE_SPACE_UNDER = 30;
-// var NODE_WIDTH = 150;
+
+var editor = new Editor("main");
+nodes.Editor=editor;
+(<any>window).graph = editor.graph;
+window.addEventListener("resize", function () {
+    editor.graphcanvas.resize();
+});
+//getNodes();
+
+var START_POS = 50;
+var FREE_SPACE_UNDER = 30;
+var NODE_WIDTH = 150;
 
 
 let node_const_A = nodes.createNode("basic/const");
