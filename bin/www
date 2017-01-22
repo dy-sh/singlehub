@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 
+
 require('../modules/debug/configure');
 var config = require('../config');
 

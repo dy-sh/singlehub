@@ -93,7 +93,7 @@
                 node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
                 //  graph.change();
             });
-            // this.getNodes();
+            this.getNodes();
             // this.getGatewayInfo();
             $("#sendButton").click(function () {
                 //console.log(graph);
@@ -225,11 +225,12 @@
             });
         }
         getNodes() {
+            let that = this;
             $.ajax({
                 url: "/NodeEditorAPI/GetNodesForPanel",
                 data: { 'panelId': window.this_panel_id },
                 success: function (nodes) {
-                    this.onReturnNodes(nodes);
+                    that.onReturnNodes(nodes);
                 }
             });
         }

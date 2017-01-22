@@ -2,7 +2,6 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-// export namespace MyNodes {
 
 //todo
 // const debug = require('debug')('nodes-engine:     ');
@@ -95,8 +94,7 @@ export class Nodes {
         Number: 1,
         Logical: 2
     };
-
-
+    
     static proxy= null; //used to redirect calls
 
 
@@ -434,7 +432,7 @@ export class Node {
                 if (this[j] && this[j].configure)
                     this[j].configure(info[j]);
                 else
-                    this[j] = Nodes.cloneObject(info[j], this[j]);
+                    this[j] = this.cloneObject(info[j], this[j]);
             }
             else //value
                 this[j] = info[j];
@@ -1308,4 +1306,3 @@ export class Node {
 }
 
 
-// }

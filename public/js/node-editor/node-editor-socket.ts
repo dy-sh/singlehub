@@ -125,7 +125,7 @@ export class NodeEditorSocket {
 		});
 
 
-		// this.getNodes();
+		this.getNodes();
 		// this.getGatewayInfo();
 
 
@@ -312,12 +312,12 @@ export class NodeEditorSocket {
 
 
 	getNodes() {
-
+		let that=this;
 		$.ajax({
 			url: "/NodeEditorAPI/GetNodesForPanel",
 			data: {'panelId': (<any>window).this_panel_id},
 			success: function (nodes) {
-				this.onReturnNodes(nodes);
+				that.onReturnNodes(nodes);
 			}
 		});
 	}

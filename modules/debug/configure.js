@@ -1,3 +1,7 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
+ */
+
 module.exports = (function () {
 	//set DEBUG environment variable if nod defined
 	if (!process.env.DEBUG)

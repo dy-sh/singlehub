@@ -10,7 +10,6 @@
     }
 })(function (require, exports) {
     "use strict";
-    // export namespace MyNodes {
     //todo
     // const debug = require('debug')('nodes-engine:     ');
     // const debugLog = require('debug')('nodes-engine:log  ');
@@ -352,7 +351,7 @@
                     if (this[j] && this[j].configure)
                         this[j].configure(info[j]);
                     else
-                        this[j] = Nodes.cloneObject(info[j], this[j]);
+                        this[j] = this.cloneObject(info[j], this[j]);
                 }
                 else
                     this[j] = info[j];
@@ -1074,5 +1073,4 @@
     }
     exports.Node = Node;
 });
-// } 
 //# sourceMappingURL=nodes.js.map
