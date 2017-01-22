@@ -373,6 +373,7 @@ export class Node {
     boxcolor: any;
     shape: any;
     onSerialize: any;
+    setValue:any;
 
     pos: [number, number] = [10, 10];
 
