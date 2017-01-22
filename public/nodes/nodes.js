@@ -442,14 +442,13 @@
         //         return JSON.stringify(this.serialize());
         //     }
         //
-        //     /**
-        //      * get the title string
-        //      * @method getTitle
-        //      */
-        //     getTitle() {
-        //         return this.title || this.constructor.title;
-        //     }
-        //
+        /**
+         * get the title string
+         * @method getTitle
+         */
+        getTitle() {
+            return this.title;
+        }
         /**
          * sets the output data
          * @method setOutputData
@@ -731,27 +730,32 @@
         getBounding() {
             return new Float32Array([this.pos[0] - 4, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + exports.Nodes.NODE_TITLE_HEIGHT]);
         }
-        // /**
-        //  * checks if a point is inside the shape of a node
-        //  * @method isPointInsideNode
-        //  * @param {number} x
-        //  * @param {number} y
-        //  * @return {boolean}
-        //  */
-        // isPointInsideNode(x, y, margin) {
-        //     margin = margin || 0;
-        //
-        //     let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
-        //     if (this.flags.collapsed) {
-        //         //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
-        //         if (isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.NODE_TITLE_HEIGHT - margin, Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.NODE_TITLE_HEIGHT + 2 * margin))
-        //             return true;
-        //     }
-        //     else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
-        //         && (this.pos[1] - margin_top - margin) < y && (this.pos[1] + this.size[1] + margin) > y)
-        //         return true;
-        //     return false;
-        // }
+        isInsideRectangle(x, y, left, top, width, height) {
+            if (left < x && (left + width) > x &&
+                top < y && (top + height) > y)
+                return true;
+            return false;
+        }
+        /**
+         * checks if a point is inside the shape of a node
+         * @method isPointInsideNode
+         * @param {number} x
+         * @param {number} y
+         * @return {boolean}
+         */
+        isPointInsideNode(x, y, margin) {
+            margin = margin || 0;
+            let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
+            if (this.flags.collapsed) {
+                //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
+                if (isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - exports.Nodes.NODE_TITLE_HEIGHT - margin, exports.Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, exports.Nodes.NODE_TITLE_HEIGHT + 2 * margin))
+                    return true;
+            }
+            else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
+                && (this.pos[1] - margin_top - margin) < y && (this.pos[1] + this.size[1] + margin) > y)
+                return true;
+            return false;
+        }
         //
         // /**
         //  * checks if a point is inside a node slot, and returns info about which slot

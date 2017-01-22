@@ -67,12 +67,14 @@
             // this.debug = config.nodesEngine.debugEngine;
             // if (this.debug)
             //     debug("Nodes engine created");
+            //default supported types
+            this.supported_types = ["number", "string", "boolean"];
             this.list_of_graphcanvas = null;
             this.clear();
         }
         //used to know which types of connections support this graph (some graphs do not allow certain types)
         getSupportedTypes() {
-            return this.supported_types || NodesEngine.supported_types;
+            return this.supported_types;
         }
         debug(mess) {
             console.log(mess);
@@ -689,23 +691,20 @@
                 this.onConnectionChange(node);
             this.sendActionToCanvas("onConnectionChange");
         }
-        //
-        //     /**
-        //      * returns if the graph is in live mode
-        //      * @method isLive
-        //      */
-        //     isLive() {
-        //         if (!this.list_of_graphcanvas)
-        //             return false;
-        //
-        //         for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-        //             let c = this.list_of_graphcanvas[i];
-        //             if (c.live_mode)
-        //                 return true;
-        //         }
-        //         return false;
-        //     }
-        //
+        /**
+         * returns if the graph is in live mode
+         * @method isLive
+         */
+        isLive() {
+            if (!this.list_of_graphcanvas)
+                return false;
+            for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
+                let c = this.list_of_graphcanvas[i];
+                if (c.live_mode)
+                    return true;
+            }
+            return false;
+        }
         /* Called when something visually changed */
         change() {
             this.sendActionToCanvas("setDirty", [true, true]);

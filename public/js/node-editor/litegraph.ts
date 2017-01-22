@@ -8,18 +8,16 @@ import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
 
 import {Editor} from "./litegraph-editor";
-import {NodeEditorSocket} from "./node-editor-socket";
 
 
-let nodesEngine = new NodesEngine();
-let nodeEditorSocket = new NodeEditorSocket();
+
 
 
 
 
 var editor = new Editor("main");
 nodes.Editor=editor;
-nodes.Socket=nodeEditorSocket;
+
 (<any>window).graph = editor.graph;
 window.addEventListener("resize", function () {
     editor.graphcanvas.resize();
@@ -27,6 +25,8 @@ window.addEventListener("resize", function () {
 //getNodes();
 
 
+let nodesEngine=editor.graph;
+//let nodesEngine = new NodesEngine();
 
 
 
@@ -68,5 +68,7 @@ nodesEngine.start(1000);
 //     nodesEngine.runStep(1);
 // }, 1000);
 
+editor.graphcanvas.draw(true,true);
 
 console.log("ok");
+

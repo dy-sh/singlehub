@@ -23,6 +23,14 @@
         constructor(canvas, graph, skip_render) {
             //if(graph === undefined)
             //	throw ("No graph assigned");
+            this.link_type_colors = { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
+            this.link_colors = ["#AAC", "#ACA", "#CAA"];
+            this.node_colors = {
+                "red": { color: "#FAA", bgcolor: "#A44" },
+                "green": { color: "#AFA", bgcolor: "#4A4" },
+                "blue": { color: "#AAF", bgcolor: "#44A" },
+                "white": { color: "#FFF", bgcolor: "#AAA" }
+            };
             if (canvas && canvas.constructor === String)
                 canvas = document.querySelector(canvas);
             //derwish edit
@@ -35,6 +43,7 @@
             this.clear();
             if (!skip_render)
                 this.startRendering();
+            console.log(this.link_type_colors);
         }
         /**
         * clears all the data inside
@@ -435,7 +444,7 @@
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         //derwish added
-                                        nodes_1.Nodes.Socket.send_remove_link(this.graph.links[input.link]);
+                                        nodes_1.Nodes.Editor.socket.send_remove_link(this.graph.links[input.link]);
                                         skip_action = true;
                                     }
                                 }
@@ -646,7 +655,7 @@
                             if (slot != -1) {
                                 //derwish added
                                 let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: slot };
-                                nodes_1.Nodes.Socket.send_create_link(link);
+                                nodes_1.Nodes.Editor.socket.send_create_link(link);
                             }
                             else {
                                 let input = node.getInputInfo(0);
@@ -656,7 +665,7 @@
                                 //derwish added
                                 if (input != null) {
                                     let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: 0 };
-                                    nodes_1.Nodes.Socket.send_create_link(link);
+                                    nodes_1.Nodes.Editor.socket.send_create_link(link);
                                 }
                             }
                         }
@@ -671,7 +680,7 @@
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
                     //derwish added
-                    nodes_1.Nodes.Socket.send_update_node(this.resizing_node);
+                    nodes_1.Nodes.Editor.socket.send_update_node(this.resizing_node);
                     this.resizing_node = null;
                 }
                 else if (this.node_dragged) {
@@ -686,7 +695,7 @@
                         //derwish added
                         this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                         this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                        nodes_1.Nodes.Socket.send_update_node(this.selected_nodes[i]);
+                        nodes_1.Nodes.Editor.socket.send_update_node(this.selected_nodes[i]);
                     }
                     this.node_dragged = null;
                 }
@@ -804,7 +813,7 @@
                     for (let i = 0; i < files.length; i++) {
                         let file = e.dataTransfer.files[0];
                         let filename = file.name;
-                        let ext = LGraphCanvas.getFileExtension(filename);
+                        let ext = this.getFileExtension(filename);
                         //console.log(file);
                         //prepare reader
                         let reader = new FileReader();
@@ -1481,9 +1490,9 @@
                             start_node_slotpos = [start_node.pos[0] + 10, start_node.pos[1] + 10];
                         else
                             start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
-                        let color = LGraphCanvas.link_type_colors[node.inputs[i].type];
+                        let color = this.link_type_colors[node.inputs[i].type];
                         if (color == null)
-                            color = LGraphCanvas.link_colors[node.id % LGraphCanvas.link_colors.length];
+                            color = this.link_colors[node.id % this.link_colors.length];
                         this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
                     }
             }
@@ -1641,10 +1650,10 @@
             if (this.getMenuOptions)
                 options = this.getMenuOptions();
             else {
-                options.push({ content: "Add", is_menu: true, callback: LGraphCanvas.onMenuAdd });
+                options.push({ content: "Add", is_menu: true, callback: this.onMenuAdd });
                 options.push(null);
                 //{content:"Collapse All", callback: LGraphCanvas.onMenuCollapseAll }
-                options.push({ content: "Import", is_menu: true, callback: LGraphCanvas.onMenuImport });
+                options.push({ content: "Import", is_menu: true, callback: this.onMenuImport });
                 options.push(null);
                 options.push({
                     content: "Reset View",
@@ -1700,11 +1709,11 @@
                 }
             }
             if (node.clonable !== false)
-                options.push({ content: "Clone", callback: LGraphCanvas.onMenuNodeClone });
+                options.push({ content: "Clone", callback: this.onMenuNodeClone });
             options.push({ content: "Description", callback: function () { this.editor.showNodeDescrition(node); } });
-            options.push({ content: "Collapse", callback: LGraphCanvas.onMenuNodeCollapse });
+            options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
             if (node.removable !== false)
-                options.push({ content: "Remove", callback: LGraphCanvas.onMenuNodeRemove });
+                options.push({ content: "Remove", callback: this.onMenuNodeRemove });
             if (node.onGetInputs) {
                 let inputs = node.onGetInputs();
                 if (inputs && inputs.length)
@@ -1748,7 +1757,7 @@
                     return v.callback(node, e, menu, that, event);
             }
         }
-        static getFileExtension(url) {
+        getFileExtension(url) {
             let question = url.indexOf("?");
             if (question != -1)
                 url = url.substr(0, question);
@@ -1758,7 +1767,7 @@
             return url.substr(point + 1).toLowerCase();
         }
         /* CONTEXT MENU ********************/
-        static onMenuAdd(node, e, prev_menu, canvas, first_event) {
+        onMenuAdd(node, e, prev_menu, canvas, first_event) {
             let window = canvas.getCanvasWindow();
             let values = nodes_1.Nodes.getNodeTypesCategories();
             let entries = {};
@@ -1787,12 +1796,12 @@
                     //derwish added
                     if (window.this_panel_id != null)
                         node.panel_id = window.this_panel_id; //this_panel_id initialized from ViewBag
-                    nodes_1.Nodes.Socket.send_create_node(node);
+                    nodes_1.Nodes.Editor.socket.send_create_node(node);
                 }
             }
             return false;
         }
-        static onMenuImport(node, e, prev_menu, canvas, first_event) {
+        onMenuImport(node, e, prev_menu, canvas, first_event) {
             let window = canvas.getCanvasWindow();
             let entries = {};
             entries[0] = { value: "Panel from file", content: "Panel from file", is_menu: false };
@@ -1823,11 +1832,11 @@
             }
             return false;
         }
-        static onMenuCollapseAll() {
+        onMenuCollapseAll() {
         }
-        static onMenuNodeEdit() {
+        onMenuNodeEdit() {
         }
-        static onMenuNodeInputs(node, e, prev_menu) {
+        onMenuNodeInputs(node, e, prev_menu) {
             if (!node)
                 return;
             let options = node.optional_inputs;
@@ -1851,7 +1860,7 @@
             }
             return false;
         }
-        static onMenuNodeOutputs(node, e, prev_menu) {
+        onMenuNodeOutputs(node, e, prev_menu) {
             if (!node)
                 return;
             let options = node.optional_outputs;
@@ -1888,17 +1897,17 @@
             }
             return false;
         }
-        static onMenuNodeCollapse(node) {
+        onMenuNodeCollapse(node) {
             node.flags.collapsed = !node.flags.collapsed;
             node.setDirtyCanvas(true, true);
         }
-        static onMenuNodePin(node) {
+        onMenuNodePin(node) {
             node.pin();
         }
-        static onMenuNodeColors(node, e, prev_menu) {
+        onMenuNodeColors(node, e, prev_menu) {
             let values = [];
-            for (let i in LGraphCanvas.node_colors) {
-                let color = LGraphCanvas.node_colors[i];
+            for (let i in this.node_colors) {
+                let color = this.node_colors[i];
                 let value = { value: i, content: "<span style='display: block; color:" + color.color + "; background-color:" + color.bgcolor + "'>" + i + "</span>" };
                 values.push(value);
             }
@@ -1906,7 +1915,7 @@
             function inner_clicked(v) {
                 if (!node)
                     return;
-                let color = LGraphCanvas.node_colors[v.value];
+                let color = this.node_colors[v.value];
                 if (color) {
                     node.color = color.color;
                     node.bgcolor = color.bgcolor;
@@ -1915,7 +1924,7 @@
             }
             return false;
         }
-        static onMenuNodeShapes(node, e) {
+        onMenuNodeShapes(node, e) {
             nodes_1.Nodes.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
             function inner_clicked(v) {
                 if (!node)
@@ -1925,17 +1934,17 @@
             }
             return false;
         }
-        static onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
+        onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
             //if (node.removable == false) return;
             if (node.id in canvas.selected_nodes)
-                nodes_1.Nodes.Socket.send_remove_nodes(canvas.selected_nodes);
+                nodes_1.Nodes.Editor.socket.send_remove_nodes(canvas.selected_nodes);
             else
-                nodes_1.Nodes.Socket.send_remove_node(node);
+                nodes_1.Nodes.Editor.socket.send_remove_node(node);
             //derwish remove
             //node.graph.remove(uiNode);
             //node.setDirtyCanvas(true, true);
         }
-        static onMenuNodeClone(node) {
+        onMenuNodeClone(node) {
             if (node.clonable == false)
                 return;
             //derwish removed
@@ -1945,7 +1954,7 @@
             //node.graph.add(newnode);
             //node.setDirtyCanvas(true, true);
             //derwish added
-            nodes_1.Nodes.Socket.send_clone_node(node);
+            nodes_1.Nodes.Editor.socket.send_clone_node(node);
         }
     }
     exports.LGraphCanvas = LGraphCanvas;

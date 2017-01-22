@@ -99,11 +99,11 @@ export class LGraphCanvas {
 	enableWebGLCanvas:IenableWebGLCanvas;
 	getExtraMenuOptions: IgetExtraMenuOptions;
 
-	static link_type_colors : { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
+	link_type_colors : any={ 0: "#AAC", 1: "#AAC", 2: "#AAC" };
 
-	static link_colors :["#AAC", "#ACA", "#CAA"];
+	 link_colors :any=["#AAC", "#ACA", "#CAA"];
 
-	static node_colors : {
+	 node_colors : any={
 		"red": { color: "#FAA", bgcolor: "#A44" },
 		"green": { color: "#AFA", bgcolor: "#4A4" },
 		"blue": { color: "#AAF", bgcolor: "#44A" },
@@ -140,6 +140,8 @@ export class LGraphCanvas {
 
 		if (!skip_render)
 			this.startRendering();
+
+		console.log(this.link_type_colors)
 	}
 
 	/**
@@ -617,7 +619,7 @@ export class LGraphCanvas {
 									//this.dirty_bgcanvas = true;
 
 									//derwish added
-									LiteGraph.Socket.send_remove_link(this.graph.links[input.link]);
+									LiteGraph.Editor.socket.send_remove_link(this.graph.links[input.link]);
 
 									skip_action = true;
 								}
@@ -877,7 +879,7 @@ export class LGraphCanvas {
 						if (slot != -1) {
 							//derwish added
 							let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: slot };
-							LiteGraph.Socket.send_create_link(link);
+							LiteGraph.Editor.socket.send_create_link(link);
 
 							//derwish removed
 							//this.connecting_node.connect(this.connecting_slot, node, slot);
@@ -892,7 +894,7 @@ export class LGraphCanvas {
 							//derwish added
 							if (input != null) {
 								let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: 0 };
-								LiteGraph.Socket.send_create_link(link);
+								LiteGraph.Editor.socket.send_create_link(link);
 							}
 							//derwish removed
 							//this.connecting_node.connect(this.connecting_slot, node, 0);
@@ -915,7 +917,7 @@ export class LGraphCanvas {
 				this.dirty_bgcanvas = true;
 
 				//derwish added
-				LiteGraph.Socket.send_update_node(this.resizing_node);
+				LiteGraph.Editor.socket.send_update_node(this.resizing_node);
 
 				this.resizing_node = null;
 			}
@@ -934,7 +936,7 @@ export class LGraphCanvas {
 					//derwish added
 					this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
 					this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-					LiteGraph.Socket.send_update_node(this.selected_nodes[i]);
+					LiteGraph.Editor.socket.send_update_node(this.selected_nodes[i]);
 				}
 
 				this.node_dragged = null;
@@ -1086,7 +1088,7 @@ export class LGraphCanvas {
 				for (let i = 0; i < files.length; i++) {
 					let file = e.dataTransfer.files[0];
 					let filename = file.name;
-					let ext = LGraphCanvas.getFileExtension(filename);
+					let ext = this.getFileExtension(filename);
 					//console.log(file);
 
 					//prepare reader
@@ -1929,9 +1931,9 @@ export class LGraphCanvas {
 					else
 						start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
 
-					let color = LGraphCanvas.link_type_colors[node.inputs[i].type];
+					let color = this.link_type_colors[node.inputs[i].type];
 					if (color == null)
-						color = LGraphCanvas.link_colors[node.id % LGraphCanvas.link_colors.length];
+						color = this.link_colors[node.id % this.link_colors.length];
 					this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
 				}
 		}
@@ -2124,12 +2126,12 @@ export class LGraphCanvas {
 		if (this.getMenuOptions)
 			options = this.getMenuOptions();
 		else {
-			options.push({ content: "Add", is_menu: true, callback: LGraphCanvas.onMenuAdd });
+			options.push({ content: "Add", is_menu: true, callback: this.onMenuAdd });
 			options.push(null);
 
 			//{content:"Collapse All", callback: LGraphCanvas.onMenuCollapseAll }
 
-			options.push({ content: "Import", is_menu: true, callback: LGraphCanvas.onMenuImport });
+			options.push({ content: "Import", is_menu: true, callback: this.onMenuImport });
 			options.push(null);
 
 			options.push({
@@ -2206,14 +2208,14 @@ export class LGraphCanvas {
 		}
 
 		if (node.clonable !== false)
-			options.push({ content: "Clone", callback: LGraphCanvas.onMenuNodeClone });
+			options.push({ content: "Clone", callback: this.onMenuNodeClone });
 
 		options.push({ content: "Description", callback: function () { this.editor.showNodeDescrition(node) } });
 
-		options.push({ content: "Collapse", callback: LGraphCanvas.onMenuNodeCollapse });
+		options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
 
 		if (node.removable !== false)
-			options.push({ content: "Remove", callback: LGraphCanvas.onMenuNodeRemove });
+			options.push({ content: "Remove", callback: this.onMenuNodeRemove });
 
 		if (node.onGetInputs) {
 			let inputs = node.onGetInputs();
@@ -2274,7 +2276,7 @@ export class LGraphCanvas {
 		}
 	}
 
-	static getFileExtension(url) {
+	 getFileExtension(url) {
 		let question = url.indexOf("?");
 		if (question != -1)
 			url = url.substr(0, question);
@@ -2285,7 +2287,7 @@ export class LGraphCanvas {
 	}
 
     /* CONTEXT MENU ********************/
-	static onMenuAdd(node, e, prev_menu, canvas, first_event) {
+	 onMenuAdd(node, e, prev_menu, canvas, first_event) {
 		let window = canvas.getCanvasWindow();
 
 		let values = LiteGraph.getNodeTypesCategories();
@@ -2325,14 +2327,14 @@ export class LGraphCanvas {
 					node.panel_id = window.this_panel_id;//this_panel_id initialized from ViewBag
 
 
-				LiteGraph.Socket.send_create_node(node);
+				LiteGraph.Editor.socket.send_create_node(node);
 			}
 		}
 
 		return false;
 	}
 
-	static onMenuImport(node, e, prev_menu, canvas, first_event) {
+	 onMenuImport(node, e, prev_menu, canvas, first_event) {
 		let window = canvas.getCanvasWindow();
 
 		let entries = {};
@@ -2372,15 +2374,15 @@ export class LGraphCanvas {
 		return false;
 	}
 
-	static onMenuCollapseAll() {
+	 onMenuCollapseAll() {
 
 	}
 
-	static onMenuNodeEdit() {
+	 onMenuNodeEdit() {
 
 	}
 
-	static onMenuNodeInputs(node, e, prev_menu) {
+	 onMenuNodeInputs(node, e, prev_menu) {
 		if (!node) return;
 
 		let options = node.optional_inputs;
@@ -2406,7 +2408,7 @@ export class LGraphCanvas {
 		return false;
 	}
 
-	static onMenuNodeOutputs(node, e, prev_menu) {
+	 onMenuNodeOutputs(node, e, prev_menu) {
 		if (!node) return;
 
 		let options = node.optional_outputs;
@@ -2449,19 +2451,19 @@ export class LGraphCanvas {
 		return false;
 	}
 
-	static onMenuNodeCollapse(node) {
+	 onMenuNodeCollapse(node) {
 		node.flags.collapsed = !node.flags.collapsed;
 		node.setDirtyCanvas(true, true);
 	}
 
-	static onMenuNodePin(node) {
+	 onMenuNodePin(node) {
 		node.pin();
 	}
 
-	static onMenuNodeColors(node, e, prev_menu) {
+	 onMenuNodeColors(node, e, prev_menu) {
 		let values = [];
-		for (let i in LGraphCanvas.node_colors) {
-			let color = LGraphCanvas.node_colors[i];
+		for (let i in this.node_colors) {
+			let color = this.node_colors[i];
 			let value = { value: i, content: "<span style='display: block; color:" + color.color + "; background-color:" + color.bgcolor + "'>" + i + "</span>" };
 			values.push(value);
 		}
@@ -2469,7 +2471,7 @@ export class LGraphCanvas {
 
 		function inner_clicked(v) {
 			if (!node) return;
-			let color = LGraphCanvas.node_colors[v.value];
+			let color = this.node_colors[v.value];
 			if (color) {
 				node.color = color.color;
 				node.bgcolor = color.bgcolor;
@@ -2480,7 +2482,7 @@ export class LGraphCanvas {
 		return false;
 	}
 
-	static onMenuNodeShapes(node, e) {
+	 onMenuNodeShapes(node, e) {
 		LiteGraph.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
 
 		function inner_clicked(v) {
@@ -2492,20 +2494,20 @@ export class LGraphCanvas {
 		return false;
 	}
 
-	static onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
+	 onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
 		//if (node.removable == false) return;
 
 		if (node.id in canvas.selected_nodes)
-			LiteGraph.Socket.send_remove_nodes(canvas.selected_nodes);
+			LiteGraph.Editor.socket.send_remove_nodes(canvas.selected_nodes);
 		else
-			LiteGraph.Socket.send_remove_node(node);
+			LiteGraph.Editor.socket.send_remove_node(node);
 
 		//derwish remove
 		//node.graph.remove(uiNode);
 		//node.setDirtyCanvas(true, true);
 	}
 
-	static onMenuNodeClone(node) {
+	 onMenuNodeClone(node) {
 		if (node.clonable == false) return;
 		//derwish removed
 		//let newnode = node.clone();
@@ -2515,7 +2517,7 @@ export class LGraphCanvas {
 		//node.setDirtyCanvas(true, true);
 
 		//derwish added
-		LiteGraph.Socket.send_clone_node(node);
+		LiteGraph.Editor.socket.send_clone_node(node);
 	}
 
 

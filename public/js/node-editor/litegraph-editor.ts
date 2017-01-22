@@ -1,6 +1,7 @@
 import {Nodes as LiteGraph,Node} from "../../nodes/nodes"
 import {NodesEngine as LGraph} from "../../nodes/nodes-engine"
 import {LGraphCanvas} from "./litegraph-canvas"
+import {NodeEditorSocket} from "./node-editor-socket";
 
 
 
@@ -8,6 +9,7 @@ export class Editor {
 	private root: HTMLDivElement;
 	graph: LGraph;
 	graphcanvas: LGraphCanvas;
+	socket: NodeEditorSocket;
 
 	constructor(container_id, options?) {
 		//fill container
@@ -25,6 +27,11 @@ export class Editor {
 		let graphcanvas = this.graphcanvas = new LGraphCanvas(canvas, graph);
 	   // graphcanvas.background_image = "/images/litegraph/grid.png";
 		graph.onAfterExecute = function () { graphcanvas.draw(true) };
+
+		//create socket
+		this.socket = new NodeEditorSocket();
+
+
 
 		//add stuff
 

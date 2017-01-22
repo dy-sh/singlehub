@@ -56,10 +56,9 @@ import {Nodes, Node} from "./nodes";
 export class NodesEngine {
 
     //default supported types
-    static supported_types: ["number", "string", "boolean"];
-    supported_types: ["number", "string", "boolean"];
 
-    static STATUS_STOPPED: 1;
+    supported_types:any= ["number", "string", "boolean"];
+
     static NodesEngine: 2;
     list_of_graphcanvas: any;
     isRunning: boolean;
@@ -116,7 +115,7 @@ export class NodesEngine {
 
 //used to know which types of connections support this graph (some graphs do not allow certain types)
     getSupportedTypes() {
-        return this.supported_types || NodesEngine.supported_types;
+        return this.supported_types;
     }
 
 
@@ -822,23 +821,23 @@ export class NodesEngine {
         this.sendActionToCanvas("onConnectionChange");
     }
 
-//
-//     /**
-//      * returns if the graph is in live mode
-//      * @method isLive
-//      */
-//     isLive() {
-//         if (!this.list_of_graphcanvas)
-//             return false;
-//
-//         for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-//             let c = this.list_of_graphcanvas[i];
-//             if (c.live_mode)
-//                 return true;
-//         }
-//         return false;
-//     }
-//
+
+    /**
+     * returns if the graph is in live mode
+     * @method isLive
+     */
+    isLive() {
+        if (!this.list_of_graphcanvas)
+            return false;
+
+        for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
+            let c = this.list_of_graphcanvas[i];
+            if (c.live_mode)
+                return true;
+        }
+        return false;
+    }
+
     /* Called when something visually changed */
     change() {
         this.sendActionToCanvas("setDirty", [true, true]);
