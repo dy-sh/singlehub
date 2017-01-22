@@ -375,5 +375,4 @@
         }).modal('setting', 'transition', 'fade up').modal('show');
     }
 });
-// LiteGraph.Editor = Editor; 
 //# sourceMappingURL=litegraph-editor.js.map

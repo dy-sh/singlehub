@@ -68,6 +68,8 @@ export const Nodes: any = {
         BG_IMAGE: "/images/litegraph/grid.png",
         MAX_NUMBER_OF_NODES: 1000, //avoid infinite loops
         DEFAULT_POSITION: [100, 100], //default node position
+        START_POS: 50,
+        FREE_SPACE_UNDER: 30,
         node_images_path: "",
 
         RENDER_CONNECTION_ARROWS: true,
@@ -97,6 +99,7 @@ export const Nodes: any = {
         registered_node_types: {},
         Nodes: {},
 
+
         //   debug: config.nodesEngine.debugEngine,
 
         /**
@@ -106,10 +109,10 @@ export const Nodes: any = {
          * @param {Class} base_class class containing the structure of a node
          */
 
-        debug:function (mess) {
+        debug: function (mess) {
             console.log(mess)
         },
-        debugErr:function (mess) {
+        debugErr: function (mess) {
             console.log(mess)
         },
 
@@ -118,7 +121,7 @@ export const Nodes: any = {
                 throw("Cannot register a simple object, it must be a class with a prototype");
             base_class.type = type;
 
-                this.debug("Node registered: " + type);
+            this.debug("Node registered: " + type);
 
             let categories = type.split("/");
 
@@ -255,7 +258,7 @@ export const Nodes: any = {
                     continue;
 
                 try {
-                        this.debug("Reloading: " + src);
+                    this.debug("Reloading: " + src);
                     let dynamicScript = document.createElement("script");
                     dynamicScript.type = "text/javascript";
                     dynamicScript.src = src;
@@ -265,11 +268,11 @@ export const Nodes: any = {
                 catch (err) {
                     if (Nodes.throw_errors)
                         throw err;
-                   this.debugErr("Error while reloading " + src);
+                    this.debugErr("Error while reloading " + src);
                 }
             }
 
-                this.debug("Nodes reloaded");
+            this.debug("Nodes reloaded");
         },
 
         //separated just to improve if it doesnt work
@@ -362,7 +365,7 @@ export class Node {
     flags: {
         skip_title_render?: true,
         unsafe_execution?: false,
-        collapsed?:boolean
+        collapsed?: boolean
     };
     editable: {
         property: string;
@@ -373,11 +376,16 @@ export class Node {
     onInputAdded: any;
     onOutputAdded: any;
     onConnectInput: any;
-    mouseOver:boolean;
-    selected:boolean;
-    onSelected:any;
-    onDrawBackground:any;
-    onDrawForeground:any;
+    mouseOver: boolean;
+    selected: boolean;
+    onSelected: any;
+    onDrawBackground: any;
+    onDrawForeground: any;
+    color: any;
+    bgcolor: any;
+    boxcolor: any;
+    shape: any;
+    onSerialize: any;
 
 
     constructor(title: string = "Unnamed") {
@@ -402,11 +410,12 @@ export class Node {
         this.id = -1; //not know till not added
     }
 
-    debug (mess) {
-    console.log(mess)
+    debug(mess) {
+        console.log(mess)
     }
-    debugErr (mess) {
-    console.log(mess)
+
+    debugErr(mess) {
+        console.log(mess)
     }
 
 //
@@ -469,43 +478,49 @@ export class Node {
 //
 //     }
 //
-//     /**
-//      * serialize the content
-//      * @method serialize
-//      */
-//     serialize() {
-//         let o = {
-//             id: this.id,
-//             title: this.title,
-//             type: this.type,
-//             pos: this.pos,
-//             size: this.size,
-//             data: this.data,
-//             flags: Nodes.cloneObject(this.flags),
-//             inputs: this.inputs,
-//             outputs: this.outputs
-//         };
-//
-//         if (this.properties)
-//             o.properties = Nodes.cloneObject(this.properties);
-//
-//         if (!o.type)
-//             o.type = this.constructor.type;
-//
-//         if (this.color)
-//             o.color = this.color;
-//         if (this.bgcolor)
-//             o.bgcolor = this.bgcolor;
-//         if (this.boxcolor)
-//             o.boxcolor = this.boxcolor;
-//         if (this.shape)
-//             o.shape = this.shape;
-//
-//         if (this.onSerialize)
-//             this.onSerialize(o);
-//
-//         return o;
-//     }
+    /**
+     * serialize the content
+     * @method serialize
+     */
+    serialize() {
+        let o = {
+            id: this.id,
+            title: this.title,
+            type: this.type,
+            pos: this.pos,
+            size: this.size,
+            data: this.data,
+            flags: Nodes.cloneObject(this.flags),
+            inputs: this.inputs,
+            outputs: this.outputs,
+            properties:null,
+            color:null,
+            bgcolor:null,
+            boxcolor:null,
+            shape:null
+        };
+
+        if (this.properties)
+            o.properties = Nodes.cloneObject(this.properties);
+
+        //todo ES6
+        // if (!o.type)
+        //     o.type = this.constructor.type;
+
+        if (this.color)
+            o.color = this.color;
+        if (this.bgcolor)
+            o.bgcolor = this.bgcolor;
+        if (this.boxcolor)
+            o.boxcolor = this.boxcolor;
+        if (this.shape)
+            o.shape = this.shape;
+
+        if (this.onSerialize)
+            this.onSerialize(o);
+
+        return o;
+    }
 //
 // 	/* Creates a clone of this node */
 //     clone() {

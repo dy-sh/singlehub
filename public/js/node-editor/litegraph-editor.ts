@@ -456,4 +456,3 @@ function NodeSettings(node) {
 }
 
 
-// LiteGraph.Editor = Editor;

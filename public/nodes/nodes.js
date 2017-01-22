@@ -65,6 +65,8 @@
         BG_IMAGE: "/images/litegraph/grid.png",
         MAX_NUMBER_OF_NODES: 1000,
         DEFAULT_POSITION: [100, 100],
+        START_POS: 50,
+        FREE_SPACE_UNDER: 30,
         node_images_path: "",
         RENDER_CONNECTION_ARROWS: true,
         CONNECTIONS_WIDTH: 4,
@@ -382,43 +384,44 @@
         //
         //     }
         //
-        //     /**
-        //      * serialize the content
-        //      * @method serialize
-        //      */
-        //     serialize() {
-        //         let o = {
-        //             id: this.id,
-        //             title: this.title,
-        //             type: this.type,
-        //             pos: this.pos,
-        //             size: this.size,
-        //             data: this.data,
-        //             flags: Nodes.cloneObject(this.flags),
-        //             inputs: this.inputs,
-        //             outputs: this.outputs
-        //         };
-        //
-        //         if (this.properties)
-        //             o.properties = Nodes.cloneObject(this.properties);
-        //
-        //         if (!o.type)
-        //             o.type = this.constructor.type;
-        //
-        //         if (this.color)
-        //             o.color = this.color;
-        //         if (this.bgcolor)
-        //             o.bgcolor = this.bgcolor;
-        //         if (this.boxcolor)
-        //             o.boxcolor = this.boxcolor;
-        //         if (this.shape)
-        //             o.shape = this.shape;
-        //
-        //         if (this.onSerialize)
-        //             this.onSerialize(o);
-        //
-        //         return o;
-        //     }
+        /**
+         * serialize the content
+         * @method serialize
+         */
+        serialize() {
+            let o = {
+                id: this.id,
+                title: this.title,
+                type: this.type,
+                pos: this.pos,
+                size: this.size,
+                data: this.data,
+                flags: exports.Nodes.cloneObject(this.flags),
+                inputs: this.inputs,
+                outputs: this.outputs,
+                properties: null,
+                color: null,
+                bgcolor: null,
+                boxcolor: null,
+                shape: null
+            };
+            if (this.properties)
+                o.properties = exports.Nodes.cloneObject(this.properties);
+            //todo ES6
+            // if (!o.type)
+            //     o.type = this.constructor.type;
+            if (this.color)
+                o.color = this.color;
+            if (this.bgcolor)
+                o.bgcolor = this.bgcolor;
+            if (this.boxcolor)
+                o.boxcolor = this.boxcolor;
+            if (this.shape)
+                o.shape = this.shape;
+            if (this.onSerialize)
+                this.onSerialize(o);
+            return o;
+        }
         //
         // 	/* Creates a clone of this node */
         //     clone() {

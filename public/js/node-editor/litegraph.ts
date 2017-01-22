@@ -8,25 +8,26 @@ import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
 
 import {Editor} from "./litegraph-editor";
+import {NodeEditorSocket} from "./node-editor-socket";
 
 
 let nodesEngine = new NodesEngine();
-
+let nodeEditorSocket = new NodeEditorSocket();
 
 
 
 
 var editor = new Editor("main");
 nodes.Editor=editor;
+nodes.Socket=nodeEditorSocket;
 (<any>window).graph = editor.graph;
 window.addEventListener("resize", function () {
     editor.graphcanvas.resize();
 });
 //getNodes();
 
-var START_POS = 50;
-var FREE_SPACE_UNDER = 30;
-var NODE_WIDTH = 150;
+
+
 
 
 let node_const_A = nodes.createNode("basic/const");

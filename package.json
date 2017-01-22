@@ -25,6 +25,8 @@
     "@types/handlebars": "^4.0.31",
     "@types/jquery": "^2.0.39",
     "@types/jquery.noty": "^2.0.28",
-    "@types/node": "^7.0.0"
+    "@types/node": "^7.0.0",
+    "@types/socket.io": "^1.4.27",
+    "@types/socket.io-client": "^1.4.29"
   }
 }

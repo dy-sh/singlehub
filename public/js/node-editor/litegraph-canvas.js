@@ -435,7 +435,7 @@
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         //derwish added
-                                        this.send_remove_link(this.graph.links[input.link]);
+                                        nodes_1.Nodes.Socket.send_remove_link(this.graph.links[input.link]);
                                         skip_action = true;
                                     }
                                 }
@@ -646,7 +646,7 @@
                             if (slot != -1) {
                                 //derwish added
                                 let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: slot };
-                                this.send_create_link(link);
+                                nodes_1.Nodes.Socket.send_create_link(link);
                             }
                             else {
                                 let input = node.getInputInfo(0);
@@ -656,7 +656,7 @@
                                 //derwish added
                                 if (input != null) {
                                     let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: 0 };
-                                    this.send_create_link(link);
+                                    nodes_1.Nodes.Socket.send_create_link(link);
                                 }
                             }
                         }
@@ -671,7 +671,7 @@
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
                     //derwish added
-                    this.send_update_node(this.resizing_node);
+                    nodes_1.Nodes.Socket.send_update_node(this.resizing_node);
                     this.resizing_node = null;
                 }
                 else if (this.node_dragged) {
@@ -686,7 +686,7 @@
                         //derwish added
                         this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                         this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                        this.send_update_node(this.selected_nodes[i]);
+                        nodes_1.Nodes.Socket.send_update_node(this.selected_nodes[i]);
                     }
                     this.node_dragged = null;
                 }
@@ -1787,7 +1787,7 @@
                     //derwish added
                     if (window.this_panel_id != null)
                         node.panel_id = window.this_panel_id; //this_panel_id initialized from ViewBag
-                    this.send_create_node(node);
+                    nodes_1.Nodes.Socket.send_create_node(node);
                 }
             }
             return false;
@@ -1928,9 +1928,9 @@
         static onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
             //if (node.removable == false) return;
             if (node.id in canvas.selected_nodes)
-                this.send_remove_nodes(canvas.selected_nodes);
+                nodes_1.Nodes.Socket.send_remove_nodes(canvas.selected_nodes);
             else
-                this.send_remove_node(node);
+                nodes_1.Nodes.Socket.send_remove_node(node);
             //derwish remove
             //node.graph.remove(uiNode);
             //node.setDirtyCanvas(true, true);
@@ -1945,19 +1945,7 @@
             //node.graph.add(newnode);
             //node.setDirtyCanvas(true, true);
             //derwish added
-            LGraphCanvas.send_clone_node(node);
-        }
-        send_create_link(link) {
-        }
-        send_remove_link(link) {
-        }
-        send_update_node(resizing_node) {
-        }
-        static send_remove_nodes(selected_nodes) {
-        }
-        static send_remove_node(node) {
-        }
-        static send_clone_node(node) {
+            nodes_1.Nodes.Socket.send_clone_node(node);
         }
     }
     exports.LGraphCanvas = LGraphCanvas;

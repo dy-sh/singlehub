@@ -617,7 +617,7 @@ export class LGraphCanvas {
 									//this.dirty_bgcanvas = true;
 
 									//derwish added
-									this.send_remove_link(this.graph.links[input.link]);
+									LiteGraph.Socket.send_remove_link(this.graph.links[input.link]);
 
 									skip_action = true;
 								}
@@ -877,7 +877,7 @@ export class LGraphCanvas {
 						if (slot != -1) {
 							//derwish added
 							let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: slot };
-							this.send_create_link(link);
+							LiteGraph.Socket.send_create_link(link);
 
 							//derwish removed
 							//this.connecting_node.connect(this.connecting_slot, node, slot);
@@ -892,7 +892,7 @@ export class LGraphCanvas {
 							//derwish added
 							if (input != null) {
 								let link = { origin_id: this.connecting_node.id, origin_slot: this.connecting_slot, target_id: node.id, target_slot: 0 };
-								this.send_create_link(link);
+								LiteGraph.Socket.send_create_link(link);
 							}
 							//derwish removed
 							//this.connecting_node.connect(this.connecting_slot, node, 0);
@@ -915,7 +915,7 @@ export class LGraphCanvas {
 				this.dirty_bgcanvas = true;
 
 				//derwish added
-				this.send_update_node(this.resizing_node);
+				LiteGraph.Socket.send_update_node(this.resizing_node);
 
 				this.resizing_node = null;
 			}
@@ -934,7 +934,7 @@ export class LGraphCanvas {
 					//derwish added
 					this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
 					this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-					this.send_update_node(this.selected_nodes[i]);
+					LiteGraph.Socket.send_update_node(this.selected_nodes[i]);
 				}
 
 				this.node_dragged = null;
@@ -2325,7 +2325,7 @@ export class LGraphCanvas {
 					node.panel_id = window.this_panel_id;//this_panel_id initialized from ViewBag
 
 
-				this.send_create_node(node);
+				LiteGraph.Socket.send_create_node(node);
 			}
 		}
 
@@ -2496,9 +2496,9 @@ export class LGraphCanvas {
 		//if (node.removable == false) return;
 
 		if (node.id in canvas.selected_nodes)
-			this.send_remove_nodes(canvas.selected_nodes);
+			LiteGraph.Socket.send_remove_nodes(canvas.selected_nodes);
 		else
-			this.send_remove_node(node);
+			LiteGraph.Socket.send_remove_node(node);
 
 		//derwish remove
 		//node.graph.remove(uiNode);
@@ -2515,36 +2515,13 @@ export class LGraphCanvas {
 		//node.setDirtyCanvas(true, true);
 
 		//derwish added
-		LGraphCanvas.send_clone_node(node);
+		LiteGraph.Socket.send_clone_node(node);
 	}
 
 
 
 
 
-	send_create_link(link: {origin_id; origin_slot: number; target_id; target_slot: number}) {
-
-	}
-
-	send_remove_link(link: any) {
-
-	}
-
-	send_update_node(resizing_node: any) {
-
-	}
-
-	static send_remove_nodes(selected_nodes: {}) {
-
-	}
-
-	private static send_remove_node(node: any) {
-
-	}
-
-	private static send_clone_node(node: any) {
-
-	}
 }
 
 
