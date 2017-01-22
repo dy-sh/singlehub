@@ -2,7 +2,8 @@
  * Created by Derwish on 02.07.2016.
  */
 
-import {Nodes as graph} from "../../nodes/nodes"
+import {Nodes} from "../../nodes/nodes"
+import {NodesEngine} from "../../nodes/nodes-engine";
 
 
 
@@ -11,8 +12,12 @@ export class NodeEditorSocket {
 
 	socketConnected:boolean;
 	socket:any;
+	engine:NodesEngine;
 
-	constructor() {
+
+	constructor(engine:NodesEngine) {
+
+		this.engine=engine;
 
 		//configure socket.io
 		this.socket = io.connect('/nodeeditor');
@@ -48,20 +53,20 @@ export class NodeEditorSocket {
 		});
 
 		this.socket.on('removeAllNodesAndLinks', function () {
-			graph.clear();
+			this.engine.clear();
 			(<any>window).location.replace("/NodeEditor/");
 			noty({text: 'All nodes have been deleted!', type: 'error'});
 		});
 
 		this.socket.on('nodeActivity', function (nodeId) {
-			var node = graph.getNodeById(nodeId);
+			var node = this.engine.getNodeById(nodeId);
 			if (node == null)
 				return;
 
-			node.boxcolor = graph.NODE_ACTIVE_BOXCOLOR;
+			node.boxcolor = Nodes.options.NODE_ACTIVE_BOXCOLOR;
 			node.setDirtyCanvas(true, true);
 			setTimeout(function () {
-				node.boxcolor = graph.NODE_DEFAULT_BOXCOLOR;
+				node.boxcolor = Nodes.options.NODE_DEFAULT_BOXCOLOR;
 				node.setDirtyCanvas(true, true);
 			}, 100);
 		});
@@ -73,12 +78,12 @@ export class NodeEditorSocket {
 				(<any>window).location = "/NodeEditor/";
 			}
 
-			var node = graph.getNodeById(nodeId);
+			var node = this.engine.getNodeById(nodeId);
 			if (node == null)
 				return;
 
-			graph.remove(node);
-			graph.setDirtyCanvas(true, true);
+			this.engine.remove(node);
+			this.engine.setDirtyCanvas(true, true);
 		});
 
 
@@ -103,7 +108,7 @@ export class NodeEditorSocket {
 				return;
 
 			//var node = graph.getNodeById(link.origin_id);
-			var targetNode = graph.getNodeById(link.target_id);
+			var targetNode = this.engine.getNodeById(link.target_id);
 			//node.disconnectOutput(link.target_slot, targetNode);
 			targetNode.disconnectInput(link.target_slot);
 		});
@@ -112,8 +117,8 @@ export class NodeEditorSocket {
 			if (link.panel_id != (<any>window).this_panel_id)
 				return;
 
-			var node = graph.getNodeById(link.origin_id);
-			var targetNode = graph.getNodeById(link.target_id);
+			var node = this.engine.getNodeById(link.origin_id);
+			var targetNode = this.engine.getNodeById(link.target_id);
 			node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
 			//  graph.change();
 
@@ -128,7 +133,7 @@ export class NodeEditorSocket {
 		$("#sendButton").click(
 			function () {
 				//console.log(graph);
-				var gr = JSON.stringify(graph.serialize());
+				var gr = JSON.stringify(this.engine.serialize());
 				$.ajax({
 					url: '/NodeEditorAPI/PutGraph',
 					type: 'POST',
@@ -299,7 +304,7 @@ export class NodeEditorSocket {
 		$.ajax({
 			url: "/NodeEditorAPI/GetGraph",
 			success: function (loadedGraph) {
-				graph.configure(loadedGraph);
+				this.engine.configure(loadedGraph);
 			}
 		});
 	}
@@ -336,10 +341,10 @@ export class NodeEditorSocket {
 
 	createOrUpdateNode(node) {
 
-		var oldNode = graph.getNodeById(node.id);
+		var oldNode = this.engine.getNodeById(node.id);
 		if (!oldNode) {
 			//create new
-			var newNode = graph.createNode(node.type);
+			var newNode = Nodes.createNode(node.type);
 
 			if (newNode == null) {
 				console.error("Can`t create node of type: [" + node.type + "]");
@@ -365,9 +370,9 @@ export class NodeEditorSocket {
 			if (node.pos)
 				newNode.pos = node.pos;
 			else
-				newNode.pos = [graph.START_POS, this.findFreeSpaceY(newNode)];
+				newNode.pos = [Nodes.options.START_POS, this.findFreeSpaceY(newNode)];
 
-			graph.add(newNode);
+			this.engine.add(newNode);
 		} else {
 			//update
 			oldNode.title = node.title;
@@ -394,9 +399,10 @@ export class NodeEditorSocket {
 			//calculate pos
 
 			if (node.pos) {
-				if (!graph.Editor.graphcanvas.node_dragged)
-					oldNode.pos = node.pos;
-				else if (!graph.Editor.graphcanvas.selected_nodes[node.id])
+				//todo ES6
+				// if (!graph.Editor.graphcanvas.node_dragged)
+				// 	oldNode.pos = node.pos;
+				// else if (!graph.Editor.graphcanvas.selected_nodes[node.id])
 					oldNode.pos = node.pos;
 			}
 
@@ -435,8 +441,8 @@ export class NodeEditorSocket {
 
 
 	createOrUpdateLink(link) {
-		var target = graph.getNodeById(link.target_id);
-		graph.getNodeById(link.origin_id)
+		var target = this.engine.getNodeById(link.target_id);
+		this.engine.getNodeById(link.origin_id)
 			.connect(link.origin_slot, target, link.target_slot, link.id);
 	}
 
@@ -449,7 +455,7 @@ export class NodeEditorSocket {
 		if (slotsMax == 0)
 			slotsMax = 1;
 
-		var height = graph.NODE_SLOT_HEIGHT * slotsMax;
+		var height = Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
 
 		return height + 5;
 	}
@@ -460,12 +466,12 @@ export class NodeEditorSocket {
 	findFreeSpaceY(node) {
 
 
-		var nodes = graph._nodes;
+		var nodes = this.engine._nodes;
 
 
 		node.pos = [0, 0];
 
-		var result = graph.START_POS;
+		var result = Nodes.options.START_POS;
 
 
 		for (var i = 0; i < nodes.length; i++) {
@@ -478,14 +484,14 @@ export class NodeEditorSocket {
 			if (!nodes[i].pos)
 				continue;
 
-			if (nodes[i].pos[0] > graph.NODE_WIDTH + 20 + graph.START_POS)
+			if (nodes[i].pos[0] > Nodes.options.NODE_WIDTH + 20 + Nodes.options.START_POS)
 				continue;
 
-			var occupyFromY = nodes[i].pos[1] - graph.FREE_SPACE_UNDER;
+			var occupyFromY = nodes[i].pos[1] - Nodes.options.FREE_SPACE_UNDER;
 			var occupyToY = nodes[i].pos[1] + nodes[i].size[1];
 
 			if (occupyFromY <= needToY && occupyToY >= needFromY) {
-				result = occupyToY + graph.FREE_SPACE_UNDER;
+				result = occupyToY + Nodes.options.FREE_SPACE_UNDER;
 				i = -1;
 			}
 		}

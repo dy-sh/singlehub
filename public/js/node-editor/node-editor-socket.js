@@ -12,7 +12,8 @@
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     class NodeEditorSocket {
-        constructor() {
+        constructor(engine) {
+            this.engine = engine;
             //configure socket.io
             this.socket = io.connect('/nodeeditor');
             this.socket.on('connect', function () {
@@ -40,18 +41,18 @@
                 noty({ text: 'Gateway disconnected!', type: 'error', timeout: false });
             });
             this.socket.on('removeAllNodesAndLinks', function () {
-                nodes_1.Nodes.clear();
+                this.engine.clear();
                 window.location.replace("/NodeEditor/");
                 noty({ text: 'All nodes have been deleted!', type: 'error' });
             });
             this.socket.on('nodeActivity', function (nodeId) {
-                var node = nodes_1.Nodes.getNodeById(nodeId);
+                var node = this.engine.getNodeById(nodeId);
                 if (node == null)
                     return;
-                node.boxcolor = nodes_1.Nodes.NODE_ACTIVE_BOXCOLOR;
+                node.boxcolor = nodes_1.Nodes.options.NODE_ACTIVE_BOXCOLOR;
                 node.setDirtyCanvas(true, true);
                 setTimeout(function () {
-                    node.boxcolor = nodes_1.Nodes.NODE_DEFAULT_BOXCOLOR;
+                    node.boxcolor = nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR;
                     node.setDirtyCanvas(true, true);
                 }, 100);
             });
@@ -60,11 +61,11 @@
                 if (nodeId == window.this_panel_id) {
                     window.location = "/NodeEditor/";
                 }
-                var node = nodes_1.Nodes.getNodeById(nodeId);
+                var node = this.engine.getNodeById(nodeId);
                 if (node == null)
                     return;
-                nodes_1.Nodes.remove(node);
-                nodes_1.Nodes.setDirtyCanvas(true, true);
+                this.engine.remove(node);
+                this.engine.setDirtyCanvas(true, true);
             });
             this.socket.on('nodeUpdated', function (node) {
                 if (node.panel_id != window.this_panel_id)
@@ -80,15 +81,15 @@
                 if (link.panel_id != window.this_panel_id)
                     return;
                 //var node = graph.getNodeById(link.origin_id);
-                var targetNode = nodes_1.Nodes.getNodeById(link.target_id);
+                var targetNode = this.engine.getNodeById(link.target_id);
                 //node.disconnectOutput(link.target_slot, targetNode);
                 targetNode.disconnectInput(link.target_slot);
             });
             this.socket.on('newLink', function (link) {
                 if (link.panel_id != window.this_panel_id)
                     return;
-                var node = nodes_1.Nodes.getNodeById(link.origin_id);
-                var targetNode = nodes_1.Nodes.getNodeById(link.target_id);
+                var node = this.engine.getNodeById(link.origin_id);
+                var targetNode = this.engine.getNodeById(link.target_id);
                 node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
                 //  graph.change();
             });
@@ -96,7 +97,7 @@
             // this.getGatewayInfo();
             $("#sendButton").click(function () {
                 //console.log(graph);
-                var gr = JSON.stringify(nodes_1.Nodes.serialize());
+                var gr = JSON.stringify(this.engine.serialize());
                 $.ajax({
                     url: '/NodeEditorAPI/PutGraph',
                     type: 'POST',
@@ -219,7 +220,7 @@
             $.ajax({
                 url: "/NodeEditorAPI/GetGraph",
                 success: function (loadedGraph) {
-                    nodes_1.Nodes.configure(loadedGraph);
+                    this.engine.configure(loadedGraph);
                 }
             });
         }
@@ -242,7 +243,7 @@
             this.getLinks();
         }
         createOrUpdateNode(node) {
-            var oldNode = nodes_1.Nodes.getNodeById(node.id);
+            var oldNode = this.engine.getNodeById(node.id);
             if (!oldNode) {
                 //create new
                 var newNode = nodes_1.Nodes.createNode(node.type);
@@ -265,8 +266,8 @@
                 if (node.pos)
                     newNode.pos = node.pos;
                 else
-                    newNode.pos = [nodes_1.Nodes.START_POS, this.findFreeSpaceY(newNode)];
-                nodes_1.Nodes.add(newNode);
+                    newNode.pos = [nodes_1.Nodes.options.START_POS, this.findFreeSpaceY(newNode)];
+                this.engine.add(newNode);
             }
             else {
                 //update
@@ -287,10 +288,11 @@
                 oldNode.size[1] = this.calculateNodeMinHeight(oldNode);
                 //calculate pos
                 if (node.pos) {
-                    if (!nodes_1.Nodes.Editor.graphcanvas.node_dragged)
-                        oldNode.pos = node.pos;
-                    else if (!nodes_1.Nodes.Editor.graphcanvas.selected_nodes[node.id])
-                        oldNode.pos = node.pos;
+                    //todo ES6
+                    // if (!graph.Editor.graphcanvas.node_dragged)
+                    // 	oldNode.pos = node.pos;
+                    // else if (!graph.Editor.graphcanvas.selected_nodes[node.id])
+                    oldNode.pos = node.pos;
                 }
                 oldNode.setDirtyCanvas(true, true);
             }
@@ -313,21 +315,21 @@
             }
         }
         createOrUpdateLink(link) {
-            var target = nodes_1.Nodes.getNodeById(link.target_id);
-            nodes_1.Nodes.getNodeById(link.origin_id)
+            var target = this.engine.getNodeById(link.target_id);
+            this.engine.getNodeById(link.origin_id)
                 .connect(link.origin_slot, target, link.target_slot, link.id);
         }
         calculateNodeMinHeight(node) {
             var slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
             if (slotsMax == 0)
                 slotsMax = 1;
-            var height = nodes_1.Nodes.NODE_SLOT_HEIGHT * slotsMax;
+            var height = nodes_1.Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
             return height + 5;
         }
         findFreeSpaceY(node) {
-            var nodes = nodes_1.Nodes._nodes;
+            var nodes = this.engine._nodes;
             node.pos = [0, 0];
-            var result = nodes_1.Nodes.START_POS;
+            var result = nodes_1.Nodes.options.START_POS;
             for (var i = 0; i < nodes.length; i++) {
                 var needFromY = result;
                 var needToY = result + node.size[1];
@@ -335,12 +337,12 @@
                     continue;
                 if (!nodes[i].pos)
                     continue;
-                if (nodes[i].pos[0] > nodes_1.Nodes.NODE_WIDTH + 20 + nodes_1.Nodes.START_POS)
+                if (nodes[i].pos[0] > nodes_1.Nodes.options.NODE_WIDTH + 20 + nodes_1.Nodes.options.START_POS)
                     continue;
-                var occupyFromY = nodes[i].pos[1] - nodes_1.Nodes.FREE_SPACE_UNDER;
+                var occupyFromY = nodes[i].pos[1] - nodes_1.Nodes.options.FREE_SPACE_UNDER;
                 var occupyToY = nodes[i].pos[1] + nodes[i].size[1];
                 if (occupyFromY <= needToY && occupyToY >= needFromY) {
-                    result = occupyToY + nodes_1.Nodes.FREE_SPACE_UNDER;
+                    result = occupyToY + nodes_1.Nodes.options.FREE_SPACE_UNDER;
                     i = -1;
                 }
             }

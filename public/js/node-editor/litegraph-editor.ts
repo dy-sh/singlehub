@@ -27,11 +27,15 @@ export class Editor {
 		if ((<any>window).theme)
 			Nodes.options=themes[(<any>window).theme];
 
-		//create socket
-		this.socket = new NodeEditorSocket();
+
 
 		//create graph
 		let graph = this.graph = new NodesEngine();
+
+		//create socket
+		this.socket = new NodeEditorSocket(graph);
+
+		//create canvas
 		let graphcanvas = this.graphcanvas = new LGraphCanvas(
 			canvas,
 			this.socket,

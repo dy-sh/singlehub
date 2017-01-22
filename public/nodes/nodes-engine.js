@@ -717,6 +717,72 @@
         setDirtyCanvas(fg, bg) {
             this.sendActionToCanvas("setDirty", [fg, bg]);
         }
+        /**
+         * Creates a Object containing all the info about this graph, it can be serialized
+         * @method serialize
+         * @return {Object} value of the node
+         */
+        serialize() {
+            let nodes_info = [];
+            for (let i = 0, l = this._nodes.length; i < l; ++i)
+                nodes_info.push(this._nodes[i].serialize());
+            //remove data from links, we dont want to store it
+            for (let i in this.links)
+                this.links[i].data = null;
+            let data = {
+                //		graph: this.graph,
+                iteration: this.iteration,
+                frame: this.frame,
+                last_node_id: this.last_node_id,
+                last_link_id: this.last_link_id,
+                links: this.cloneObject(this.links),
+                config: this.config,
+                nodes: nodes_info
+            };
+            return data;
+        }
+        cloneObject(obj, target) {
+            if (obj == null)
+                return null;
+            let r = JSON.parse(JSON.stringify(obj));
+            if (!target)
+                return r;
+            for (let i in r)
+                target[i] = r[i];
+            return target;
+        }
+        ;
+        /**
+         * Configure a graph from a JSON string
+         * @method configure
+         * @param {String} str configure a graph from a JSON string
+         */
+        configure(data, keep_old) {
+            if (!keep_old)
+                this.clear();
+            let nodes = data.nodes;
+            //copy all stored fields
+            for (let i in data)
+                this[i] = data[i];
+            let error = false;
+            //create nodes
+            this._nodes = [];
+            for (let i = 0, l = nodes.length; i < l; ++i) {
+                let n_info = nodes[i]; //stored info
+                let node = nodes_1.Nodes.createNode(n_info.type, n_info.title);
+                if (!node) {
+                    this.debugErr("Node not found: " + n_info.type);
+                    error = true;
+                    continue;
+                }
+                node.id = n_info.id; //id it or it will create a new id
+                this.add(node, true); //add before configure, otherwise configure cannot create links
+                node.configure(n_info);
+            }
+            this.updateExecutionOrder();
+            this.setDirtyCanvas(true, true);
+            return error;
+        }
     }
     NodesEngine.NodesEngine = 2;
     exports.NodesEngine = NodesEngine;

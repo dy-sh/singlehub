@@ -25,10 +25,11 @@
             //nodes options theme
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
-            //create socket
-            this.socket = new node_editor_socket_1.NodeEditorSocket();
             //create graph
             let graph = this.graph = new nodes_engine_1.NodesEngine();
+            //create socket
+            this.socket = new node_editor_socket_1.NodeEditorSocket(graph);
+            //create canvas
             let graphcanvas = this.graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.socket, this, graph);
             // graphcanvas.background_image = "/images/litegraph/grid.png";
             graph.onAfterExecute = function () { graphcanvas.draw(true); };

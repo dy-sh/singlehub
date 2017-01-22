@@ -332,66 +332,60 @@
             return target;
         }
         ;
-        //
-        //     /**
-        //      * configure a node from an object containing the serialized info
-        //      * @method configure
-        //      */
-        //     configure(info) {
-        //         for (let j in info) {
-        //             if (j == "console") continue;
-        //
-        //             if (j == "properties") {
-        //                 //i dont want to clone properties, I want to reuse the old container
-        //                 for (let k in info.properties)
-        //                     this.properties[k] = info.properties[k];
-        //                 continue;
-        //             }
-        //
-        //             if (info[j] == null)
-        //                 continue;
-        //             else if (typeof(info[j]) == 'object') //object
-        //             {
-        //                 if (this[j] && this[j].configure)
-        //                     this[j].configure(info[j]);
-        //                 else
-        //                     this[j] = Nodes.cloneObject(info[j], this[j]);
-        //             }
-        //             else //value
-        //                 this[j] = info[j];
-        //         }
-        //
-        //         //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
-        //         for (let i in this.inputs) {
-        //             let input = this.inputs[i];
-        //             if (!input.link || !input.link.length)
-        //                 continue;
-        //             let link = input.link;
-        //             if (typeof(link) != "object")
-        //                 continue;
-        //             input.link = link[0];
-        //             this.graph.links[link[0]] = {
-        //                 id: link[0],
-        //                 origin_id: link[1],
-        //                 origin_slot: link[2],
-        //                 target_id: link[3],
-        //                 target_slot: link[4]
-        //             };
-        //         }
-        //         for (let i in this.outputs) {
-        //             let output = this.outputs[i];
-        //             if (!output.links || output.links.length == 0)
-        //                 continue;
-        //             for (let j in output.links) {
-        //                 let link = output.links[j];
-        //                 if (typeof(link) != "object")
-        //                     continue;
-        //                 output.links[j] = link[0];
-        //             }
-        //         }
-        //
-        //     }
-        //
+        /**
+         * configure a node from an object containing the serialized info
+         * @method configure
+         */
+        configure(info) {
+            for (let j in info) {
+                if (j == "console")
+                    continue;
+                if (j == "properties") {
+                    //i dont want to clone properties, I want to reuse the old container
+                    for (let k in info.properties)
+                        this.properties[k] = info.properties[k];
+                    continue;
+                }
+                if (info[j] == null)
+                    continue;
+                else if (typeof (info[j]) == 'object') {
+                    if (this[j] && this[j].configure)
+                        this[j].configure(info[j]);
+                    else
+                        this[j] = Nodes.cloneObject(info[j], this[j]);
+                }
+                else
+                    this[j] = info[j];
+            }
+            //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
+            for (let i in this.inputs) {
+                let input = this.inputs[i];
+                if (!input.link || !input.link.length)
+                    continue;
+                let link = input.link;
+                if (typeof (link) != "object")
+                    continue;
+                input.link = link[0];
+                this.graph.links[link[0]] = {
+                    id: link[0],
+                    origin_id: link[1],
+                    origin_slot: link[2],
+                    target_id: link[3],
+                    target_slot: link[4]
+                };
+            }
+            for (let i in this.outputs) {
+                let output = this.outputs[i];
+                if (!output.links || output.links.length == 0)
+                    continue;
+                for (let j in output.links) {
+                    let link = output.links[j];
+                    if (typeof (link) != "object")
+                        continue;
+                    output.links[j] = link[0];
+                }
+            }
+        }
         /**
          * serialize the content
          * @method serialize
