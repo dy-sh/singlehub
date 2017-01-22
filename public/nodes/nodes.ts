@@ -353,8 +353,6 @@ export class Node {
     desc: string;
     size: [number, number];
     graph: any;
-    private _pos: [number, number];
-    pos: [number, number];
     id: number;
     type: any;
     inputs: Array<any>;
@@ -387,26 +385,13 @@ export class Node {
     shape: any;
     onSerialize: any;
 
+    pos:[number, number]=[10, 10];
+
+
 
     constructor(title: string = "Unnamed") {
         this.title = title;
         this.size = [Nodes.NODE_WIDTH, 60];
-
-        this._pos = [10, 10];
-
-        Object.defineProperty(this, "pos", {
-            set: function (v) {
-                if (!v || !(v.length < 2))
-                    return;
-                this._pos[0] = v[0];
-                this._pos[1] = v[1];
-            },
-            get: function () {
-                return this._pos;
-            },
-            enumerable: true
-        });
-
         this.id = -1; //not know till not added
     }
 
@@ -869,7 +854,7 @@ export class Node {
         let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
         if (this.flags.collapsed) {
             //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
-            if (isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.NODE_TITLE_HEIGHT - margin, Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.NODE_TITLE_HEIGHT + 2 * margin))
+            if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.NODE_TITLE_HEIGHT - margin, Nodes.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.NODE_TITLE_HEIGHT + 2 * margin))
                 return true;
         }
         else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
