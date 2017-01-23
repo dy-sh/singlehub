@@ -121,4 +121,4 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = new Server();
 });
-//# sourceMappingURL=server.js.map
+//# sourceMappingURL=index.js.map
