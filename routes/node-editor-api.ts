@@ -9,9 +9,10 @@ let router = express.Router();
 //var uiNodesEngine = require('../modules/nodes/ui-nodes-engine');
 //var config = require('./../config');
 
+import App from '../modules/web-server/server'
 
 router.get('/GetNodesForPanel', function (req, res) {
-	res.json("ok");
+	res.json(App.server.address().port);
 });
 
 router.get('/ConvertNodeToLiteGraphNode', function (req, res) {

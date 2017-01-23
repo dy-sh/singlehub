@@ -4,7 +4,7 @@
 
 module.exports = (function () {
 
-	var app = require('./../../app');
+	var app = require('./server');
 	var debug = require('debug')('server:           ');
 	var debugError = require('debug')('server:error      ');
 	var http = require('http');

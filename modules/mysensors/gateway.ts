@@ -32,7 +32,7 @@ util.inherits(Gateway, eventEmitter);
 Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
     if (!portName) throw new Error("portName is not defined!");
     baudRate = baudRate || 115200;
-    baudRate=115200;
+    baudRate = 115200;
 
     var SerialPort = require("serialport");
     this.port = new SerialPort(portName, {baudRate: baudRate, autoOpen: false});
@@ -370,5 +370,6 @@ Gateway.prototype._getNewNodeId = function () {
     debugErr('Can`t register new node. There are no available id.');
 };
 
-module.exports = new Gateway;
+var mys_gameway = new Gateway;
 
+export{mys_gameway};

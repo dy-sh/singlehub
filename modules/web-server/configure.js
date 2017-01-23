@@ -2,7 +2,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 module.exports = (function () {
-    var app = require('./../../app');
+    var app = require('./server');
     var debug = require('debug')('server:           ');
     var debugError = require('debug')('server:error      ');
     var http = require('http');

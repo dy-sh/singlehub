@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express'], factory);
+        define(["require", "exports", 'express', '../modules/web-server/server'], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,8 +15,9 @@
     //var nodesEngine = require('../modules/nodes/nodes-engine');
     //var uiNodesEngine = require('../modules/nodes/ui-nodes-engine');
     //var config = require('./../config');
+    const server_1 = require('../modules/web-server/server');
     router.get('/GetNodesForPanel', function (req, res) {
-        res.json("ok");
+        res.json(server_1.default.server.address().port);
     });
     router.get('/ConvertNodeToLiteGraphNode', function (req, res) {
     });

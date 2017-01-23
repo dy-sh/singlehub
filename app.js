@@ -1,70 +1,59 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
+ */
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser'], factory);
+        define(["require", "exports", 'path', './modules/web-server/server'], factory);
     }
 })(function (require, exports) {
     "use strict";
-    /**
-     * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
-     */
-    const express = require('express');
+    console.log("-------- MyNodes ----------");
     const path = require('path');
-    const logger = require('morgan');
-    const cookieParser = require('cookie-parser');
-    const bodyParser = require('body-parser');
-    var app = express();
-    let config = require('./config');
-    // view engine setup
-    app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
-    // uncomment after placing your favicon in /public
-    //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-    if (config.webServer.debug) {
-        app.use(logger('dev'));
-    }
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser());
-    app.use(require('stylus').middleware(path.join(__dirname, 'public')));
-    app.use(express.static(path.join(__dirname, 'public')));
-    app.use('/', require('./routes/firstrun'));
-    app.use('/', require('./routes/index'));
-    app.use('/Dashboard', require('./routes/dashboard'));
-    app.use('/NodeEditor', require('./routes/node-editor'));
-    app.use('/NodeEditorAPI', require('./routes/node-editor-api'));
-    app.use('/MySensors', require('./routes/mysensors'));
-    app.use('/MySensorsAPI', require('./routes/mysensors-api'));
-    // catch 404 and forward to error handler
-    app.use(function (req, res, next) {
-        let err = new Error('Not Found');
-        err.status = 404;
-        next(err);
-    });
-    // error handlers
-    // // development error handler
-    // // will print stacktrace
-    // if (app.get('env') === 'development') {
-    // 	app.use(function (err, req, res, next) {
-    // 		res.status(err.status || 500);
-    // 		res.render('error', {
-    // 			message: err.message,
-    // 			error: err
-    // 		});
-    // 	});
-    // }
-    //
-    // // production error handler
-    // // no stacktraces leaked to user
-    // app.use(function (err, req, res, next) {
-    // 	res.status(err.status || 500);
-    // 	res.render('error', {
-    // 		message: err.message,
-    // 		error: {}
-    // 	});
-    // });
-    module.exports = app;
+    global.__rootdirname = path.resolve(__dirname);
+    require('./modules/web-server/server');
 });
+//
+//
+// debug('ts-express:server');
+//
+// const port = normalizePort(process.env.PORT || 3000);
+// App.set('port', port);
+//
+// const server = http.createServer(App);
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
+//
+// function normalizePort(val: number|string): number|string|boolean {
+//     let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
+//     if (isNaN(port)) return val;
+//     else if (port >= 0) return port;
+//     else return false;
+// }
+//
+// function onError(error: NodeJS.ErrnoException): void {
+//     if (error.syscall !== 'listen') throw error;
+//     let bind = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
+//     switch(error.code) {
+//         case 'EACCES':
+//             console.error(`${bind} requires elevated privileges`);
+//             process.exit(1);
+//             break;
+//         case 'EADDRINUSE':
+//             console.error(`${bind} is already in use`);
+//             process.exit(1);
+//             break;
+//         default:
+//             throw error;
+//     }
+// }
+//
+// function onListening(): void {
+//     let addr = server.address();
+//     let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+//     debug(`Listening on ${bind}`);
+// }
 //# sourceMappingURL=app.js.map
