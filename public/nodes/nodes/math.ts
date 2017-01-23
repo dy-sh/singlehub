@@ -353,12 +353,12 @@ import {Nodes as nodes, Node} from "../nodes";
                 this.properties = {A: 1.0, B: 1.0, OP: "+"};
             }
 
-            setValue(v) {
+            setValue= function(v) {
                 if (typeof(v) == "string") v = parseFloat(v);
                 this.properties["value"] = v;
             }
 
-            onExecute() {
+            onExecute= function() {
                 let A = this.getInputData(0);
                 let B = this.getInputData(1);
                 if (A != null)
@@ -392,7 +392,7 @@ import {Nodes as nodes, Node} from "../nodes";
                 this.setOutputData(0, result);
             }
 
-            onDrawBackground(ctx) {
+            onDrawBackground= function(ctx) {
                 this.outputs[0].label = "A" + this.properties.OP + "B";
             }
         }

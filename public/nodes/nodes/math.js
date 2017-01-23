@@ -344,6 +344,45 @@
     class MathOperation extends nodes_1.Node {
         constructor() {
             super();
+            this.setValue = function (v) {
+                if (typeof (v) == "string")
+                    v = parseFloat(v);
+                this.properties["value"] = v;
+            };
+            this.onExecute = function () {
+                let A = this.getInputData(0);
+                let B = this.getInputData(1);
+                if (A != null)
+                    this.properties["A"] = A;
+                else
+                    A = this.properties["A"];
+                if (B != null)
+                    this.properties["B"] = B;
+                else
+                    B = this.properties["B"];
+                let result = 0;
+                switch (this.properties.OP) {
+                    case '+':
+                        result = A + B;
+                        break;
+                    case '-':
+                        result = A - B;
+                        break;
+                    case '/':
+                        result = A / B;
+                        break;
+                    case '%':
+                        result = A % B;
+                        break;
+                    case '^':
+                        result = Math.pow(A, B);
+                        break;
+                }
+                this.setOutputData(0, result);
+            };
+            this.onDrawBackground = function (ctx) {
+                this.outputs[0].label = "A" + this.properties.OP + "B";
+            };
             this.title = "Operation";
             this.desc = "Easy math operators";
             this["@OP"] = { type: "enum", title: "operation", values: ["+", "-", "*", "/", "%", "^"] };
@@ -351,45 +390,6 @@
             this.addInput("B", "number");
             this.addOutput("=", "number");
             this.properties = { A: 1.0, B: 1.0, OP: "+" };
-        }
-        setValue(v) {
-            if (typeof (v) == "string")
-                v = parseFloat(v);
-            this.properties["value"] = v;
-        }
-        onExecute() {
-            let A = this.getInputData(0);
-            let B = this.getInputData(1);
-            if (A != null)
-                this.properties["A"] = A;
-            else
-                A = this.properties["A"];
-            if (B != null)
-                this.properties["B"] = B;
-            else
-                B = this.properties["B"];
-            let result = 0;
-            switch (this.properties.OP) {
-                case '+':
-                    result = A + B;
-                    break;
-                case '-':
-                    result = A - B;
-                    break;
-                case '/':
-                    result = A / B;
-                    break;
-                case '%':
-                    result = A % B;
-                    break;
-                case '^':
-                    result = Math.pow(A, B);
-                    break;
-            }
-            this.setOutputData(0, result);
-        }
-        onDrawBackground(ctx) {
-            this.outputs[0].label = "A" + this.properties.OP + "B";
         }
     }
     nodes_1.Nodes.registerNodeType("math/operation", MathOperation);

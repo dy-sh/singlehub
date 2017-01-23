@@ -1,6 +1,6 @@
 
 
- import {Nodes, Node} from "../../nodes/nodes"
+import {Nodes, Node} from "../../nodes/nodes"
 // import {LGraphCanvas} from "./litegraph-canvas"
 // import {NodesEngine} from "../../nodes/nodes-engine"
 
