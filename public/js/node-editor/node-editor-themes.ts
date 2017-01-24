@@ -1,5 +1,5 @@
 /**
- * Created by derwish on 22.01.17.
+ * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 
 import {NodesOptions} from "../../nodes/nodes";

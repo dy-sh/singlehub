@@ -1,6 +1,6 @@
-//*********************************************************************************
-// NodeEditorCanvas: LGraph renderer CLASS
-//*********************************************************************************
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
+ */
 
 import {Node, Nodes} from "../../nodes/nodes"
 import {NodesEngine,engine} from "../../nodes/nodes-engine"

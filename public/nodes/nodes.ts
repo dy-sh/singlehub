@@ -351,7 +351,7 @@ export class Node {
     desc: string;
     size: [number, number];
     graph: any;
-    id: number;
+    id: string|number;
     type: any;
     inputs: Array<any>;
     outputs: Array<any>;

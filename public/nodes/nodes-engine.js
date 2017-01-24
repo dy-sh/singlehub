@@ -724,7 +724,7 @@
          * @method configure
          * @param {String} str configure a graph from a JSON string
          */
-        configure(data, keep_old) {
+        configure(data, keep_old = false) {
             if (!keep_old)
                 this.clear();
             let nodes = data.nodes;

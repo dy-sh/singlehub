@@ -866,7 +866,7 @@ export class NodesEngine {
      * @method configure
      * @param {String} str configure a graph from a JSON string
      */
-    configure(data, keep_old) {
+    configure(data, keep_old=false) {
         if (!keep_old)
             this.clear();
 
@@ -901,5 +901,5 @@ export class NodesEngine {
 }
 
 
-export var engine = new NodesEngine();
+export let engine = new NodesEngine();
 

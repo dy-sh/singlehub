@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', '../modules/web-server/server'], factory);
+        define(["require", "exports", 'express', "../public/nodes/nodes-engine"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,9 +15,11 @@
     //var nodesEngine = require('../modules/nodes/nodes-engine');
     //var uiNodesEngine = require('../modules/nodes/ui-nodes-engine');
     //var config = require('./../config');
-    const server_1 = require('../modules/web-server/server');
+    // import App from '../modules/web-server/server'
+    const nodes_engine_1 = require("../public/nodes/nodes-engine");
     router.get('/GetNodesForPanel', function (req, res) {
-        res.json(server_1.default.server.address().port);
+        let s = nodes_engine_1.engine.serialize();
+        res.json(s);
     });
     router.get('/ConvertNodeToLiteGraphNode', function (req, res) {
     });
@@ -39,6 +41,10 @@
     router.post('/RemoveNodes', function (req, res) {
     });
     router.post('/UpdateNode', function (req, res) {
+        let newNode = JSON.parse(req.body.node);
+        // console.log(newNode);
+        let node = nodes_engine_1.engine._nodes.find(n => n.id === newNode.id);
+        node.pos = newNode.pos;
     });
     router.post('/SetNodeSettings', function (req, res) {
     });

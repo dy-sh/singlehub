@@ -9,10 +9,12 @@ let router = express.Router();
 //var uiNodesEngine = require('../modules/nodes/ui-nodes-engine');
 //var config = require('./../config');
 
-import App from '../modules/web-server/server'
+// import App from '../modules/web-server/server'
+import {engine} from "../public/nodes/nodes-engine"
 
 router.get('/GetNodesForPanel', function (req, res) {
-	res.json(App.server.address().port);
+	let s=engine.serialize();
+	res.json(s);
 });
 
 router.get('/ConvertNodeToLiteGraphNode', function (req, res) {
@@ -55,7 +57,10 @@ router.post('/RemoveNodes', function (req, res) {
 });
 
 router.post('/UpdateNode', function (req, res) {
-
+	let newNode = JSON.parse(req.body.node);
+	// console.log(newNode);
+	let node = engine._nodes.find(n => n.id === newNode.id);
+	node.pos=newNode.pos;
 });
 
 router.post('/SetNodeSettings', function (req, res) {

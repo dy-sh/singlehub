@@ -39,8 +39,6 @@
                 this.express.use(logger('dev'));
             this.express.use(bodyParser.json());
             this.express.use(bodyParser.urlencoded({ extended: false }));
-            this.express.use(bodyParser.json());
-            this.express.use(bodyParser.urlencoded({ extended: false }));
             this.express.use(cookieParser());
             this.express.use(require('stylus').middleware(path.join(this.__rootdirname, 'public')));
             this.express.use(express.static(path.join(this.__rootdirname, 'public')));

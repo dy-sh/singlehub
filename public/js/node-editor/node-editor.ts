@@ -1,3 +1,7 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
+ */
+
 import {Nodes,Node} from "../../nodes/nodes"
 import {NodesEngine,engine} from "../../nodes/nodes-engine"
 import {NodeEditorCanvas} from "./node-editor-canvas"
@@ -479,4 +483,4 @@ function NodeSettings(node) {
 }
 
 
-export var editor= new NodeEditor();
+export let editor= new NodeEditor();

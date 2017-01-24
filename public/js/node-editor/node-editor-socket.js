@@ -1,5 +1,5 @@
 /**
- * Created by Derwish on 02.07.2016.
+ * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
  */
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -49,7 +49,7 @@
                 noty({ text: 'All nodes have been deleted!', type: 'error' });
             });
             this.socket.on('nodeActivity', function (nodeId) {
-                var node = this.engine.getNodeById(nodeId);
+                let node = this.engine.getNodeById(nodeId);
                 if (node == null)
                     return;
                 node.boxcolor = nodes_1.Nodes.options.NODE_ACTIVE_BOXCOLOR;
@@ -64,7 +64,7 @@
                 if (nodeId == window.this_panel_id) {
                     window.location = "/NodeEditor/";
                 }
-                var node = this.engine.getNodeById(nodeId);
+                let node = this.engine.getNodeById(nodeId);
                 if (node == null)
                     return;
                 this.engine.remove(node);
@@ -83,16 +83,16 @@
             this.socket.on('removeLink', function (link) {
                 if (link.panel_id != window.this_panel_id)
                     return;
-                //var node = graph.getNodeById(link.origin_id);
-                var targetNode = this.engine.getNodeById(link.target_id);
+                //let node = graph.getNodeById(link.origin_id);
+                let targetNode = this.engine.getNodeById(link.target_id);
                 //node.disconnectOutput(link.target_slot, targetNode);
                 targetNode.disconnectInput(link.target_slot);
             });
             this.socket.on('newLink', function (link) {
                 if (link.panel_id != window.this_panel_id)
                     return;
-                var node = this.engine.getNodeById(link.origin_id);
-                var targetNode = this.engine.getNodeById(link.target_id);
+                let node = this.engine.getNodeById(link.origin_id);
+                let targetNode = this.engine.getNodeById(link.target_id);
                 node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
                 //  graph.change();
             });
@@ -100,7 +100,7 @@
             // this.getGatewayInfo();
             $("#sendButton").click(function () {
                 //console.log(graph);
-                var gr = JSON.stringify(this.engine.serialize());
+                let gr = JSON.stringify(this.engine.serialize());
                 $.ajax({
                     url: '/NodeEditorAPI/PutGraph',
                     type: 'POST',
@@ -110,8 +110,8 @@
             });
             $("#fullscreen-button").click(function () {
                 // editor.goFullscreen();
-                var elem = document.documentElement;
-                var fullscreenElement = document.fullscreenElement ||
+                let elem = document.documentElement;
+                let fullscreenElement = document.fullscreenElement ||
                     document.mozFullscreenElement ||
                     document.webkitFullscreenElement;
                 if (fullscreenElement == null) {
@@ -168,7 +168,7 @@
         ;
         send_create_node(node) {
             node.size = null; //reset size for autosizing
-            var serializedNode = node.serialize();
+            let serializedNode = node.serialize();
             $.ajax({
                 url: '/NodeEditorAPI/AddNode',
                 type: 'POST',
@@ -187,7 +187,7 @@
         }
         ;
         send_remove_node(node) {
-            var serializedNode = node.serialize();
+            let serializedNode = node.serialize();
             $.ajax({
                 url: '/NodeEditorAPI/RemoveNode',
                 type: 'POST',
@@ -197,8 +197,8 @@
         }
         ;
         send_remove_nodes(nodes) {
-            var array = [];
-            for (var n in nodes) {
+            let array = [];
+            for (let n in nodes) {
                 array.push(nodes[n].id);
             }
             $.ajax({
@@ -210,11 +210,12 @@
         }
         ;
         send_update_node(node) {
-            var serializedNode = node.serialize();
+            let s = node.serialize();
+            s = JSON.stringify(s);
             $.ajax({
                 url: '/NodeEditorAPI/UpdateNode',
                 type: 'POST',
-                data: { 'node': serializedNode }
+                data: { 'node': s }
             }).done(function () {
             });
         }
@@ -233,7 +234,8 @@
                 url: "/NodeEditorAPI/GetNodesForPanel",
                 data: { 'panelId': window.this_panel_id },
                 success: function (nodes) {
-                    that.onReturnNodes(nodes);
+                    //that.onReturnNodes(nodes);
+                    nodes_engine_1.engine.configure(nodes, false);
                 }
             });
         }
@@ -241,16 +243,17 @@
             //console.log(nodes);
             if (!nodes)
                 return;
-            for (var i = 0; i < nodes.length; i++) {
+            console.log(nodes);
+            for (let i = 0; i < nodes.length; i++) {
                 this.createOrUpdateNode(nodes[i]);
             }
             this.getLinks();
         }
         createOrUpdateNode(node) {
-            var oldNode = this.engine.getNodeById(node.id);
+            let oldNode = this.engine.getNodeById(node.id);
             if (!oldNode) {
                 //create new
-                var newNode = nodes_1.Nodes.createNode(node.type);
+                let newNode = nodes_1.Nodes.createNode(node.type);
                 if (newNode == null) {
                     console.error("Can`t create node of type: [" + node.type + "]");
                     return;
@@ -314,37 +317,37 @@
             //console.log(nodes);
             if (!links)
                 return;
-            for (var i = 0; i < links.length; i++) {
+            for (let i = 0; i < links.length; i++) {
                 this.createOrUpdateLink(links[i]);
             }
         }
         createOrUpdateLink(link) {
-            var target = this.engine.getNodeById(link.target_id);
+            let target = this.engine.getNodeById(link.target_id);
             this.engine.getNodeById(link.origin_id)
                 .connect(link.origin_slot, target, link.target_slot, link.id);
         }
         calculateNodeMinHeight(node) {
-            var slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
+            let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
             if (slotsMax == 0)
                 slotsMax = 1;
-            var height = nodes_1.Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
+            let height = nodes_1.Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
             return height + 5;
         }
         findFreeSpaceY(node) {
-            var nodes = this.engine._nodes;
+            let nodes = this.engine._nodes;
             node.pos = [0, 0];
-            var result = nodes_1.Nodes.options.START_POS;
-            for (var i = 0; i < nodes.length; i++) {
-                var needFromY = result;
-                var needToY = result + node.size[1];
+            let result = nodes_1.Nodes.options.START_POS;
+            for (let i = 0; i < nodes.length; i++) {
+                let needFromY = result;
+                let needToY = result + node.size[1];
                 if (node.id == nodes[i].id)
                     continue;
                 if (!nodes[i].pos)
                     continue;
                 if (nodes[i].pos[0] > nodes_1.Nodes.options.NODE_WIDTH + 20 + nodes_1.Nodes.options.START_POS)
                     continue;
-                var occupyFromY = nodes[i].pos[1] - nodes_1.Nodes.options.FREE_SPACE_UNDER;
-                var occupyToY = nodes[i].pos[1] + nodes[i].size[1];
+                let occupyFromY = nodes[i].pos[1] - nodes_1.Nodes.options.FREE_SPACE_UNDER;
+                let occupyToY = nodes[i].pos[1] + nodes[i].size[1];
                 if (occupyFromY <= needToY && occupyToY >= needFromY) {
                     result = occupyToY + nodes_1.Nodes.options.FREE_SPACE_UNDER;
                     i = -1;
