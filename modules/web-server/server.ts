@@ -13,11 +13,17 @@ import * as bodyParser from 'body-parser';
 import * as http from 'http';
 import * as debug from 'debug';
 
-var config = require('./../../config.json');
+import {NodesServerSocket} from "../../routes/node-editor-io"
+
+import * as socket from 'socket.io';
+
+
+let config = require('./../../config.json');
 
 class Server {
     express: express.Application;
     server: http.Server;
+    io: NodesServerSocket;
 
     private __rootdirname;
 
@@ -29,6 +35,7 @@ class Server {
         this.routes();
         this.handeErrors();
         this.configure();
+        this.start_io();
     }
 
     private setViewEngine() {
@@ -93,6 +100,16 @@ class Server {
         this.server.on('error', onError);
         this.server.on('listening', onListening);
 
+        // let io=socket(this.server);
+        //
+        //
+        //
+        // io.on('connection', function(socket){
+        //     socket.on('chat message', function(msg){
+        //         io.emit('chat message', msg+"2");
+        //     });
+        // });
+
         function normalizePort(val: number|string): number|string|boolean {
             let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
             if (isNaN(port)) return val;
@@ -126,6 +143,10 @@ class Server {
         }
 
         console.log("Server started at port " + port);
+    }
+
+    private start_io() {
+        this.io = new NodesServerSocket(this.server);
     }
 }
 

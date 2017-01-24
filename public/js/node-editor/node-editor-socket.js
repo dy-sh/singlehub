@@ -15,6 +15,11 @@
     class NodeEditorSocket {
         constructor() {
             this.engine = nodes_engine_1.engine;
+            let socket = io();
+            socket.emit('chat message', "h1");
+            socket.on('chat message', function (msg) {
+                console.log(msg);
+            });
         }
         c() {
             //configure socket.io

@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug'], factory);
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', "../../routes/node-editor-io"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -17,7 +17,8 @@
     const bodyParser = require('body-parser');
     const http = require('http');
     const debug = require('debug');
-    var config = require('./../../config.json');
+    const node_editor_io_1 = require("../../routes/node-editor-io");
+    let config = require('./../../config.json');
     class Server {
         constructor() {
             this.__rootdirname = global.__rootdirname;
@@ -27,6 +28,7 @@
             this.routes();
             this.handeErrors();
             this.configure();
+            this.start_io();
         }
         setViewEngine() {
             this.express.set('views', path.join(this.__rootdirname, 'views'));
@@ -81,6 +83,15 @@
             this.server.listen(port);
             this.server.on('error', onError);
             this.server.on('listening', onListening);
+            // let io=socket(this.server);
+            //
+            //
+            //
+            // io.on('connection', function(socket){
+            //     socket.on('chat message', function(msg){
+            //         io.emit('chat message', msg+"2");
+            //     });
+            // });
             function normalizePort(val) {
                 let port = (typeof val === 'string') ? parseInt(val, 10) : val;
                 if (isNaN(port))
@@ -114,6 +125,9 @@
                 debug(`Listening on ${bind}`);
             }
             console.log("Server started at port " + port);
+        }
+        start_io() {
+            this.io = new node_editor_io_1.NodesServerSocket(this.server);
         }
     }
     Object.defineProperty(exports, "__esModule", { value: true });
