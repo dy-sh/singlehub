@@ -46,8 +46,8 @@ import {Nodes, Node} from "./nodes";
 //
 //
 //
-// 	if (config.nodesEngine.updateInterval > 0)
-// 		setTimeout(step, config.nodesEngine.updateInterval);
+// 	if (config.engine.updateInterval > 0)
+// 		setTimeout(step, config.engine.updateInterval);
 // 	else
 // 		setImmediate(step);
 // }
@@ -105,7 +105,7 @@ export class NodesEngine {
     constructor() {
         console.log("Nodes engine created");
         //todo
-        // this.debug = config.nodesEngine.debugEngine;
+        // this.debug = config.engine.debugEngine;
         // if (this.debug)
         //     debug("Nodes engine created");
 
@@ -933,5 +933,5 @@ export class NodesEngine {
 }
 
 
-export var nodesEngine = new NodesEngine();
+export var engine = new NodesEngine();
 

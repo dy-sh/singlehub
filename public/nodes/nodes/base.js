@@ -72,7 +72,7 @@
 //                 this.size = [120, 60];
 //
 //                 //create inner graph
-//                 this.subgraph = new nodesEngine();
+//                 this.subgraph = new engine();
 //                 this.subgraph._subgraph_node = this;
 //                 this.subgraph._is_subgraph = true;
 //

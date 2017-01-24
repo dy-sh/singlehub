@@ -628,7 +628,7 @@ import {Nodes as nodes, Node} from "../nodes";
 //                     y = this.properties["y"];
 //
 //                 let f = this.properties["formula"];
-//                 let value = math.eval(f, {x: x, y: y, T: this.nodesEngine.globaltime});
+//                 let value = math.eval(f, {x: x, y: y, T: this.engine.globaltime});
 //                 this.setOutputData(0, value);
 //             }
 //

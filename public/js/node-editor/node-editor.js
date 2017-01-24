@@ -3,16 +3,16 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./litegraph-canvas", "./node-editor-socket", "./node-editor-themes"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor-canvas", "./node-editor-socket", "./node-editor-themes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
-    const litegraph_canvas_1 = require("./litegraph-canvas");
+    const node_editor_canvas_1 = require("./node-editor-canvas");
     const node_editor_socket_1 = require("./node-editor-socket");
     const node_editor_themes_1 = require("./node-editor-themes");
-    class Editor {
+    class NodeEditor {
         //nodes: Nodes;
         constructor() {
             //fill container
@@ -26,11 +26,11 @@
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
             //create graph
-            let graph = this.graph = nodes_engine_1.nodesEngine;
+            let graph = this.graph = nodes_engine_1.engine;
             //create socket
-            this.socket = node_editor_socket_1.nodeEditorSocket;
+            this.socket = node_editor_socket_1.socket;
             //create canvas
-            let graphcanvas = this.graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.socket, this, graph);
+            let graphcanvas = this.graphcanvas = new node_editor_canvas_1.NodeEditorCanvas(canvas, this.socket, this, graph);
             // graphcanvas.background_image = "/images/litegraph/grid.png";
             graph.onAfterExecute = function () { graphcanvas.draw(true); };
             //add stuff
@@ -50,7 +50,7 @@
             miniwindow.className = "litegraph miniwindow";
             miniwindow.innerHTML = "<canvas class='graphcanvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
             let canvas = miniwindow.querySelector("canvas");
-            let graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.socket, this, this.graph);
+            let graphcanvas = new node_editor_canvas_1.NodeEditorCanvas(canvas, this.socket, this, this.graph);
             //  graphcanvas.background_image = "images/litegraph/grid.png";
             //derwish edit
             graphcanvas.scale = 0.1;
@@ -314,7 +314,7 @@
             });
         }
     }
-    exports.Editor = Editor;
+    exports.NodeEditor = NodeEditor;
     let minimap_opened = false;
     // noty settings
     $.noty.defaults.layout = 'bottomRight';
@@ -384,6 +384,6 @@
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
     }
-    exports.editor = new Editor();
+    exports.editor = new NodeEditor();
 });
-//# sourceMappingURL=litegraph-editor.js.map
+//# sourceMappingURL=node-editor.js.map

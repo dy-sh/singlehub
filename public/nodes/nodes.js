@@ -83,7 +83,7 @@
     }
     exports.NodesOptions = NodesOptions;
     class Nodes {
-        //   debug: config.nodesEngine.debugEngine,
+        //   debug: config.engine.debugEngine,
         /**
          * Register a node class so it can be listed when the user wants to create a new one
          * @method registerNodeType

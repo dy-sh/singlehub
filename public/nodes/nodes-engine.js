@@ -50,8 +50,8 @@
     //
     //
     //
-    // 	if (config.nodesEngine.updateInterval > 0)
-    // 		setTimeout(step, config.nodesEngine.updateInterval);
+    // 	if (config.engine.updateInterval > 0)
+    // 		setTimeout(step, config.engine.updateInterval);
     // 	else
     // 		setImmediate(step);
     // }
@@ -70,7 +70,7 @@
             this.global_outputs = {};
             console.log("Nodes engine created");
             //todo
-            // this.debug = config.nodesEngine.debugEngine;
+            // this.debug = config.engine.debugEngine;
             // if (this.debug)
             //     debug("Nodes engine created");
             this.list_of_graphcanvas = null;
@@ -787,6 +787,6 @@
     }
     NodesEngine.NodesEngine = 2;
     exports.NodesEngine = NodesEngine;
-    exports.nodesEngine = new NodesEngine();
+    exports.engine = new NodesEngine();
 });
 //# sourceMappingURL=nodes-engine.js.map

@@ -355,7 +355,7 @@ LGraph.prototype.clear = function () {
 
 LGraph.prototype.attachCanvas = function (graphcanvas) {
     if (graphcanvas.constructor != LGraphCanvas)
-        throw ("attachCanvas expects a LGraphCanvas instance");
+        throw ("attachCanvas expects a NodeEditorCanvas instance");
     if (graphcanvas.graph && graphcanvas.graph != this)
         graphcanvas.graph.detachCanvas(graphcanvas);
 
@@ -2076,7 +2076,7 @@ LGraphNode.prototype.localToScreen = function (x, y, graphcanvas) {
 
 
 //*********************************************************************************
-// LGraphCanvas: LGraph renderer CLASS                                  
+// NodeEditorCanvas: LGraph renderer CLASS
 //*********************************************************************************
 
 /**
@@ -2308,7 +2308,7 @@ LGraphCanvas.prototype._doReturnTrue = function doNothing(e) { e.preventDefault(
 
 LGraphCanvas.prototype.bindEvents = function () {
     if (this._events_binded) {
-        console.warn("LGraphCanvas: events already binded");
+        console.warn("NodeEditorCanvas: events already binded");
         return;
     }
 
@@ -2352,7 +2352,7 @@ LGraphCanvas.prototype.bindEvents = function () {
 
 LGraphCanvas.prototype.unbindEvents = function () {
     if (!this._events_binded) {
-        console.warn("LGraphCanvas: no events binded");
+        console.warn("NodeEditorCanvas: no events binded");
         return;
     }
 
@@ -2410,7 +2410,7 @@ LGraphCanvas.prototype.enableWebGL = function () {
 
 
 /*
-LGraphCanvas.prototype.UIinit = function()
+NodeEditorCanvas.prototype.UIinit = function()
 {
 	var that = this;
 	$("#node-console input").change(function(e)
@@ -2461,7 +2461,7 @@ LGraphCanvas.prototype.UIinit = function()
 /**
 * marks as dirty the canvas, this way it will be rendered again 
 *
-* @class LGraphCanvas
+* @class NodeEditorCanvas
 * @method setDirty
 * @param {bool} fgcanvas if the foreground canvas is dirty (the one containing the nodes)
 * @param {bool} bgcanvas if the background canvas is dirty (the one containing the wires)
@@ -3260,7 +3260,7 @@ LGraphCanvas.prototype.sendToBack = function (n) {
 
 
 
-/* LGraphCanvas render */
+/* NodeEditorCanvas render */
 
 LGraphCanvas.prototype.computeVisibleNodes = function () {
     var visible_nodes = [];
@@ -4002,7 +4002,7 @@ LGraphCanvas.prototype.computeConnectionPoint = function (a, b, t) {
 }
 
 /*
-LGraphCanvas.prototype.resizeCanvas = function(width,height)
+NodeEditorCanvas.prototype.resizeCanvas = function(width,height)
 {
 	this.canvas.width = width;
 	if(height)
@@ -4349,7 +4349,7 @@ LGraphCanvas.prototype.getCanvasMenuOptions = function () {
         options.push({ content: "Add", is_menu: true, callback: LGraphCanvas.onMenuAdd });
         options.push(null);
 
-        //{content:"Collapse All", callback: LGraphCanvas.onMenuCollapseAll }
+        //{content:"Collapse All", callback: NodeEditorCanvas.onMenuCollapseAll }
 
         options.push({ content: "Import", is_menu: true, callback: LGraphCanvas.onMenuImport });
         options.push(null);

@@ -14,7 +14,7 @@
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     class NodeEditorSocket {
         constructor() {
-            this.engine = nodes_engine_1.nodesEngine;
+            this.engine = nodes_engine_1.engine;
         }
         c() {
             //configure socket.io
@@ -354,6 +354,6 @@
         }
     }
     exports.NodeEditorSocket = NodeEditorSocket;
-    exports.nodeEditorSocket = new NodeEditorSocket();
+    exports.socket = new NodeEditorSocket();
 });
 //# sourceMappingURL=node-editor-socket.js.map

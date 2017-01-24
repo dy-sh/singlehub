@@ -9,7 +9,7 @@
                 };
             }
             BasicConstantNode.title = 'Constant';
-            LiteGraph.registerNodeType('Basic/Constant', BasicConstantNode);
+            Nodes.registerNodeType('Basic/Constant', BasicConstantNode);
 
             
 
@@ -21,7 +21,7 @@
                 };
             }
             ConnectionGateNode.title = 'Gate';
-            LiteGraph.registerNodeType('Connection/Gate', ConnectionGateNode);
+            Nodes.registerNodeType('Connection/Gate', ConnectionGateNode);
 
             
 
@@ -33,7 +33,7 @@
                 };
             }
             ConnectionHubNode.title = 'Hub';
-            LiteGraph.registerNodeType('Connection/Hub', ConnectionHubNode);
+            Nodes.registerNodeType('Connection/Hub', ConnectionHubNode);
 
             
 
@@ -45,7 +45,7 @@
                 };
             }
             ConnectionLocalReceiverNode.title = 'Local Receiver';
-            LiteGraph.registerNodeType('Connection/Local Receiver', ConnectionLocalReceiverNode);
+            Nodes.registerNodeType('Connection/Local Receiver', ConnectionLocalReceiverNode);
 
             
 
@@ -57,7 +57,7 @@
                 };
             }
             ConnectionLocalTransmitterNode.title = 'Local Transmitter';
-            LiteGraph.registerNodeType('Connection/Local Transmitter', ConnectionLocalTransmitterNode);
+            Nodes.registerNodeType('Connection/Local Transmitter', ConnectionLocalTransmitterNode);
 
             
 
@@ -69,7 +69,7 @@
                 };
             }
             ConnectionRemoteReceiverNode.title = 'Remote Receiver';
-            LiteGraph.registerNodeType('Connection/Remote Receiver', ConnectionRemoteReceiverNode);
+            Nodes.registerNodeType('Connection/Remote Receiver', ConnectionRemoteReceiverNode);
 
             
 
@@ -81,7 +81,7 @@
                 };
             }
             ConnectionRemoteTransmitterNode.title = 'Remote Transmitter';
-            LiteGraph.registerNodeType('Connection/Remote Transmitter', ConnectionRemoteTransmitterNode);
+            Nodes.registerNodeType('Connection/Remote Transmitter', ConnectionRemoteTransmitterNode);
 
             
 
@@ -93,7 +93,7 @@
                 };
             }
             ConnectionRouterMultipleToOneNode.title = 'Router Multiple-One';
-            LiteGraph.registerNodeType('Connection/Router Multiple-One', ConnectionRouterMultipleToOneNode);
+            Nodes.registerNodeType('Connection/Router Multiple-One', ConnectionRouterMultipleToOneNode);
 
             
 
@@ -105,7 +105,7 @@
                 };
             }
             ConnectionRouterOneToMultipleNode.title = 'Router One-Multiple';
-            LiteGraph.registerNodeType('Connection/Router One-Multiple', ConnectionRouterOneToMultipleNode);
+            Nodes.registerNodeType('Connection/Router One-Multiple', ConnectionRouterOneToMultipleNode);
 
             
 
@@ -117,7 +117,7 @@
                 };
             }
             FiltersOnlyFromRangeNode.title = 'Only From Range';
-            LiteGraph.registerNodeType('Filters/Only From Range', FiltersOnlyFromRangeNode);
+            Nodes.registerNodeType('Filters/Only From Range', FiltersOnlyFromRangeNode);
 
             
 
@@ -129,7 +129,7 @@
                 };
             }
             FiltersOnlyGreaterNode.title = 'Only Greater';
-            LiteGraph.registerNodeType('Filters/Only Greater', FiltersOnlyGreaterNode);
+            Nodes.registerNodeType('Filters/Only Greater', FiltersOnlyGreaterNode);
 
             
 
@@ -141,7 +141,7 @@
                 };
             }
             FiltersOnlyLogicNode.title = 'Only Logic';
-            LiteGraph.registerNodeType('Filters/Only Logic', FiltersOnlyLogicNode);
+            Nodes.registerNodeType('Filters/Only Logic', FiltersOnlyLogicNode);
 
             
 
@@ -153,7 +153,7 @@
                 };
             }
             FiltersOnlyLowerNode.title = 'Only Lower';
-            LiteGraph.registerNodeType('Filters/Only Lower', FiltersOnlyLowerNode);
+            Nodes.registerNodeType('Filters/Only Lower', FiltersOnlyLowerNode);
 
             
 
@@ -165,7 +165,7 @@
                 };
             }
             FiltersOnlyNumbersNode.title = 'Only Numbers';
-            LiteGraph.registerNodeType('Filters/Only Numbers', FiltersOnlyNumbersNode);
+            Nodes.registerNodeType('Filters/Only Numbers', FiltersOnlyNumbersNode);
 
             
 
@@ -177,7 +177,7 @@
                 };
             }
             FiltersOnlyOneNode.title = 'Only One';
-            LiteGraph.registerNodeType('Filters/Only One', FiltersOnlyOneNode);
+            Nodes.registerNodeType('Filters/Only One', FiltersOnlyOneNode);
 
             
 
@@ -189,7 +189,7 @@
                 };
             }
             FiltersOnlySpecifiedNode.title = 'Only Specified';
-            LiteGraph.registerNodeType('Filters/Only Specified', FiltersOnlySpecifiedNode);
+            Nodes.registerNodeType('Filters/Only Specified', FiltersOnlySpecifiedNode);
 
             
 
@@ -201,7 +201,7 @@
                 };
             }
             FiltersOnlyZeroNode.title = 'Only Zero';
-            LiteGraph.registerNodeType('Filters/Only Zero', FiltersOnlyZeroNode);
+            Nodes.registerNodeType('Filters/Only Zero', FiltersOnlyZeroNode);
 
             
 
@@ -213,7 +213,7 @@
                 };
             }
             FiltersPreventDuplicationNode.title = 'Prevent Duplication';
-            LiteGraph.registerNodeType('Filters/Prevent Duplication', FiltersPreventDuplicationNode);
+            Nodes.registerNodeType('Filters/Prevent Duplication', FiltersPreventDuplicationNode);
 
             
 
@@ -225,7 +225,7 @@
                 };
             }
             FiltersPreventNullNode.title = 'Prevent Null';
-            LiteGraph.registerNodeType('Filters/Prevent Null', FiltersPreventNullNode);
+            Nodes.registerNodeType('Filters/Prevent Null', FiltersPreventNullNode);
 
             
 
@@ -237,7 +237,7 @@
                 };
             }
             FiltersPreventSpecifiedNode.title = 'Prevent Specified';
-            LiteGraph.registerNodeType('Filters/Prevent Specified', FiltersPreventSpecifiedNode);
+            Nodes.registerNodeType('Filters/Prevent Specified', FiltersPreventSpecifiedNode);
 
             
 
@@ -249,7 +249,7 @@
                 };
             }
             FiltersReduceEventsNode.title = 'Reduce Events';
-            LiteGraph.registerNodeType('Filters/Reduce Events', FiltersReduceEventsNode);
+            Nodes.registerNodeType('Filters/Reduce Events', FiltersReduceEventsNode);
 
             
 
@@ -262,7 +262,7 @@
             }
             MySensorsNode.title = 'MySensors Node';
             MySensorsNode.skip_list = true;
-            LiteGraph.registerNodeType('Hardware/MySensors', MySensorsNode);
+            Nodes.registerNodeType('Hardware/MySensors', MySensorsNode);
 
             
 
@@ -274,7 +274,7 @@
                 };
             }
             LogicAndNode.title = 'AND';
-            LiteGraph.registerNodeType('Logic/AND', LogicAndNode);
+            Nodes.registerNodeType('Logic/AND', LogicAndNode);
 
             
 
@@ -286,7 +286,7 @@
                 };
             }
             CheckInRangeNode.title = 'Check In Range';
-            LiteGraph.registerNodeType('Logic/Check In Range', CheckInRangeNode);
+            Nodes.registerNodeType('Logic/Check In Range', CheckInRangeNode);
 
             
 
@@ -298,7 +298,7 @@
                 };
             }
             LogicCompareEqualNode.title = 'Compare Equal';
-            LiteGraph.registerNodeType('Logic/Compare Equal', LogicCompareEqualNode);
+            Nodes.registerNodeType('Logic/Compare Equal', LogicCompareEqualNode);
 
             
 
@@ -310,7 +310,7 @@
                 };
             }
             LogicCompareGreaterNode.title = 'Compare Greater';
-            LiteGraph.registerNodeType('Logic/Compare Greater', LogicCompareGreaterNode);
+            Nodes.registerNodeType('Logic/Compare Greater', LogicCompareGreaterNode);
 
             
 
@@ -322,7 +322,7 @@
                 };
             }
             LogicCompareLowerNode.title = 'Compare Lower';
-            LiteGraph.registerNodeType('Logic/Compare Lower', LogicCompareLowerNode);
+            Nodes.registerNodeType('Logic/Compare Lower', LogicCompareLowerNode);
 
             
 
@@ -334,7 +334,7 @@
                 };
             }
             LogicCompareNotEqualNode.title = 'Compare NotEqual';
-            LiteGraph.registerNodeType('Logic/Compare NotEqual', LogicCompareNotEqualNode);
+            Nodes.registerNodeType('Logic/Compare NotEqual', LogicCompareNotEqualNode);
 
             
 
@@ -346,7 +346,7 @@
                 };
             }
             LogicNotNode.title = 'NOT';
-            LiteGraph.registerNodeType('Logic/NOT', LogicNotNode);
+            Nodes.registerNodeType('Logic/NOT', LogicNotNode);
 
             
 
@@ -358,7 +358,7 @@
                 };
             }
             LogicOrNode.title = 'OR';
-            LiteGraph.registerNodeType('Logic/OR', LogicOrNode);
+            Nodes.registerNodeType('Logic/OR', LogicOrNode);
 
             
 
@@ -383,7 +383,7 @@
                     null
                 ];
             }
-            LiteGraph.registerNodeType('Main/Panel', PanelNode);
+            Nodes.registerNodeType('Main/Panel', PanelNode);
 
             
 
@@ -395,7 +395,7 @@
                 };
             }
             PanelInputNode.title = 'Panel Input';
-            LiteGraph.registerNodeType('Main/Panel Input', PanelInputNode);
+            Nodes.registerNodeType('Main/Panel Input', PanelInputNode);
 
             
 
@@ -407,7 +407,7 @@
                 };
             }
             PanelOutputNode.title = 'Panel Output';
-            LiteGraph.registerNodeType('Main/Panel Output', PanelOutputNode);
+            Nodes.registerNodeType('Main/Panel Output', PanelOutputNode);
 
             
 
@@ -419,7 +419,7 @@
                 };
             }
             MathAverageNode.title = 'Average';
-            LiteGraph.registerNodeType('Math/Average', MathAverageNode);
+            Nodes.registerNodeType('Math/Average', MathAverageNode);
 
             
 
@@ -431,7 +431,7 @@
                 };
             }
             MathClampNode.title = 'Clamp';
-            LiteGraph.registerNodeType('Math/Clamp', MathClampNode);
+            Nodes.registerNodeType('Math/Clamp', MathClampNode);
 
             
 
@@ -443,7 +443,7 @@
                 };
             }
             MathCosNode.title = 'Cos';
-            LiteGraph.registerNodeType('Math/Cos', MathCosNode);
+            Nodes.registerNodeType('Math/Cos', MathCosNode);
 
             
 
@@ -455,7 +455,7 @@
                 };
             }
             MathDivideNode.title = 'Divide';
-            LiteGraph.registerNodeType('Math/Divide', MathDivideNode);
+            Nodes.registerNodeType('Math/Divide', MathDivideNode);
 
             
 
@@ -467,7 +467,7 @@
                 };
             }
             MathMaxNode.title = 'Max';
-            LiteGraph.registerNodeType('Math/Max', MathMaxNode);
+            Nodes.registerNodeType('Math/Max', MathMaxNode);
 
             
 
@@ -479,7 +479,7 @@
                 };
             }
             MathMinNode.title = 'Min';
-            LiteGraph.registerNodeType('Math/Min', MathMinNode);
+            Nodes.registerNodeType('Math/Min', MathMinNode);
 
             
 
@@ -491,7 +491,7 @@
                 };
             }
             MathMinusNode.title = 'Minus';
-            LiteGraph.registerNodeType('Math/Minus', MathMinusNode);
+            Nodes.registerNodeType('Math/Minus', MathMinusNode);
 
             
 
@@ -503,7 +503,7 @@
                 };
             }
             MathModulusNode.title = 'Modulus';
-            LiteGraph.registerNodeType('Math/Modulus', MathModulusNode);
+            Nodes.registerNodeType('Math/Modulus', MathModulusNode);
 
             
 
@@ -515,7 +515,7 @@
                 };
             }
             MathMultiplyNode.title = 'Multiply';
-            LiteGraph.registerNodeType('Math/Multiply', MathMultiplyNode);
+            Nodes.registerNodeType('Math/Multiply', MathMultiplyNode);
 
             
 
@@ -527,7 +527,7 @@
                 };
             }
             MathPlusNode.title = 'Plus';
-            LiteGraph.registerNodeType('Math/Plus', MathPlusNode);
+            Nodes.registerNodeType('Math/Plus', MathPlusNode);
 
             
 
@@ -539,7 +539,7 @@
                 };
             }
             MathPowNode.title = 'Pow';
-            LiteGraph.registerNodeType('Math/Pow', MathPowNode);
+            Nodes.registerNodeType('Math/Pow', MathPowNode);
 
             
 
@@ -551,7 +551,7 @@
                 };
             }
             MathRemapNode.title = 'Remap';
-            LiteGraph.registerNodeType('Math/Remap', MathRemapNode);
+            Nodes.registerNodeType('Math/Remap', MathRemapNode);
 
             
 
@@ -563,7 +563,7 @@
                 };
             }
             MathRoundNode.title = 'Round';
-            LiteGraph.registerNodeType('Math/Round', MathRoundNode);
+            Nodes.registerNodeType('Math/Round', MathRoundNode);
 
             
 
@@ -575,7 +575,7 @@
                 };
             }
             MathSinNode.title = 'Sin';
-            LiteGraph.registerNodeType('Math/Sin', MathSinNode);
+            Nodes.registerNodeType('Math/Sin', MathSinNode);
 
             
 
@@ -587,7 +587,7 @@
                 };
             }
             MathSqrtNode.title = 'Sqrt';
-            LiteGraph.registerNodeType('Math/Sqrt', MathSqrtNode);
+            Nodes.registerNodeType('Math/Sqrt', MathSqrtNode);
 
             
 
@@ -599,7 +599,7 @@
                 };
             }
             MathSumNode.title = 'Sum';
-            LiteGraph.registerNodeType('Math/Sum', MathSumNode);
+            Nodes.registerNodeType('Math/Sum', MathSumNode);
 
             
 
@@ -611,7 +611,7 @@
                 };
             }
             MathTanNode.title = 'Tan';
-            LiteGraph.registerNodeType('Math/Tan', MathTanNode);
+            Nodes.registerNodeType('Math/Tan', MathTanNode);
 
             
 
@@ -623,7 +623,7 @@
                 };
             }
             OperationAnyToOneNode.title = 'Any To One';
-            LiteGraph.registerNodeType('Operation/Any To One', OperationAnyToOneNode);
+            Nodes.registerNodeType('Operation/Any To One', OperationAnyToOneNode);
 
             
 
@@ -635,7 +635,7 @@
                 };
             }
             OperationCounterNode.title = 'Counter';
-            LiteGraph.registerNodeType('Operation/Counter', OperationCounterNode);
+            Nodes.registerNodeType('Operation/Counter', OperationCounterNode);
 
             
 
@@ -647,7 +647,7 @@
                 };
             }
             OperationCrossfadeNode.title = 'Crossfade';
-            LiteGraph.registerNodeType('Operation/Crossfade', OperationCrossfadeNode);
+            Nodes.registerNodeType('Operation/Crossfade', OperationCrossfadeNode);
 
             
 
@@ -659,7 +659,7 @@
                 };
             }
             OperationEventCounterNode.title = 'Event Counter';
-            LiteGraph.registerNodeType('Operation/Event Counter', OperationEventCounterNode);
+            Nodes.registerNodeType('Operation/Event Counter', OperationEventCounterNode);
 
             
 
@@ -671,7 +671,7 @@
                 };
             }
             OperationFlipflopNode.title = 'Flip-Flop';
-            LiteGraph.registerNodeType('Operation/Flip-Flop', OperationFlipflopNode);
+            Nodes.registerNodeType('Operation/Flip-Flop', OperationFlipflopNode);
 
             
 
@@ -683,7 +683,7 @@
                 };
             }
             OperationFreqDividerNode.title = 'Freq Divider';
-            LiteGraph.registerNodeType('Operation/Freq Divider', OperationFreqDividerNode);
+            Nodes.registerNodeType('Operation/Freq Divider', OperationFreqDividerNode);
 
             
 
@@ -695,7 +695,7 @@
                 };
             }
             OperationLinearShaperNode.title = 'Linear Shaper';
-            LiteGraph.registerNodeType('Operation/Linear Shaper', OperationLinearShaperNode);
+            Nodes.registerNodeType('Operation/Linear Shaper', OperationLinearShaperNode);
 
             
 
@@ -707,7 +707,7 @@
                 };
             }
             OperationQueueNode.title = 'Queue';
-            LiteGraph.registerNodeType('Operation/Queue', OperationQueueNode);
+            Nodes.registerNodeType('Operation/Queue', OperationQueueNode);
 
             
 
@@ -719,7 +719,7 @@
                 };
             }
             OperationRandomNode.title = 'Random';
-            LiteGraph.registerNodeType('Operation/Random', OperationRandomNode);
+            Nodes.registerNodeType('Operation/Random', OperationRandomNode);
 
             
 
@@ -731,7 +731,7 @@
                 };
             }
             OperationStackNode.title = 'Stack';
-            LiteGraph.registerNodeType('Operation/Stack', OperationStackNode);
+            Nodes.registerNodeType('Operation/Stack', OperationStackNode);
 
             
 
@@ -743,7 +743,7 @@
                 };
             }
             RgbCrossfadeRgbNode.title = 'Crossfade RGB';
-            LiteGraph.registerNodeType('RGB/Crossfade RGB', RgbCrossfadeRgbNode);
+            Nodes.registerNodeType('RGB/Crossfade RGB', RgbCrossfadeRgbNode);
 
             
 
@@ -755,7 +755,7 @@
                 };
             }
             RgbCrossfadeRgbwNode.title = 'Crossfade RGBW';
-            LiteGraph.registerNodeType('RGB/Crossfade RGBW', RgbCrossfadeRgbwNode);
+            Nodes.registerNodeType('RGB/Crossfade RGBW', RgbCrossfadeRgbwNode);
 
             
 
@@ -767,7 +767,7 @@
                 };
             }
             RgbFadeRgbNode.title = 'Fade RGB';
-            LiteGraph.registerNodeType('RGB/Fade RGB', RgbFadeRgbNode);
+            Nodes.registerNodeType('RGB/Fade RGB', RgbFadeRgbNode);
 
             
 
@@ -779,7 +779,7 @@
                 };
             }
             RgbFadeRgbwNode.title = 'Fade RGBW';
-            LiteGraph.registerNodeType('RGB/Fade RGBW', RgbFadeRgbwNode);
+            Nodes.registerNodeType('RGB/Fade RGBW', RgbFadeRgbwNode);
 
             
 
@@ -791,7 +791,7 @@
                 };
             }
             RgbNumbersToRgbNode.title = 'Numbers to RGB';
-            LiteGraph.registerNodeType('RGB/Numbers to RGB', RgbNumbersToRgbNode);
+            Nodes.registerNodeType('RGB/Numbers to RGB', RgbNumbersToRgbNode);
 
             
 
@@ -803,7 +803,7 @@
                 };
             }
             RgbNumbersToRgbwNode.title = 'Numbers to RGBW';
-            LiteGraph.registerNodeType('RGB/Numbers to RGBW', RgbNumbersToRgbwNode);
+            Nodes.registerNodeType('RGB/Numbers to RGBW', RgbNumbersToRgbwNode);
 
             
 
@@ -815,7 +815,7 @@
                 };
             }
             RgbRandomRgbNode.title = 'Random RGB';
-            LiteGraph.registerNodeType('RGB/Random RGB', RgbRandomRgbNode);
+            Nodes.registerNodeType('RGB/Random RGB', RgbRandomRgbNode);
 
             
 
@@ -827,7 +827,7 @@
                 };
             }
             RgbRandomRgbwNode.title = 'Random RGBW';
-            LiteGraph.registerNodeType('RGB/Random RGBW', RgbRandomRgbwNode);
+            Nodes.registerNodeType('RGB/Random RGBW', RgbRandomRgbwNode);
 
             
 
@@ -839,7 +839,7 @@
                 };
             }
             RgbRgbRemapNode.title = 'RGB Remap';
-            LiteGraph.registerNodeType('RGB/RGB Remap', RgbRgbRemapNode);
+            Nodes.registerNodeType('RGB/RGB Remap', RgbRgbRemapNode);
 
             
 
@@ -851,7 +851,7 @@
                 };
             }
             RgbRgbToNumbersNode.title = 'RGB to Numbers';
-            LiteGraph.registerNodeType('RGB/RGB to Numbers', RgbRgbToNumbersNode);
+            Nodes.registerNodeType('RGB/RGB to Numbers', RgbRgbToNumbersNode);
 
             
 
@@ -863,7 +863,7 @@
                 };
             }
             RgbRgbwRemapNode.title = 'RGBW Remap';
-            LiteGraph.registerNodeType('RGB/RGBW Remap', RgbRgbwRemapNode);
+            Nodes.registerNodeType('RGB/RGBW Remap', RgbRgbwRemapNode);
 
             
 
@@ -875,7 +875,7 @@
                 };
             }
             RgbRgbwToNumbersNode.title = 'RGBW to Numbers';
-            LiteGraph.registerNodeType('RGB/RGBW to Numbers', RgbRgbwToNumbersNode);
+            Nodes.registerNodeType('RGB/RGBW to Numbers', RgbRgbwToNumbersNode);
 
             
 
@@ -887,7 +887,7 @@
                 };
             }
             RgbSmoothRgbNode.title = 'Smooth RGB';
-            LiteGraph.registerNodeType('RGB/Smooth RGB', RgbSmoothRgbNode);
+            Nodes.registerNodeType('RGB/Smooth RGB', RgbSmoothRgbNode);
 
             
 
@@ -899,7 +899,7 @@
                 };
             }
             RgbSmoothRgbwNode.title = 'Smooth RGBW';
-            LiteGraph.registerNodeType('RGB/Smooth RGBW', RgbSmoothRgbwNode);
+            Nodes.registerNodeType('RGB/Smooth RGBW', RgbSmoothRgbwNode);
 
             
 
@@ -911,7 +911,7 @@
                 };
             }
             SystemFileNode.title = 'File';
-            LiteGraph.registerNodeType('System/File', SystemFileNode);
+            Nodes.registerNodeType('System/File', SystemFileNode);
 
             
 
@@ -923,7 +923,7 @@
                 };
             }
             SystemJsonFileNode.title = 'Json File';
-            LiteGraph.registerNodeType('System/Json File', SystemJsonFileNode);
+            Nodes.registerNodeType('System/Json File', SystemJsonFileNode);
 
             
 
@@ -935,7 +935,7 @@
                 };
             }
             SystemRunNode.title = 'Run';
-            LiteGraph.registerNodeType('System/Run', SystemRunNode);
+            Nodes.registerNodeType('System/Run', SystemRunNode);
 
             
 
@@ -947,7 +947,7 @@
                 };
             }
             TextASCIICharNode.title = 'ASCII Char';
-            LiteGraph.registerNodeType('Text/ASCII Char', TextASCIICharNode);
+            Nodes.registerNodeType('Text/ASCII Char', TextASCIICharNode);
 
             
 
@@ -959,7 +959,7 @@
                 };
             }
             TextASCIICodeNode.title = 'ASCII Code';
-            LiteGraph.registerNodeType('Text/ASCII Code', TextASCIICodeNode);
+            Nodes.registerNodeType('Text/ASCII Code', TextASCIICodeNode);
 
             
 
@@ -971,7 +971,7 @@
                 };
             }
             TextCharAtIndexNode.title = 'Char At Index';
-            LiteGraph.registerNodeType('Text/Char At Index', TextCharAtIndexNode);
+            Nodes.registerNodeType('Text/Char At Index', TextCharAtIndexNode);
 
             
 
@@ -983,7 +983,7 @@
                 };
             }
             TextConcatenationNode.title = 'Concatenation';
-            LiteGraph.registerNodeType('Text/Concatenation', TextConcatenationNode);
+            Nodes.registerNodeType('Text/Concatenation', TextConcatenationNode);
 
             
 
@@ -995,7 +995,7 @@
                 };
             }
             TextCutSubstringNode.title = 'Cut Substring';
-            LiteGraph.registerNodeType('Text/Cut Substring', TextCutSubstringNode);
+            Nodes.registerNodeType('Text/Cut Substring', TextCutSubstringNode);
 
             
 
@@ -1007,7 +1007,7 @@
                 };
             }
             TextSplitStringsNode.title = 'Split Strings';
-            LiteGraph.registerNodeType('Text/Split Strings', TextSplitStringsNode);
+            Nodes.registerNodeType('Text/Split Strings', TextSplitStringsNode);
 
             
 
@@ -1019,7 +1019,7 @@
                 };
             }
             TextStringLengthNode.title = 'String Length';
-            LiteGraph.registerNodeType('Text/String Length', TextStringLengthNode);
+            Nodes.registerNodeType('Text/String Length', TextStringLengthNode);
 
             
 
@@ -1031,7 +1031,7 @@
                 };
             }
             TimeClockNode.title = 'Clock';
-            LiteGraph.registerNodeType('Time/Clock', TimeClockNode);
+            Nodes.registerNodeType('Time/Clock', TimeClockNode);
 
             
 
@@ -1043,7 +1043,7 @@
                 };
             }
             TimeDelayNode.title = 'Delay';
-            LiteGraph.registerNodeType('Time/Delay', TimeDelayNode);
+            Nodes.registerNodeType('Time/Delay', TimeDelayNode);
 
             
 
@@ -1055,7 +1055,7 @@
                 };
             }
             TimeDelayMeterNode.title = 'Delay Meter';
-            LiteGraph.registerNodeType('Time/Delay Meter', TimeDelayMeterNode);
+            Nodes.registerNodeType('Time/Delay Meter', TimeDelayMeterNode);
 
             
 
@@ -1067,7 +1067,7 @@
                 };
             }
             TimeFadeNode.title = 'Fade';
-            LiteGraph.registerNodeType('Time/Fade', TimeFadeNode);
+            Nodes.registerNodeType('Time/Fade', TimeFadeNode);
 
             
 
@@ -1079,7 +1079,7 @@
                 };
             }
             TimeFrequencyMeterNode.title = 'Frequency Meter';
-            LiteGraph.registerNodeType('Time/Frequency Meter', TimeFrequencyMeterNode);
+            Nodes.registerNodeType('Time/Frequency Meter', TimeFrequencyMeterNode);
 
             
 
@@ -1091,7 +1091,7 @@
                 };
             }
             TimeIntervalTimerNode.title = 'Interval Timer';
-            LiteGraph.registerNodeType('Time/Interval Timer', TimeIntervalTimerNode);
+            Nodes.registerNodeType('Time/Interval Timer', TimeIntervalTimerNode);
 
             
 
@@ -1103,7 +1103,7 @@
                 };
             }
             TimeIteratorNode.title = 'Iterator';
-            LiteGraph.registerNodeType('Time/Iterator', TimeIteratorNode);
+            Nodes.registerNodeType('Time/Iterator', TimeIteratorNode);
 
             
 
@@ -1115,7 +1115,7 @@
                 };
             }
             TimeSmoothByRangeNode.title = 'Smooth By Range';
-            LiteGraph.registerNodeType('Time/Smooth By Range', TimeSmoothByRangeNode);
+            Nodes.registerNodeType('Time/Smooth By Range', TimeSmoothByRangeNode);
 
             
 
@@ -1127,7 +1127,7 @@
                 };
             }
             TimeSmoothByTimeNode.title = 'Smooth By Time';
-            LiteGraph.registerNodeType('Time/Smooth By Time', TimeSmoothByTimeNode);
+            Nodes.registerNodeType('Time/Smooth By Time', TimeSmoothByTimeNode);
 
             
 
@@ -1139,7 +1139,7 @@
                 };
             }
             TimeTickerNode.title = 'Ticker';
-            LiteGraph.registerNodeType('Time/Ticker', TimeTickerNode);
+            Nodes.registerNodeType('Time/Ticker', TimeTickerNode);
 
             
 
@@ -1151,7 +1151,7 @@
                 };
             }
             UiAudioNode.title = 'Audio';
-            LiteGraph.registerNodeType('UI/Audio', UiAudioNode);
+            Nodes.registerNodeType('UI/Audio', UiAudioNode);
 
             
 
@@ -1163,7 +1163,7 @@
                 };
             }
             UiButtonNode.title = 'Button';
-            LiteGraph.registerNodeType('UI/Button', UiButtonNode);
+            Nodes.registerNodeType('UI/Button', UiButtonNode);
 
             
 
@@ -1175,7 +1175,7 @@
                 };
             }
             UiChartNode.title = 'Chart';
-            LiteGraph.registerNodeType('UI/Chart', UiChartNode);
+            Nodes.registerNodeType('UI/Chart', UiChartNode);
 
             
 
@@ -1187,7 +1187,7 @@
                 };
             }
             UiLabelNode.title = 'Label';
-            LiteGraph.registerNodeType('UI/Label', UiLabelNode);
+            Nodes.registerNodeType('UI/Label', UiLabelNode);
 
             
 
@@ -1199,7 +1199,7 @@
                 };
             }
             UiLogNode.title = 'Log';
-            LiteGraph.registerNodeType('UI/Log', UiLogNode);
+            Nodes.registerNodeType('UI/Log', UiLogNode);
 
             
 
@@ -1211,7 +1211,7 @@
                 };
             }
             UiProgressNode.title = 'Progress';
-            LiteGraph.registerNodeType('UI/Progress', UiProgressNode);
+            Nodes.registerNodeType('UI/Progress', UiProgressNode);
 
             
 
@@ -1223,7 +1223,7 @@
                 };
             }
             UiRgbSlidersNode.title = 'RGB Sliders';
-            LiteGraph.registerNodeType('UI/RGB Sliders', UiRgbSlidersNode);
+            Nodes.registerNodeType('UI/RGB Sliders', UiRgbSlidersNode);
 
             
 
@@ -1235,7 +1235,7 @@
                 };
             }
             UiRgbwSlidersNode.title = 'RGBW Sliders';
-            LiteGraph.registerNodeType('UI/RGBW Sliders', UiRgbwSlidersNode);
+            Nodes.registerNodeType('UI/RGBW Sliders', UiRgbwSlidersNode);
 
             
 
@@ -1247,7 +1247,7 @@
                 };
             }
             UiSliderNode.title = 'Slider';
-            LiteGraph.registerNodeType('UI/Slider', UiSliderNode);
+            Nodes.registerNodeType('UI/Slider', UiSliderNode);
 
             
 
@@ -1259,7 +1259,7 @@
                 };
             }
             UiStateNode.title = 'State';
-            LiteGraph.registerNodeType('UI/State', UiStateNode);
+            Nodes.registerNodeType('UI/State', UiStateNode);
 
             
 
@@ -1271,7 +1271,7 @@
                 };
             }
             UiSwitchNode.title = 'Switch';
-            LiteGraph.registerNodeType('UI/Switch', UiSwitchNode);
+            Nodes.registerNodeType('UI/Switch', UiSwitchNode);
 
             
 
@@ -1283,7 +1283,7 @@
                 };
             }
             UiTextBoxNode.title = 'TextBox';
-            LiteGraph.registerNodeType('UI/TextBox', UiTextBoxNode);
+            Nodes.registerNodeType('UI/TextBox', UiTextBoxNode);
 
             
 
@@ -1303,7 +1303,7 @@
                 ];
             }
             UiTimerNode.title = 'Timer';
-            LiteGraph.registerNodeType('UI/Timer', UiTimerNode);
+            Nodes.registerNodeType('UI/Timer', UiTimerNode);
 
             
 
@@ -1315,7 +1315,7 @@
                 };
             }
             UiToggleButtonNode.title = 'Toggle';
-            LiteGraph.registerNodeType('UI/Toggle', UiToggleButtonNode);
+            Nodes.registerNodeType('UI/Toggle', UiToggleButtonNode);
 
             
 
@@ -1327,7 +1327,7 @@
                 };
             }
             UiVoiceGoogleNode.title = 'Voice Google';
-            LiteGraph.registerNodeType('UI/Voice Google', UiVoiceGoogleNode);
+            Nodes.registerNodeType('UI/Voice Google', UiVoiceGoogleNode);
 
             
 
@@ -1339,7 +1339,7 @@
                 };
             }
             UiVoiceYandexNode.title = 'Voice Yandex';
-            LiteGraph.registerNodeType('UI/Voice Yandex', UiVoiceYandexNode);
+            Nodes.registerNodeType('UI/Voice Yandex', UiVoiceYandexNode);
 
             
 
@@ -1351,7 +1351,7 @@
                 };
             }
             UtilityBeepNode.title = 'Beep';
-            LiteGraph.registerNodeType('Utility/Beep', UtilityBeepNode);
+            Nodes.registerNodeType('Utility/Beep', UtilityBeepNode);
 
             
 })();

@@ -3,7 +3,7 @@
  */
 
 import {Nodes} from "../../nodes/nodes"
-import {NodesEngine,nodesEngine} from "../../nodes/nodes-engine";
+import {NodesEngine,engine} from "../../nodes/nodes-engine";
 
 
 
@@ -17,7 +17,7 @@ export class NodeEditorSocket {
 
 	constructor() {
 
-		this.engine = nodesEngine;
+		this.engine = engine;
 	}
 	c(){
 		//configure socket.io
@@ -502,4 +502,4 @@ export class NodeEditorSocket {
 	}
 }
 
-export var nodeEditorSocket = new NodeEditorSocket();
+export var socket = new NodeEditorSocket();

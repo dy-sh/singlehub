@@ -1,5 +1,5 @@
 //*********************************************************************************
-// LGraphCanvas: LGraph renderer CLASS                                  
+// NodeEditorCanvas: LGraph renderer CLASS
 //*********************************************************************************
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -11,7 +11,7 @@
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
-    class LGraphCanvas {
+    class NodeEditorCanvas {
         /**
          * The Global Scope. It contains all the registered node classes.
          *
@@ -204,7 +204,7 @@
         }
         bindEvents() {
             if (this._events_binded) {
-                console.warn("LGraphCanvas: events already binded");
+                console.warn("NodeEditorCanvas: events already binded");
                 return;
             }
             let canvas = this.canvas;
@@ -237,7 +237,7 @@
         }
         unbindEvents() {
             if (!this._events_binded) {
-                console.warn("LGraphCanvas: no events binded");
+                console.warn("NodeEditorCanvas: no events binded");
                 return;
             }
             this.canvas.removeEventListener("mousedown", this._mousedown_callback);
@@ -333,7 +333,7 @@
              */
         }
         /*
-         LGraphCanvas.prototype.UIinit = function()
+         NodeEditorCanvas.prototype.UIinit = function()
          {
          let that = this;
          $("#node-console input").change(function(e)
@@ -976,7 +976,7 @@
             this.graph._nodes.unshift(n);
         }
         /* Interaction */
-        /* LGraphCanvas render */
+        /* NodeEditorCanvas render */
         computeVisibleNodes() {
             let visible_nodes = [];
             for (let i in this.graph._nodes) {
@@ -1572,7 +1572,7 @@
             return [x, y];
         }
         /*
-         LGraphCanvas.prototype.resizeCanvas = function(width,height)
+         NodeEditorCanvas.prototype.resizeCanvas = function(width,height)
          {
          this.canvas.width = width;
          if(height)
@@ -1662,7 +1662,7 @@
             else {
                 options.push({ content: "Add", is_menu: true, callback: this.onMenuAdd });
                 options.push(null);
-                //{content:"Collapse All", callback: LGraphCanvas.onMenuCollapseAll }
+                //{content:"Collapse All", callback: NodeEditorCanvas.onMenuCollapseAll }
                 options.push({ content: "Import", is_menu: true, callback: this.onMenuImport });
                 options.push(null);
                 options.push({
@@ -2142,7 +2142,7 @@
                 }
         }
     }
-    exports.LGraphCanvas = LGraphCanvas;
+    exports.NodeEditorCanvas = NodeEditorCanvas;
     //API *************************************************
     //function roundRect(ctx, x, y, width, height, radius, radius_low) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, radius_low) {
@@ -2249,4 +2249,4 @@
             });
     }
 });
-//# sourceMappingURL=litegraph-canvas.js.map
+//# sourceMappingURL=node-editor-canvas.js.map

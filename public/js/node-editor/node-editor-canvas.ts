@@ -1,10 +1,10 @@
 //*********************************************************************************
-// LGraphCanvas: LGraph renderer CLASS                                  
+// NodeEditorCanvas: LGraph renderer CLASS
 //*********************************************************************************
 
 import {Node, Nodes} from "../../nodes/nodes"
-import {NodesEngine,nodesEngine} from "../../nodes/nodes-engine"
-import {Editor,editor} from "./litegraph-editor";
+import {NodesEngine,engine} from "../../nodes/nodes-engine"
+import {NodeEditor,editor} from "./node-editor";
 import {NodeEditorSocket} from "./node-editor-socket";
 
 interface IgetMenuOptions {
@@ -20,8 +20,8 @@ interface IgetExtraMenuOptions {
 }
 
 
-export class LGraphCanvas {
-    editor:Editor;
+export class NodeEditorCanvas {
+    editor:NodeEditor;
     socket: NodeEditorSocket;
     max_zoom: number;
     min_zoom: number;
@@ -115,7 +115,7 @@ export class LGraphCanvas {
      * @param {HTMLCanvas} canvas the canvas where you want to render (it accepts a selector in string format or the canvas itself)
      * @param {LGraph} graph [optional]
      */
-    constructor(canvas, socket: NodeEditorSocket, editor:Editor,graph?: NodesEngine, skip_render?) {
+    constructor(canvas, socket: NodeEditorSocket, editor:NodeEditor, graph?: NodesEngine, skip_render?) {
         //if(graph === undefined)
         //	throw ("No graph assigned");
 
@@ -343,7 +343,7 @@ export class LGraphCanvas {
 
     bindEvents() {
         if (this._events_binded) {
-            console.warn("LGraphCanvas: events already binded");
+            console.warn("NodeEditorCanvas: events already binded");
             return;
         }
 
@@ -387,7 +387,7 @@ export class LGraphCanvas {
 
     unbindEvents() {
         if (!this._events_binded) {
-            console.warn("LGraphCanvas: no events binded");
+            console.warn("NodeEditorCanvas: no events binded");
             return;
         }
 
@@ -497,7 +497,7 @@ export class LGraphCanvas {
     }
 
     /*
-     LGraphCanvas.prototype.UIinit = function()
+     NodeEditorCanvas.prototype.UIinit = function()
      {
      let that = this;
      $("#node-console input").change(function(e)
@@ -1297,7 +1297,7 @@ export class LGraphCanvas {
     /* Interaction */
 
 
-    /* LGraphCanvas render */
+    /* NodeEditorCanvas render */
     computeVisibleNodes() {
         let visible_nodes = [];
         for (let i in this.graph._nodes) {
@@ -2033,7 +2033,7 @@ export class LGraphCanvas {
     }
 
     /*
-     LGraphCanvas.prototype.resizeCanvas = function(width,height)
+     NodeEditorCanvas.prototype.resizeCanvas = function(width,height)
      {
      this.canvas.width = width;
      if(height)
@@ -2143,7 +2143,7 @@ export class LGraphCanvas {
             options.push({content: "Add", is_menu: true, callback: this.onMenuAdd});
             options.push(null);
 
-            //{content:"Collapse All", callback: LGraphCanvas.onMenuCollapseAll }
+            //{content:"Collapse All", callback: NodeEditorCanvas.onMenuCollapseAll }
 
             options.push({content: "Import", is_menu: true, callback: this.onMenuImport});
             options.push(null);
