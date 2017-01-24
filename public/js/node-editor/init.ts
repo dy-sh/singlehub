@@ -14,6 +14,7 @@ import {editor} from "./node-editor";
 
 
 
+
 (<any>window).graph = engine;
 (<any>window).editor = editor;
 (<any>window).nodes = Nodes;

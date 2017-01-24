@@ -20,6 +20,7 @@ interface IgetExtraMenuOptions {
 }
 
 
+
 export class NodeEditorCanvas {
     editor:NodeEditor;
     socket: NodeEditorSocket;

@@ -12,13 +12,14 @@ export class NodeEditor {
 	socket: NodeEditorSocket;
 	//nodes: Nodes;
 
+
 	constructor() {
 		//fill container
 		let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
 
 		let root = document.createElement("div");
 		this.root = root;
-		root.className = "litegraph-editor";
+		root.className = "node-editor";
 		root.innerHTML = html;
 
 		let canvas = root.querySelector(".graphcanvas");

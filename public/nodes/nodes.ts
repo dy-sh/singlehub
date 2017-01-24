@@ -25,6 +25,7 @@
  */
 
 
+
 export class NodesOptions{
     MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
     DEFAULT_POSITION = [100, 100]; //default node position

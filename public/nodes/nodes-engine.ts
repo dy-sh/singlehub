@@ -3,6 +3,10 @@
  */
 
 
+
+import {Nodes, Node} from "./nodes";
+
+
 //todo
 // if (!(<any>window)) {
 //     let debug = require('debug')('nodes-engine:     ');
@@ -15,42 +19,6 @@
 // }
 
 
-import {Nodes, Node} from "./nodes";
-
-// start: function () {
-// 	this._started = true;
-//
-// 	debug("Started");
-//
-//
-// 	step();
-// },
-//
-// stop: function () {
-// 	this._started = false;
-//
-// 	debug("Started");
-//
-// 	function step() {
-// 		setImmediate(step);
-// 	}
-//
-// 	step();
-// },
-//
-// step: function () {
-// 	if (!this._started)
-// 		return;
-//
-// 	debug("step");
-//
-//
-//
-// 	if (config.engine.updateInterval > 0)
-// 		setTimeout(step, config.engine.updateInterval);
-// 	else
-// 		setImmediate(step);
-// }
 
 
 export class NodesEngine {
