@@ -63,15 +63,16 @@
          * @constructor
          */
         constructor() {
-            //todo
-            // this.debug = config.nodesEngine.debugEngine;
-            // if (this.debug)
-            //     debug("Nodes engine created");
             this.supported_types = ["number", "string", "boolean"];
             this._nodes_by_id = {};
             this.links = {};
             this.global_inputs = {};
             this.global_outputs = {};
+            console.log("Nodes engine created");
+            //todo
+            // this.debug = config.nodesEngine.debugEngine;
+            // if (this.debug)
+            //     debug("Nodes engine created");
             this.list_of_graphcanvas = null;
             this.clear();
         }
@@ -786,5 +787,6 @@
     }
     NodesEngine.NodesEngine = 2;
     exports.NodesEngine = NodesEngine;
+    exports.nodesEngine = new NodesEngine();
 });
 //# sourceMappingURL=nodes-engine.js.map

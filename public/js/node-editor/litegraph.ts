@@ -2,27 +2,26 @@
 
 import {Nodes, Node} from "../../nodes/nodes"
 // import {LGraphCanvas} from "./litegraph-canvas"
-// import {NodesEngine} from "../../nodes/nodes-engine"
+import {nodesEngine} from "../../nodes/nodes-engine"
 
 import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
 
-import {Editor} from "./litegraph-editor";
+import {editor} from "./litegraph-editor";
 
 
 
 
-let editor = new Editor("main");
 
-(<any>window).graph = editor.graph;
+
+(<any>window).graph = nodesEngine;
+(<any>window).editor = editor;
+(<any>window).nodes = Nodes;
+
 window.addEventListener("resize", function () {
     editor.graphcanvas.resize();
 });
 //getNodes();
-
-
-let nodesEngine=editor.graph;
-//let nodesEngine = new NodesEngine();
 
 
 

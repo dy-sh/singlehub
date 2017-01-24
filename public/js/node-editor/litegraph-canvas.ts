@@ -3,8 +3,8 @@
 //*********************************************************************************
 
 import {Node, Nodes} from "../../nodes/nodes"
-import {NodesEngine} from "../../nodes/nodes-engine"
-import {Editor} from "./litegraph-editor";
+import {NodesEngine,nodesEngine} from "../../nodes/nodes-engine"
+import {Editor,editor} from "./litegraph-editor";
 import {NodeEditorSocket} from "./node-editor-socket";
 
 interface IgetMenuOptions {

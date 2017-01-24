@@ -6,14 +6,17 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
+    const nodes_engine_1 = require("../../nodes/nodes-engine");
     class NodeEditorSocket {
-        constructor(engine) {
-            this.engine = engine;
+        constructor() {
+            this.engine = nodes_engine_1.nodesEngine;
+        }
+        c() {
             //configure socket.io
             this.socket = io.connect('/nodeeditor');
             this.socket.on('connect', function () {
@@ -351,5 +354,6 @@
         }
     }
     exports.NodeEditorSocket = NodeEditorSocket;
+    exports.nodeEditorSocket = new NodeEditorSocket();
 });
 //# sourceMappingURL=node-editor-socket.js.map

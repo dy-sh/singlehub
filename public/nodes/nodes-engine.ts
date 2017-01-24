@@ -103,7 +103,7 @@ export class NodesEngine {
      * @constructor
      */
     constructor() {
-
+        console.log("Nodes engine created");
         //todo
         // this.debug = config.nodesEngine.debugEngine;
         // if (this.debug)
@@ -933,5 +933,5 @@ export class NodesEngine {
 }
 
 
-
+export var nodesEngine = new NodesEngine();
 

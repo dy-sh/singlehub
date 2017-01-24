@@ -77,7 +77,7 @@
         }
         configure() {
             debug('ts-express:server');
-            const port = normalizePort(process.env.PORT || 3000);
+            const port = normalizePort(process.env.PORT || 1312);
             this.express.set('port', port);
             this.server = http.createServer(this.express);
             this.server.listen(port);
@@ -121,4 +121,4 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = new Server();
 });
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=server.js.map

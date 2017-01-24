@@ -4,11 +4,10 @@
 
 
 import {Nodes as nodes, Node} from "../public/nodes/nodes";
-import {NodesEngine} from "../public/nodes/nodes-engine";
+import {nodesEngine} from "../public/nodes/nodes-engine";
 
 
 
-let nodesEngine = new NodesEngine();
 
 
 module.exports.test = function () {

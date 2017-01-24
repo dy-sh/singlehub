@@ -1,7 +1,7 @@
 import {Nodes,Node} from "../../nodes/nodes"
-import {NodesEngine} from "../../nodes/nodes-engine"
+import {NodesEngine,nodesEngine} from "../../nodes/nodes-engine"
 import {LGraphCanvas} from "./litegraph-canvas"
-import {NodeEditorSocket} from "./node-editor-socket";
+import {NodeEditorSocket,nodeEditorSocket} from "./node-editor-socket";
 import {themes} from "./node-editor-themes"
 
 
@@ -12,7 +12,7 @@ export class Editor {
 	socket: NodeEditorSocket;
 	//nodes: Nodes;
 
-	constructor(container_id, options?) {
+	constructor() {
 		//fill container
 		let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
 
@@ -30,10 +30,10 @@ export class Editor {
 
 
 		//create graph
-		let graph = this.graph = new NodesEngine();
+		let graph = this.graph = nodesEngine;
 
 		//create socket
-		this.socket = new NodeEditorSocket(graph);
+		this.socket = nodeEditorSocket;
 
 		//create canvas
 		let graphcanvas = this.graphcanvas = new LGraphCanvas(
@@ -53,7 +53,7 @@ export class Editor {
 		this.addMiniWindow(200, 200);
 
 		//append to DOM
-		let parent = document.getElementById(container_id);
+		let parent = document.getElementById("main");
 		if (parent)
 			parent.appendChild(root);
 
@@ -478,3 +478,4 @@ function NodeSettings(node) {
 }
 
 
+export var editor= new Editor();

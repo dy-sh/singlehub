@@ -14,7 +14,7 @@
     const node_editor_themes_1 = require("./node-editor-themes");
     class Editor {
         //nodes: Nodes;
-        constructor(container_id, options) {
+        constructor() {
             //fill container
             let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
             let root = document.createElement("div");
@@ -26,9 +26,9 @@
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
             //create graph
-            let graph = this.graph = new nodes_engine_1.NodesEngine();
+            let graph = this.graph = nodes_engine_1.nodesEngine;
             //create socket
-            this.socket = new node_editor_socket_1.NodeEditorSocket(graph);
+            this.socket = node_editor_socket_1.nodeEditorSocket;
             //create canvas
             let graphcanvas = this.graphcanvas = new litegraph_canvas_1.LGraphCanvas(canvas, this.socket, this, graph);
             // graphcanvas.background_image = "/images/litegraph/grid.png";
@@ -36,7 +36,7 @@
             //add stuff
             this.addMiniWindow(200, 200);
             //append to DOM
-            let parent = document.getElementById(container_id);
+            let parent = document.getElementById("main");
             if (parent)
                 parent.appendChild(root);
             graphcanvas.resize();
@@ -384,5 +384,6 @@
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
     }
+    exports.editor = new Editor();
 });
 //# sourceMappingURL=litegraph-editor.js.map
