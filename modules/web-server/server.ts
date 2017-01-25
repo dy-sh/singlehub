@@ -23,7 +23,7 @@ let config = require('./../../config.json');
 class Server {
     express: express.Application;
     server: http.Server;
-    io: NodesServerSocket;
+    socket: NodesServerSocket;
 
     private __rootdirname;
 
@@ -146,7 +146,7 @@ class Server {
     }
 
     private start_io() {
-        this.io = new NodesServerSocket(this.server);
+        this.socket = new NodesServerSocket(this.server);
     }
 }
 

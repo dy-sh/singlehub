@@ -527,7 +527,7 @@ export class NodesEngine {
      * @method getNodeById
      * @param {String} id
      */
-    getNodeById(id) {
+    getNodeById(id):Node {
         if (id == null) return null;
         return this._nodes_by_id[id];
     }

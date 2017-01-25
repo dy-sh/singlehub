@@ -19,10 +19,15 @@ export class NodeEditorSocket {
 
         let socket = io();
 
-        socket.emit('chat message', "h1");
+        // socket.emit('chat message', "h1");
 
-        socket.on('chat message', function(msg){
-            console.log(msg);
+        socket.on('node position update', function(n){
+            console.log("node position update "+JSON.stringify(n))
+            let node = engine.getNodeById(n.id);
+            if (node.pos!=n.pos) {
+                node.pos = n.pos;
+                node.setDirtyCanvas(true,true);
+            }
         });
     }
 
@@ -428,7 +433,9 @@ export class NodeEditorSocket {
     createOrUpdateLink(link) {
         let target = this.engine.getNodeById(link.target_id);
         this.engine.getNodeById(link.origin_id)
-            .connect(link.origin_slot, target, link.target_slot, link.id);
+            .connect(link.origin_slot, target, link.target_slot);
+
+        // .connect(link.origin_slot, target, link.target_slot, link.id);
     }
 
 

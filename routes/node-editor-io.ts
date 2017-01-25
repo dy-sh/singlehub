@@ -7,14 +7,17 @@ import * as socket from 'socket.io';
 import * as http from 'http';
 
 
-export class NodesServerSocket{
+export class NodesServerSocket {
 
-    constructor(server:http.Server){
-        let io=socket(server);
+    io: SocketIO.Server;
 
-        io.on('connection', function(socket){
-            socket.on('chat message', function(msg){
-                io.emit('chat message', msg+"2");
+    constructor(server: http.Server) {
+        let io = socket(server);
+        this.io = io;
+
+        io.on('connection', function (socket) {
+            socket.on('chat message', function (msg) {
+                io.emit('chat message', msg + "2");
             });
         });
     }

@@ -16,9 +16,14 @@
         constructor() {
             this.engine = nodes_engine_1.engine;
             let socket = io();
-            socket.emit('chat message', "h1");
-            socket.on('chat message', function (msg) {
-                console.log(msg);
+            // socket.emit('chat message', "h1");
+            socket.on('node position update', function (n) {
+                console.log("node position update " + JSON.stringify(n));
+                let node = nodes_engine_1.engine.getNodeById(n.id);
+                if (node.pos != n.pos) {
+                    node.pos = n.pos;
+                    node.setDirtyCanvas(true, true);
+                }
             });
         }
         c() {
@@ -329,7 +334,8 @@
         createOrUpdateLink(link) {
             let target = this.engine.getNodeById(link.target_id);
             this.engine.getNodeById(link.origin_id)
-                .connect(link.origin_slot, target, link.target_slot, link.id);
+                .connect(link.origin_slot, target, link.target_slot);
+            // .connect(link.origin_slot, target, link.target_slot, link.id);
         }
         calculateNodeMinHeight(node) {
             let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;

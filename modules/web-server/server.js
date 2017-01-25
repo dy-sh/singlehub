@@ -127,7 +127,7 @@
             console.log("Server started at port " + port);
         }
         start_io() {
-            this.io = new node_editor_io_1.NodesServerSocket(this.server);
+            this.socket = new node_editor_io_1.NodesServerSocket(this.server);
         }
     }
     Object.defineProperty(exports, "__esModule", { value: true });

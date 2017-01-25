@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/nodes-engine"], factory);
+        define(["require", "exports", 'express', "../public/nodes/nodes-engine", "../modules/web-server/server"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -17,6 +17,7 @@
     //var config = require('./../config');
     // import App from '../modules/web-server/server'
     const nodes_engine_1 = require("../public/nodes/nodes-engine");
+    const server_1 = require("../modules/web-server/server");
     router.get('/GetNodesForPanel', function (req, res) {
         let s = nodes_engine_1.engine.serialize();
         res.json(s);
@@ -45,6 +46,7 @@
         // console.log(newNode);
         let node = nodes_engine_1.engine._nodes.find(n => n.id === newNode.id);
         node.pos = newNode.pos;
+        server_1.default.socket.io.emit('node position update', { id: node.id, pos: node.pos });
     });
     router.post('/SetNodeSettings', function (req, res) {
     });

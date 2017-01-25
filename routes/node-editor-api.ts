@@ -11,6 +11,7 @@ let router = express.Router();
 
 // import App from '../modules/web-server/server'
 import {engine} from "../public/nodes/nodes-engine"
+import server from "../modules/web-server/server"
 
 router.get('/GetNodesForPanel', function (req, res) {
 	let s=engine.serialize();
@@ -61,6 +62,8 @@ router.post('/UpdateNode', function (req, res) {
 	// console.log(newNode);
 	let node = engine._nodes.find(n => n.id === newNode.id);
 	node.pos=newNode.pos;
+
+	server.socket.io.emit('node position update', {id:node.id,pos:node.pos});
 });
 
 router.post('/SetNodeSettings', function (req, res) {
