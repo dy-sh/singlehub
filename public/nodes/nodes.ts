@@ -3,6 +3,7 @@
  */
 
 
+
 //todo
 // const debug = require('debug')('nodes-engine:     ');
 // const debugLog = require('debug')('nodes-engine:log  ');
@@ -17,6 +18,7 @@
 //   Nodes CLASS                                     *******
 // *************************************************************
 
+import {NodesEngine} from "./nodes-engine";
 /**
  * The Global Scope. It contains all the registered node classes.
  *
@@ -27,6 +29,7 @@
 
 
 export class NodesOptions{
+
     MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
     DEFAULT_POSITION = [100, 100]; //default node position
     START_POS = 50;
@@ -120,7 +123,7 @@ export class Nodes {
         console.log(mess)
     };
 
-    static registerNodeType (type, base_class) {
+    static registerNodeType (type:string, base_class:any) {
         if (!base_class.prototype)
             throw("Cannot register a simple object, it must be a class with a prototype");
         base_class.type = type;
@@ -150,7 +153,8 @@ export class Nodes {
      * @method addNodeMethod
      * @param {Function} func
      */
-    static addNodeMethod (name, func) {
+
+    static addNodeMethod (name:string, func:Function) {
         Node.prototype[name] = func;
         for (let i in this.registered_node_types)
             this.registered_node_types[i].prototype[name] = func;
@@ -204,7 +208,7 @@ export class Nodes {
      * @return {Class} the node class
      */
 
-    static getNodeType (type) {
+    static getNodeType (type:string):Node {
         return this.registered_node_types[type];
     };
 
@@ -216,7 +220,7 @@ export class Nodes {
      * @return {Array} array with all the node classes
      */
 
-    static getNodeTypesInCategory (category) {
+    static getNodeTypesInCategory (category:string):Array<Node> {
         let r = [];
         for (let i in this.registered_node_types)
             if (category == "") {
@@ -235,7 +239,7 @@ export class Nodes {
      * @return {Array} array with all the names of the categories
      */
 
-    static getNodeTypesCategories () {
+    static getNodeTypesCategories ():Array<any> {
         let categories = {"": 1};
         for (let i in this.registered_node_types)
             if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
@@ -283,12 +287,12 @@ export class Nodes {
 
 
 
-    static getTime () {
+    static getTime ():number {
         return (typeof(performance) != "undefined") ? performance.now() : Date.now();
     };
 
 
-    static guid() {
+    static guid():string {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -350,7 +354,7 @@ export class Node {
     title: string;
     desc: string;
     size: [number, number];
-    graph: any;
+    graph: NodesEngine;
     id: string|number;
     type: any;
     inputs: Array<any>;
@@ -368,20 +372,20 @@ export class Node {
         type: string
     };
 
-    onAdded: any;
-    onInputAdded: any;
-    onOutputAdded: any;
-    onConnectInput: any;
+    onAdded: Function;
+    onInputAdded: Function;
+    onOutputAdded: Function;
+    onConnectInput: Function;
     mouseOver: boolean;
     selected: boolean;
     onSelected: any;
-    onDrawBackground: any;
-    onDrawForeground: any;
-    color: any;
-    bgcolor: any;
-    boxcolor: any;
+    onDrawBackground: Function;
+    onDrawForeground: Function;
+    color: string;
+    bgcolor: string;
+    boxcolor: string;
     shape: any;
-    onSerialize: any;
+    onSerialize: Function;
     setValue:any;
 
     pos: [number, number] = [10, 10];
@@ -415,7 +419,7 @@ export class Node {
      * configure a node from an object containing the serialized info
      * @method configure
      */
-    configure(info) {
+    configure(info:any) {
         for (let j in info) {
             if (j == "console") continue;
 
@@ -474,7 +478,7 @@ export class Node {
      * serialize the content
      * @method serialize
      */
-    serialize() {
+    serialize():any {
         let o = {
             id: this.id,
             title: this.title,
@@ -538,7 +542,7 @@ export class Node {
      * get the title string
      * @method getTitle
      */
-    getTitle() {
+    getTitle():string {
         return this.title;
     }
 
@@ -836,12 +840,12 @@ export class Node {
      * @method getBounding
      * @return {Float32Array[4]} the total size
      */
-    getBounding() {
+    getBounding():Float32Array {
         return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT]);
     }
 
 
-    isInsideRectangle(x, y, left, top, width, height) {
+    isInsideRectangle(x:number, y:number, left:number, top:number, width:number, height:number):boolean {
         if (left < x && (left + width) > x &&
             top < y && (top + height) > y)
             return true;
@@ -855,7 +859,7 @@ export class Node {
      * @param {number} y
      * @return {boolean}
      */
-    isPointInsideNode(x, y, margin) {
+    isPointInsideNode(x:number, y:number, margin:number):boolean {
         margin = margin || 0;
 
         let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
@@ -870,34 +874,34 @@ export class Node {
         return false;
     }
 
-    //
-    // /**
-    //  * checks if a point is inside a node slot, and returns info about which slot
-    //  * @method getSlotInPosition
-    //  * @param {number} x
-    //  * @param {number} y
-    //  * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
-    //  */
-    // getSlotInPosition(x, y) {
-    //     //search for inputs
-    //     if (this.inputs)
-    //         for (let i = 0, l = this.inputs.length; i < l; ++i) {
-    //             let input = this.inputs[i];
-    //             let link_pos = this.getConnectionPos(true, i);
-    //             if (isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-    //                 return {input: input, slot: i, link_pos: link_pos, locked: input.locked};
-    //         }
-    //
-    //     if (this.outputs)
-    //         for (let i = 0, l = this.outputs.length; i < l; ++i) {
-    //             let output = this.outputs[i];
-    //             let link_pos = this.getConnectionPos(false, i);
-    //             if (isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-    //                 return {output: output, slot: i, link_pos: link_pos, locked: output.locked};
-    //         }
-    //
-    //     return null;
-    // }
+
+    /**
+     * checks if a point is inside a node slot, and returns info about which slot
+     * @method getSlotInPosition
+     * @param {number} x
+     * @param {number} y
+     * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
+     */
+    getSlotInPosition(x:number, y:number) :any{
+        //search for inputs
+        if (this.inputs)
+            for (let i = 0, l = this.inputs.length; i < l; ++i) {
+                let input = this.inputs[i];
+                let link_pos = this.getConnectionPos(true, i);
+                if (this.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
+                    return {input: input, slot: i, link_pos: link_pos, locked: input.locked};
+            }
+
+        if (this.outputs)
+            for (let i = 0, l = this.outputs.length; i < l; ++i) {
+                let output = this.outputs[i];
+                let link_pos = this.getConnectionPos(false, i);
+                if (this.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
+                    return {output: output, slot: i, link_pos: link_pos, locked: output.locked};
+            }
+
+        return null;
+    }
 
     /**
      * returns the input slot with a given name (used for dynamic slots), -1 if not found
@@ -935,7 +939,7 @@ export class Node {
      * @param {number_or_string} target_slot the input slot of the target node (could be the number of the slot or the string with the name of the slot)
      * @return {boolean} if it was connected succesfully
      */
-    connect(slot: number|string, node: Node, target_slot: number|string) {
+    connect(slot: number|string, node: Node, target_slot: number|string) :boolean{
         target_slot = target_slot || 0;
 
         //seek for the output slot
@@ -1025,72 +1029,72 @@ export class Node {
         return true;
     }
 
-//
-//     /**
-//      * disconnect one output to an specific node
-//      * @method disconnectOutput
-//      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
-//      * @param {Node} target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
-//      * @return {boolean} if it was disconnected succesfully
-//      */
-//     disconnectOutput(slot, target_node) {
-//         if (slot.constructor === String) {
-//             slot = this.findOutputSlot(slot);
-//             if (slot == -1) {
-//                 debugErr("Connect: Error, no slot of name " + slot);
-//                 return false;
-//             }
-//         }
-//         else if (!this.outputs || slot >= this.outputs.length) {
-//             debugErr("Connect: Error, slot number not found");
-//             return false;
-//         }
-//
-//         //get output slot
-//         let output = this.outputs[slot];
-//         if (!output.links || output.links.length == 0)
-//             return false;
-//
-//         //one of the links
-//         if (target_node) {
-//             if (target_node.constructor === Number)
-//                 target_node = this.graph.getNodeById(target_node);
-//             if (!target_node)
-//                 throw("Target Node not found");
-//
-//             for (let i = 0, l = output.links.length; i < l; i++) {
-//                 let link_id = output.links[i];
-//                 let link_info = this.graph.links[link_id];
-//
-//                 //is the link we are searching for...
-//                 if (link_info.target_id == target_node.id) {
-//                     output.links.splice(i, 1); //remove here
-//                     target_node.inputs[link_info.target_slot].link = null; //remove there
-//                     delete this.graph.links[link_id]; //remove the link from the links pool
-//                     break;
-//                 }
-//             }
-//         }
-//         else //all the links
-//         {
-//             for (let i = 0, l = output.links.length; i < l; i++) {
-//                 let link_id = output.links[i];
-//                 let link_info = this.graph.links[link_id];
-//
-//                 let target_node = this.graph.getNodeById(link_info.target_id);
-//                 if (target_node)
-//                     target_node.inputs[link_info.target_slot].link = null; //remove other side link
-//                 delete this.graph.links[link_id]; //remove the link from the links pool
-//             }
-//             output.links = null;
-//         }
-//
-//         this.setDirtyCanvas(false, true);
-//     if (this.graph)
-//         this.graph.connectionChange(this);
-//         return true;
-//     }
-//
+
+    /**
+     * disconnect one output to an specific node
+     * @method disconnectOutput
+     * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
+     * @param {Node} target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
+     * @return {boolean} if it was disconnected succesfully
+     */
+    disconnectOutput(slot:number|string, target_node:Node):boolean {
+        if (typeof slot == "string") {
+            slot = this.findOutputSlot(slot);
+            if (slot == -1) {
+                this.debugErr("Connect: Error, no slot of name " + slot);
+                return false;
+            }
+        }
+        else if (!this.outputs || slot >= this.outputs.length) {
+            this.debugErr("Connect: Error, slot number not found");
+            return false;
+        }
+
+        //get output slot
+        let output = this.outputs[slot];
+        if (!output.links || output.links.length == 0)
+            return false;
+
+        //one of the links
+        if (target_node) {
+            if (target_node.constructor === Number)
+                target_node = this.graph.getNodeById(target_node);
+            if (!target_node)
+                throw("Target Node not found");
+
+            for (let i = 0, l = output.links.length; i < l; i++) {
+                let link_id = output.links[i];
+                let link_info = this.graph.links[link_id];
+
+                //is the link we are searching for...
+                if (link_info.target_id == target_node.id) {
+                    output.links.splice(i, 1); //remove here
+                    target_node.inputs[link_info.target_slot].link = null; //remove there
+                    delete this.graph.links[link_id]; //remove the link from the links pool
+                    break;
+                }
+            }
+        }
+        else //all the links
+        {
+            for (let i = 0, l = output.links.length; i < l; i++) {
+                let link_id = output.links[i];
+                let link_info = this.graph.links[link_id];
+
+                let target_node = this.graph.getNodeById(link_info.target_id);
+                if (target_node)
+                    target_node.inputs[link_info.target_slot].link = null; //remove other side link
+                delete this.graph.links[link_id]; //remove the link from the links pool
+            }
+            output.links = null;
+        }
+
+        this.setDirtyCanvas(false, true);
+    if (this.graph)
+        this.graph.connectionChange(this);
+        return true;
+    }
+
     /**
      * disconnect one input
      * @method disconnectInput
@@ -1153,7 +1157,7 @@ export class Node {
      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
      * @return {[x,y]} the position
      **/
-    getConnectionPos(is_input, slot_number) {
+    getConnectionPos(is_input:boolean, slot_number:number) {
         if (this.flags.collapsed) {
             if (is_input)
                 return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
