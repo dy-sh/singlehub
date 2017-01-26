@@ -55,7 +55,7 @@ export class Constant extends Node {
         this.outputs[0].label = this.properties["value"].toFixed(3);
     }
 
-    onWidget(e, widget) {
+    onWidget=function(e, widget) {
         if (widget.name == "value")
             this.setValue(widget.value);
     }

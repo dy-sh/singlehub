@@ -3,8 +3,8 @@
  */
 
 
-
 import {Nodes, Node} from "./nodes";
+import {NodeEditorCanvas} from "../js/node-editor/node-editor-canvas";
 
 
 //todo
@@ -19,25 +19,23 @@ import {Nodes, Node} from "./nodes";
 // }
 
 
-
-
 export class NodesEngine {
 
 
-    supported_types= ["number", "string", "boolean"];
+    supported_types = ["number", "string", "boolean"];
 
-    static NodesEngine= 2;
-    list_of_graphcanvas: any;
+    static NodesEngine = 2;
+    list_of_graphcanvas: Array<NodeEditorCanvas>;
     isRunning: boolean;
     last_node_id: number;
     _nodes: Array<Node>;
-    _nodes_by_id= {};
+    _nodes_by_id = {};
     last_link_id: number;
-    links= {};
+    links = {};
     iteration: number;
     config: {
         align_to_grid?: boolean;
-        links_ontop?:any;
+        links_ontop?: any;
     };
     globaltime: number;
     runningtime: number;
@@ -45,23 +43,23 @@ export class NodesEngine {
     fixedtime_lapse: number;
     elapsed_time: number;
     starttime: number;
-    global_inputs= {};
-    global_outputs= {};
+    global_inputs = {};
+    global_outputs = {};
     execution_timer_id: any;
     _nodes_in_order: any;
     errors_in_execution: boolean;
 
     M: any;
 
-    onStopEvent: any;
-    on_change: any;
-    onNodeAdded: any;
-    onExecuteStep: any;
-    onAfterExecute: any;
-    onConnectionChange: any;
-     onNodeRemoved: any;
-     onPlayEvent: any;
-     frame: any;
+    onStopEvent: Function;
+    on_change: Function;
+    onNodeAdded: Function;
+    onExecuteStep: Function;
+    onAfterExecute: Function;
+    onConnectionChange: Function;
+    onNodeRemoved: Function;
+    onPlayEvent: Function;
+    frame: any;
 
 
     /**
@@ -102,7 +100,7 @@ export class NodesEngine {
      */
     clear() {
         this.stop();
-        this.isRunning=false;
+        this.isRunning = false;
         this.last_node_id = 0;
 
         //nodes
@@ -145,7 +143,7 @@ export class NodesEngine {
         if (!this.isRunning)
             return;
 
-        this.isRunning=true;
+        this.isRunning = true;
 
         if (this.onStopEvent)
             this.onStopEvent();
@@ -163,7 +161,7 @@ export class NodesEngine {
      * @method attachCanvas
      * @param {GraphCanvas} graph_canvas
      */
-    attachCanvas(graphcanvas) {
+    attachCanvas(graphcanvas: NodeEditorCanvas) {
         // if (graphcanvas.constructor != NodesCanvas)
         //     throw("attachCanvas expects a NodesCanvas instance");
         if (graphcanvas.graph && graphcanvas.graph != this)
@@ -180,7 +178,7 @@ export class NodesEngine {
      * @method detachCanvas
      * @param {GraphCanvas} graph_canvas
      */
-    detachCanvas(graphcanvas) {
+    detachCanvas(graphcanvas: NodeEditorCanvas) {
         if (!this.list_of_graphcanvas)
             return;
 
@@ -196,7 +194,7 @@ export class NodesEngine {
      * @method start
      * @param {number} interval amount of milliseconds between executions, default is 1
      */
-    start(interval:number) {
+    start(interval: number) {
         if (this.isRunning)
             return;
 
@@ -217,7 +215,6 @@ export class NodesEngine {
             that.runStep(1);
         }, interval);
     }
-
 
 
     /**
@@ -267,7 +264,7 @@ export class NodesEngine {
     }
 
 //This is more internal, it computes the order and returns it
-    computeExecutionOrder() {
+    computeExecutionOrder(): any {
         let L = [];
         let S = [];
         let M = {};
@@ -351,7 +348,7 @@ export class NodesEngine {
      * @method getTime
      * @return {number} number of milliseconds the graph has been running
      */
-    getTime() {
+    getTime(): number {
         return this.globaltime;
     }
 
@@ -360,7 +357,7 @@ export class NodesEngine {
      * @method getFixedTime
      * @return {number} number of milliseconds the graph has been running
      */
-    getFixedTime() {
+    getFixedTime(): number {
         return this.fixedtime;
     }
 
@@ -370,7 +367,7 @@ export class NodesEngine {
      * @method getElapsedTime
      * @return {number} number of milliseconds it took the last cycle
      */
-    getElapsedTime() {
+    getElapsedTime(): number {
         return this.elapsed_time;
     }
 
@@ -416,7 +413,7 @@ export class NodesEngine {
      * @method add
      * @param {Node} node the instance of the node
      */
-    add(node: Node, skip_compute_order?: boolean) {
+    add(node: Node, skip_compute_order?: boolean): Node {
         if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
             return; //already added
 
@@ -464,7 +461,7 @@ export class NodesEngine {
      * @method remove
      * @param {Node} node the instance of the node
      */
-    remove(node) {
+    remove(node: Node) {
         if (this._nodes_by_id[node.id] == null)
             return; //not found
 
@@ -527,7 +524,7 @@ export class NodesEngine {
      * @method getNodeById
      * @param {String} id
      */
-    getNodeById(id):Node {
+    getNodeById(id: string|number): Node {
         if (id == null) return null;
         return this._nodes_by_id[id];
     }
@@ -584,7 +581,7 @@ export class NodesEngine {
      * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the graph
      * @return {Array} a list with all the nodes that intersect this coordinate
      */
-    getNodeOnPos(x, y, nodes_list?) {
+    getNodeOnPos(x: number, y: number, nodes_list?: Array<Node>): Node {
         nodes_list = nodes_list || this._nodes;
         for (let i = nodes_list.length - 1; i >= 0; i--) {
             let n = nodes_list[i];
@@ -593,6 +590,7 @@ export class NodesEngine {
         }
         return null;
     }
+
 //
 // // ********** GLOBALS *****************
 //
@@ -836,7 +834,7 @@ export class NodesEngine {
 
 
         let data = {
-    //		graph: this.graph,
+            //		graph: this.graph,
 
             iteration: this.iteration,
             frame: this.frame,
@@ -851,7 +849,7 @@ export class NodesEngine {
         return data;
     }
 
-    cloneObject (obj, target?) {
+    cloneObject(obj, target?) {
         if (obj == null) return null;
         let r = JSON.parse(JSON.stringify(obj));
         if (!target) return r;
@@ -866,7 +864,7 @@ export class NodesEngine {
      * @method configure
      * @param {String} str configure a graph from a JSON string
      */
-    configure(data, keep_old=false) {
+    configure(data, keep_old = false) {
         if (!keep_old)
             this.clear();
 

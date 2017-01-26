@@ -480,19 +480,19 @@
         //         return (slot < this.inputs.length && this.inputs[slot].link != null);
         //     }
         //
-        //     /**
-        //      * tells you info about an input connection (which node, type, etc)
-        //      * @method getInputInfo
-        //      * @param {number} slot
-        //      * @return {Object} object or null
-        //      */
-        //     getInputInfo(slot) {
-        //         if (!this.inputs)
-        //             return null;
-        //         if (slot < this.inputs.length)
-        //             return this.inputs[slot];
-        //         return null;
-        //     }
+        /**
+         * tells you info about an input connection (which node, type, etc)
+         * @method getInputInfo
+         * @param {number} slot
+         * @return {Object} object or null
+         */
+        getInputInfo(slot) {
+            if (!this.inputs)
+                return null;
+            if (slot < this.inputs.length)
+                return this.inputs[slot];
+            return null;
+        }
         //
         //     /**
         //      * tells you info about an output connection (which node, type, etc)
@@ -821,7 +821,7 @@
                 return false;
             }
             if (node && node.constructor === Number)
-                node = this.graph.getNodeById(node);
+                node = this.graph.getNodeById(node.id);
             if (!node)
                 throw ("Node not found");
             //avoid loopback
@@ -907,7 +907,7 @@
             //one of the links
             if (target_node) {
                 if (target_node.constructor === Number)
-                    target_node = this.graph.getNodeById(target_node);
+                    target_node = this.graph.getNodeById(target_node.id);
                 if (!target_node)
                     throw ("Target Node not found");
                 for (let i = 0, l = output.links.length; i < l; i++) {
@@ -1045,6 +1045,81 @@
             if (!this.graph)
                 return;
             this.graph.sendActionToCanvas("setDirty", [dirty_foreground, dirty_background]);
+        }
+        //     loadImage(url) {
+        //         let img = new Image();
+        //         img.src = Nodes.node_images_path + url;
+        //         img.ready = false;
+        //
+        //         let that = this;
+        //         img.onload = function () {
+        //             this.ready = true;
+        //             that.setDirtyCanvas(true);
+        //         }
+        //         return img;
+        //     }
+        //
+        // //safe Node action execution (not sure if safe)
+        //     executeAction(action) {
+        //         if (action == "") return false;
+        //
+        //         if (action.indexOf(";") != -1 || action.indexOf("}") != -1) {
+        //             this.traceError("Error: Action contains unsafe characters");
+        //             return false;
+        //         }
+        //
+        //         let tokens = action.split("(");
+        //         let func_name = tokens[0];
+        //         if (typeof(this[func_name]) != "function") {
+        //             this.traceError("Error: Action not found on node: " + func_name);
+        //             return false;
+        //         }
+        //
+        //         let code = action;
+        //
+        //         try {
+        //         	//todo ES6
+        //             // let _foo = eval;
+        //             // eval = null;
+        //             // (new Function("with(this) { " + code + "}")).call(this);
+        //             // eval = _foo;
+        //         }
+        //         catch (err) {
+        //             this.traceError("Error executing action {" + action + "} :" + err);
+        //             return false;
+        //         }
+        //
+        //         return true;
+        //     }
+        //
+        // 	/* Allows to get onMouseMove and onMouseUp events even if the mouse is out of focus */
+        //     captureInput(v) {
+        //         if (!this.graph || !this.graph.list_of_graphcanvas)
+        //             return;
+        //
+        //         let list = this.graph.list_of_graphcanvas;
+        //
+        //         for (let i = 0; i < list.length; ++i) {
+        //             let c = list[i];
+        //             //releasing somebody elses capture?!
+        //             if (!v && c.node_capturing_input != this)
+        //                 continue;
+        //
+        //             //change
+        //             c.node_capturing_input = v ? this : null;
+        //         }
+        //     }
+        //
+        /**
+         * Collapse the node to make it smaller on the canvas
+         * @method collapse
+         **/
+        collapse() {
+            if (!this.flags.collapsed)
+                this.flags.collapsed = true;
+            else
+                this.flags.collapsed = false;
+            this.setDirtyCanvas(true, true);
         }
     }
     exports.Node = Node;

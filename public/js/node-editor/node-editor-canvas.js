@@ -1500,7 +1500,7 @@
                         else
                             start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
                         let color = nodes_1.Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
-                        if (color == null)
+                        if (color == null && typeof node.id == "number")
                             color = nodes_1.Nodes.options.LINK_COLORS[node.id % nodes_1.Nodes.options.LINK_COLORS.length];
                         this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
                     }

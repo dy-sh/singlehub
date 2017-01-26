@@ -47,15 +47,15 @@
                 //show the current value
                 this.outputs[0].label = this.properties["value"].toFixed(3);
             };
+            this.onWidget = function (e, widget) {
+                if (widget.name == "value")
+                    this.setValue(widget.value);
+            };
             this.title = "Const";
             this.desc = "Constant value";
             this.addOutput("value", "number");
             this.properties = { value: 1.0 };
             this.editable = { property: "value", type: "number" };
-        }
-        onWidget(e, widget) {
-            if (widget.name == "value")
-                this.setValue(widget.value);
         }
     }
     exports.Constant = Constant;

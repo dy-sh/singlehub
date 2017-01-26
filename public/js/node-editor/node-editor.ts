@@ -66,7 +66,7 @@ export class NodeEditor {
 		//graphcanvas.draw(true,true);
 	}
 
-	addMiniWindow(w, h) {
+	addMiniWindow(w:number, h:number) {
 
 		if (minimap_opened)
 			return;
@@ -117,7 +117,7 @@ export class NodeEditor {
 
 	}
 
-	importPanelFromFile(position) {
+	importPanelFromFile(position:[number,number]) {
 
 		$('#import-panel-title').html("Import Panel");
 
@@ -183,7 +183,7 @@ export class NodeEditor {
 
 	}
 
-	importPanelFromScript(position) {
+	importPanelFromScript(position:[number,number]) {
 		$('#modal-panel-submit').show();
 
 		$('#modal-panel-title').html("Import Panel");
@@ -235,7 +235,7 @@ export class NodeEditor {
 		});
 	}
 
-	importPanelFromURL(position) {
+	importPanelFromURL(position:[number,number]) {
 		$('#modal-panel-submit').show();
 
 		$('#modal-panel-title').html("Import Panel");
@@ -309,7 +309,7 @@ export class NodeEditor {
 		});
 	}
 
-	exportPanelToScript(id) {
+	exportPanelToScript(id:string) {
 
 		$('#modal-panel-message').html("Generating script...");
 		$('#modal-panel-message').fadeIn(300);
@@ -341,7 +341,7 @@ export class NodeEditor {
 		});
 	}
 
-	exportPanelURL(id) {
+	exportPanelURL(id:string) {
 
 		$('#modal-panel-title').html("Export Panel");
 		$('#modal-panel-form').html(
@@ -366,7 +366,7 @@ export class NodeEditor {
 
 	}
 
-	showNodeDescrition(node) {
+	showNodeDescrition(node:Node) {
 
 		$('#modal-panel-title').html(node.type);
 		$('#modal-panel-form').html(
@@ -417,7 +417,7 @@ let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html(
 let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
 
 
-function NodeSettings(node) {
+function NodeSettings(node:Node) {
     $('#node-settings-title').html(node.type);
 
     //parse settings from json

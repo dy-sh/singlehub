@@ -220,7 +220,7 @@ export class Nodes {
      * @return {Array} array with all the node classes
      */
 
-    static getNodeTypesInCategory (category:string):Array<Node> {
+    static getNodeTypesInCategory (category:string):Array<any> {
         let r = [];
         for (let i in this.registered_node_types)
             if (category == "") {
@@ -362,10 +362,12 @@ export class Node {
     connections: Array<any>;
     properties: any;
     data: any;
+    ignore_remove:boolean;
     flags: {
         skip_title_render?: true,
         unsafe_execution?: false,
-        collapsed?: boolean
+        collapsed?: boolean,
+        pinned?:boolean
     };
     editable: {
         property: string;
@@ -381,12 +383,22 @@ export class Node {
     onSelected: any;
     onDrawBackground: Function;
     onDrawForeground: Function;
+    onRemoved:Function;
+    onDblClick:Function;
+    onMouseDown:Function;
+    onMouseEnter:Function;
+    onMouseMove:Function;
+    onDropFile:Function;
+    onDropItem:Function;
+    onMouseUp:Function;
+    onMouseLeave:Function;
     color: string;
     bgcolor: string;
     boxcolor: string;
     shape: any;
     onSerialize: Function;
     setValue:any;
+
 
     pos: [number, number] = [10, 10];
 
@@ -591,19 +603,19 @@ export class Node {
 //         return (slot < this.inputs.length && this.inputs[slot].link != null);
 //     }
 //
-//     /**
-//      * tells you info about an input connection (which node, type, etc)
-//      * @method getInputInfo
-//      * @param {number} slot
-//      * @return {Object} object or null
-//      */
-//     getInputInfo(slot) {
-//         if (!this.inputs)
-//             return null;
-//         if (slot < this.inputs.length)
-//             return this.inputs[slot];
-//         return null;
-//     }
+    /**
+     * tells you info about an input connection (which node, type, etc)
+     * @method getInputInfo
+     * @param {number} slot
+     * @return {Object} object or null
+     */
+    getInputInfo(slot:number) {
+        if (!this.inputs)
+            return null;
+        if (slot < this.inputs.length)
+            return this.inputs[slot];
+        return null;
+    }
 //
 //     /**
 //      * tells you info about an output connection (which node, type, etc)
@@ -956,7 +968,7 @@ export class Node {
         }
 
         if (node && node.constructor === Number)
-            node = this.graph.getNodeById(node);
+            node = this.graph.getNodeById(node.id);
         if (!node)
             throw("Node not found");
 
@@ -1037,7 +1049,7 @@ export class Node {
      * @param {Node} target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
      * @return {boolean} if it was disconnected succesfully
      */
-    disconnectOutput(slot:number|string, target_node:Node):boolean {
+    disconnectOutput(slot:number|string, target_node?:Node):boolean {
         if (typeof slot == "string") {
             slot = this.findOutputSlot(slot);
             if (slot == -1) {
@@ -1058,7 +1070,7 @@ export class Node {
         //one of the links
         if (target_node) {
             if (target_node.constructor === Number)
-                target_node = this.graph.getNodeById(target_node);
+                target_node = this.graph.getNodeById(target_node.id);
             if (!target_node)
                 throw("Target Node not found");
 
@@ -1157,7 +1169,7 @@ export class Node {
      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
      * @return {[x,y]} the position
      **/
-    getConnectionPos(is_input:boolean, slot_number:number) {
+    getConnectionPos(is_input:boolean, slot_number:any):[number,number] {
         if (this.flags.collapsed) {
             if (is_input)
                 return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
@@ -1281,17 +1293,17 @@ export class Node {
 //         }
 //     }
 //
-//     /**
-//      * Collapse the node to make it smaller on the canvas
-//      * @method collapse
-//      **/
-//     collapse() {
-//         if (!this.flags.collapsed)
-//             this.flags.collapsed = true;
-//         else
-//             this.flags.collapsed = false;
-//         this.setDirtyCanvas(true, true);
-//     }
+    /**
+     * Collapse the node to make it smaller on the canvas
+     * @method collapse
+     **/
+    collapse() {
+        if (!this.flags.collapsed)
+            this.flags.collapsed = true;
+        else
+            this.flags.collapsed = false;
+        this.setDirtyCanvas(true, true);
+    }
 //
 //     /**
 //      * Forces the node to do not move or realign on Z

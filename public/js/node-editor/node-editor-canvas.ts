@@ -3,8 +3,8 @@
  */
 
 import {Node, Nodes} from "../../nodes/nodes"
-import {NodesEngine,engine} from "../../nodes/nodes-engine"
-import {NodeEditor,editor} from "./node-editor";
+import {NodesEngine, engine} from "../../nodes/nodes-engine"
+import {NodeEditor, editor} from "./node-editor";
 import {NodeEditorSocket} from "./node-editor-socket";
 
 interface IgetMenuOptions {
@@ -20,9 +20,8 @@ interface IgetExtraMenuOptions {
 }
 
 
-
 export class NodeEditorCanvas {
-    editor:NodeEditor;
+    editor: NodeEditor;
     socket: NodeEditorSocket;
     max_zoom: number;
     min_zoom: number;
@@ -33,15 +32,15 @@ export class NodeEditorCanvas {
     scale: number;
     offset: [number, number];
     selected_nodes: Array<Node>|any;
-    node_dragged: any;
-    node_over: any;
-    node_capturing_input: any;
-    connecting_node: any;
+    node_dragged: Node;
+    node_over: Node;
+    node_capturing_input: Node;
+    connecting_node: Node;
     highquality_render: boolean;
     editor_alpha: number;
     pause_rendering: boolean;
     render_shadows: boolean;
-    shadows_width: any;
+    shadows_width: number;
     clear_background: boolean;
     render_only_selected: boolean;
     live_mode: boolean;
@@ -116,7 +115,7 @@ export class NodeEditorCanvas {
      * @param {HTMLCanvas} canvas the canvas where you want to render (it accepts a selector in string format or the canvas itself)
      * @param {LGraph} graph [optional]
      */
-    constructor(canvas, socket: NodeEditorSocket, editor:NodeEditor, graph?: NodesEngine, skip_render?) {
+    constructor(canvas, socket: NodeEditorSocket, editor: NodeEditor, graph?: NodesEngine, skip_render?) {
         //if(graph === undefined)
         //	throw ("No graph assigned");
 
@@ -1945,7 +1944,7 @@ export class NodeEditorCanvas {
                         start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
 
                     let color = Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
-                    if (color == null)
+                    if (color == null && typeof node.id == "number")//ES6 check this
                         color = Nodes.options.LINK_COLORS[node.id % Nodes.options.LINK_COLORS.length];
                     this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
                 }
@@ -1953,7 +1952,7 @@ export class NodeEditorCanvas {
         ctx.globalAlpha = 1;
     }
 
-    renderLink(ctx, a, b, color) {
+    renderLink(ctx, a:[number,number], b:[number,number], color:string) {
         if (!this.highquality_render) {
             ctx.beginPath();
             ctx.moveTo(a[0], a[1]);
@@ -2151,7 +2150,7 @@ export class NodeEditorCanvas {
 
             options.push({
                 content: "Reset View",
-                callback: ()=> {
+                callback: () => {
                     this.editor.graphcanvas.offset = [0, 0];
                     this.editor.graphcanvas.scale = 1;
                     this.editor.graphcanvas.setZoom(1, [1, 1]);
@@ -2160,7 +2159,7 @@ export class NodeEditorCanvas {
 
             options.push({
                 content: "Show Map",
-                callback:  () =>{
+                callback: () => {
                     this.editor.addMiniWindow(200, 200);
                 }
             });
@@ -2563,7 +2562,7 @@ export class NodeEditorCanvas {
             //derwish edit
             let menus = document.querySelectorAll(".graphcontextualmenu");
             for (let key in menus) {
-               // todo ES6
+                // todo ES6
                 if (menus[key].previousSibling == options.from)
                     (<any>menus[key]).closeMenu();
             }
@@ -2678,7 +2677,8 @@ export class NodeEditorCanvas {
         root.style.left = left + "px";
         root.style.top = top + "px";
 
-        let that=this;
+        let that = this;
+
         function on_click(e) {
             let value = this.dataset["value"];
             let close = true;
@@ -2791,7 +2791,7 @@ function compareObjects(a, b) {
     return true;
 }
 
-function distance(a, b) {
+function distance(a:[number,number], b:[number,number]) {
     return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
 }
 
