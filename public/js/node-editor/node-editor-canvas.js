@@ -23,7 +23,7 @@
         constructor(canvas, socket, editor, graph, skip_render) {
             //if(graph === undefined)
             //	throw ("No graph assigned");
-            if (canvas && canvas.constructor === String)
+            if (canvas && typeof canvas == "string")
                 canvas = document.querySelector(canvas);
             this.socket = socket;
             this.editor = editor;
@@ -266,7 +266,7 @@
             if (typeof (this.enableWebGLCanvas) === undefined)
                 throw ("webglCanvas.js must be included to use this feature");
             this.gl = this.ctx = this.enableWebGLCanvas(this.canvas);
-            this.ctx.webgl = true;
+            this.ctx.webgl = true; //check ES6
             this.bgcanvas = this.canvas;
             this.bgctx = this.gl;
             /*
@@ -297,7 +297,7 @@
          */
         getCanvasWindow() {
             let doc = this.canvas.ownerDocument;
-            return doc.defaultView || doc.parentWindow;
+            return doc.defaultView || doc.parentWindow; //check ES6
         }
         /**
          * starts rendering the content of the canvas when needed
@@ -1013,8 +1013,8 @@
             let ctx = this.ctx;
             if (!ctx)
                 return;
-            if (ctx.start2D)
-                ctx.start2D();
+            if (this.ctx.start2D)
+                this.ctx.start2D(); //check ES6
             let canvas = this.canvas;
             //reset in case of error
             ctx.restore();
@@ -1092,8 +1092,8 @@
             if (this.dirty_area) {
                 ctx.restore();
             }
-            if (ctx.finish2D)
-                ctx.finish2D();
+            if (this.ctx.finish2D)
+                this.ctx.finish2D(); //check ES6
             this.dirty_canvas = false;
         }
         renderInfo(ctx, x = 0, y = 0) {
@@ -1586,7 +1586,7 @@
         resize(width, height) {
             if (!width && !height) {
                 let parent = this.canvas.parentNode;
-                width = parent.offsetWidth;
+                width = parent.offsetWidth; //check ES6
                 height = parent.offsetHeight;
             }
             if (this.canvas.width == width && this.canvas.height == height)

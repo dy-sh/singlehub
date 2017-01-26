@@ -49,55 +49,55 @@ export class NodeEditorCanvas {
     allow_dragnodes: boolean;
     dirty_canvas: boolean;
     dirty_bgcanvas: boolean;
-    dirty_area: any;
-    node_in_panel: any;
+    dirty_area: Array<any>;
+    node_in_panel: Node;
     last_mouse: [number, number];
     last_mouseclick: number;
-    title_text_font: any;
-    inner_text_font: any;
+    title_text_font: string;
+    inner_text_font: string;
     render_connections_shadows: boolean;
     render_connections_border: boolean;
     render_curved_connections: boolean;
-    render_connection_arrows: any;
-    connections_width: any;
-    connections_shadow: any;
-    onClear: any;
+    render_connection_arrows: boolean;
+    connections_width: number;
+    connections_shadow: number;
+    onClear: Function;
     graph: NodesEngine;
-    _graph_stack: any;
-    canvas: any;
-    bgcanvas: any;
-    ctx: any;
-    _mousemove_callback: any;
-    _mouseup_callback: any;
-    _events_binded: any;
-    _mousedown_callback: any;
-    _mousewheel_callback: any;
-    _key_callback: any;
-    _ondrop_callback: any;
-    GL: any;
-    gl: any;
-    is_rendering: any;
-    visible_nodes: any;
+    _graph_stack: Array<NodesEngine>;
+    canvas: HTMLCanvasElement;
+    bgcanvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D |null;
+    _mousemove_callback: EventListenerOrEventListenerObject;
+    _mouseup_callback: EventListenerOrEventListenerObject;
+    _events_binded: boolean;
+    _mousedown_callback: EventListenerOrEventListenerObject;
+    _mousewheel_callback: EventListenerOrEventListenerObject;
+    _key_callback: EventListenerOrEventListenerObject;
+    _ondrop_callback: EventListenerOrEventListenerObject;
+    GL: CanvasRenderingContext2D;
+    gl: CanvasRenderingContext2D;
+    is_rendering: boolean;
+    visible_nodes: Array<Node>;
     connecting_output: any;
-    connecting_pos: any;
+    connecting_pos: [number, number];
     connecting_slot: number;
-    resizing_node: any;
+    resizing_node: Node;
     dragging_canvas: boolean;
     canvas_mouse: [any, any];
     _highlight_input: [number, number];
-    onDropItem: any;
-    onNodeSelected: any;
-    onNodeDeselected: any;
-    onShowNodePanel: any;
-    onNodeDblClicked: any;
-    visible_area: any;
+    onDropItem: Function;
+    onNodeSelected: Function;
+    onNodeDeselected: Function;
+    onShowNodePanel: Function;
+    onNodeDblClicked: Function;
+    visible_area: Float32Array;
     last__time: number;
-    onRender: any;
-    bgctx: any;
-    _bg_img: any;
-    _pattern: any;
-    _pattern_img: any;
-    onBackgroundRender: any;
+    onRender: Function;
+    bgctx: CanvasRenderingContext2D;
+    _bg_img: HTMLImageElement;
+    _pattern: CanvasPattern;
+    _pattern_img: HTMLImageElement;
+    onBackgroundRender: Function;
     getMenuOptions: IgetMenuOptions;
     enableWebGLCanvas: IenableWebGLCanvas;
     getExtraMenuOptions: IgetExtraMenuOptions;
@@ -115,11 +115,11 @@ export class NodeEditorCanvas {
      * @param {HTMLCanvas} canvas the canvas where you want to render (it accepts a selector in string format or the canvas itself)
      * @param {LGraph} graph [optional]
      */
-    constructor(canvas, socket: NodeEditorSocket, editor: NodeEditor, graph?: NodesEngine, skip_render?) {
+    constructor(canvas: string|Element, socket: NodeEditorSocket, editor: NodeEditor, graph?: NodesEngine, skip_render?) {
         //if(graph === undefined)
         //	throw ("No graph assigned");
 
-        if (canvas && canvas.constructor === String)
+        if (canvas && typeof canvas == "string")
             canvas = document.querySelector(canvas);
 
         this.socket = socket;
@@ -422,7 +422,7 @@ export class NodeEditorCanvas {
             throw ("webglCanvas.js must be included to use this feature");
 
         this.gl = this.ctx = this.enableWebGLCanvas(this.canvas);
-        this.ctx.webgl = true;
+        (<any>this.ctx).webgl = true;//check ES6
         this.bgcanvas = this.canvas;
         this.bgctx = this.gl;
 
@@ -456,7 +456,7 @@ export class NodeEditorCanvas {
      */
     getCanvasWindow() {
         let doc = this.canvas.ownerDocument;
-        return doc.defaultView || doc.parentWindow;
+        return doc.defaultView || (<any>doc).parentWindow;//check ES6
     }
 
     /**
@@ -1298,7 +1298,7 @@ export class NodeEditorCanvas {
 
 
     /* NodeEditorCanvas render */
-    computeVisibleNodes() {
+    computeVisibleNodes(): Array<Node> {
         let visible_nodes = [];
         for (let i in this.graph._nodes) {
             let n = this.graph._nodes[i];
@@ -1344,8 +1344,8 @@ export class NodeEditorCanvas {
         if (!ctx) //maybe is using webgl...
             return;
 
-        if (ctx.start2D)
-            ctx.start2D();
+        if ((<any>this.ctx).start2D)
+            (<any>this.ctx).start2D();//check ES6
 
         let canvas = this.canvas;
 
@@ -1443,8 +1443,8 @@ export class NodeEditorCanvas {
             //this.dirty_area = null;
         }
 
-        if (ctx.finish2D) //this is a function I use in webgl renderer
-            ctx.finish2D();
+        if ((<any>this.ctx).finish2D) //this is a function I use in webgl renderer
+            (<any>this.ctx).finish2D();//check ES6
 
         this.dirty_canvas = false;
     }
@@ -1472,8 +1472,8 @@ export class NodeEditorCanvas {
         if (!this.bgctx)
             this.bgctx = this.bgcanvas.getContext("2d");
         let ctx = this.bgctx;
-        if (ctx.start)
-            ctx.start();
+        if ((<any>ctx).start)
+            (<any>ctx).start();
 
         //clear
         if (this.clear_background)
@@ -1493,7 +1493,7 @@ export class NodeEditorCanvas {
             //render BG
             if (Nodes.options.BG_IMAGE && this.scale > 0.5) {
                 ctx.globalAlpha = (1.0 - 0.5 / this.scale) * this.editor_alpha;
-                ctx.imageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
+                (<any>ctx).imageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
                 if (!this._bg_img || this._bg_img.name != Nodes.options.BG_IMAGE) {
                     this._bg_img = new Image();
                     this._bg_img.name = Nodes.options.BG_IMAGE;
@@ -1519,7 +1519,7 @@ export class NodeEditorCanvas {
                 }
 
                 ctx.globalAlpha = 1.0;
-                ctx.imageSmoothingEnabled = ctx.mozImageSmoothingEnabled = true;
+                (<any>ctx).imageSmoothingEnabled = ctx.mozImageSmoothingEnabled = true;
             }
 
             if (this.onBackgroundRender)
@@ -1552,8 +1552,8 @@ export class NodeEditorCanvas {
             ctx.restore();
         }
 
-        if (ctx.finish)
-            ctx.finish();
+        if ((<any>ctx).finish)
+            (<any>ctx).finish();
 
         this.dirty_bgcanvas = false;
         this.dirty_canvas = true; //to force to repaint the front canvas with the bgcanvas
@@ -1952,7 +1952,7 @@ export class NodeEditorCanvas {
         ctx.globalAlpha = 1;
     }
 
-    renderLink(ctx, a:[number,number], b:[number,number], color:string) {
+    renderLink(ctx, a: [number, number], b: [number, number], color: string) {
         if (!this.highquality_render) {
             ctx.beginPath();
             ctx.moveTo(a[0], a[1]);
@@ -2047,8 +2047,8 @@ export class NodeEditorCanvas {
     resize(width?: number, height?: number) {
         if (!width && !height) {
             let parent = this.canvas.parentNode;
-            width = parent.offsetWidth;
-            height = parent.offsetHeight;
+            width = (<any>parent).offsetWidth;//check ES6
+            height = (<any>parent).offsetHeight;
         }
 
         if (this.canvas.width == width && this.canvas.height == height)
@@ -2791,7 +2791,7 @@ function compareObjects(a, b) {
     return true;
 }
 
-function distance(a:[number,number], b:[number,number]) {
+function distance(a: [number, number], b: [number, number]) {
     return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
 }
 
