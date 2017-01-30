@@ -66,7 +66,7 @@ export class NodeEditor {
 		//graphcanvas.draw(true,true);
 	}
 
-	addMiniWindow(w:number, h:number) {
+	addMiniWindow(w:number, h:number) :void {
 
 		if (minimap_opened)
 			return;
@@ -117,7 +117,7 @@ export class NodeEditor {
 
 	}
 
-	importPanelFromFile(position:[number,number]) {
+	importPanelFromFile(position:[number,number]):void  {
 
 		$('#import-panel-title').html("Import Panel");
 
@@ -183,7 +183,7 @@ export class NodeEditor {
 
 	}
 
-	importPanelFromScript(position:[number,number]) {
+	importPanelFromScript(position:[number,number]) :void {
 		$('#modal-panel-submit').show();
 
 		$('#modal-panel-title').html("Import Panel");
@@ -235,7 +235,7 @@ export class NodeEditor {
 		});
 	}
 
-	importPanelFromURL(position:[number,number]) {
+	importPanelFromURL(position:[number,number]) :void {
 		$('#modal-panel-submit').show();
 
 		$('#modal-panel-title').html("Import Panel");
@@ -309,7 +309,7 @@ export class NodeEditor {
 		});
 	}
 
-	exportPanelToScript(id:string) {
+	exportPanelToScript(id:string):void  {
 
 		$('#modal-panel-message').html("Generating script...");
 		$('#modal-panel-message').fadeIn(300);
@@ -341,7 +341,7 @@ export class NodeEditor {
 		});
 	}
 
-	exportPanelURL(id:string) {
+	exportPanelURL(id:string) :void {
 
 		$('#modal-panel-title').html("Export Panel");
 		$('#modal-panel-form').html(
@@ -366,7 +366,7 @@ export class NodeEditor {
 
 	}
 
-	showNodeDescrition(node:Node) {
+	showNodeDescrition(node:Node) :void {
 
 		$('#modal-panel-title').html(node.type);
 		$('#modal-panel-form').html(
@@ -417,7 +417,7 @@ let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html(
 let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
 
 
-function NodeSettings(node:Node) {
+function NodeSettings(node:Node) :void {
     $('#node-settings-title').html(node.type);
 
     //parse settings from json

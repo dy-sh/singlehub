@@ -2,7 +2,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
  */
 
-import {Nodes} from "../../nodes/nodes"
+import {Nodes,Node} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine";
 
 
@@ -191,7 +191,7 @@ export class NodeEditorSocket {
     }
 
 
-    getGatewayInfo() {
+    getGatewayInfo() :void {
         $.ajax({
             url: "/MySensorsAPI/GetGatewayInfo/",
             success: function (gatewayInfo) {
@@ -203,7 +203,7 @@ export class NodeEditorSocket {
     }
 
 
-    send_create_link(link) {
+    send_create_link(link:any):void  {
 
         $.ajax({
             url: '/NodeEditorAPI/CreateLink',
@@ -215,7 +215,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_remove_link(link) {
+    send_remove_link(link:any):void  {
 
         $.ajax({
             url: '/NodeEditorAPI/RemoveLink',
@@ -227,7 +227,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_create_node(node) {
+    send_create_node(node:Node):void  {
         node.size = null;//reset size for autosizing
 
         let serializedNode = node.serialize();
@@ -241,7 +241,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_clone_node(node) {
+    send_clone_node(node:Node):void  {
         $.ajax({
             url: '/NodeEditorAPI/CloneNode',
             type: 'POST',
@@ -252,7 +252,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_remove_node(node) {
+    send_remove_node(node:Node):void  {
 
         let serializedNode = node.serialize();
         $.ajax({
@@ -265,7 +265,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_remove_nodes(nodes) {
+    send_remove_nodes(nodes:Array<Node>):void  {
 
         let array = [];
 
@@ -283,7 +283,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_update_node(node) {
+    send_update_node(node:Node):void  {
 
         let s = node.serialize();
         s = JSON.stringify(s);
@@ -297,7 +297,7 @@ export class NodeEditorSocket {
     };
 
 
-    getGraph() {
+    getGraph():void  {
 
         $.ajax({
             url: "/NodeEditorAPI/GetGraph",
@@ -308,7 +308,7 @@ export class NodeEditorSocket {
     }
 
 
-    getNodes() {
+    getNodes():void  {
         let that = this;
         $.ajax({
             url: "/NodeEditorAPI/GetNodesForPanel",
@@ -321,7 +321,7 @@ export class NodeEditorSocket {
     }
 
 
-    onReturnNodes(nodes) {
+    onReturnNodes(nodes:Array<Node>):void  {
         //console.log(nodes);
         if (!nodes) return;
 
@@ -335,7 +335,7 @@ export class NodeEditorSocket {
     }
 
 
-    createOrUpdateNode(node) {
+    createOrUpdateNode(node:Node):void  {
 
         let oldNode = this.engine.getNodeById(node.id);
         if (!oldNode) {
@@ -407,7 +407,7 @@ export class NodeEditorSocket {
     }
 
 
-    getLinks() {
+    getLinks():void  {
 
         $.ajax({
             url: "/NodeEditorAPI/GetLinks",
@@ -419,7 +419,7 @@ export class NodeEditorSocket {
     }
 
 
-    onReturnLinks(links) {
+    onReturnLinks(links:Array<any>) :void {
         //console.log(nodes);
 
         if (!links) return;
@@ -430,7 +430,7 @@ export class NodeEditorSocket {
     }
 
 
-    createOrUpdateLink(link) {
+    createOrUpdateLink(link:any):void  {
         let target = this.engine.getNodeById(link.target_id);
         this.engine.getNodeById(link.origin_id)
             .connect(link.origin_slot, target, link.target_slot);
@@ -439,7 +439,7 @@ export class NodeEditorSocket {
     }
 
 
-    calculateNodeMinHeight(node) {
+    calculateNodeMinHeight(node:Node):number  {
 
         let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
         if (slotsMax == 0)
@@ -451,7 +451,7 @@ export class NodeEditorSocket {
     }
 
 
-    findFreeSpaceY(node) {
+    findFreeSpaceY(node:Node):number  {
 
 
         let nodes = this.engine._nodes;
