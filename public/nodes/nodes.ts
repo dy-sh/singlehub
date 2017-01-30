@@ -423,6 +423,7 @@ export class Node {
     removable: boolean;
     optional_inputs: any;
     optional_outputs: any;
+    order:string;
 
 
     pos: [number, number] = [10, 10];

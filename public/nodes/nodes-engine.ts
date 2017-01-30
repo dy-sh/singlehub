@@ -259,13 +259,13 @@ export class NodesEngine {
      * nodes with only inputs.
      * @method updateExecutionOrder
      */
-    updateExecutionOrder() {
+    updateExecutionOrder():void {
         this._nodes_in_order = this.computeExecutionOrder();
     }
 
 //This is more internal, it computes the order and returns it
-    computeExecutionOrder(): any {
-        let L = [];
+    computeExecutionOrder(): Array<Node> {
+        let L:Array<Node> = [];
         let S = [];
         let M = {};
         let visited_links = {}; //to avoid repeating links
@@ -378,7 +378,7 @@ export class NodesEngine {
      * @param {String} eventname the name of the event (function to be called)
      * @param {Array} params parameters in array format
      */
-    sendEventToAllNodes(eventname: string, params?: Array<any>) {
+    sendEventToAllNodes(eventname: string, params?: Array<any>) :void {
         let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
         if (!nodes)
             return;
@@ -396,7 +396,7 @@ export class NodesEngine {
         }
     }
 
-    sendActionToCanvas(action: string, params?: Array<any>) {
+    sendActionToCanvas(action: string, params?: Array<any>) :void {
         if (!this.list_of_graphcanvas)
             return;
 
@@ -461,7 +461,7 @@ export class NodesEngine {
      * @method remove
      * @param {Node} node the instance of the node
      */
-    remove(node: Node) {
+    remove(node: Node) :void {
         if (this._nodes_by_id[node.id] == null)
             return; //not found
 
@@ -780,7 +780,7 @@ export class NodesEngine {
 //             nodes[i].setTrigger(func);
 //     }
 //
-    connectionChange(node: Node) {
+    connectionChange(node: Node) :void {
         this.updateExecutionOrder();
         if (this.onConnectionChange)
             this.onConnectionChange(node);
@@ -792,7 +792,7 @@ export class NodesEngine {
      * returns if the graph is in live mode
      * @method isLive
      */
-    isLive() {
+    isLive() :boolean {
         if (!this.list_of_graphcanvas)
             return false;
 
@@ -805,7 +805,7 @@ export class NodesEngine {
     }
 
     /* Called when something visually changed */
-    change() {
+    change():void  {
         this.sendActionToCanvas("setDirty", [true, true]);
 
         if (this.on_change)
@@ -813,7 +813,7 @@ export class NodesEngine {
     }
 
 
-    setDirtyCanvas(fg?: boolean, bg?: boolean) {
+    setDirtyCanvas(fg?: boolean, bg?: boolean) :void {
         this.sendActionToCanvas("setDirty", [fg, bg]);
     }
 
@@ -849,7 +849,7 @@ export class NodesEngine {
         return data;
     }
 
-    cloneObject(obj, target?) {
+    cloneObject(obj:any, target?:any) :any {
         if (obj == null) return null;
         let r = JSON.parse(JSON.stringify(obj));
         if (!target) return r;
@@ -864,7 +864,7 @@ export class NodesEngine {
      * @method configure
      * @param {String} str configure a graph from a JSON string
      */
-    configure(data, keep_old = false) {
+    configure(data:any, keep_old = false) :boolean {
         if (!keep_old)
             this.clear();
 
