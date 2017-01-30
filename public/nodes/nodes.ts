@@ -26,9 +26,19 @@ import {NodesEngine} from "./nodes-engine";
  * @constructor
  */
 
+// interface Boundings{
+//     [4]: Float32Array;
+// }
+//
+// interface Position{
+//     [2]: Float32Array;
+// }
+//
+// interface Size{
+//     [2]: Float32Array;
+// }
 
-
-export class NodesOptions{
+export class NodesOptions {
 
     MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
     DEFAULT_POSITION = [100, 100]; //default node position
@@ -51,7 +61,7 @@ export class NodesOptions{
     IO_NODE_BGCOLOR = "#373737";
     NODE_DEFAULT_IO_COLOR = "#999";
     NODE_OPTIONAL_IO_COLOR = "#777";
-    NODE_DEFAULT_BOXCOLOR= "#373737";
+    NODE_DEFAULT_BOXCOLOR = "#373737";
     NODE_ACTIVE_BOXCOLOR = "#AEF";
     NODE_DEFAULT_SHAPE = "box";
     TITLE_TEXT_FONT = "bold 13px Arial";
@@ -74,37 +84,37 @@ export class NodesOptions{
         2: "#AAA"
     };
     NEW_LINK_COLOR = "#CCC";
-    LINK_TYPE_COLORS ={ 0: "#AAC", 1: "#AAC", 2: "#AAC" };
+    LINK_TYPE_COLORS = {0: "#AAC", 1: "#AAC", 2: "#AAC"};
 
-    LINK_COLORS=["#AAC", "#ACA", "#CAA"];
+    LINK_COLORS = ["#AAC", "#ACA", "#CAA"];
 
-    NODE_COLORS ={
-        "red": { color: "#FAA", bgcolor: "#A44" },
-        "green": { color: "#AFA", bgcolor: "#4A4" },
-        "blue": { color: "#AAF", bgcolor: "#44A" },
-        "white": { color: "#FFF", bgcolor: "#AAA" }
+    NODE_COLORS = {
+        "red": {color: "#FAA", bgcolor: "#A44"},
+        "green": {color: "#AFA", bgcolor: "#4A4"},
+        "blue": {color: "#AAF", bgcolor: "#44A"},
+        "white": {color: "#FFF", bgcolor: "#AAA"}
     };
 }
 
 export class Nodes {
-   static options=new NodesOptions;
+    static options = new NodesOptions;
 
 
-    static MAIN_PANEL_ID= "Main";
+    static MAIN_PANEL_ID = "Main";
 
 
-    static DataType= {
+    static DataType = {
         Text: 0,
         Number: 1,
         Logical: 2
     };
-    
-    static proxy= null; //used to redirect calls
+
+    static proxy = null; //used to redirect calls
 
 
-    static throw_errors= true;
-    static registered_node_types= {};
-    static Nodes= {};
+    static throw_errors = true;
+    static registered_node_types = {};
+    static Nodes = {};
 
 
     //   debug: config.engine.debugEngine,
@@ -116,14 +126,15 @@ export class Nodes {
      * @param {Class} base_class class containing the structure of a node
      */
 
-    static debug (mess) {
-        console.log(mess)
-    };
-    static debugErr (mess) {
+    static debug(mess) {
         console.log(mess)
     };
 
-    static registerNodeType (type:string, base_class:any) {
+    static debugErr(mess) {
+        console.log(mess)
+    };
+
+    static registerNodeType(type: string, base_class: any) {
         if (!base_class.prototype)
             throw("Cannot register a simple object, it must be a class with a prototype");
         base_class.type = type;
@@ -154,7 +165,7 @@ export class Nodes {
      * @param {Function} func
      */
 
-    static addNodeMethod (name:string, func:Function) {
+    static addNodeMethod(name: string, func: Function) {
         Node.prototype[name] = func;
         for (let i in this.registered_node_types)
             this.registered_node_types[i].prototype[name] = func;
@@ -168,7 +179,7 @@ export class Nodes {
      * @param {Object} options to set options
      */
 
-    static createNode (type: string, title?: string, options?: any): Node {
+    static createNode(type: string, title?: string, options?: any): Node {
         let base_class = this.registered_node_types[type];
         if (!base_class) {
             this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
@@ -180,13 +191,13 @@ export class Nodes {
         title = title || base_class.title || type;
 
         let node = new base_class(title);
-        node.nodes=this;
+        node.nodes = this;
 
         node.type = type;
         if (!node.title) node.title = title;
         if (!node.properties) node.properties = {};
         if (!node.flags) node.flags = {};
-      //  if (!node.size) node.size = [this.NODE_WIDTH, 60];
+        //  if (!node.size) node.size = [this.NODE_WIDTH, 60];
         if (!node.size) node.size = node.computeSize();
         if (!node.pos) node.pos = this.options.DEFAULT_POSITION.concat();
 
@@ -208,7 +219,7 @@ export class Nodes {
      * @return {Class} the node class
      */
 
-    static getNodeType (type:string):Node {
+    static getNodeType(type: string): Node {
         return this.registered_node_types[type];
     };
 
@@ -220,7 +231,7 @@ export class Nodes {
      * @return {Array} array with all the node classes
      */
 
-    static getNodeTypesInCategory (category:string):Array<any> {
+    static getNodeTypesInCategory(category: string): Array<any> {
         let r = [];
         for (let i in this.registered_node_types)
             if (category == "") {
@@ -239,7 +250,7 @@ export class Nodes {
      * @return {Array} array with all the names of the categories
      */
 
-    static getNodeTypesCategories ():Array<any> {
+    static getNodeTypesCategories(): Array<any> {
         let categories = {"": 1};
         for (let i in this.registered_node_types)
             if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
@@ -251,7 +262,7 @@ export class Nodes {
     };
 
     //debug purposes: reloads all the js scripts that matches a wilcard
-    static reloadNodes (folder_wildcard) {
+    static reloadNodes(folder_wildcard) {
         let tmp = document.getElementsByTagName("script");
         //weird, this array changes by its own, so we use a copy
         let script_files = [];
@@ -286,13 +297,12 @@ export class Nodes {
     };
 
 
-
-    static getTime ():number {
+    static getTime(): number {
         return (typeof(performance) != "undefined") ? performance.now() : Date.now();
     };
 
 
-    static guid():string {
+    static guid(): string {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -302,7 +312,8 @@ export class Nodes {
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
     }
-};
+}
+;
 
 
 // *************************************************************
@@ -350,7 +361,7 @@ export class Nodes {
 
 export class Node {
 
-    panel_id:string;
+    panel_id: string;
     title: string;
     desc: string;
     size: [number, number];
@@ -362,12 +373,13 @@ export class Node {
     connections: Array<any>;
     properties: any;
     data: any;
-    ignore_remove:boolean;
+    ignore_remove: boolean;
     flags: {
         skip_title_render?: true,
         unsafe_execution?: false,
         collapsed?: boolean,
-        pinned?:boolean
+        pinned?: boolean,
+        clip_area?: boolean
     };
     editable: {
         property: string;
@@ -380,24 +392,37 @@ export class Node {
     onConnectInput: Function;
     mouseOver: boolean;
     selected: boolean;
-    onSelected: any;
+    onSelected: Function;
+    onDeselected: Function;
     onDrawBackground: Function;
     onDrawForeground: Function;
-    onRemoved:Function;
-    onDblClick:Function;
-    onMouseDown:Function;
-    onMouseEnter:Function;
-    onMouseMove:Function;
-    onDropFile:Function;
-    onDropItem:Function;
-    onMouseUp:Function;
-    onMouseLeave:Function;
+    onRemoved: Function;
+    onDblClick: Function;
+    onMouseDown: Function;
+    onMouseEnter: Function;
+    onMouseMove: Function;
+    onDropFile: Function;
+    onDropItem: Function;
+    onMouseUp: Function;
+    onMouseLeave: Function;
+    getMenuOptions: Function;
+    getExtraMenuOptions: Function;
+    onGetInputs: Function;
+    onGetOutputs: Function;
+    onInputRemoved: Function;
+    onOutputRemoved: Function;
     color: string;
     bgcolor: string;
     boxcolor: string;
     shape: any;
     onSerialize: Function;
-    setValue:any;
+    setValue: any;
+    bgImage: any;
+    bgImageUrl: string;
+    clonable: boolean;
+    removable: boolean;
+    optional_inputs: any;
+    optional_outputs: any;
 
 
     pos: [number, number] = [10, 10];
@@ -416,7 +441,7 @@ export class Node {
         console.log(mess)
     }
 
-    cloneObject (obj, target?) {
+    cloneObject(obj, target?) {
         if (obj == null) return null;
         let r = JSON.parse(JSON.stringify(obj));
         if (!target) return r;
@@ -431,7 +456,7 @@ export class Node {
      * configure a node from an object containing the serialized info
      * @method configure
      */
-    configure(info:any) {
+    configure(info: any) {
         for (let j in info) {
             if (j == "console") continue;
 
@@ -490,7 +515,7 @@ export class Node {
      * serialize the content
      * @method serialize
      */
-    serialize():any {
+    serialize(): any {
         let o = {
             id: this.id,
             title: this.title,
@@ -554,7 +579,7 @@ export class Node {
      * get the title string
      * @method getTitle
      */
-    getTitle():string {
+    getTitle(): string {
         return this.title;
     }
 
@@ -609,13 +634,14 @@ export class Node {
      * @param {number} slot
      * @return {Object} object or null
      */
-    getInputInfo(slot:number) {
+    getInputInfo(slot: number) {
         if (!this.inputs)
             return null;
         if (slot < this.inputs.length)
             return this.inputs[slot];
         return null;
     }
+
 //
 //     /**
 //      * tells you info about an output connection (which node, type, etc)
@@ -716,18 +742,19 @@ export class Node {
 //         this.size = this.computeSize();
 //     }
 //
-//     /**
-//      * remove an existing output slot
-//      * @method removeOutput
-//      * @param {number} slot
-//      */
-//     removeOutput(slot) {
-//         this.disconnectOutput(slot);
-//         this.outputs.splice(slot, 1);
-//         this.size = this.computeSize();
-//         if (this.onOutputRemoved)
-//             this.onOutputRemoved(slot);
-//     }
+    /**
+     * remove an existing output slot
+     * @method removeOutput
+     * @param {number} slot
+     */
+    removeOutput(slot: number) {
+        this.disconnectOutput(slot);
+        this.outputs.splice(slot, 1);
+        this.size = this.computeSize();
+        if (this.onOutputRemoved)
+            this.onOutputRemoved(slot);
+    }
+
 //
     /**
      * add a new input slot to use in this node
@@ -774,18 +801,19 @@ export class Node {
     //     this.size = this.computeSize();
     // }
 //
-//     /**
-//      * remove an existing input slot
-//      * @method removeInput
-//      * @param {number} slot
-//      */
-//     removeInput(slot) {
-//         this.disconnectInput(slot);
-//         this.inputs.splice(slot, 1);
-//         this.size = this.computeSize();
-//         if (this.onInputRemoved)
-//             this.onInputRemoved(slot);
-//     }
+    /**
+     * remove an existing input slot
+     * @method removeInput
+     * @param {number} slot
+     */
+    removeInput(slot: number) {
+        this.disconnectInput(slot);
+        this.inputs.splice(slot, 1);
+        this.size = this.computeSize();
+        if (this.onInputRemoved)
+            this.onInputRemoved(slot);
+    }
+
 //
 //     /**
 //      * add an special connection to this node (used for special kinds of graphs)
@@ -852,12 +880,13 @@ export class Node {
      * @method getBounding
      * @return {Float32Array[4]} the total size
      */
-    getBounding():Float32Array {
-        return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT]);
+
+    getBounding(): [number, number, number, number] {
+        return [this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT];
     }
 
 
-    isInsideRectangle(x:number, y:number, left:number, top:number, width:number, height:number):boolean {
+    isInsideRectangle(x: number, y: number, left: number, top: number, width: number, height: number): boolean {
         if (left < x && (left + width) > x &&
             top < y && (top + height) > y)
             return true;
@@ -871,7 +900,7 @@ export class Node {
      * @param {number} y
      * @return {boolean}
      */
-    isPointInsideNode(x:number, y:number, margin:number):boolean {
+    isPointInsideNode(x: number, y: number, margin: number): boolean {
         margin = margin || 0;
 
         let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
@@ -894,7 +923,7 @@ export class Node {
      * @param {number} y
      * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
      */
-    getSlotInPosition(x:number, y:number) :any{
+    getSlotInPosition(x: number, y: number): any {
         //search for inputs
         if (this.inputs)
             for (let i = 0, l = this.inputs.length; i < l; ++i) {
@@ -951,7 +980,7 @@ export class Node {
      * @param {number_or_string} target_slot the input slot of the target node (could be the number of the slot or the string with the name of the slot)
      * @return {boolean} if it was connected succesfully
      */
-    connect(slot: number|string, node: Node, target_slot: number|string) :boolean{
+    connect(slot: number|string, node: Node, target_slot: number|string): boolean {
         target_slot = target_slot || 0;
 
         //seek for the output slot
@@ -1049,7 +1078,7 @@ export class Node {
      * @param {Node} target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
      * @return {boolean} if it was disconnected succesfully
      */
-    disconnectOutput(slot:number|string, target_node?:Node):boolean {
+    disconnectOutput(slot: number|string, target_node?: Node): boolean {
         if (typeof slot == "string") {
             slot = this.findOutputSlot(slot);
             if (slot == -1) {
@@ -1102,8 +1131,8 @@ export class Node {
         }
 
         this.setDirtyCanvas(false, true);
-    if (this.graph)
-        this.graph.connectionChange(this);
+        if (this.graph)
+            this.graph.connectionChange(this);
         return true;
     }
 
@@ -1169,7 +1198,7 @@ export class Node {
      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
      * @return {[x,y]} the position
      **/
-    getConnectionPos(is_input:boolean, slot_number:any):[number,number] {
+    getConnectionPos(is_input: boolean, slot_number: any): [number, number] {
         if (this.flags.collapsed) {
             if (is_input)
                 return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
@@ -1229,18 +1258,19 @@ export class Node {
         this.graph.sendActionToCanvas("setDirty", [dirty_foreground, dirty_background]);
     }
 
-//     loadImage(url) {
-//         let img = new Image();
-//         img.src = Nodes.node_images_path + url;
-//         img.ready = false;
-//
-//         let that = this;
-//         img.onload = function () {
-//             this.ready = true;
-//             that.setDirtyCanvas(true);
-//         }
-//         return img;
-//     }
+    loadImage(url: string) {
+        let img = new Image();
+        img.src = Nodes.options.NODE_IMAGES_PATH + url;
+        (<any>img).ready = false;
+
+        let that = this;
+        img.onload = function () {
+            (<any>this).ready = true;
+            that.setDirtyCanvas(true);
+        }
+        return img;
+    }
+
 //
 // //safe Node action execution (not sure if safe)
 //     executeAction(action) {
@@ -1304,22 +1334,22 @@ export class Node {
             this.flags.collapsed = false;
         this.setDirtyCanvas(true, true);
     }
-//
-//     /**
-//      * Forces the node to do not move or realign on Z
-//      * @method pin
-//      **/
-//     pin(v) {
-//         if (v === undefined)
-//             this.flags.pinned = !this.flags.pinned;
-//         else
-//             this.flags.pinned = v;
-//     }
-//
-//     localToScreen(x, y, graphcanvas) {
-//         return [(x + this.pos[0]) * graphcanvas.scale + graphcanvas.offset[0],
-//             (y + this.pos[1]) * graphcanvas.scale + graphcanvas.offset[1]];
-//     }
+
+    /**
+     * Forces the node to do not move or realign on Z
+     * @method pin
+     **/
+    pin(v?: boolean) {
+        if (v === undefined)
+            this.flags.pinned = !this.flags.pinned;
+        else
+            this.flags.pinned = v;
+    }
+
+    localToScreen(x, y, graphcanvas) {
+        return [(x + this.pos[0]) * graphcanvas.scale + graphcanvas.offset[0],
+            (y + this.pos[1]) * graphcanvas.scale + graphcanvas.offset[1]];
+    }
 }
 
 

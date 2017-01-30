@@ -16,6 +16,17 @@
      * @class Nodes
      * @constructor
      */
+    // interface Boundings{
+    //     [4]: Float32Array;
+    // }
+    //
+    // interface Position{
+    //     [2]: Float32Array;
+    // }
+    //
+    // interface Size{
+    //     [2]: Float32Array;
+    // }
     class NodesOptions {
         constructor() {
             this.MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
@@ -591,18 +602,18 @@
         //         this.size = this.computeSize();
         //     }
         //
-        //     /**
-        //      * remove an existing output slot
-        //      * @method removeOutput
-        //      * @param {number} slot
-        //      */
-        //     removeOutput(slot) {
-        //         this.disconnectOutput(slot);
-        //         this.outputs.splice(slot, 1);
-        //         this.size = this.computeSize();
-        //         if (this.onOutputRemoved)
-        //             this.onOutputRemoved(slot);
-        //     }
+        /**
+         * remove an existing output slot
+         * @method removeOutput
+         * @param {number} slot
+         */
+        removeOutput(slot) {
+            this.disconnectOutput(slot);
+            this.outputs.splice(slot, 1);
+            this.size = this.computeSize();
+            if (this.onOutputRemoved)
+                this.onOutputRemoved(slot);
+        }
         //
         /**
          * add a new input slot to use in this node
@@ -646,18 +657,18 @@
         //     this.size = this.computeSize();
         // }
         //
-        //     /**
-        //      * remove an existing input slot
-        //      * @method removeInput
-        //      * @param {number} slot
-        //      */
-        //     removeInput(slot) {
-        //         this.disconnectInput(slot);
-        //         this.inputs.splice(slot, 1);
-        //         this.size = this.computeSize();
-        //         if (this.onInputRemoved)
-        //             this.onInputRemoved(slot);
-        //     }
+        /**
+         * remove an existing input slot
+         * @method removeInput
+         * @param {number} slot
+         */
+        removeInput(slot) {
+            this.disconnectInput(slot);
+            this.inputs.splice(slot, 1);
+            this.size = this.computeSize();
+            if (this.onInputRemoved)
+                this.onInputRemoved(slot);
+        }
         //
         //     /**
         //      * add an special connection to this node (used for special kinds of graphs)
@@ -717,7 +728,7 @@
          * @return {Float32Array[4]} the total size
          */
         getBounding() {
-            return new Float32Array([this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT]);
+            return [this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT];
         }
         isInsideRectangle(x, y, left, top, width, height) {
             if (left < x && (left + width) > x &&
@@ -1046,18 +1057,17 @@
                 return;
             this.graph.sendActionToCanvas("setDirty", [dirty_foreground, dirty_background]);
         }
-        //     loadImage(url) {
-        //         let img = new Image();
-        //         img.src = Nodes.node_images_path + url;
-        //         img.ready = false;
-        //
-        //         let that = this;
-        //         img.onload = function () {
-        //             this.ready = true;
-        //             that.setDirtyCanvas(true);
-        //         }
-        //         return img;
-        //     }
+        loadImage(url) {
+            let img = new Image();
+            img.src = Nodes.options.NODE_IMAGES_PATH + url;
+            img.ready = false;
+            let that = this;
+            img.onload = function () {
+                this.ready = true;
+                that.setDirtyCanvas(true);
+            };
+            return img;
+        }
         //
         // //safe Node action execution (not sure if safe)
         //     executeAction(action) {
@@ -1120,6 +1130,20 @@
             else
                 this.flags.collapsed = false;
             this.setDirtyCanvas(true, true);
+        }
+        /**
+         * Forces the node to do not move or realign on Z
+         * @method pin
+         **/
+        pin(v) {
+            if (v === undefined)
+                this.flags.pinned = !this.flags.pinned;
+            else
+                this.flags.pinned = v;
+        }
+        localToScreen(x, y, graphcanvas) {
+            return [(x + this.pos[0]) * graphcanvas.scale + graphcanvas.offset[0],
+                (y + this.pos[1]) * graphcanvas.scale + graphcanvas.offset[1]];
         }
     }
     exports.Node = Node;

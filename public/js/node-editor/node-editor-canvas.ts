@@ -1,3 +1,5 @@
+///<reference path='../../../types/my_types.d.ts'/>
+
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
@@ -90,7 +92,7 @@ export class NodeEditorCanvas {
     onNodeDeselected: Function;
     onShowNodePanel: Function;
     onNodeDblClicked: Function;
-    visible_area: Float32Array;
+    visible_area: [number, number, number, number];
     last__time: number;
     onRender: Function;
     bgctx: CanvasRenderingContext2D;
@@ -115,12 +117,12 @@ export class NodeEditorCanvas {
      * @param {HTMLCanvas} canvas the canvas where you want to render (it accepts a selector in string format or the canvas itself)
      * @param {LGraph} graph [optional]
      */
-    constructor(canvas: string|Element, socket: NodeEditorSocket, editor: NodeEditor, graph?: NodesEngine, skip_render?) {
+    constructor(canvas: HTMLCanvasElement, socket: NodeEditorSocket, editor: NodeEditor, graph?: NodesEngine, skip_render?) {
         //if(graph === undefined)
         //	throw ("No graph assigned");
 
-        if (canvas && typeof canvas == "string")
-            canvas = document.querySelector(canvas);
+        //     if (canvas && typeof canvas == "string")
+        //        canvas = <HTMLCanvasElement>document.querySelector(canvas);
 
         this.socket = socket;
         this.editor = editor;
@@ -207,7 +209,7 @@ export class NodeEditorCanvas {
      * @method setGraph
      * @param {LGraph} graph
      */
-    setGraph(graph?, skip_clear?) {
+    setGraph(graph?: NodesEngine, skip_clear = false) {
         if (this.graph == graph)
             return;
 
@@ -236,7 +238,7 @@ export class NodeEditorCanvas {
      * @method openSubgraph
      * @param {LGraph} graph
      */
-    openSubgraph(graph) {
+    openSubgraph(graph: NodesEngine) {
         if (!graph)
             throw ("graph cannot be null");
 
@@ -275,16 +277,16 @@ export class NodeEditorCanvas {
      * @method setCanvas
      * @param {Canvas} assigns a canvas
      */
-    setCanvas(canvas, skip_events?) {
+    setCanvas(canvas: HTMLCanvasElement, skip_events = false) {
         let that = this;
 
-        if (canvas) {
-            if (canvas.constructor === String) {
-                canvas = document.getElementById(canvas);
-                if (!canvas)
-                    throw ("Error creating LiteGraph canvas: Canvas not found");
-            }
-        }
+        // if (canvas) {
+        //     if (canvas.constructor === String) {
+        //         canvas = document.getElementById(canvas);
+        //         if (!canvas)
+        //             throw ("Error creating LiteGraph canvas: Canvas not found");
+        //     }
+        // }
 
         if (canvas === this.canvas)
             return;
@@ -302,7 +304,7 @@ export class NodeEditorCanvas {
 
         //this.canvas.tabindex = "1000";
         canvas.className += " lgraphcanvas";
-        canvas.data = this;
+        (<any>canvas).data = this;
 
         //bg canvas: used for non changing stuff
         this.bgcanvas = null;
@@ -546,7 +548,7 @@ export class NodeEditorCanvas {
      */
 
     /* LiteGraphCanvas input */
-    processMouseDown(e) {
+    processMouseDown(e): boolean {
         if (!this.graph)
             return;
 
@@ -718,7 +720,7 @@ export class NodeEditorCanvas {
     }
 
 
-    processMouseMove(e) {
+    processMouseMove(e): boolean {
         if (!this.graph) return;
 
         this.adjustMouseEvent(e);
@@ -990,7 +992,7 @@ export class NodeEditorCanvas {
     }
 
 
-    processMouseWheel(e) {
+    processMouseWheel(e): boolean {
         if (!this.graph || !this.allow_dragcanvas)
             return;
 
@@ -1020,7 +1022,7 @@ export class NodeEditorCanvas {
         return false; // prevent default
     }
 
-    isOverNodeInput(node, canvasx, canvasy, slot_pos?) {
+    isOverNodeInput(node: Node, canvasx: number, canvasy: number, slot_pos?: [number, number]): any {
         if (node.inputs)
             for (let i = 0, l = node.inputs.length; i < l; ++i) {
                 let input = node.inputs[i];
@@ -1080,7 +1082,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    processDrop(e) {
+    processDrop(e): boolean {
         e.preventDefault();
         this.adjustMouseEvent(e);
 
@@ -1135,7 +1137,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    processNodeSelected(n, e) {
+    processNodeSelected(n: Node, e) {
         n.selected = true;
         if (n.onSelected)
             n.onSelected();
@@ -1155,7 +1157,7 @@ export class NodeEditorCanvas {
         //if(this.node_in_panel) this.showNodePanel(n);
     }
 
-    processNodeDeselected(n) {
+    processNodeDeselected(n: Node) {
         n.selected = false;
         if (n.onDeselected)
             n.onDeselected();
@@ -1170,7 +1172,7 @@ export class NodeEditorCanvas {
         //this.showNodePanel(null);
     }
 
-    processNodeDblClicked(n) {
+    processNodeDblClicked(n: Node) {
         if (this.onShowNodePanel)
             this.onShowNodePanel(n);
 
@@ -1180,7 +1182,7 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    selectNode(node) {
+    selectNode(node: Node) {
         this.deselectAllNodes();
 
         if (!node)
@@ -1226,13 +1228,13 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    centerOnNode(node) {
+    centerOnNode(node: Node) {
         this.offset[0] = -node.pos[0] - node.size[0] * 0.5 + (this.canvas.width * 0.5 / this.scale);
         this.offset[1] = -node.pos[1] - node.size[1] * 0.5 + (this.canvas.height * 0.5 / this.scale);
         this.setDirty(true, true);
     }
 
-    adjustMouseEvent(e) {
+    adjustMouseEvent(e: any) {
         let b = this.canvas.getBoundingClientRect();
         e.localX = e.pageX - b.left;
         e.localY = e.pageY - b.top;
@@ -1241,7 +1243,7 @@ export class NodeEditorCanvas {
         e.canvasY = e.localY / this.scale - this.offset[1];
     }
 
-    setZoom(value, zooming_center) {
+    setZoom(value: number, zooming_center: [number, number]) {
         if (!zooming_center)
             zooming_center = [this.canvas.width * 0.5, this.canvas.height * 0.5];
 
@@ -1264,21 +1266,21 @@ export class NodeEditorCanvas {
         this.dirty_bgcanvas = true;
     }
 
-    convertOffsetToCanvas(pos) {
+    convertOffsetToCanvas(pos: [number, number]): [number, number] {
         return [pos[0] / this.scale - this.offset[0], pos[1] / this.scale - this.offset[1]];
     }
 
-    convertCanvasToOffset(pos) {
+    convertCanvasToOffset(pos: [number, number]): [number, number] {
         return [(pos[0] + this.offset[0]) * this.scale,
             (pos[1] + this.offset[1]) * this.scale];
     }
 
-    convertEventToCanvas(e) {
+    convertEventToCanvas(e: any): [number, number] {
         let rect = this.canvas.getClientRects()[0];
         return this.convertOffsetToCanvas([e.pageX - rect.left, e.pageY - rect.top]);
     }
 
-    bringToFront(n) {
+    bringToFront(n: Node) {
         let i = this.graph._nodes.indexOf(n);
         if (i == -1) return;
 
@@ -1286,7 +1288,7 @@ export class NodeEditorCanvas {
         this.graph._nodes.push(n);
     }
 
-    sendToBack(n) {
+    sendToBack(n: Node) {
         let i = this.graph._nodes.indexOf(n);
         if (i == -1) return;
 
@@ -1324,7 +1326,7 @@ export class NodeEditorCanvas {
         if (this.graph) {
             let start = [-this.offset[0], -this.offset[1]];
             let end = [start[0] + this.canvas.width / this.scale, start[1] + this.canvas.height / this.scale];
-            this.visible_area = new Float32Array([start[0], start[1], end[0], end[1]]);
+            this.visible_area = [start[0], start[1], end[0], end[1]];
         }
 
         if (this.dirty_bgcanvas || force_bgcanvas)
@@ -1449,7 +1451,7 @@ export class NodeEditorCanvas {
         this.dirty_canvas = false;
     }
 
-    renderInfo(ctx, x = 0, y = 0) {
+    renderInfo(ctx: CanvasRenderingContext2D, x = 0, y = 0) {
 
         ctx.save();
         ctx.translate(x, y);
@@ -1560,7 +1562,7 @@ export class NodeEditorCanvas {
     }
 
     /* Renders the LGraphNode on the canvas */
-    drawNode(node, ctx) {
+    drawNode(node: Node, ctx: CanvasRenderingContext2D) {
         let glow = false;
 
         let color = node.color || Nodes.options.NODE_DEFAULT_COLOR;
@@ -1625,7 +1627,7 @@ export class NodeEditorCanvas {
 
         //clip if required (mask)
         let shape = node.shape || Nodes.options.NODE_DEFAULT_SHAPE;
-        let size = new Float32Array(node.size);
+        let size: [number, number] = [node.size[0], node.size[1]];
         if (node.flags.collapsed) {
             size[0] = Nodes.options.NODE_COLLAPSED_WIDTH;
             size[1] = 0;
@@ -1757,7 +1759,7 @@ export class NodeEditorCanvas {
     }
 
     /* Renders the node shape */
-    drawNodeShape(node, ctx, size, fgcolor, bgcolor, no_title, selected) {
+    drawNodeShape(node: Node, ctx: CanvasRenderingContext2D, size: [number, number], fgcolor: string, bgcolor: string, no_title: boolean, selected: boolean) {
         //bg rect
         ctx.strokeStyle = fgcolor || Nodes.options.NODE_DEFAULT_COLOR;
         ctx.fillStyle = bgcolor || Nodes.options.NODE_DEFAULT_BGCOLOR;
@@ -1862,7 +1864,7 @@ export class NodeEditorCanvas {
     }
 
     /* Renders the node when collapsed */
-    drawNodeCollapsed(node, ctx, fgcolor, bgcolor) {
+    drawNodeCollapsed(node: Node, ctx: CanvasRenderingContext2D, fgcolor: string, bgcolor: string) {
         //draw default collapsed shape
         ctx.strokeStyle = fgcolor || Nodes.options.NODE_DEFAULT_COLOR;
         ctx.fillStyle = bgcolor || Nodes.options.NODE_DEFAULT_BGCOLOR;
@@ -1913,7 +1915,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    drawConnections(ctx) {
+    drawConnections(ctx: CanvasRenderingContext2D) {
         //draw connections
         ctx.lineWidth = this.connections_width;
 
@@ -1952,7 +1954,7 @@ export class NodeEditorCanvas {
         ctx.globalAlpha = 1;
     }
 
-    renderLink(ctx, a: [number, number], b: [number, number], color: string) {
+    renderLink(ctx: CanvasRenderingContext2D, a: [number, number], b: [number, number], color: string) {
         if (!this.highquality_render) {
             ctx.beginPath();
             ctx.moveTo(a[0], a[1]);
@@ -2015,7 +2017,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    computeConnectionPoint(a, b, t) {
+    computeConnectionPoint(a: [number, number], b: [number, number], t: number) {
         let dist = distance(a, b);
         let p0 = a;
         let p1 = [a[0] + dist * 0.25, a[1]];
@@ -2061,7 +2063,7 @@ export class NodeEditorCanvas {
         this.setDirty(true, true);
     }
 
-    switchLiveMode(transition) {
+    switchLiveMode(transition: boolean) {
         if (!transition) {
             this.live_mode = !this.live_mode;
             this.dirty_canvas = true;
@@ -2093,12 +2095,12 @@ export class NodeEditorCanvas {
         }, 1);
     }
 
-    onNodeSelectionChange(node) {
+    onNodeSelectionChange(node: Node) {
         return; //disabled
         //if(this.node_in_panel) this.showNodePanel(node);
     }
 
-    touchHandler(event) {
+    touchHandler(event: any) {
         //alert("foo");
         let touches = event.changedTouches,
             first = touches[0],
@@ -2182,7 +2184,7 @@ export class NodeEditorCanvas {
                 });
 
             }
-            ;
+
 
             if (this._graph_stack && this._graph_stack.length > 0)
                 options.push({content: "Close subgraph", callback: this.closeSubgraph.bind(this)});
@@ -2200,7 +2202,7 @@ export class NodeEditorCanvas {
         return options;
     }
 
-    getNodeMenuOptions(node) {
+    getNodeMenuOptions(node: Node) {
         let options = [];
 
         //derwish added
@@ -2255,7 +2257,7 @@ export class NodeEditorCanvas {
         return options;
     }
 
-    processContextualMenu(node, event) {
+    processContextualMenu(node: Node, event: any) {
         let that = this;
         let win = this.getCanvasWindow();
 
@@ -2299,7 +2301,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    getFileExtension(url) {
+    getFileExtension(url: string) {
         let question = url.indexOf("?");
         if (question != -1)
             url = url.substr(0, question);
@@ -2310,7 +2312,7 @@ export class NodeEditorCanvas {
     }
 
     /* CONTEXT MENU ********************/
-    onMenuAdd(node, e, prev_menu, canvas, first_event) {
+    onMenuAdd(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any): boolean {
         let window = canvas.getCanvasWindow();
 
         let values = Nodes.getNodeTypesCategories();
@@ -2357,7 +2359,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuImport(node, e, prev_menu, canvas, first_event) {
+    onMenuImport(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any): boolean {
         let window = canvas.getCanvasWindow();
 
         let entries = {};
@@ -2406,7 +2408,7 @@ export class NodeEditorCanvas {
 
     }
 
-    onMenuNodeInputs(node, e, prev_menu) {
+    onMenuNodeInputs(node: Node, e: any, prev_menu: any) {
         if (!node) return;
 
         let options = node.optional_inputs;
@@ -2432,7 +2434,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeOutputs(node, e, prev_menu) {
+    onMenuNodeOutputs(node: Node, e: any, prev_menu: any): boolean {
         if (!node) return;
 
         let options = node.optional_outputs;
@@ -2475,16 +2477,16 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeCollapse(node) {
+    onMenuNodeCollapse(node: Node) {
         node.flags.collapsed = !node.flags.collapsed;
         node.setDirtyCanvas(true, true);
     }
 
-    onMenuNodePin(node) {
+    onMenuNodePin(node: Node) {
         node.pin();
     }
 
-    onMenuNodeColors(node, e, prev_menu) {
+    onMenuNodeColors(node: Node, e: any, prev_menu: any) {
         let values = [];
         for (let i in Nodes.options.NODE_COLORS) {
             let color = Nodes.options.NODE_COLORS[i];
@@ -2509,7 +2511,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeShapes(node, e) {
+    onMenuNodeShapes(node: Node, e: any) {
         this.createContextualMenu(["box", "round"], {event: e, callback: inner_clicked});
 
         function inner_clicked(v) {
@@ -2521,7 +2523,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
+    onMenuNodeRemove(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any) {
         //if (node.removable == false) return;
 
         if (node.id in canvas.selected_nodes)
@@ -2534,7 +2536,7 @@ export class NodeEditorCanvas {
         //node.setDirtyCanvas(true, true);
     }
 
-    onMenuNodeClone(node) {
+    onMenuNodeClone(node: Node) {
         if (node.clonable == false) return;
         //derwish removed
         //let newnode = node.clone();
@@ -2548,7 +2550,7 @@ export class NodeEditorCanvas {
     }
 
 
-    createContextualMenu(values, options?, ref_window?) {
+    createContextualMenu(values: any, options?: any, ref_window?: any): HTMLDivElement {
         options = options || {};
         this.options = options;
 
@@ -2720,7 +2722,7 @@ export class NodeEditorCanvas {
                 result[i].parentNode.removeChild(result[i]);
     }
 
-    extendClass(target, origin) {
+    extendClass(target: any, origin: any) {
         for (let i in origin) //copy class properties
         {
             if (target.hasOwnProperty(i))
@@ -2762,11 +2764,14 @@ export class NodeEditorCanvas {
 
 
 //API *************************************************
-//function roundRect(ctx, x, y, width, height, radius, radius_low) {
-(<any>CanvasRenderingContext2D).prototype.roundRect = function (x, y, width, height, radius, radius_low) {
-    if (radius === undefined) {
-        radius = 5;
+declare global {
+    interface CanvasRenderingContext2D extends Object, CanvasPathMethods {
+        roundRect(x: number, y: number, width: number, height: number, radius: number, radius_low?: number): void;
+
     }
+}
+//function roundRect(ctx, x, y, width, height, radius, radius_low) {
+CanvasRenderingContext2D.prototype.roundRect = function (x: number, y: number, width: number, height: number, radius: number = 5, radius_low?: number) {
 
     if (radius_low === undefined)
         radius_low = radius;
@@ -2784,7 +2789,7 @@ export class NodeEditorCanvas {
     this.quadraticCurveTo(x, y, x + radius, y);
 }
 
-function compareObjects(a, b) {
+function compareObjects(a: any, b: any) {
     for (let i in a)
         if (a[i] != b[i])
             return false;
@@ -2795,11 +2800,11 @@ function distance(a: [number, number], b: [number, number]) {
     return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
 }
 
-function colorToString(c) {
+function colorToString(c: [number, number, number, number]) {
     return "rgba(" + Math.round(c[0] * 255).toFixed() + "," + Math.round(c[1] * 255).toFixed() + "," + Math.round(c[2] * 255).toFixed() + "," + (c.length == 4 ? c[3].toFixed(2) : "1.0") + ")";
 }
 
-function isInsideRectangle(x, y, left, top, width, height) {
+function isInsideRectangle(x: number, y: number, left: number, top: number, width: number, height: number): boolean {
     if (left < x && (left + width) > x &&
         top < y && (top + height) > y)
         return true;
@@ -2807,7 +2812,7 @@ function isInsideRectangle(x, y, left, top, width, height) {
 }
 
 //[minx,miny,maxx,maxy]
-function growBounding(bounding, x, y) {
+function growBounding(bounding: number, x: number, y: number) {
     if (x < bounding[0])
         bounding[0] = x;
     else if (x > bounding[2])
@@ -2820,7 +2825,7 @@ function growBounding(bounding, x, y) {
 }
 
 //point inside boundin box
-function isInsideBounding(p, bb) {
+function isInsideBounding(p: [number, number], bb: [number, number, number, number]) {
     if (p[0] < bb[0][0] ||
         p[1] < bb[0][1] ||
         p[0] > bb[1][0] ||
@@ -2830,7 +2835,7 @@ function isInsideBounding(p, bb) {
 }
 
 //boundings overlap, format: [start,end]
-function overlapBounding(a, b) {
+function overlapBounding(a: [number, number, number, number], b: [number, number, number, number]) {
     if (a[0] > b[2] ||
         a[1] > b[3] ||
         a[2] < b[0] ||
@@ -2842,11 +2847,11 @@ function overlapBounding(a, b) {
 //Convert a hex value to its decimal value - the inputted hex must be in the
 //	format of a hex triplet - the kind we use for HTML colours. The function
 //	will return an array with three values.
-function hex2num(hex) {
+function hex2num(hex: string): [number, number, number] {
     if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
     hex = hex.toUpperCase();
     let hex_alphabets = "0123456789ABCDEF";
-    let value = new Array(3);
+    let value: [number, number, number];
     let k = 0;
     let int1, int2;
     for (let i = 0; i < 6; i += 2) {
@@ -2855,11 +2860,11 @@ function hex2num(hex) {
         value[k] = (int1 * 16) + int2;
         k++;
     }
-    return (value);
+    return value;
 }
 //Give a array with three values as the argument and the function will return
 //	the corresponding hex triplet.
-function num2hex(triplet) {
+function num2hex(triplet: [number, number, number]): string {
     let hex_alphabets = "0123456789ABCDEF";
     let hex = "#";
     let int1, int2;

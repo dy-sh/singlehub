@@ -42,7 +42,7 @@ export class NodeEditor {
 
 		//create canvas
 		let graphcanvas = this.graphcanvas = new NodeEditorCanvas(
-			canvas,
+			<HTMLCanvasElement>canvas,
 			this.socket,
 			this,
 			graph);

@@ -1,6 +1,4 @@
-/**
- * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
- */
+///<reference path='../../../types/my_types.d.ts'/>
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
@@ -10,6 +8,9 @@
     }
 })(function (require, exports) {
     "use strict";
+    /**
+     * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
+     */
     const nodes_1 = require("../../nodes/nodes");
     class NodeEditorCanvas {
         /**
@@ -23,8 +24,8 @@
         constructor(canvas, socket, editor, graph, skip_render) {
             //if(graph === undefined)
             //	throw ("No graph assigned");
-            if (canvas && typeof canvas == "string")
-                canvas = document.querySelector(canvas);
+            //     if (canvas && typeof canvas == "string")
+            //        canvas = <HTMLCanvasElement>document.querySelector(canvas);
             this.socket = socket;
             this.editor = editor;
             //derwish edit
@@ -92,7 +93,7 @@
          * @method setGraph
          * @param {LGraph} graph
          */
-        setGraph(graph, skip_clear) {
+        setGraph(graph, skip_clear = false) {
             if (this.graph == graph)
                 return;
             if (!skip_clear)
@@ -150,15 +151,15 @@
          * @method setCanvas
          * @param {Canvas} assigns a canvas
          */
-        setCanvas(canvas, skip_events) {
+        setCanvas(canvas, skip_events = false) {
             let that = this;
-            if (canvas) {
-                if (canvas.constructor === String) {
-                    canvas = document.getElementById(canvas);
-                    if (!canvas)
-                        throw ("Error creating LiteGraph canvas: Canvas not found");
-                }
-            }
+            // if (canvas) {
+            //     if (canvas.constructor === String) {
+            //         canvas = document.getElementById(canvas);
+            //         if (!canvas)
+            //             throw ("Error creating LiteGraph canvas: Canvas not found");
+            //     }
+            // }
             if (canvas === this.canvas)
                 return;
             if (!canvas && this.canvas) {
@@ -998,7 +999,7 @@
             if (this.graph) {
                 let start = [-this.offset[0], -this.offset[1]];
                 let end = [start[0] + this.canvas.width / this.scale, start[1] + this.canvas.height / this.scale];
-                this.visible_area = new Float32Array([start[0], start[1], end[0], end[1]]);
+                this.visible_area = [start[0], start[1], end[0], end[1]];
             }
             if (this.dirty_bgcanvas || force_bgcanvas)
                 this.drawBackCanvas();
@@ -1241,7 +1242,7 @@
             ctx.globalAlpha = editor_alpha;
             //clip if required (mask)
             let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
-            let size = new Float32Array(node.size);
+            let size = [node.size[0], node.size[1]];
             if (node.flags.collapsed) {
                 size[0] = nodes_1.Nodes.options.NODE_COLLAPSED_WIDTH;
                 size[1] = 0;
@@ -1691,7 +1692,6 @@
                         }
                     });
                 }
-                ;
                 if (this._graph_stack && this._graph_stack.length > 0)
                     options.push({ content: "Close subgraph", callback: this.closeSubgraph.bind(this) });
             }
@@ -2143,12 +2143,8 @@
         }
     }
     exports.NodeEditorCanvas = NodeEditorCanvas;
-    //API *************************************************
     //function roundRect(ctx, x, y, width, height, radius, radius_low) {
-    CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, radius_low) {
-        if (radius === undefined) {
-            radius = 5;
-        }
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius = 5, radius_low) {
         if (radius_low === undefined)
             radius_low = radius;
         this.beginPath();
@@ -2217,7 +2213,7 @@
             hex = hex.slice(1); //Remove the '#' char - if there is one.
         hex = hex.toUpperCase();
         let hex_alphabets = "0123456789ABCDEF";
-        let value = new Array(3);
+        let value;
         let k = 0;
         let int1, int2;
         for (let i = 0; i < 6; i += 2) {
@@ -2226,7 +2222,7 @@
             value[k] = (int1 * 16) + int2;
             k++;
         }
-        return (value);
+        return value;
     }
     //Give a array with three values as the argument and the function will return
     //	the corresponding hex triplet.
