@@ -148,7 +148,7 @@ export class NodeEditorCanvas {
      *
      * @method clear
      */
-    clear() {
+    clear(): void {
         this.frame = 0;
         this.last_draw_time = 0;
         this.render_time = 0;
@@ -209,7 +209,7 @@ export class NodeEditorCanvas {
      * @method setGraph
      * @param {LGraph} graph
      */
-    setGraph(graph?: NodesEngine, skip_clear = false) {
+    setGraph(graph?: NodesEngine, skip_clear = false): void {
         if (this.graph == graph)
             return;
 
@@ -238,7 +238,7 @@ export class NodeEditorCanvas {
      * @method openSubgraph
      * @param {LGraph} graph
      */
-    openSubgraph(graph: NodesEngine) {
+    openSubgraph(graph: NodesEngine): void {
         if (!graph)
             throw ("graph cannot be null");
 
@@ -263,7 +263,7 @@ export class NodeEditorCanvas {
      * @method closeSubgraph
      * @param {LGraph} assigns a graph
      */
-    closeSubgraph() {
+    closeSubgraph(): void {
         if (!this._graph_stack || this._graph_stack.length == 0)
             return;
         let graph = this._graph_stack.pop();
@@ -277,7 +277,7 @@ export class NodeEditorCanvas {
      * @method setCanvas
      * @param {Canvas} assigns a canvas
      */
-    setCanvas(canvas: HTMLCanvasElement, skip_events = false) {
+    setCanvas(canvas: HTMLCanvasElement, skip_events = false): void {
         let that = this;
 
         // if (canvas) {
@@ -333,17 +333,17 @@ export class NodeEditorCanvas {
     }
 
 //used in some events to capture them
-    _doNothing(e) {
+    _doNothing(e): boolean {
         e.preventDefault();
         return false;
     }
 
-    _doReturnTrue(e) {
+    _doReturnTrue(e): boolean {
         e.preventDefault();
         return true;
     }
 
-    bindEvents() {
+    bindEvents(): void {
         if (this._events_binded) {
             console.warn("NodeEditorCanvas: events already binded");
             return;
@@ -387,7 +387,7 @@ export class NodeEditorCanvas {
         this._events_binded = true;
     }
 
-    unbindEvents() {
+    unbindEvents(): void {
         if (!this._events_binded) {
             console.warn("NodeEditorCanvas: no events binded");
             return;
@@ -417,7 +417,7 @@ export class NodeEditorCanvas {
 
 //this file allows to render the canvas using WebGL instead of Canvas2D
 //this is useful if you plant to render 3D objects inside your nodes
-    enableWebGL() {
+    enableWebGL(): void {
         if (typeof (this.GL) === undefined)
             throw ("litegl.js must be included to use a WebGL canvas");
         if (typeof (this.enableWebGLCanvas) === undefined)
@@ -443,7 +443,7 @@ export class NodeEditorCanvas {
      * @param {bool} fgcanvas if the foreground canvas is dirty (the one containing the nodes)
      * @param {bool} bgcanvas if the background canvas is dirty (the one containing the wires)
      */
-    setDirty(fgcanvas: boolean, bgcanvas: boolean = false) {
+    setDirty(fgcanvas: boolean, bgcanvas: boolean = false): void {
         if (fgcanvas)
             this.dirty_canvas = true;
         if (bgcanvas)
@@ -456,7 +456,7 @@ export class NodeEditorCanvas {
      * @method getCanvasWindow
      * @return {window} returns the window where the canvas is attached (the DOM root node)
      */
-    getCanvasWindow() {
+    getCanvasWindow(): Window {
         let doc = this.canvas.ownerDocument;
         return doc.defaultView || (<any>doc).parentWindow;//check ES6
     }
@@ -466,7 +466,7 @@ export class NodeEditorCanvas {
      *
      * @method startRendering
      */
-    startRendering() {
+    startRendering(): void {
         if (this.is_rendering) return; //already rendering
 
         this.is_rendering = true;
@@ -487,7 +487,7 @@ export class NodeEditorCanvas {
      *
      * @method stopRendering
      */
-    stopRendering() {
+    stopRendering(): void {
         this.is_rendering = false;
         /*
          if(this.rendering_timer_id)
@@ -848,7 +848,7 @@ export class NodeEditorCanvas {
         //this.graph.change();
     }
 
-    processMouseUp(e) {
+    processMouseUp(e): boolean {
         if (!this.graph)
             return;
 
@@ -1022,7 +1022,7 @@ export class NodeEditorCanvas {
         return false; // prevent default
     }
 
-    isOverNodeInput(node: Node, canvasx: number, canvasy: number, slot_pos?: [number, number]): any {
+    isOverNodeInput(node: Node, canvasx: number, canvasy: number, slot_pos?: [number, number]): number {
         if (node.inputs)
             for (let i = 0, l = node.inputs.length; i < l; ++i) {
                 let input = node.inputs[i];
@@ -1039,7 +1039,7 @@ export class NodeEditorCanvas {
         return -1;
     }
 
-    processKey(e) {
+    processKey(e): boolean {
         if (!this.graph)
             return;
 
@@ -1137,7 +1137,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    processNodeSelected(n: Node, e) {
+    processNodeSelected(n: Node, e): void {
         n.selected = true;
         if (n.onSelected)
             n.onSelected();
@@ -1157,7 +1157,7 @@ export class NodeEditorCanvas {
         //if(this.node_in_panel) this.showNodePanel(n);
     }
 
-    processNodeDeselected(n: Node) {
+    processNodeDeselected(n: Node): void {
         n.selected = false;
         if (n.onDeselected)
             n.onDeselected();
@@ -1172,7 +1172,7 @@ export class NodeEditorCanvas {
         //this.showNodePanel(null);
     }
 
-    processNodeDblClicked(n: Node) {
+    processNodeDblClicked(n: Node): void {
         if (this.onShowNodePanel)
             this.onShowNodePanel(n);
 
@@ -1182,7 +1182,7 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    selectNode(node: Node) {
+    selectNode(node: Node): void {
         this.deselectAllNodes();
 
         if (!node)
@@ -1195,7 +1195,7 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    selectAllNodes() {
+    selectAllNodes(): void {
         for (let i in this.graph._nodes) {
             let n = this.graph._nodes[i];
             if (!n.selected && n.onSelected)
@@ -1207,7 +1207,7 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    deselectAllNodes() {
+    deselectAllNodes(): void {
         for (let i in this.selected_nodes) {
             let n = this.selected_nodes;
             if (n.onDeselected)
@@ -1218,7 +1218,7 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    deleteSelectedNodes() {
+    deleteSelectedNodes(): void {
         for (let i in this.selected_nodes) {
             let m = this.selected_nodes[i];
             //if(m == this.node_in_panel) this.showNodePanel(null);
@@ -1228,13 +1228,13 @@ export class NodeEditorCanvas {
         this.setDirty(true);
     }
 
-    centerOnNode(node: Node) {
+    centerOnNode(node: Node): void {
         this.offset[0] = -node.pos[0] - node.size[0] * 0.5 + (this.canvas.width * 0.5 / this.scale);
         this.offset[1] = -node.pos[1] - node.size[1] * 0.5 + (this.canvas.height * 0.5 / this.scale);
         this.setDirty(true, true);
     }
 
-    adjustMouseEvent(e: any) {
+    adjustMouseEvent(e: any): void {
         let b = this.canvas.getBoundingClientRect();
         e.localX = e.pageX - b.left;
         e.localY = e.pageY - b.top;
@@ -1243,7 +1243,7 @@ export class NodeEditorCanvas {
         e.canvasY = e.localY / this.scale - this.offset[1];
     }
 
-    setZoom(value: number, zooming_center: [number, number]) {
+    setZoom(value: number, zooming_center: [number, number]): void {
         if (!zooming_center)
             zooming_center = [this.canvas.width * 0.5, this.canvas.height * 0.5];
 
@@ -1280,7 +1280,7 @@ export class NodeEditorCanvas {
         return this.convertOffsetToCanvas([e.pageX - rect.left, e.pageY - rect.top]);
     }
 
-    bringToFront(n: Node) {
+    bringToFront(n: Node): void {
         let i = this.graph._nodes.indexOf(n);
         if (i == -1) return;
 
@@ -1288,7 +1288,7 @@ export class NodeEditorCanvas {
         this.graph._nodes.push(n);
     }
 
-    sendToBack(n: Node) {
+    sendToBack(n: Node): void {
         let i = this.graph._nodes.indexOf(n);
         if (i == -1) return;
 
@@ -1317,7 +1317,7 @@ export class NodeEditorCanvas {
         return visible_nodes;
     }
 
-    draw(force_canvas?: boolean, force_bgcanvas?: boolean) {
+    draw(force_canvas?: boolean, force_bgcanvas?: boolean): void {
         //fps counting
         let now = Nodes.getTime();
         this.render_time = (now - this.last__time) * 0.001;
@@ -1339,7 +1339,7 @@ export class NodeEditorCanvas {
         this.frame += 1;
     }
 
-    drawFrontCanvas() {
+    drawFrontCanvas(): void {
         if (!this.ctx)
             this.ctx = this.bgcanvas.getContext("2d");
         let ctx = this.ctx;
@@ -1451,7 +1451,7 @@ export class NodeEditorCanvas {
         this.dirty_canvas = false;
     }
 
-    renderInfo(ctx: CanvasRenderingContext2D, x = 0, y = 0) {
+    renderInfo(ctx: CanvasRenderingContext2D, x = 0, y = 0): void {
 
         ctx.save();
         ctx.translate(x, y);
@@ -1469,7 +1469,7 @@ export class NodeEditorCanvas {
         ctx.restore();
     }
 
-    drawBackCanvas() {
+    drawBackCanvas(): void {
         let canvas = this.bgcanvas;
         if (!this.bgctx)
             this.bgctx = this.bgcanvas.getContext("2d");
@@ -1562,7 +1562,7 @@ export class NodeEditorCanvas {
     }
 
     /* Renders the LGraphNode on the canvas */
-    drawNode(node: Node, ctx: CanvasRenderingContext2D) {
+    drawNode(node: Node, ctx: CanvasRenderingContext2D): void {
         let glow = false;
 
         let color = node.color || Nodes.options.NODE_DEFAULT_COLOR;
@@ -1759,7 +1759,7 @@ export class NodeEditorCanvas {
     }
 
     /* Renders the node shape */
-    drawNodeShape(node: Node, ctx: CanvasRenderingContext2D, size: [number, number], fgcolor: string, bgcolor: string, no_title: boolean, selected: boolean) {
+    drawNodeShape(node: Node, ctx: CanvasRenderingContext2D, size: [number, number], fgcolor: string, bgcolor: string, no_title: boolean, selected: boolean): void {
         //bg rect
         ctx.strokeStyle = fgcolor || Nodes.options.NODE_DEFAULT_COLOR;
         ctx.fillStyle = bgcolor || Nodes.options.NODE_DEFAULT_BGCOLOR;
@@ -1864,7 +1864,7 @@ export class NodeEditorCanvas {
     }
 
     /* Renders the node when collapsed */
-    drawNodeCollapsed(node: Node, ctx: CanvasRenderingContext2D, fgcolor: string, bgcolor: string) {
+    drawNodeCollapsed(node: Node, ctx: CanvasRenderingContext2D, fgcolor: string, bgcolor: string): void {
         //draw default collapsed shape
         ctx.strokeStyle = fgcolor || Nodes.options.NODE_DEFAULT_COLOR;
         ctx.fillStyle = bgcolor || Nodes.options.NODE_DEFAULT_BGCOLOR;
@@ -1915,7 +1915,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    drawConnections(ctx: CanvasRenderingContext2D) {
+    drawConnections(ctx: CanvasRenderingContext2D): void {
         //draw connections
         ctx.lineWidth = this.connections_width;
 
@@ -1954,7 +1954,7 @@ export class NodeEditorCanvas {
         ctx.globalAlpha = 1;
     }
 
-    renderLink(ctx: CanvasRenderingContext2D, a: [number, number], b: [number, number], color: string) {
+    renderLink(ctx: CanvasRenderingContext2D, a: [number, number], b: [number, number], color: string): void {
         if (!this.highquality_render) {
             ctx.beginPath();
             ctx.moveTo(a[0], a[1]);
@@ -2017,7 +2017,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    computeConnectionPoint(a: [number, number], b: [number, number], t: number) {
+    computeConnectionPoint(a: [number, number], b: [number, number], t: number): [number, number] {
         let dist = distance(a, b);
         let p0 = a;
         let p1 = [a[0] + dist * 0.25, a[1]];
@@ -2046,7 +2046,7 @@ export class NodeEditorCanvas {
      this.draw(true,true);
      }
      */
-    resize(width?: number, height?: number) {
+    resize(width?: number, height?: number): void {
         if (!width && !height) {
             let parent = this.canvas.parentNode;
             width = (<any>parent).offsetWidth;//check ES6
@@ -2063,7 +2063,7 @@ export class NodeEditorCanvas {
         this.setDirty(true, true);
     }
 
-    switchLiveMode(transition: boolean) {
+    switchLiveMode(transition: boolean): void {
         if (!transition) {
             this.live_mode = !this.live_mode;
             this.dirty_canvas = true;
@@ -2095,12 +2095,12 @@ export class NodeEditorCanvas {
         }, 1);
     }
 
-    onNodeSelectionChange(node: Node) {
+    onNodeSelectionChange(node: Node): void {
         return; //disabled
         //if(this.node_in_panel) this.showNodePanel(node);
     }
 
-    touchHandler(event: any) {
+    touchHandler(event: any): void {
         //alert("foo");
         let touches = event.changedTouches,
             first = touches[0],
@@ -2137,7 +2137,7 @@ export class NodeEditorCanvas {
     }
 
 
-    getCanvasMenuOptions() {
+    getCanvasMenuOptions(): any {
         let options = [];
         if (this.getMenuOptions)
             options = this.getMenuOptions();
@@ -2202,7 +2202,7 @@ export class NodeEditorCanvas {
         return options;
     }
 
-    getNodeMenuOptions(node: Node) {
+    getNodeMenuOptions(node: Node): any {
         let options = [];
 
         //derwish added
@@ -2257,7 +2257,7 @@ export class NodeEditorCanvas {
         return options;
     }
 
-    processContextualMenu(node: Node, event: any) {
+    processContextualMenu(node: Node, event: any): void {
         let that = this;
         let win = this.getCanvasWindow();
 
@@ -2301,7 +2301,7 @@ export class NodeEditorCanvas {
         }
     }
 
-    getFileExtension(url: string) {
+    getFileExtension(url: string): string {
         let question = url.indexOf("?");
         if (question != -1)
             url = url.substr(0, question);
@@ -2348,8 +2348,8 @@ export class NodeEditorCanvas {
                 node.pos[1] = Math.round(node.pos[1]);
 
                 //derwish added
-                if (window.this_panel_id != null)
-                    node.panel_id = window.this_panel_id;//this_panel_id initialized from ViewBag
+                if ((<any>window).this_panel_id != null)
+                    node.panel_id = (<any>window).this_panel_id;//this_panel_id initialized from ViewBag
 
 
                 canvas.editor.socket.send_create_node(node);
@@ -2400,15 +2400,15 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuCollapseAll() {
+    onMenuCollapseAll(): void {
 
     }
 
-    onMenuNodeEdit() {
+    onMenuNodeEdit(): void {
 
     }
 
-    onMenuNodeInputs(node: Node, e: any, prev_menu: any) {
+    onMenuNodeInputs(node: Node, e: any, prev_menu: any): boolean {
         if (!node) return;
 
         let options = node.optional_inputs;
@@ -2477,16 +2477,16 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeCollapse(node: Node) {
+    onMenuNodeCollapse(node: Node): void {
         node.flags.collapsed = !node.flags.collapsed;
         node.setDirtyCanvas(true, true);
     }
 
-    onMenuNodePin(node: Node) {
+    onMenuNodePin(node: Node): void {
         node.pin();
     }
 
-    onMenuNodeColors(node: Node, e: any, prev_menu: any) {
+    onMenuNodeColors(node: Node, e: any, prev_menu: any): boolean {
         let values = [];
         for (let i in Nodes.options.NODE_COLORS) {
             let color = Nodes.options.NODE_COLORS[i];
@@ -2511,7 +2511,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeShapes(node: Node, e: any) {
+    onMenuNodeShapes(node: Node, e: any): boolean {
         this.createContextualMenu(["box", "round"], {event: e, callback: inner_clicked});
 
         function inner_clicked(v) {
@@ -2523,7 +2523,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeRemove(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any) {
+    onMenuNodeRemove(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any): void {
         //if (node.removable == false) return;
 
         if (node.id in canvas.selected_nodes)
@@ -2536,7 +2536,7 @@ export class NodeEditorCanvas {
         //node.setDirtyCanvas(true, true);
     }
 
-    onMenuNodeClone(node: Node) {
+    onMenuNodeClone(node: Node): void {
         if (node.clonable == false) return;
         //derwish removed
         //let newnode = node.clone();
@@ -2709,7 +2709,7 @@ export class NodeEditorCanvas {
         return root;
     }
 
-    closeAllContextualMenus() {
+    closeAllContextualMenus(): void {
         let elements = document.querySelectorAll(".graphcontextualmenu");
         if (!elements.length) return;
 
@@ -2722,7 +2722,7 @@ export class NodeEditorCanvas {
                 result[i].parentNode.removeChild(result[i]);
     }
 
-    extendClass(target: any, origin: any) {
+    extendClass(target: any, origin: any): void {
         for (let i in origin) //copy class properties
         {
             if (target.hasOwnProperty(i))
@@ -2771,7 +2771,7 @@ declare global {
     }
 }
 //function roundRect(ctx, x, y, width, height, radius, radius_low) {
-CanvasRenderingContext2D.prototype.roundRect = function (x: number, y: number, width: number, height: number, radius: number = 5, radius_low?: number) {
+CanvasRenderingContext2D.prototype.roundRect = function (x: number, y: number, width: number, height: number, radius: number = 5, radius_low?: number): void {
 
     if (radius_low === undefined)
         radius_low = radius;
@@ -2789,18 +2789,18 @@ CanvasRenderingContext2D.prototype.roundRect = function (x: number, y: number, w
     this.quadraticCurveTo(x, y, x + radius, y);
 }
 
-function compareObjects(a: any, b: any) {
+function compareObjects(a: any, b: any): boolean {
     for (let i in a)
         if (a[i] != b[i])
             return false;
     return true;
 }
 
-function distance(a: [number, number], b: [number, number]) {
+function distance(a: [number, number], b: [number, number]): number {
     return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
 }
 
-function colorToString(c: [number, number, number, number]) {
+function colorToString(c: [number, number, number, number]): string {
     return "rgba(" + Math.round(c[0] * 255).toFixed() + "," + Math.round(c[1] * 255).toFixed() + "," + Math.round(c[2] * 255).toFixed() + "," + (c.length == 4 ? c[3].toFixed(2) : "1.0") + ")";
 }
 
@@ -2812,7 +2812,7 @@ function isInsideRectangle(x: number, y: number, left: number, top: number, widt
 }
 
 //[minx,miny,maxx,maxy]
-function growBounding(bounding: number, x: number, y: number) {
+function growBounding(bounding: [number, number, number, number], x: number, y: number): void {
     if (x < bounding[0])
         bounding[0] = x;
     else if (x > bounding[2])
@@ -2825,7 +2825,7 @@ function growBounding(bounding: number, x: number, y: number) {
 }
 
 //point inside boundin box
-function isInsideBounding(p: [number, number], bb: [number, number, number, number]) {
+function isInsideBounding(p: [number, number], bb: [number, number, number, number]): boolean {
     if (p[0] < bb[0][0] ||
         p[1] < bb[0][1] ||
         p[0] > bb[1][0] ||
@@ -2835,7 +2835,7 @@ function isInsideBounding(p: [number, number], bb: [number, number, number, numb
 }
 
 //boundings overlap, format: [start,end]
-function overlapBounding(a: [number, number, number, number], b: [number, number, number, number]) {
+function overlapBounding(a: [number, number, number, number], b: [number, number, number, number]): boolean {
     if (a[0] > b[2] ||
         a[1] > b[3] ||
         a[2] < b[0] ||

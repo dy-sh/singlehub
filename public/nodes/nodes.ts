@@ -126,15 +126,15 @@ export class Nodes {
      * @param {Class} base_class class containing the structure of a node
      */
 
-    static debug(mess) {
+    static debug(mess): void {
         console.log(mess)
     };
 
-    static debugErr(mess) {
+    static debugErr(mess): void {
         console.log(mess)
     };
 
-    static registerNodeType(type: string, base_class: any) {
+    static registerNodeType(type: string, base_class: any): void {
         if (!base_class.prototype)
             throw("Cannot register a simple object, it must be a class with a prototype");
         base_class.type = type;
@@ -165,7 +165,7 @@ export class Nodes {
      * @param {Function} func
      */
 
-    static addNodeMethod(name: string, func: Function) {
+    static addNodeMethod(name: string, func: Function): void {
         Node.prototype[name] = func;
         for (let i in this.registered_node_types)
             this.registered_node_types[i].prototype[name] = func;
@@ -262,7 +262,7 @@ export class Nodes {
     };
 
     //debug purposes: reloads all the js scripts that matches a wilcard
-    static reloadNodes(folder_wildcard) {
+    static reloadNodes(folder_wildcard): void {
         let tmp = document.getElementsByTagName("script");
         //weird, this array changes by its own, so we use a copy
         let script_files = [];
@@ -433,15 +433,15 @@ export class Node {
         this.id = -1; //not know till not added
     }
 
-    debug(mess) {
+    debug(mess: any): void {
         console.log(mess)
     }
 
-    debugErr(mess) {
+    debugErr(mess: any): void {
         console.log(mess)
     }
 
-    cloneObject(obj, target?) {
+    cloneObject(obj: any, target?: any): any {
         if (obj == null) return null;
         let r = JSON.parse(JSON.stringify(obj));
         if (!target) return r;
@@ -456,7 +456,7 @@ export class Node {
      * configure a node from an object containing the serialized info
      * @method configure
      */
-    configure(info: any) {
+    configure(info: any): void {
         for (let j in info) {
             if (j == "console") continue;
 
@@ -589,7 +589,7 @@ export class Node {
      * @param {number} slot
      * @param {*} data
      */
-    setOutputData(slot: number, data: any) {
+    setOutputData(slot: number, data: any): void {
         if (!this.outputs)
             return;
 
@@ -607,7 +607,7 @@ export class Node {
      * @param {number} slot
      * @return {*} data or if it is not connected returns undefined
      */
-    getInputData(slot: number) {
+    getInputData(slot: number): any {
         if (!this.inputs)
             return; //undefined;
         if (slot < this.inputs.length && this.inputs[slot].link != null)
@@ -634,7 +634,7 @@ export class Node {
      * @param {number} slot
      * @return {Object} object or null
      */
-    getInputInfo(slot: number) {
+    getInputInfo(slot: number):any {
         if (!this.inputs)
             return null;
         if (slot < this.inputs.length)
@@ -705,7 +705,7 @@ export class Node {
      * @param {Object} extra_info this can be used to have special properties of an output (label, special color, position, etc)
      */
 
-    addOutput(name: string, type: string|number = 0, extra_info?: any) {
+    addOutput(name: string, type: string|number = 0, extra_info?: any) :void{
         let o = {name: name, type: type, links: null};
         if (extra_info)
             for (let i in extra_info)
@@ -747,7 +747,7 @@ export class Node {
      * @method removeOutput
      * @param {number} slot
      */
-    removeOutput(slot: number) {
+    removeOutput(slot: number) :void{
         this.disconnectOutput(slot);
         this.outputs.splice(slot, 1);
         this.size = this.computeSize();
@@ -763,7 +763,7 @@ export class Node {
      * @param {string} type string defining the input type ("vec3","number",...), it its a generic one use 0
      * @param {Object} extra_info this can be used to have special properties of an input (label, color, position, etc)
      */
-    addInput(name: string, type: string|number = 0, extra_info?: any) {
+    addInput(name: string, type: string|number = 0, extra_info?: any):void {
 
         let o = {name: name, type: type, link: null};
         if (extra_info)
@@ -806,7 +806,7 @@ export class Node {
      * @method removeInput
      * @param {number} slot
      */
-    removeInput(slot: number) {
+    removeInput(slot: number):void {
         this.disconnectInput(slot);
         this.inputs.splice(slot, 1);
         this.size = this.computeSize();
@@ -1224,7 +1224,7 @@ export class Node {
 //connections
 
     /* Force align to grid */
-    alignToGrid() {
+    alignToGrid():void {
         this.pos[0] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.options.CANVAS_GRID_SIZE);
         this.pos[1] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.options.CANVAS_GRID_SIZE);
     }
@@ -1252,13 +1252,13 @@ export class Node {
 //     }
 //
     /* Forces to redraw or the main canvas (Node) or the bg canvas (links) */
-    setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean) {
+    setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean) :void{
         if (!this.graph)
             return;
         this.graph.sendActionToCanvas("setDirty", [dirty_foreground, dirty_background]);
     }
 
-    loadImage(url: string) {
+    loadImage(url: string) :HTMLImageElement{
         let img = new Image();
         img.src = Nodes.options.NODE_IMAGES_PATH + url;
         (<any>img).ready = false;
@@ -1327,7 +1327,7 @@ export class Node {
      * Collapse the node to make it smaller on the canvas
      * @method collapse
      **/
-    collapse() {
+    collapse():void {
         if (!this.flags.collapsed)
             this.flags.collapsed = true;
         else
@@ -1339,14 +1339,14 @@ export class Node {
      * Forces the node to do not move or realign on Z
      * @method pin
      **/
-    pin(v?: boolean) {
+    pin(v?: boolean):void {
         if (v === undefined)
             this.flags.pinned = !this.flags.pinned;
         else
             this.flags.pinned = v;
     }
 
-    localToScreen(x, y, graphcanvas) {
+    localToScreen(x, y, graphcanvas) :[number,number]{
         return [(x + this.pos[0]) * graphcanvas.scale + graphcanvas.offset[0],
             (y + this.pos[1]) * graphcanvas.scale + graphcanvas.offset[1]];
     }

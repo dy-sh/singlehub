@@ -80,16 +80,16 @@ export class NodesEngine {
     }
 
 //used to know which types of connections support this graph (some graphs do not allow certain types)
-    getSupportedTypes() {
+    getSupportedTypes() :Array<string>{
         return this.supported_types;
     }
 
 
-    debug(mess) {
+    debug(mess:any):void {
         console.log(mess)
     }
 
-    debugErr(mess) {
+    debugErr(mess:any):void {
         console.log(mess)
     }
 
@@ -98,7 +98,7 @@ export class NodesEngine {
      * Removes all nodes from this graph
      * @method clear
      */
-    clear() {
+    clear() :void{
         this.stop();
         this.isRunning = false;
         this.last_node_id = 0;
@@ -139,7 +139,7 @@ export class NodesEngine {
      * Stops the execution loop of the graph
      * @method stop execution
      */
-    stop() {
+    stop() :void{
         if (!this.isRunning)
             return;
 
@@ -161,7 +161,7 @@ export class NodesEngine {
      * @method attachCanvas
      * @param {GraphCanvas} graph_canvas
      */
-    attachCanvas(graphcanvas: NodeEditorCanvas) {
+    attachCanvas(graphcanvas: NodeEditorCanvas):void {
         // if (graphcanvas.constructor != NodesCanvas)
         //     throw("attachCanvas expects a NodesCanvas instance");
         if (graphcanvas.graph && graphcanvas.graph != this)
@@ -178,7 +178,7 @@ export class NodesEngine {
      * @method detachCanvas
      * @param {GraphCanvas} graph_canvas
      */
-    detachCanvas(graphcanvas: NodeEditorCanvas) {
+    detachCanvas(graphcanvas: NodeEditorCanvas):void {
         if (!this.list_of_graphcanvas)
             return;
 
@@ -194,7 +194,7 @@ export class NodesEngine {
      * @method start
      * @param {number} interval amount of milliseconds between executions, default is 1
      */
-    start(interval: number) {
+    start(interval: number) :void{
         if (this.isRunning)
             return;
 
@@ -222,7 +222,7 @@ export class NodesEngine {
      * @method runStep
      * @param {number} num number of steps to run, default is 1
      */
-    runStep(num: number = 1) {
+    runStep(num: number = 1) :void{
 
         let start = Nodes.getTime();
         this.globaltime = 0.001 * (start - this.starttime);
