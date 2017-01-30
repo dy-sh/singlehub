@@ -81,6 +81,12 @@
         }
     }
     exports.NodesOptions = NodesOptions;
+    class Output {
+    }
+    exports.Output = Output;
+    class Input {
+    }
+    exports.Input = Input;
     class Nodes {
         //   debug: config.engine.debugEngine,
         /**
@@ -566,7 +572,7 @@
          * @param {string} type string defining the output type ("vec3","number",...)
          * @param {Object} extra_info this can be used to have special properties of an output (label, special color, position, etc)
          */
-        addOutput(name, type = 0, extra_info) {
+        addOutput(name, type, extra_info) {
             let o = { name: name, type: type, links: null };
             if (extra_info)
                 for (let i in extra_info)
@@ -622,7 +628,7 @@
          * @param {string} type string defining the input type ("vec3","number",...), it its a generic one use 0
          * @param {Object} extra_info this can be used to have special properties of an input (label, color, position, etc)
          */
-        addInput(name, type = 0, extra_info) {
+        addInput(name, type, extra_info) {
             let o = { name: name, type: type, link: null };
             if (extra_info)
                 for (let i in extra_info)

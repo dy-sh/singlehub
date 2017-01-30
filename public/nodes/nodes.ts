@@ -96,6 +96,27 @@ export class NodesOptions {
     };
 }
 
+export class Output {
+    name: string;
+    type: string;
+    links: Array<any>;
+    label?: string;
+    locked?:boolean;
+    pos?: boolean;
+    round?: number;
+}
+
+export class Input {
+    name: string;
+    type: string;
+    link: any;
+    label?: string;
+    locked?:boolean;
+    pos?: boolean;
+    round?: number;
+    isOptional?: boolean;
+}
+
 export class Nodes {
     static options = new NodesOptions;
 
@@ -368,8 +389,8 @@ export class Node {
     graph: NodesEngine;
     id: string|number;
     type: any;
-    inputs: Array<any>;
-    outputs: Array<any>;
+    inputs: Array<Input>;
+    outputs: Array<Output>;
     connections: Array<any>;
     properties: any;
     data: any;
@@ -423,7 +444,7 @@ export class Node {
     removable: boolean;
     optional_inputs: any;
     optional_outputs: any;
-    order:string;
+    order: string;
 
 
     pos: [number, number] = [10, 10];
@@ -635,7 +656,7 @@ export class Node {
      * @param {number} slot
      * @return {Object} object or null
      */
-    getInputInfo(slot: number):any {
+    getInputInfo(slot: number): any {
         if (!this.inputs)
             return null;
         if (slot < this.inputs.length)
@@ -706,8 +727,8 @@ export class Node {
      * @param {Object} extra_info this can be used to have special properties of an output (label, special color, position, etc)
      */
 
-    addOutput(name: string, type: string|number = 0, extra_info?: any) :void{
-        let o = {name: name, type: type, links: null};
+    addOutput(name: string, type: string, extra_info?: any): void {
+        let o: Output = {name: name, type: type, links: null};
         if (extra_info)
             for (let i in extra_info)
                 o[i] = extra_info[i];
@@ -748,7 +769,7 @@ export class Node {
      * @method removeOutput
      * @param {number} slot
      */
-    removeOutput(slot: number) :void{
+    removeOutput(slot: number): void {
         this.disconnectOutput(slot);
         this.outputs.splice(slot, 1);
         this.size = this.computeSize();
@@ -764,9 +785,9 @@ export class Node {
      * @param {string} type string defining the input type ("vec3","number",...), it its a generic one use 0
      * @param {Object} extra_info this can be used to have special properties of an input (label, color, position, etc)
      */
-    addInput(name: string, type: string|number = 0, extra_info?: any):void {
+    addInput(name: string, type: string, extra_info?: any): void {
 
-        let o = {name: name, type: type, link: null};
+        let o: Input = {name: name, type: type, link: null};
         if (extra_info)
             for (let i in extra_info)
                 o[i] = extra_info[i];
@@ -807,7 +828,7 @@ export class Node {
      * @method removeInput
      * @param {number} slot
      */
-    removeInput(slot: number):void {
+    removeInput(slot: number): void {
         this.disconnectInput(slot);
         this.inputs.splice(slot, 1);
         this.size = this.computeSize();
@@ -1225,7 +1246,7 @@ export class Node {
 //connections
 
     /* Force align to grid */
-    alignToGrid():void {
+    alignToGrid(): void {
         this.pos[0] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.options.CANVAS_GRID_SIZE);
         this.pos[1] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.options.CANVAS_GRID_SIZE);
     }
@@ -1253,13 +1274,13 @@ export class Node {
 //     }
 //
     /* Forces to redraw or the main canvas (Node) or the bg canvas (links) */
-    setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean) :void{
+    setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean): void {
         if (!this.graph)
             return;
         this.graph.sendActionToCanvas("setDirty", [dirty_foreground, dirty_background]);
     }
 
-    loadImage(url: string) :HTMLImageElement{
+    loadImage(url: string): HTMLImageElement {
         let img = new Image();
         img.src = Nodes.options.NODE_IMAGES_PATH + url;
         (<any>img).ready = false;
@@ -1328,7 +1349,7 @@ export class Node {
      * Collapse the node to make it smaller on the canvas
      * @method collapse
      **/
-    collapse():void {
+    collapse(): void {
         if (!this.flags.collapsed)
             this.flags.collapsed = true;
         else
@@ -1340,14 +1361,14 @@ export class Node {
      * Forces the node to do not move or realign on Z
      * @method pin
      **/
-    pin(v?: boolean):void {
+    pin(v?: boolean): void {
         if (v === undefined)
             this.flags.pinned = !this.flags.pinned;
         else
             this.flags.pinned = v;
     }
 
-    localToScreen(x, y, graphcanvas) :[number,number]{
+    localToScreen(x, y, graphcanvas): [number, number] {
         return [(x + this.pos[0]) * graphcanvas.scale + graphcanvas.offset[0],
             (y + this.pos[1]) * graphcanvas.scale + graphcanvas.offset[1]];
     }
