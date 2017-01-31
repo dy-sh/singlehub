@@ -31,7 +31,7 @@ export class NodesEngine {
     _nodes: Array<Node> = [];
     _nodes_by_id = {};
     last_link_id: number;
-    links: {[id: string]: Link;} = {};
+    links: {[id: number]: Link} = {};
     iteration: number;
     config: {
         align_to_grid?: boolean;

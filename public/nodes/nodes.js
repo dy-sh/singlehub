@@ -171,7 +171,7 @@
                 for (let i in options)
                     node[i] = options[i];
             }
-            node.id = this.guid();
+            //    node.id = this.guid();
             return node;
         }
         ;

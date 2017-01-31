@@ -99,7 +99,7 @@ export class NodesOptions {
 export class Output {
     name: string;
     type: string;
-    links: Array<string|number>;
+    links: Array<number>;
     label?: string;
     locked?: boolean;
     pos?: boolean;
@@ -118,11 +118,11 @@ export class Input {
 }
 
 export class Link {
-    id: string|number;
+    id: number;
     slot?: number;
-    origin_id?: string|number;
+    origin_id?: number;
     origin_slot?: number;
-    target_id?: string|number;
+    target_id?: number;
     target_slot?: number;
     data?:any;
 }
@@ -238,7 +238,7 @@ export class Nodes {
                 node[i] = options[i];
         }
 
-        node.id = this.guid();
+    //    node.id = this.guid();
 
         return node;
     };
@@ -397,12 +397,12 @@ export class Node {
     desc: string;
     size: [number, number];
     graph: NodesEngine;
-    id: string|number;
+    id: number;
     type: string;
     inputs: Array<Input>;
     outputs: Array<Output>;
  //   connections: Array<any>;
-    properties: {};
+    properties: any;
     data: any;
     ignore_remove: boolean;
     flags: {
@@ -737,7 +737,7 @@ export class Node {
      * @param {Object} extra_info this can be used to have special properties of an output (label, special color, position, etc)
      */
 
-    addOutput(name: string, type: string, extra_info?: any): void {
+    addOutput(name: string, type?: string, extra_info?: any): void {
         let o: Output = {name: name, type: type, links: null};
         if (extra_info)
             for (let i in extra_info)
@@ -1086,6 +1086,7 @@ export class Node {
                 target_id: node.id,
                 target_slot: target_slot
             };
+
             this.graph.links[link.id] = link;
 
             //connect
