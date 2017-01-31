@@ -78,7 +78,7 @@
         /**
          * Register a node class so it can be listed when the user wants to create a new one
          * @method registerNodeType
-         * @param {String} type name of the node and path
+         * @param type name of the node and path
          * @param {Class} base_class class containing the structure of a node
          */
         static debug(mess) {
@@ -123,8 +123,8 @@
         /**
          * Create a node of a given type with a name. The node is not attached to any engine yet.
          * @method createNode
-         * @param {String} type full name of the node class. p.e. "math/sin"
-         * @param {String} name a name to distinguish from other nodes
+         * @param type full name of the node class. p.e. "math/sin"
+         * @param name a name to distinguish from other nodes
          * @param {Object} options to set options
          */
         static createNode(type, title, options) {
@@ -161,8 +161,8 @@
         /**
          * Returns a registered node type with a given name
          * @method getNodeType
-         * @param {String} type full name of the node class. p.e. "math/sin"
-         * @return {Class} the node class
+         * @param type full name of the node class. p.e. "math/sin"
+         * @returns {Class} the node class
          */
         static getNodeType(type) {
             return this.registered_node_types[type];
@@ -171,8 +171,8 @@
         /**
          * Returns a list of node types matching one category
          * @method getNodeType
-         * @param {String} category category name
-         * @return {Array} array with all the node classes
+         * @param category category name
+         * @returns {Array} array with all the node classes
          */
         static getNodeTypesInCategory(category) {
             let r = [];
@@ -189,7 +189,7 @@
         /**
          * Returns a list with all the node type categories
          * @method getNodeTypesCategories
-         * @return {Array} array with all the names of the categories
+         * @returns {Array} array with all the names of the categories
          */
         static getNodeTypesCategories() {
             let categories = { "": 1 };
@@ -444,7 +444,7 @@
         /**
          * sets the output data
          * @method setOutputData
-         * @param {number} slot
+         * @param slot
          * @param {*} data
          */
         setOutputData(slot, data) {
@@ -460,8 +460,8 @@
         /**
          * retrieves the input data (data traveling through the connection) from one slot
          * @method getInputData
-         * @param {number} slot
-         * @return {*} data or if it is not connected returns undefined
+         * @param slot
+         * @returns {*} data or if it is not connected returns undefined
          */
         getInputData(slot) {
             if (!this.inputs)
@@ -474,8 +474,8 @@
         //     /**
         //      * tells you if there is a connection in one input slot
         //      * @method isInputConnected
-        //      * @param {number} slot
-        //      * @return {boolean}
+        //      * @param slot
+        //      * @returns {boolean}
         //      */
         //     isInputConnected(slot:number) {
         //         if (!this.inputs)
@@ -486,8 +486,8 @@
         /**
          * tells you info about an input connection (which node, type, etc)
          * @method getInputInfo
-         * @param {number} slot
-         * @return {Object} object or null
+         * @param slot
+         * @returns {Object} object or null
          */
         getInputInfo(slot) {
             if (!this.inputs)
@@ -500,8 +500,8 @@
         //     /**
         //      * tells you info about an output connection (which node, type, etc)
         //      * @method getOutputInfo
-        //      * @param {number} slot
-        //      * @return {Object}  object or null
+        //      * @param slot
+        //      * @returns {Object}  object or null
         //      */
         //     getOutputInfo(slot) {
         //         if (!this.outputs)
@@ -514,8 +514,8 @@
         //     /**
         //      * tells you if there is a connection in one output slot
         //      * @method isOutputConnected
-        //      * @param {number} slot
-        //      * @return {boolean}
+        //      * @param slot
+        //      * @returns {boolean}
         //      */
         //     isOutputConnected(slot) {
         //         if (!this.outputs)
@@ -526,8 +526,8 @@
         //     /**
         //      * retrieves all the nodes connected to this output slot
         //      * @method getOutputNodes
-        //      * @param {number} slot
-        //      * @return {array}
+        //      * @param slot
+        //      * @returns {array}
         //      */
         //     getOutputNodes(slot) {
         //         if (!this.outputs || this.outputs.length == 0) return null;
@@ -554,8 +554,8 @@
         /**
          * add a new output slot to use in this node
          * @method addOutput
-         * @param {string} name
-         * @param {string} type string defining the output type ("vec3","number",...)
+         * @param name
+         * @param type string defining the output type ("vec3","number",...)
          * @param {Object} extra_info this can be used to have special properties of an output (label, special color, position, etc)
          */
         addOutput(name, type, extra_info) {
@@ -597,7 +597,7 @@
         /**
          * remove an existing output slot
          * @method removeOutput
-         * @param {number} slot
+         * @param slot
          */
         removeOutput(slot) {
             this.disconnectOutput(slot);
@@ -610,8 +610,8 @@
         /**
          * add a new input slot to use in this node
          * @method addInput
-         * @param {string} name
-         * @param {string} type string defining the input type ("vec3","number",...), it its a generic one use 0
+         * @param name
+         * @param type string defining the input type ("vec3","number",...), it its a generic one use 0
          * @param {Object} extra_info this can be used to have special properties of an input (label, color, position, etc)
          */
         addInput(name, type, extra_info) {
@@ -652,7 +652,7 @@
         /**
          * remove an existing input slot
          * @method removeInput
-         * @param {number} slot
+         * @param slot
          */
         removeInput(slot) {
             this.disconnectInput(slot);
@@ -665,10 +665,10 @@
         //     /**
         //      * add an special connection to this node (used for special kinds of graphs)
         //      * @method addConnection
-        //      * @param {string} name
-        //      * @param {string} type string defining the input type ("vec3","number",...)
+        //      * @param name
+        //      * @param type string defining the input type ("vec3","number",...)
         //      * @param {[x,y]} pos position of the connection inside the node
-        //      * @param {string} direction if is input or output
+        //      * @param direction if is input or output
         //      */
         //     addConnection(name, type, pos, direction) {
         //         this.connections.push({name: name, type: type, pos: pos, direction: direction, links: null});
@@ -677,8 +677,8 @@
         /**
          * computes the size of a node according to its inputs and output slots
          * @method computeSize
-         * @param {number} minHeight
-         * @return {number} the total size
+         * @param minHeight
+         * @returns the total size
          */
         computeSize(minHeight) {
             let rows = Math.max(this.inputs ? this.inputs.length : 1, this.outputs ? this.outputs.length : 1);
@@ -717,7 +717,7 @@
         /**
          * returns the bounding of the object, used for rendering purposes
          * @method getBounding
-         * @return {Float32Array[4]} the total size
+         * @returns {Float32Array[4]} the total size
          */
         getBounding() {
             return [this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT];
@@ -731,9 +731,9 @@
         /**
          * checks if a point is inside the shape of a node
          * @method isPointInsideNode
-         * @param {number} x
-         * @param {number} y
-         * @return {boolean}
+         * @param x
+         * @param y
+         * @returns {boolean}
          */
         isPointInsideNode(x, y, margin) {
             margin = margin || 0;
@@ -751,9 +751,9 @@
         /**
          * checks if a point is inside a node slot, and returns info about which slot
          * @method getSlotInPosition
-         * @param {number} x
-         * @param {number} y
-         * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
+         * @param x
+         * @param y
+         * @returns {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
          */
         getSlotInPosition(x, y) {
             //search for inputs
@@ -776,8 +776,8 @@
         /**
          * returns the input slot with a given name (used for dynamic slots), -1 if not found
          * @method findInputSlot
-         * @param {string} name the name of the slot
-         * @return {number} the slot (-1 if not found)
+         * @param name the name of the slot
+         * @returns the slot (-1 if not found)
          */
         findInputSlot(name) {
             if (!this.inputs)
@@ -790,8 +790,8 @@
         /**
          * returns the output slot with a given name (used for dynamic slots), -1 if not found
          * @method findOutputSlot
-         * @param {string} name the name of the slot
-         * @return {number} the slot (-1 if not found)
+         * @param name the name of the slot
+         * @returns the slot (-1 if not found)
          */
         findOutputSlot(name) {
             if (!this.outputs)
@@ -807,7 +807,7 @@
          * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
          * @param {Node} node the target node
          * @param {number_or_string} target_slot the input slot of the target node (could be the number of the slot or the string with the name of the slot)
-         * @return {boolean} if it was connected succesfully
+         * @returns Canvasif it was connected succesfully
          */
         connect(slot, node, target_slot) {
             target_slot = target_slot || 0;
@@ -889,7 +889,7 @@
          * @method disconnectOutput
          * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
          * @param {Node} target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
-         * @return {boolean} if it was disconnected succesfully
+         * @returns Canvasif it was disconnected succesfully
          */
         disconnectOutput(slot, target_node) {
             if (typeof slot == "string") {
@@ -945,7 +945,7 @@
          * disconnect one input
          * @method disconnectInput
          * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
-         * @return {boolean} if it was disconnected succesfully
+         * @returns Canvasif it was disconnected succesfully
          */
         disconnectInput(slot) {
             //seek for the output slot
@@ -993,9 +993,9 @@
         /**
          * returns the center of a connection point in renderer coords
          * @method getConnectionPos
-         * @param {boolean} is_input true if if a input slot, false if it is an output
+         * @param is_input true if if a input slot, false if it is an output
          * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
-         * @return {[x,y]} the position
+         * @returns {[x,y]} the position
          **/
         getConnectionPos(is_input, slot_number) {
             if (this.flags.collapsed) {

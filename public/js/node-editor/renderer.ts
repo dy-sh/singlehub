@@ -109,21 +109,7 @@ export class Renderer {
     root: HTMLDivElement;
 
 
-    /**
-     * The Global Scope. It contains all the registered node classes.
-     *
-     * @class Renderer
-     * @constructor
-     * @param {HTMLCanvas} canvas the renderer where you want to render (it accepts a selector in string format or the renderer itself)
-     * @param {Graph} engine [optional]
-     */
     constructor(canvas: HTMLCanvasElement, socket: EditorSocket, editor: NodeEditor, engine?: NodesEngine, skip_render?) {
-        //if(engine === undefined)
-        //	throw ("No engine assigned");
-
-        //     if (renderer && typeof renderer == "string")
-        //        renderer = <HTMLCanvasElement>document.querySelector(renderer);
-
         this.socket = socket;
         this.editor = editor;
 
@@ -144,9 +130,7 @@ export class Renderer {
     }
 
     /**
-     * clears all the data inside
-     *
-     * @method clear
+     * Clears all the data inside
      */
     clear(): void {
         this.frame = 0;
@@ -204,10 +188,9 @@ export class Renderer {
     }
 
     /**
-     * assigns a engine, you can reasign graphs to the same renderer
-     *
-     * @method setGraph
-     * @param {Graph} engine
+     * Assigns a engine, you can reasign engines to the same renderer
+     * @param engine
+     * @param skip_clear
      */
     setGraph(engine?: NodesEngine, skip_clear = false): void {
         if (this.engine == engine)
@@ -233,10 +216,8 @@ export class Renderer {
     }
 
     /**
-     * opens a engine contained inside a node in the current engine
-     *
-     * @method openSubgraph
-     * @param {Graph} engine
+     * Opens a engine contained inside a node in the current engine
+     * @param engine
      */
     openSubgraph(engine: NodesEngine): void {
         if (!engine)
@@ -258,10 +239,7 @@ export class Renderer {
     }
 
     /**
-     * closes a subgraph contained inside a node
-     *
-     * @method closeSubgraph
-     * @param {Graph} assigns a engine
+     * Closes a subgraph contained inside a node
      */
     closeSubgraph(): void {
         if (!this._engine_stack || this._engine_stack.length == 0)
@@ -272,10 +250,9 @@ export class Renderer {
     }
 
     /**
-     * assigns a renderer
-     *
-     * @method setCanvas
-     * @param {Canvas} assigns a renderer
+     * Assigns a canvas
+     * @param canvas
+     * @param skip_events
      */
     setCanvas(canvas: HTMLCanvasElement, skip_events = false): void {
         let that = this;
@@ -332,17 +309,31 @@ export class Renderer {
             this.bindEvents();
     }
 
-//used in some events to capture them
+    /**
+     * Used in some events to capture them
+     * @param e
+     * @returns {boolean}
+     * @private
+     */
     _doNothing(e): boolean {
         e.preventDefault();
         return false;
     }
 
+    /**
+     *
+     * @param e
+     * @returns {boolean}
+     * @private
+     */
     _doReturnTrue(e): boolean {
         e.preventDefault();
         return true;
     }
 
+    /**
+     *
+     */
     bindEvents(): void {
         if (this._events_binded) {
             console.warn("Renderer: events already binded");
@@ -387,6 +378,9 @@ export class Renderer {
         this._events_binded = true;
     }
 
+    /**
+     *
+     */
     unbindEvents(): void {
         if (!this._events_binded) {
             console.warn("NodeEditorCanvas: no events binded");
@@ -415,8 +409,11 @@ export class Renderer {
         this._events_binded = false;
     }
 
-//this file allows to render the renderer using WebGL instead of Canvas2D
-//this is useful if you plant to render 3D objects inside your nodes
+
+    /**
+     * Allows to render the renderer using WebGL instead of Canvas2D
+     * This is useful if you plant to render 3D objects inside your nodes
+     */
     enableWebGL(): void {
         if (typeof (this.GL) === undefined)
             throw ("litegl.js must be included to use a WebGL canvas");
@@ -436,24 +433,20 @@ export class Renderer {
     }
 
     /**
-     * marks as dirty the renderer, this way it will be rendered again
-     *
-     * @method setDirty
-     * @param {bool} fgcanvas if the foreground renderer is dirty (the one containing the nodes)
-     * @param {bool} bgcanvas if the background renderer is dirty (the one containing the wires)
+     * Marks as dirty the renderer, this way it will be rendered again
+     * @param foregraund if the foreground renderer is dirty (the one containing the nodes)
+     * @param background if the background renderer is dirty (the one containing the wires)
      */
-    setDirty(fgcanvas: boolean, bgcanvas: boolean = false): void {
-        if (fgcanvas)
+    setDirty(foregraund: boolean, background: boolean = false): void {
+        if (foregraund)
             this.dirty_canvas = true;
-        if (bgcanvas)
+        if (background)
             this.dirty_bgcanvas = true;
     }
 
     /**
      * Used to attach the renderer in a popup
-     *
-     * @method getCanvasWindow
-     * @return {window} returns the window where the renderer is attached (the DOM root node)
+     * @returns {window} returns the window where the renderer is attached (the DOM root node)
      */
     getCanvasWindow(): Window {
         let doc = this.canvas.ownerDocument;
@@ -462,8 +455,6 @@ export class Renderer {
 
     /**
      * starts rendering the content of the renderer when needed
-     *
-     * @method startRendering
      */
     startRendering(): void {
         if (this.is_rendering) return; //already rendering
@@ -482,9 +473,7 @@ export class Renderer {
     }
 
     /**
-     * stops rendering the content of the renderer (to save resources)
-     *
-     * @method stopRendering
+     * Stops rendering the content of the renderer (to save resources)
      */
     stopRendering(): void {
         this.is_rendering = false;
@@ -546,7 +535,11 @@ export class Renderer {
      }
      */
 
-    /* Canvas input */
+    /**
+     * Canvas mouse input
+     * @param e
+     * @returns {boolean}
+     */
     processMouseDown(e): boolean {
         if (!this.engine)
             return;
@@ -719,6 +712,11 @@ export class Renderer {
     }
 
 
+    /**
+     * Process mouse move
+     * @param e
+     * @returns {boolean}
+     */
     processMouseMove(e): boolean {
         if (!this.engine) return;
 
@@ -847,6 +845,11 @@ export class Renderer {
         //this.engine.change();
     }
 
+    /**
+     * Process mouse up
+     * @param e
+     * @returns {boolean}
+     */
     processMouseUp(e): boolean {
         if (!this.engine)
             return;
@@ -991,6 +994,11 @@ export class Renderer {
     }
 
 
+    /**
+     * Process mouse wheel
+     * @param e
+     * @returns {boolean}
+     */
     processMouseWheel(e): boolean {
         if (!this.engine || !this.allow_dragcanvas)
             return;
@@ -1038,6 +1046,11 @@ export class Renderer {
         return -1;
     }
 
+    /**
+     * Process key
+     * @param e
+     * @returns {boolean}
+     */
     processKey(e): boolean {
         if (!this.engine)
             return;
@@ -1081,6 +1094,11 @@ export class Renderer {
         }
     }
 
+    /**
+     * Process drop
+     * @param e
+     * @returns {boolean}
+     */
     processDrop(e): boolean {
         e.preventDefault();
         this.adjustMouseEvent(e);
@@ -1136,6 +1154,11 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * Process node selected
+     * @param n node
+     * @param e
+     */
     processNodeSelected(n: Node, e): void {
         n.selected = true;
         if (n.onSelected)
@@ -1156,6 +1179,10 @@ export class Renderer {
         //if(this.node_in_panel) this.showNodePanel(n);
     }
 
+    /**
+     * Process node deselected
+     * @param n node
+     */
     processNodeDeselected(n: Node): void {
         n.selected = false;
         if (n.onDeselected)
@@ -1171,6 +1198,10 @@ export class Renderer {
         //this.showNodePanel(null);
     }
 
+    /**
+     * Process node double clicked
+     * @param n node
+     */
     processNodeDblClicked(n: Node): void {
         if (this.onShowNodePanel)
             this.onShowNodePanel(n);
@@ -1181,6 +1212,10 @@ export class Renderer {
         this.setDirty(true);
     }
 
+    /**
+     * Select node
+     * @param node node
+     */
     selectNode(node: Node): void {
         this.deselectAllNodes();
 
@@ -1194,6 +1229,9 @@ export class Renderer {
         this.setDirty(true);
     }
 
+    /**
+     * Select all nodes
+     */
     selectAllNodes(): void {
         for (let i in this.engine._nodes) {
             let n = this.engine._nodes[i];
@@ -1206,6 +1244,9 @@ export class Renderer {
         this.setDirty(true);
     }
 
+    /**
+     * Deselect all nodes
+     */
     deselectAllNodes(): void {
         for (let i in this.selected_nodes) {
             let n = this.selected_nodes[i];
@@ -1217,6 +1258,9 @@ export class Renderer {
         this.setDirty(true);
     }
 
+    /**
+     * Deselect selected nodes
+     */
     deleteSelectedNodes(): void {
         for (let i in this.selected_nodes) {
             let m = this.selected_nodes[i];
@@ -1227,12 +1271,20 @@ export class Renderer {
         this.setDirty(true);
     }
 
+    /**
+     * Center on node
+     * @param node
+     */
     centerOnNode(node: Node): void {
         this.offset[0] = -node.pos[0] - node.size[0] * 0.5 + (this.canvas.width * 0.5 / this.scale);
         this.offset[1] = -node.pos[1] - node.size[1] * 0.5 + (this.canvas.height * 0.5 / this.scale);
         this.setDirty(true, true);
     }
 
+    /**
+     *
+     * @param e
+     */
     adjustMouseEvent(e: any): void {
         let b = this.canvas.getBoundingClientRect();
         e.localX = e.pageX - b.left;
@@ -1242,6 +1294,11 @@ export class Renderer {
         e.canvasY = e.localY / this.scale - this.offset[1];
     }
 
+    /**
+     * Set canvas zoom
+     * @param value
+     * @param zooming_center
+     */
     setZoom(value: number, zooming_center: [number, number]): void {
         if (!zooming_center)
             zooming_center = [this.canvas.width * 0.5, this.canvas.height * 0.5];
@@ -1265,20 +1322,39 @@ export class Renderer {
         this.dirty_bgcanvas = true;
     }
 
+    /**
+     *
+     * @param pos
+     * @returns {[number,number]}
+     */
     convertOffsetToCanvas(pos: [number, number]): [number, number] {
         return [pos[0] / this.scale - this.offset[0], pos[1] / this.scale - this.offset[1]];
     }
 
+    /**
+     *
+     * @param pos
+     * @returns {[number,number]}
+     */
     convertCanvasToOffset(pos: [number, number]): [number, number] {
         return [(pos[0] + this.offset[0]) * this.scale,
             (pos[1] + this.offset[1]) * this.scale];
     }
 
+    /**
+     *
+     * @param e
+     * @returns {[number,number]}
+     */
     convertEventToCanvas(e: any): [number, number] {
         let rect = this.canvas.getClientRects()[0];
         return this.convertOffsetToCanvas([e.pageX - rect.left, e.pageY - rect.top]);
     }
 
+    /**
+     *
+     * @param n
+     */
     bringToFront(n: Node): void {
         let i = this.engine._nodes.indexOf(n);
         if (i == -1) return;
@@ -1287,6 +1363,10 @@ export class Renderer {
         this.engine._nodes.push(n);
     }
 
+    /**
+     *
+     * @param n
+     */
     sendToBack(n: Node): void {
         let i = this.engine._nodes.indexOf(n);
         if (i == -1) return;
@@ -1295,10 +1375,11 @@ export class Renderer {
         this.engine._nodes.unshift(n);
     }
 
-    /* Interaction */
 
-
-    /* NodeEditorCanvas render */
+    /**
+     * Compute visible ndes
+     * @returns {Array}
+     */
     computeVisibleNodes(): Array<Node> {
         let visible_nodes = [];
         for (let i in this.engine._nodes) {
@@ -1316,7 +1397,12 @@ export class Renderer {
         return visible_nodes;
     }
 
-    draw(force_canvas?: boolean, force_bgcanvas?: boolean): void {
+    /**
+     * Draw canvas
+     * @param force_foreground
+     * @param force_background
+     */
+    draw(force_foreground?: boolean, force_background?: boolean): void {
         //fps counting
         let now = Nodes.getTime();
         this.render_time = (now - this.last__time) * 0.001;
@@ -1328,16 +1414,19 @@ export class Renderer {
             this.visible_area = [start[0], start[1], end[0], end[1]];
         }
 
-        if (this.dirty_bgcanvas || force_bgcanvas)
+        if (this.dirty_bgcanvas || force_background)
             this.drawBackCanvas();
 
-        if (this.dirty_canvas || force_canvas)
+        if (this.dirty_canvas || force_foreground)
             this.drawFrontCanvas();
 
         this.fps = this.render_time ? (1.0 / this.render_time) : 0;
         this.frame += 1;
     }
 
+    /**
+     * Draw front canvas
+     */
     drawFrontCanvas(): void {
         if (!this.ctx)
             this.ctx = this.bgcanvas.getContext("2d");
@@ -1450,6 +1539,12 @@ export class Renderer {
         this.dirty_canvas = false;
     }
 
+    /**
+     * Render info
+     * @param ctx
+     * @param x
+     * @param y
+     */
     renderInfo(ctx: CanvasRenderingContext2D, x = 0, y = 0): void {
 
         ctx.save();
@@ -1468,6 +1563,9 @@ export class Renderer {
         ctx.restore();
     }
 
+    /**
+     * Draw back canvas
+     */
     drawBackCanvas(): void {
         let canvas = this.bgcanvas;
         if (!this.bgctx)
@@ -1560,7 +1658,11 @@ export class Renderer {
         this.dirty_canvas = true; //to force to repaint the front renderer with the bgcanvas
     }
 
-    /* Renders node on the renderer */
+    /**
+     * Draw node
+     * @param node
+     * @param ctx
+     */
     drawNode(node: Node, ctx: CanvasRenderingContext2D): void {
         let glow = false;
 
@@ -1757,7 +1859,16 @@ export class Renderer {
         ctx.globalAlpha = 1.0;
     }
 
-    /* Renders the node shape */
+    /**
+     * Draw node shape
+     * @param node
+     * @param ctx
+     * @param size
+     * @param fgcolor
+     * @param bgcolor
+     * @param no_title
+     * @param selected
+     */
     drawNodeShape(node: Node, ctx: CanvasRenderingContext2D, size: [number, number], fgcolor: string, bgcolor: string, no_title: boolean, selected: boolean): void {
         //bg rect
         ctx.strokeStyle = fgcolor || Nodes.options.NODE_DEFAULT_COLOR;
@@ -1862,7 +1973,13 @@ export class Renderer {
         }
     }
 
-    /* Renders the node when collapsed */
+    /**
+     * Draw node when collapsed
+     * @param node
+     * @param ctx
+     * @param fgcolor
+     * @param bgcolor
+     */
     drawNodeCollapsed(node: Node, ctx: CanvasRenderingContext2D, fgcolor: string, bgcolor: string): void {
         //draw default collapsed shape
         ctx.strokeStyle = fgcolor || Nodes.options.NODE_DEFAULT_COLOR;
@@ -1914,6 +2031,10 @@ export class Renderer {
         }
     }
 
+    /**
+     * Draw connections
+     * @param ctx
+     */
     drawConnections(ctx: CanvasRenderingContext2D): void {
         //draw connections
         ctx.lineWidth = this.connections_width;
@@ -1954,6 +2075,13 @@ export class Renderer {
         ctx.globalAlpha = 1;
     }
 
+    /**
+     * Draw link
+     * @param ctx
+     * @param a
+     * @param b
+     * @param color
+     */
     renderLink(ctx: CanvasRenderingContext2D, a: [number, number], b: [number, number], color: string): void {
         if (!this.highquality_render) {
             ctx.beginPath();
@@ -2017,6 +2145,13 @@ export class Renderer {
         }
     }
 
+    /**
+     * Compute connection point
+     * @param a
+     * @param b
+     * @param t
+     * @returns {[number,number]}
+     */
     computeConnectionPoint(a: [number, number], b: [number, number], t: number): [number, number] {
         let dist = distance(a, b);
         let p0 = a;
@@ -2046,6 +2181,12 @@ export class Renderer {
      this.draw(true,true);
      }
      */
+
+    /**
+     * Resize canvas
+     * @param width
+     * @param height
+     */
     resize(width?: number, height?: number): void {
         if (!width && !height) {
             let parent = this.canvas.parentNode;
@@ -2063,6 +2204,10 @@ export class Renderer {
         this.setDirty(true, true);
     }
 
+    /**
+     * switch live mode
+     * @param transition
+     */
     switchLiveMode(transition: boolean): void {
         if (!transition) {
             this.live_mode = !this.live_mode;
@@ -2095,11 +2240,19 @@ export class Renderer {
         }, 1);
     }
 
+    /**
+     *
+     * @param node
+     */
     onNodeSelectionChange(node: Node): void {
         return; //disabled
         //if(this.node_in_panel) this.showNodePanel(node);
     }
 
+    /**
+     *
+     * @param event
+     */
     touchHandler(event: any): void {
         //alert("foo");
         let touches = event.changedTouches,
@@ -2137,6 +2290,10 @@ export class Renderer {
     }
 
 
+    /**
+     * Get canvas menu options
+     * @returns {Array}
+     */
     getCanvasMenuOptions(): Array<any> {
         let options = [];
         if (this.getMenuOptions)
@@ -2202,6 +2359,11 @@ export class Renderer {
         return options;
     }
 
+    /**
+     * Get node menu options
+     * @param node
+     * @returns {Array}
+     */
     getNodeMenuOptions(node: Node): Array<any> {
         let options = [];
 
@@ -2257,6 +2419,11 @@ export class Renderer {
         return options;
     }
 
+    /**
+     * Process contextual menu
+     * @param node
+     * @param event
+     */
     processContextualMenu(node: Node, event: any): void {
         let that = this;
         let win = this.getCanvasWindow();
@@ -2301,6 +2468,11 @@ export class Renderer {
         }
     }
 
+    /**
+     * Get file extension
+     * @param url
+     * @returns {any}
+     */
     getFileExtension(url: string): string {
         let question = url.indexOf("?");
         if (question != -1)
@@ -2311,7 +2483,16 @@ export class Renderer {
         return url.substr(point + 1).toLowerCase();
     }
 
-    /* CONTEXT MENU ********************/
+
+    /**
+     * On menu add
+     * @param node
+     * @param e
+     * @param prev_menu
+     * @param canvas
+     * @param first_event
+     * @returns {boolean}
+     */
     onMenuAdd(node: Node, e: any, prev_menu: Element, canvas: Renderer, first_event: any): boolean {
         let window = canvas.getCanvasWindow();
 
@@ -2359,6 +2540,15 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * On menu import
+     * @param node
+     * @param e
+     * @param prev_menu
+     * @param canvas
+     * @param first_event
+     * @returns {boolean}
+     */
     onMenuImport(node: Node, e: any, prev_menu: Element, canvas: Renderer, first_event: any): boolean {
         let window = canvas.getCanvasWindow();
 
@@ -2400,14 +2590,27 @@ export class Renderer {
         return false;
     }
 
+    /**
+     *
+     */
     onMenuCollapseAll(): void {
 
     }
 
+    /**
+     *
+     */
     onMenuNodeEdit(): void {
 
     }
 
+    /**
+     * On menu node inputs
+     * @param node
+     * @param e
+     * @param prev_menu
+     * @returns {boolean}
+     */
     onMenuNodeInputs(node: Node, e: any, prev_menu: Element): boolean {
         if (!node) return;
 
@@ -2434,6 +2637,13 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * On menu node outputs
+     * @param node
+     * @param e
+     * @param prev_menu
+     * @returns {boolean}
+     */
     onMenuNodeOutputs(node: Node, e: any, prev_menu: Element): boolean {
         if (!node) return;
 
@@ -2477,15 +2687,30 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * On menu collapse
+     * @param node
+     */
     onMenuNodeCollapse(node: Node): void {
         node.flags.collapsed = !node.flags.collapsed;
         node.setDirtyCanvas(true, true);
     }
 
+    /**
+     * On menu node pin
+     * @param node
+     */
     onMenuNodePin(node: Node): void {
         node.pin();
     }
 
+    /**
+     * On menu node colors
+     * @param node
+     * @param e
+     * @param prev_menu
+     * @returns {boolean}
+     */
     onMenuNodeColors(node: Node, e: any, prev_menu: Element): boolean {
         let values = [];
         for (let i in Nodes.options.NODE_COLORS) {
@@ -2511,6 +2736,12 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * On menu node shapes
+     * @param node
+     * @param e
+     * @returns {boolean}
+     */
     onMenuNodeShapes(node: Node, e: any): boolean {
         this.createContextualMenu(["box", "round"], {event: e, callback: inner_clicked});
 
@@ -2523,6 +2754,14 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * On menu node remove
+     * @param node
+     * @param e
+     * @param prev_menu
+     * @param canvas
+     * @param first_event
+     */
     onMenuNodeRemove(node: Node, e: any, prev_menu: Element, canvas: Renderer, first_event: any): void {
         //if (node.removable == false) return;
 
@@ -2536,6 +2775,10 @@ export class Renderer {
         //node.setDirtyCanvas(true, true);
     }
 
+    /**
+     * On menu node clone
+     * @param node
+     */
     onMenuNodeClone(node: Node): void {
         if (node.clonable == false) return;
         //derwish removed
@@ -2549,7 +2792,13 @@ export class Renderer {
         this.socket.send_clone_node(node);
     }
 
-
+    /**
+     * Create contextual menu
+     * @param values
+     * @param options
+     * @param ref_window
+     * @returns {HTMLDivElement}
+     */
     createContextualMenu(values: any, options?: any, ref_window?: Window): HTMLDivElement {
         options = options || {};
         this.options = options;
@@ -2709,6 +2958,9 @@ export class Renderer {
         return root;
     }
 
+    /**
+     * Clone all contextual menus
+     */
     closeAllContextualMenus(): void {
         let elements = document.querySelectorAll(".graphcontextualmenu");
         if (!elements.length) return;
@@ -2722,6 +2974,11 @@ export class Renderer {
                 result[i].parentNode.removeChild(result[i]);
     }
 
+    /**
+     * extend class
+     * @param target
+     * @param origin
+     */
     extendClass(target: any, origin: any): void {
         for (let i in origin) //copy class properties
         {
@@ -2763,14 +3020,23 @@ export class Renderer {
 }
 
 
-//API *************************************************
+
 declare global {
+    /**
+     * Extend CanvasRenderingContext2D with roundRect
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param radius
+     * @param radius_low
+     */
     interface CanvasRenderingContext2D extends Object, CanvasPathMethods {
         roundRect(x: number, y: number, width: number, height: number, radius: number, radius_low?: number): void;
 
     }
 }
-//function roundRect(ctx, x, y, width, height, radius, radius_low) {
+
 CanvasRenderingContext2D.prototype.roundRect = function (x: number, y: number, width: number, height: number, radius: number = 5, radius_low?: number): void {
 
     if (radius_low === undefined)
@@ -2789,6 +3055,12 @@ CanvasRenderingContext2D.prototype.roundRect = function (x: number, y: number, w
     this.quadraticCurveTo(x, y, x + radius, y);
 }
 
+/**
+ * Compare objects
+ * @param a
+ * @param b
+ * @returns {boolean}
+ */
 function compareObjects(a: any, b: any): boolean {
     for (let i in a)
         if (a[i] != b[i])
@@ -2796,14 +3068,35 @@ function compareObjects(a: any, b: any): boolean {
     return true;
 }
 
+/**
+ * Calculate distance
+ * @param a
+ * @param b
+ * @returns {number}
+ */
 function distance(a: [number, number], b: [number, number]): number {
     return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
 }
 
+/**
+ * Conver color to string
+ * @param c
+ * @returns {string}
+ */
 function colorToString(c: [number, number, number, number]): string {
     return "rgba(" + Math.round(c[0] * 255).toFixed() + "," + Math.round(c[1] * 255).toFixed() + "," + Math.round(c[2] * 255).toFixed() + "," + (c.length == 4 ? c[3].toFixed(2) : "1.0") + ")";
 }
 
+/**
+ * Compute is shape inside a rectangle
+ * @param x
+ * @param y
+ * @param left
+ * @param top
+ * @param width
+ * @param height
+ * @returns {boolean}
+ */
 function isInsideRectangle(x: number, y: number, left: number, top: number, width: number, height: number): boolean {
     if (left < x && (left + width) > x &&
         top < y && (top + height) > y)
@@ -2811,7 +3104,13 @@ function isInsideRectangle(x: number, y: number, left: number, top: number, widt
     return false;
 }
 
-//[minx,miny,maxx,maxy]
+
+/**
+ * Grow bounding
+ * @param bounding [minx,miny,maxx,maxy]
+ * @param x
+ * @param y
+ */
 function growBounding(bounding: [number, number, number, number], x: number, y: number): void {
     if (x < bounding[0])
         bounding[0] = x;
@@ -2824,7 +3123,13 @@ function growBounding(bounding: [number, number, number, number], x: number, y: 
         bounding[3] = y;
 }
 
-//point inside boundin box
+
+/**
+ * Compute is point inside bounding
+ * @param p
+ * @param bb
+ * @returns {boolean}
+ */
 function isInsideBounding(p: [number, number], bb: [number, number, number, number]): boolean {
     if (p[0] < bb[0][0] ||
         p[1] < bb[0][1] ||
@@ -2834,7 +3139,13 @@ function isInsideBounding(p: [number, number], bb: [number, number, number, numb
     return true;
 }
 
-//boundings overlap, format: [start,end]
+
+/**
+ * Compute is bounings overlap
+ * @param a
+ * @param b
+ * @returns {boolean}
+ */
 function overlapBounding(a: [number, number, number, number], b: [number, number, number, number]): boolean {
     if (a[0] > b[2] ||
         a[1] > b[3] ||
@@ -2844,9 +3155,14 @@ function overlapBounding(a: [number, number, number, number], b: [number, number
     return true;
 }
 
-//Convert a hex value to its decimal value - the inputted hex must be in the
-//	format of a hex triplet - the kind we use for HTML colours. The function
-//	will return an array with three values.
+
+/**
+ * Convert a hex value to its decimal value - the inputted hex must be in the
+ * format of a hex triplet - the kind we use for HTML colours. The function
+ * will return an array with three values.
+ * @param hex
+ * @returns {[number,number,number]}
+ */
 function hex2num(hex: string): [number, number, number] {
     if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
     hex = hex.toUpperCase();
@@ -2862,8 +3178,13 @@ function hex2num(hex: string): [number, number, number] {
     }
     return value;
 }
-//Give a array with three values as the argument and the function will return
-//	the corresponding hex triplet.
+
+/**
+ * Give a array with three values as the argument and the function will return
+ * the corresponding hex triplet.
+ * @param triplet
+ * @returns {string}
+ */
 function num2hex(triplet: [number, number, number]): string {
     let hex_alphabets = "0123456789ABCDEF";
     let hex = "#";

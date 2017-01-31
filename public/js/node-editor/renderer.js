@@ -13,19 +13,7 @@
      */
     const nodes_1 = require("../../nodes/nodes");
     class Renderer {
-        /**
-         * The Global Scope. It contains all the registered node classes.
-         *
-         * @class Renderer
-         * @constructor
-         * @param {HTMLCanvas} canvas the renderer where you want to render (it accepts a selector in string format or the renderer itself)
-         * @param {Graph} engine [optional]
-         */
         constructor(canvas, socket, editor, engine, skip_render) {
-            //if(engine === undefined)
-            //	throw ("No engine assigned");
-            //     if (renderer && typeof renderer == "string")
-            //        renderer = <HTMLCanvasElement>document.querySelector(renderer);
             this.socket = socket;
             this.editor = editor;
             //derwish edit
@@ -40,9 +28,7 @@
                 this.startRendering();
         }
         /**
-         * clears all the data inside
-         *
-         * @method clear
+         * Clears all the data inside
          */
         clear() {
             this.frame = 0;
@@ -88,10 +74,9 @@
                 this.onClear();
         }
         /**
-         * assigns a engine, you can reasign graphs to the same renderer
-         *
-         * @method setGraph
-         * @param {Graph} engine
+         * Assigns a engine, you can reasign engines to the same renderer
+         * @param engine
+         * @param skip_clear
          */
         setGraph(engine, skip_clear = false) {
             if (this.engine == engine)
@@ -113,10 +98,8 @@
             this.setDirty(true, true);
         }
         /**
-         * opens a engine contained inside a node in the current engine
-         *
-         * @method openSubgraph
-         * @param {Graph} engine
+         * Opens a engine contained inside a node in the current engine
+         * @param engine
          */
         openSubgraph(engine) {
             if (!engine)
@@ -133,10 +116,7 @@
             this.setDirty(true, true);
         }
         /**
-         * closes a subgraph contained inside a node
-         *
-         * @method closeSubgraph
-         * @param {Graph} assigns a engine
+         * Closes a subgraph contained inside a node
          */
         closeSubgraph() {
             if (!this._engine_stack || this._engine_stack.length == 0)
@@ -146,10 +126,9 @@
             this.setDirty(true, true);
         }
         /**
-         * assigns a renderer
-         *
-         * @method setCanvas
-         * @param {Canvas} assigns a renderer
+         * Assigns a canvas
+         * @param canvas
+         * @param skip_events
          */
         setCanvas(canvas, skip_events = false) {
             let that = this;
@@ -194,15 +173,29 @@
             if (!skip_events)
                 this.bindEvents();
         }
-        //used in some events to capture them
+        /**
+         * Used in some events to capture them
+         * @param e
+         * @returns {boolean}
+         * @private
+         */
         _doNothing(e) {
             e.preventDefault();
             return false;
         }
+        /**
+         *
+         * @param e
+         * @returns {boolean}
+         * @private
+         */
         _doReturnTrue(e) {
             e.preventDefault();
             return true;
         }
+        /**
+         *
+         */
         bindEvents() {
             if (this._events_binded) {
                 console.warn("Renderer: events already binded");
@@ -236,6 +229,9 @@
             canvas.addEventListener("dragenter", this._doReturnTrue, false);
             this._events_binded = true;
         }
+        /**
+         *
+         */
         unbindEvents() {
             if (!this._events_binded) {
                 console.warn("NodeEditorCanvas: no events binded");
@@ -259,8 +255,10 @@
             this._ondrop_callback = null;
             this._events_binded = false;
         }
-        //this file allows to render the renderer using WebGL instead of Canvas2D
-        //this is useful if you plant to render 3D objects inside your nodes
+        /**
+         * Allows to render the renderer using WebGL instead of Canvas2D
+         * This is useful if you plant to render 3D objects inside your nodes
+         */
         enableWebGL() {
             if (typeof (this.GL) === undefined)
                 throw ("litegl.js must be included to use a WebGL canvas");
@@ -277,23 +275,19 @@
              */
         }
         /**
-         * marks as dirty the renderer, this way it will be rendered again
-         *
-         * @method setDirty
-         * @param {bool} fgcanvas if the foreground renderer is dirty (the one containing the nodes)
-         * @param {bool} bgcanvas if the background renderer is dirty (the one containing the wires)
+         * Marks as dirty the renderer, this way it will be rendered again
+         * @param foregraund if the foreground renderer is dirty (the one containing the nodes)
+         * @param background if the background renderer is dirty (the one containing the wires)
          */
-        setDirty(fgcanvas, bgcanvas = false) {
-            if (fgcanvas)
+        setDirty(foregraund, background = false) {
+            if (foregraund)
                 this.dirty_canvas = true;
-            if (bgcanvas)
+            if (background)
                 this.dirty_bgcanvas = true;
         }
         /**
          * Used to attach the renderer in a popup
-         *
-         * @method getCanvasWindow
-         * @return {window} returns the window where the renderer is attached (the DOM root node)
+         * @returns {window} returns the window where the renderer is attached (the DOM root node)
          */
         getCanvasWindow() {
             let doc = this.canvas.ownerDocument;
@@ -301,8 +295,6 @@
         }
         /**
          * starts rendering the content of the renderer when needed
-         *
-         * @method startRendering
          */
         startRendering() {
             if (this.is_rendering)
@@ -318,9 +310,7 @@
             }
         }
         /**
-         * stops rendering the content of the renderer (to save resources)
-         *
-         * @method stopRendering
+         * Stops rendering the content of the renderer (to save resources)
          */
         stopRendering() {
             this.is_rendering = false;
@@ -380,7 +370,11 @@
          });
          }
          */
-        /* Canvas input */
+        /**
+         * Canvas mouse input
+         * @param e
+         * @returns {boolean}
+         */
         processMouseDown(e) {
             if (!this.engine)
                 return;
@@ -518,6 +512,11 @@
             e.stopPropagation();
             return false;
         }
+        /**
+         * Process mouse move
+         * @param e
+         * @returns {boolean}
+         */
         processMouseMove(e) {
             if (!this.engine)
                 return;
@@ -627,6 +626,11 @@
             //this is not really optimal
             //this.engine.change();
         }
+        /**
+         * Process mouse up
+         * @param e
+         * @returns {boolean}
+         */
         processMouseUp(e) {
             if (!this.engine)
                 return;
@@ -736,6 +740,11 @@
             e.preventDefault();
             return false;
         }
+        /**
+         * Process mouse wheel
+         * @param e
+         * @returns {boolean}
+         */
         processMouseWheel(e) {
             if (!this.engine || !this.allow_dragcanvas)
                 return;
@@ -771,6 +780,11 @@
                 }
             return -1;
         }
+        /**
+         * Process key
+         * @param e
+         * @returns {boolean}
+         */
         processKey(e) {
             if (!this.engine)
                 return;
@@ -806,6 +820,11 @@
                 return false;
             }
         }
+        /**
+         * Process drop
+         * @param e
+         * @returns {boolean}
+         */
         processDrop(e) {
             e.preventDefault();
             this.adjustMouseEvent(e);
@@ -851,6 +870,11 @@
                 return this.onDropItem(event);
             return false;
         }
+        /**
+         * Process node selected
+         * @param n node
+         * @param e
+         */
         processNodeSelected(n, e) {
             n.selected = true;
             if (n.onSelected)
@@ -866,6 +890,10 @@
                 this.onNodeSelected(n);
             //if(this.node_in_panel) this.showNodePanel(n);
         }
+        /**
+         * Process node deselected
+         * @param n node
+         */
         processNodeDeselected(n) {
             n.selected = false;
             if (n.onDeselected)
@@ -876,6 +904,10 @@
             this.dirty_canvas = true;
             //this.showNodePanel(null);
         }
+        /**
+         * Process node double clicked
+         * @param n node
+         */
         processNodeDblClicked(n) {
             if (this.onShowNodePanel)
                 this.onShowNodePanel(n);
@@ -883,6 +915,10 @@
                 this.onNodeDblClicked(n);
             this.setDirty(true);
         }
+        /**
+         * Select node
+         * @param node node
+         */
         selectNode(node) {
             this.deselectAllNodes();
             if (!node)
@@ -893,6 +929,9 @@
             this.selected_nodes[node.id] = node;
             this.setDirty(true);
         }
+        /**
+         * Select all nodes
+         */
         selectAllNodes() {
             for (let i in this.engine._nodes) {
                 let n = this.engine._nodes[i];
@@ -903,6 +942,9 @@
             }
             this.setDirty(true);
         }
+        /**
+         * Deselect all nodes
+         */
         deselectAllNodes() {
             for (let i in this.selected_nodes) {
                 let n = this.selected_nodes[i];
@@ -913,6 +955,9 @@
             this.selected_nodes = {};
             this.setDirty(true);
         }
+        /**
+         * Deselect selected nodes
+         */
         deleteSelectedNodes() {
             for (let i in this.selected_nodes) {
                 let m = this.selected_nodes[i];
@@ -922,11 +967,19 @@
             this.selected_nodes = {};
             this.setDirty(true);
         }
+        /**
+         * Center on node
+         * @param node
+         */
         centerOnNode(node) {
             this.offset[0] = -node.pos[0] - node.size[0] * 0.5 + (this.canvas.width * 0.5 / this.scale);
             this.offset[1] = -node.pos[1] - node.size[1] * 0.5 + (this.canvas.height * 0.5 / this.scale);
             this.setDirty(true, true);
         }
+        /**
+         *
+         * @param e
+         */
         adjustMouseEvent(e) {
             let b = this.canvas.getBoundingClientRect();
             e.localX = e.pageX - b.left;
@@ -934,6 +987,11 @@
             e.canvasX = e.localX / this.scale - this.offset[0];
             e.canvasY = e.localY / this.scale - this.offset[1];
         }
+        /**
+         * Set canvas zoom
+         * @param value
+         * @param zooming_center
+         */
         setZoom(value, zooming_center) {
             if (!zooming_center)
                 zooming_center = [this.canvas.width * 0.5, this.canvas.height * 0.5];
@@ -950,17 +1008,36 @@
             this.dirty_canvas = true;
             this.dirty_bgcanvas = true;
         }
+        /**
+         *
+         * @param pos
+         * @returns {[number,number]}
+         */
         convertOffsetToCanvas(pos) {
             return [pos[0] / this.scale - this.offset[0], pos[1] / this.scale - this.offset[1]];
         }
+        /**
+         *
+         * @param pos
+         * @returns {[number,number]}
+         */
         convertCanvasToOffset(pos) {
             return [(pos[0] + this.offset[0]) * this.scale,
                 (pos[1] + this.offset[1]) * this.scale];
         }
+        /**
+         *
+         * @param e
+         * @returns {[number,number]}
+         */
         convertEventToCanvas(e) {
             let rect = this.canvas.getClientRects()[0];
             return this.convertOffsetToCanvas([e.pageX - rect.left, e.pageY - rect.top]);
         }
+        /**
+         *
+         * @param n
+         */
         bringToFront(n) {
             let i = this.engine._nodes.indexOf(n);
             if (i == -1)
@@ -968,6 +1045,10 @@
             this.engine._nodes.splice(i, 1);
             this.engine._nodes.push(n);
         }
+        /**
+         *
+         * @param n
+         */
         sendToBack(n) {
             let i = this.engine._nodes.indexOf(n);
             if (i == -1)
@@ -975,8 +1056,10 @@
             this.engine._nodes.splice(i, 1);
             this.engine._nodes.unshift(n);
         }
-        /* Interaction */
-        /* NodeEditorCanvas render */
+        /**
+         * Compute visible ndes
+         * @returns {Array}
+         */
         computeVisibleNodes() {
             let visible_nodes = [];
             for (let i in this.engine._nodes) {
@@ -990,7 +1073,12 @@
             }
             return visible_nodes;
         }
-        draw(force_canvas, force_bgcanvas) {
+        /**
+         * Draw canvas
+         * @param force_foreground
+         * @param force_background
+         */
+        draw(force_foreground, force_background) {
             //fps counting
             let now = nodes_1.Nodes.getTime();
             this.render_time = (now - this.last__time) * 0.001;
@@ -1000,13 +1088,16 @@
                 let end = [start[0] + this.canvas.width / this.scale, start[1] + this.canvas.height / this.scale];
                 this.visible_area = [start[0], start[1], end[0], end[1]];
             }
-            if (this.dirty_bgcanvas || force_bgcanvas)
+            if (this.dirty_bgcanvas || force_background)
                 this.drawBackCanvas();
-            if (this.dirty_canvas || force_canvas)
+            if (this.dirty_canvas || force_foreground)
                 this.drawFrontCanvas();
             this.fps = this.render_time ? (1.0 / this.render_time) : 0;
             this.frame += 1;
         }
+        /**
+         * Draw front canvas
+         */
         drawFrontCanvas() {
             if (!this.ctx)
                 this.ctx = this.bgcanvas.getContext("2d");
@@ -1096,6 +1187,12 @@
                 this.ctx.finish2D(); //check ES6
             this.dirty_canvas = false;
         }
+        /**
+         * Render info
+         * @param ctx
+         * @param x
+         * @param y
+         */
         renderInfo(ctx, x = 0, y = 0) {
             ctx.save();
             ctx.translate(x, y);
@@ -1111,6 +1208,9 @@
                 ctx.fillText("No engine selected", 5, 13 * 1);
             ctx.restore();
         }
+        /**
+         * Draw back canvas
+         */
         drawBackCanvas() {
             let canvas = this.bgcanvas;
             if (!this.bgctx)
@@ -1186,7 +1286,11 @@
             this.dirty_bgcanvas = false;
             this.dirty_canvas = true; //to force to repaint the front renderer with the bgcanvas
         }
-        /* Renders node on the renderer */
+        /**
+         * Draw node
+         * @param node
+         * @param ctx
+         */
         drawNode(node, ctx) {
             let glow = false;
             let color = node.color || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
@@ -1344,7 +1448,16 @@
                 ctx.restore();
             ctx.globalAlpha = 1.0;
         }
-        /* Renders the node shape */
+        /**
+         * Draw node shape
+         * @param node
+         * @param ctx
+         * @param size
+         * @param fgcolor
+         * @param bgcolor
+         * @param no_title
+         * @param selected
+         */
         drawNodeShape(node, ctx, size, fgcolor, bgcolor, no_title, selected) {
             //bg rect
             ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
@@ -1427,7 +1540,13 @@
                 }
             }
         }
-        /* Renders the node when collapsed */
+        /**
+         * Draw node when collapsed
+         * @param node
+         * @param ctx
+         * @param fgcolor
+         * @param bgcolor
+         */
         drawNodeCollapsed(node, ctx, fgcolor, bgcolor) {
             //draw default collapsed shape
             ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
@@ -1471,6 +1590,10 @@
                 ctx.fill();
             }
         }
+        /**
+         * Draw connections
+         * @param ctx
+         */
         drawConnections(ctx) {
             //draw connections
             ctx.lineWidth = this.connections_width;
@@ -1507,6 +1630,13 @@
             }
             ctx.globalAlpha = 1;
         }
+        /**
+         * Draw link
+         * @param ctx
+         * @param a
+         * @param b
+         * @param color
+         */
         renderLink(ctx, a, b, color) {
             if (!this.highquality_render) {
                 ctx.beginPath();
@@ -1557,6 +1687,13 @@
                 ctx.restore();
             }
         }
+        /**
+         * Compute connection point
+         * @param a
+         * @param b
+         * @param t
+         * @returns {[number,number]}
+         */
         computeConnectionPoint(a, b, t) {
             let dist = distance(a, b);
             let p0 = a;
@@ -1583,6 +1720,11 @@
          this.draw(true,true);
          }
          */
+        /**
+         * Resize canvas
+         * @param width
+         * @param height
+         */
         resize(width, height) {
             if (!width && !height) {
                 let parent = this.canvas.parentNode;
@@ -1597,6 +1739,10 @@
             this.bgcanvas.height = this.canvas.height;
             this.setDirty(true, true);
         }
+        /**
+         * switch live mode
+         * @param transition
+         */
         switchLiveMode(transition) {
             if (!transition) {
                 this.live_mode = !this.live_mode;
@@ -1625,10 +1771,18 @@
                 }
             }, 1);
         }
+        /**
+         *
+         * @param node
+         */
         onNodeSelectionChange(node) {
             return; //disabled
             //if(this.node_in_panel) this.showNodePanel(node);
         }
+        /**
+         *
+         * @param event
+         */
         touchHandler(event) {
             //alert("foo");
             let touches = event.changedTouches, first = touches[0], type = "";
@@ -1655,6 +1809,10 @@
             first.target.dispatchEvent(simulatedEvent);
             event.preventDefault();
         }
+        /**
+         * Get canvas menu options
+         * @returns {Array}
+         */
         getCanvasMenuOptions() {
             let options = [];
             if (this.getMenuOptions)
@@ -1703,6 +1861,11 @@
             }
             return options;
         }
+        /**
+         * Get node menu options
+         * @param node
+         * @returns {Array}
+         */
         getNodeMenuOptions(node) {
             let options = [];
             //derwish added
@@ -1745,6 +1908,11 @@
             }
             return options;
         }
+        /**
+         * Process contextual menu
+         * @param node
+         * @param event
+         */
         processContextualMenu(node, event) {
             let that = this;
             let win = this.getCanvasWindow();
@@ -1776,6 +1944,11 @@
                     return v.callback(node, e, menu, that, event);
             }
         }
+        /**
+         * Get file extension
+         * @param url
+         * @returns {any}
+         */
         getFileExtension(url) {
             let question = url.indexOf("?");
             if (question != -1)
@@ -1785,7 +1958,15 @@
                 return "";
             return url.substr(point + 1).toLowerCase();
         }
-        /* CONTEXT MENU ********************/
+        /**
+         * On menu add
+         * @param node
+         * @param e
+         * @param prev_menu
+         * @param canvas
+         * @param first_event
+         * @returns {boolean}
+         */
         onMenuAdd(node, e, prev_menu, canvas, first_event) {
             let window = canvas.getCanvasWindow();
             let values = nodes_1.Nodes.getNodeTypesCategories();
@@ -1820,6 +2001,15 @@
             }
             return false;
         }
+        /**
+         * On menu import
+         * @param node
+         * @param e
+         * @param prev_menu
+         * @param canvas
+         * @param first_event
+         * @returns {boolean}
+         */
         onMenuImport(node, e, prev_menu, canvas, first_event) {
             let window = canvas.getCanvasWindow();
             let entries = {};
@@ -1851,10 +2041,23 @@
             }
             return false;
         }
+        /**
+         *
+         */
         onMenuCollapseAll() {
         }
+        /**
+         *
+         */
         onMenuNodeEdit() {
         }
+        /**
+         * On menu node inputs
+         * @param node
+         * @param e
+         * @param prev_menu
+         * @returns {boolean}
+         */
         onMenuNodeInputs(node, e, prev_menu) {
             if (!node)
                 return;
@@ -1879,6 +2082,13 @@
             }
             return false;
         }
+        /**
+         * On menu node outputs
+         * @param node
+         * @param e
+         * @param prev_menu
+         * @returns {boolean}
+         */
         onMenuNodeOutputs(node, e, prev_menu) {
             if (!node)
                 return;
@@ -1916,13 +2126,28 @@
             }
             return false;
         }
+        /**
+         * On menu collapse
+         * @param node
+         */
         onMenuNodeCollapse(node) {
             node.flags.collapsed = !node.flags.collapsed;
             node.setDirtyCanvas(true, true);
         }
+        /**
+         * On menu node pin
+         * @param node
+         */
         onMenuNodePin(node) {
             node.pin();
         }
+        /**
+         * On menu node colors
+         * @param node
+         * @param e
+         * @param prev_menu
+         * @returns {boolean}
+         */
         onMenuNodeColors(node, e, prev_menu) {
             let values = [];
             for (let i in nodes_1.Nodes.options.NODE_COLORS) {
@@ -1946,6 +2171,12 @@
             }
             return false;
         }
+        /**
+         * On menu node shapes
+         * @param node
+         * @param e
+         * @returns {boolean}
+         */
         onMenuNodeShapes(node, e) {
             this.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
             function inner_clicked(v) {
@@ -1956,6 +2187,14 @@
             }
             return false;
         }
+        /**
+         * On menu node remove
+         * @param node
+         * @param e
+         * @param prev_menu
+         * @param canvas
+         * @param first_event
+         */
         onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
             //if (node.removable == false) return;
             if (node.id in canvas.selected_nodes)
@@ -1966,6 +2205,10 @@
             //node.engine.remove(uiNode);
             //node.setDirtyCanvas(true, true);
         }
+        /**
+         * On menu node clone
+         * @param node
+         */
         onMenuNodeClone(node) {
             if (node.clonable == false)
                 return;
@@ -1978,6 +2221,13 @@
             //derwish added
             this.socket.send_clone_node(node);
         }
+        /**
+         * Create contextual menu
+         * @param values
+         * @param options
+         * @param ref_window
+         * @returns {HTMLDivElement}
+         */
         createContextualMenu(values, options, ref_window) {
             options = options || {};
             this.options = options;
@@ -2107,6 +2357,9 @@
             };
             return root;
         }
+        /**
+         * Clone all contextual menus
+         */
         closeAllContextualMenus() {
             let elements = document.querySelectorAll(".graphcontextualmenu");
             if (!elements.length)
@@ -2118,6 +2371,11 @@
                 if (result[i].parentNode)
                     result[i].parentNode.removeChild(result[i]);
         }
+        /**
+         * extend class
+         * @param target
+         * @param origin
+         */
         extendClass(target, origin) {
             for (let i in origin) {
                 if (target.hasOwnProperty(i))
@@ -2142,7 +2400,6 @@
         }
     }
     exports.Renderer = Renderer;
-    //function roundRect(ctx, x, y, width, height, radius, radius_low) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius = 5, radius_low) {
         if (radius_low === undefined)
             radius_low = radius;
@@ -2157,25 +2414,57 @@
         this.lineTo(x, y + radius);
         this.quadraticCurveTo(x, y, x + radius, y);
     };
+    /**
+     * Compare objects
+     * @param a
+     * @param b
+     * @returns {boolean}
+     */
     function compareObjects(a, b) {
         for (let i in a)
             if (a[i] != b[i])
                 return false;
         return true;
     }
+    /**
+     * Calculate distance
+     * @param a
+     * @param b
+     * @returns {number}
+     */
     function distance(a, b) {
         return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
     }
+    /**
+     * Conver color to string
+     * @param c
+     * @returns {string}
+     */
     function colorToString(c) {
         return "rgba(" + Math.round(c[0] * 255).toFixed() + "," + Math.round(c[1] * 255).toFixed() + "," + Math.round(c[2] * 255).toFixed() + "," + (c.length == 4 ? c[3].toFixed(2) : "1.0") + ")";
     }
+    /**
+     * Compute is shape inside a rectangle
+     * @param x
+     * @param y
+     * @param left
+     * @param top
+     * @param width
+     * @param height
+     * @returns {boolean}
+     */
     function isInsideRectangle(x, y, left, top, width, height) {
         if (left < x && (left + width) > x &&
             top < y && (top + height) > y)
             return true;
         return false;
     }
-    //[minx,miny,maxx,maxy]
+    /**
+     * Grow bounding
+     * @param bounding [minx,miny,maxx,maxy]
+     * @param x
+     * @param y
+     */
     function growBounding(bounding, x, y) {
         if (x < bounding[0])
             bounding[0] = x;
@@ -2186,7 +2475,12 @@
         else if (y > bounding[3])
             bounding[3] = y;
     }
-    //point inside boundin box
+    /**
+     * Compute is point inside bounding
+     * @param p
+     * @param bb
+     * @returns {boolean}
+     */
     function isInsideBounding(p, bb) {
         if (p[0] < bb[0][0] ||
             p[1] < bb[0][1] ||
@@ -2195,7 +2489,12 @@
             return false;
         return true;
     }
-    //boundings overlap, format: [start,end]
+    /**
+     * Compute is bounings overlap
+     * @param a
+     * @param b
+     * @returns {boolean}
+     */
     function overlapBounding(a, b) {
         if (a[0] > b[2] ||
             a[1] > b[3] ||
@@ -2204,9 +2503,13 @@
             return false;
         return true;
     }
-    //Convert a hex value to its decimal value - the inputted hex must be in the
-    //	format of a hex triplet - the kind we use for HTML colours. The function
-    //	will return an array with three values.
+    /**
+     * Convert a hex value to its decimal value - the inputted hex must be in the
+     * format of a hex triplet - the kind we use for HTML colours. The function
+     * will return an array with three values.
+     * @param hex
+     * @returns {[number,number,number]}
+     */
     function hex2num(hex) {
         if (hex.charAt(0) == "#")
             hex = hex.slice(1); //Remove the '#' char - if there is one.
@@ -2223,8 +2526,12 @@
         }
         return value;
     }
-    //Give a array with three values as the argument and the function will return
-    //	the corresponding hex triplet.
+    /**
+     * Give a array with three values as the argument and the function will return
+     * the corresponding hex triplet.
+     * @param triplet
+     * @returns {string}
+     */
     function num2hex(triplet) {
         let hex_alphabets = "0123456789ABCDEF";
         let hex = "#";

@@ -22,12 +22,6 @@
     //     let config = require('./../../config');
     // }
     class NodesEngine {
-        /**
-         * NodesEngine is the class that contain a full engine. We instantiate one and add nodes to it, and then we can run the execution loop.
-         *
-         * @class NodesEngine
-         * @constructor
-         */
         constructor() {
             this.supported_types = ["number", "string", "boolean"];
             this._nodes = [];
@@ -55,7 +49,6 @@
         }
         /**
          * Removes all nodes from this engine
-         * @method clear
          */
         clear() {
             this.stop();
@@ -86,7 +79,6 @@
         }
         /**
          * Stops the execution loop of the engine
-         * @method stop execution
          */
         stop() {
             if (!this.isRunning)
@@ -101,8 +93,7 @@
         }
         /**
          * Attach Renderer to this engine
-         * @method attachRenderer
-         * @param {Redrerer} renderer
+         * @param renderer
          */
         attachRenderer(renderer) {
             if (renderer.engine && renderer.engine != this)
@@ -114,8 +105,7 @@
         }
         /**
          * Detach Renderer from this engine
-         * @method detachRenderer
-         * @param {Renderer} renderer
+         * @param renderer
          */
         detachRenderer(renderer) {
             if (!this.list_of_renderers)
@@ -128,10 +118,9 @@
         }
         /**
          * Starts running this engine every interval milliseconds.
-         * @method start
-         * @param {number} interval amount of milliseconds between executions, default is 1
+         * @param interval amount of milliseconds between executions
          */
-        start(interval) {
+        start(interval = 1) {
             if (this.isRunning)
                 return;
             this.isRunning = true;
@@ -140,7 +129,6 @@
             this.sendEventToAllNodes("onStart");
             //launch
             this.starttime = nodes_1.Nodes.getTime();
-            interval = interval || 1;
             let that = this;
             this.execution_timer_id = setInterval(function () {
                 //execute
@@ -149,8 +137,7 @@
         }
         /**
          * Run N steps (cycles) of the engine
-         * @method runStep
-         * @param {number} num number of steps to run, default is 1
+         * @param num number of steps to run, default is 1
          */
         runStep(num = 1) {
             let start = nodes_1.Nodes.getTime();
@@ -257,7 +244,7 @@
         /**
          * Returns the amount of time the engine has been running in milliseconds
          * @method getTime
-         * @return {number} number of milliseconds the engine has been running
+         * @returns number of milliseconds the engine has been running
          */
         getTime() {
             return this.globaltime;
@@ -265,7 +252,7 @@
         /**
          * Returns the amount of time accumulated using the fixedtime_lapse var. This is used in context where the time increments should be constant
          * @method getFixedTime
-         * @return {number} number of milliseconds the engine has been running
+         * @returns number of milliseconds the engine has been running
          */
         getFixedTime() {
             return this.fixedtime;
@@ -274,7 +261,7 @@
          * Returns the amount of time it took to compute the latest iteration. Take into account that this number could be not correct
          * if the nodes are using graphical actions
          * @method getElapsedTime
-         * @return {number} number of milliseconds it took the last cycle
+         * @returns number of milliseconds it took the last cycle
          */
         getElapsedTime() {
             return this.elapsed_time;
@@ -282,9 +269,8 @@
         //
         /**
          * Sends an event to all the nodes, useful to trigger stuff
-         * @method sendEventToAllNodes
-         * @param {String} eventname the name of the event (function to be called)
-         * @param {Array} params parameters in array format
+         * @param eventname the name of the event (function to be called)
+         * @param params parameters in array format
          */
         sendEventToAllNodes(eventname, params) {
             let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
@@ -302,6 +288,11 @@
                 }
             }
         }
+        /**
+         * Sends action to renderer
+         * @param action
+         * @param params
+         */
         sendActionToRenderer(action, params) {
             if (!this.list_of_renderers)
                 return;
@@ -313,8 +304,8 @@
         }
         /**
          * Adds a new node instasnce to this engine
-         * @method add
-         * @param {Node} node the instance of the node
+         * @param node the instance of the node
+         * @param node skip_compute_order
          */
         add(node, skip_compute_order) {
             if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
@@ -346,8 +337,7 @@
         }
         /**
          * Removes a node from the engine
-         * @method remove
-         * @param {Node} node the instance of the node
+         * @param node the instance of the node
          */
         remove(node) {
             if (this._nodes_by_id[node.id] == null)
@@ -396,65 +386,56 @@
         }
         /**
          * Returns a node by its id.
-         * @method getNodeById
-         * @param {String} id
+         * @param id
          */
         getNodeById(id) {
             if (id == null)
                 return null;
             return this._nodes_by_id[id];
         }
-        //
-        //     /**
-        //      * Returns a list of nodes that matches a class
-        //      * @method findNodesByClass
-        //      * @param {Class} classObject the class itself (not an string)
-        //      * @return {Array} a list with all the nodes of this type
-        //      */
-        //     findNodesByClass(classObject) {
-        //         let r = [];
-        //         for (let i = 0, l = this._nodes.length; i < l; ++i)
-        //             if (this._nodes[i].constructor === classObject)
-        //                 r.push(this._nodes[i]);
-        //         return r;
-        //     }
-        //
-        //     /**
-        //      * Returns a list of nodes that matches a type
-        //      * @method findNodesByType
-        //      * @param {String} type the name of the node type
-        //      * @return {Array} a list with all the nodes of this type
-        //      */
-        //     findNodesByType(type) {
-        //         let type = type.toLowerCase();
-        //         let r = [];
-        //         for (let i = 0, l = this._nodes.length; i < l; ++i)
-        //             if (this._nodes[i].type.toLowerCase() == type)
-        //                 r.push(this._nodes[i]);
-        //         return r;
-        //     }
-        //
-        //     /**
-        //      * Returns a list of nodes that matches a name
-        //      * @method findNodesByName
-        //      * @param {String} name the name of the node to search
-        //      * @return {Array} a list with all the nodes with this name
-        //      */
-        //     findNodesByTitle(title) {
-        //         let result = [];
-        //         for (let i = 0, l = this._nodes.length; i < l; ++i)
-        //             if (this._nodes[i].title == title)
-        //                 result.push(this._nodes[i]);
-        //         return result;
-        //     }
-        //
+        /**
+         * Returns a list of nodes that matches a class
+         * @param classObject the class itself (not an string)
+         * @returns a list with all the nodes of this type
+         */
+        findNodesByClass(classObject) {
+            let r = [];
+            for (let i = 0, l = this._nodes.length; i < l; ++i)
+                if (this._nodes[i].constructor === classObject)
+                    r.push(this._nodes[i]);
+            return r;
+        }
+        /**
+         * Returns a list of nodes that matches a type
+         * @param type the name of the node type
+         * @returns a list with all the nodes of this type
+         */
+        findNodesByType(type) {
+            type = type.toLowerCase();
+            let r = [];
+            for (let i = 0, l = this._nodes.length; i < l; ++i)
+                if (this._nodes[i].type.toLowerCase() == type)
+                    r.push(this._nodes[i]);
+            return r;
+        }
+        /**
+         * Returns a list of nodes that matches a name
+         * @param name the name of the node to search
+         * @returns a list with all the nodes with this name
+         */
+        findNodesByTitle(title) {
+            let result = [];
+            for (let i = 0, l = this._nodes.length; i < l; ++i)
+                if (this._nodes[i].title == title)
+                    result.push(this._nodes[i]);
+            return result;
+        }
         /**
          * Returns the top-most node in this position of the renderer
-         * @method getNodeOnPos
-         * @param {number} x the x coordinate in renderer space
-         * @param {number} y the y coordinate in renderer space
-         * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
-         * @return {Array} a list with all the nodes that intersect this coordinate
+         * @param x the x coordinate in renderer space
+         * @param y the y coordinate in renderer space
+         * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
+         * @returns a list with all the nodes that intersect this coordinate
          */
         getNodeOnPos(x, y, nodes_list) {
             nodes_list = nodes_list || this._nodes;
@@ -619,7 +600,7 @@
         //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
         //      * can be easily accesed from the outside of the engine
         //      * @method setInputData
-        //      * @param {String} name the name of the node
+        //      * @param name the name of the node
         //      * @param {*} value value to assign to this node
         //      */
         //     setInputData(name, value) {
@@ -631,8 +612,8 @@
         //     /**
         //      * Returns the value of the first node with this name. This is used to access global variables of the engine from the outside
         //      * @method setInputData
-        //      * @param {String} name the name of the node
-        //      * @return {*} value of the node
+        //      * @param name the name of the node
+        //      * @returns {*} value of the node
         //      */
         //     getOutputData(name) {
         //         let n = this.findNodesByName(name);
@@ -674,19 +655,25 @@
             }
             return false;
         }
-        /* Called when something visually changed */
+        /**
+         * Called when something visually changed
+         */
         change() {
             this.sendActionToRenderer("setDirty", [true, true]);
             if (this.on_change)
                 this.on_change(this);
         }
-        setDirtyCanvas(fg, bg) {
-            this.sendActionToRenderer("setDirty", [fg, bg]);
+        /**
+         * Set canvas to dirty for update
+         * @param foreground
+         * @param backgroud
+         */
+        setDirtyCanvas(foreground, backgroud) {
+            this.sendActionToRenderer("setDirty", [foreground, backgroud]);
         }
         /**
          * Creates a Object containing all the info about this engine, it can be serialized
-         * @method serialize
-         * @return {Object} value of the node
+         * @returns value of the node
          */
         serialize() {
             let nodes_info = [];
@@ -707,6 +694,12 @@
             };
             return data;
         }
+        /***
+         * Clone object
+         * @param obj
+         * @param target
+         * @returns {any}
+         */
         cloneObject(obj, target) {
             if (obj == null)
                 return null;
@@ -719,9 +712,9 @@
         }
         ;
         /**
-         * Configure a engine from a JSON string
-         * @method configure
-         * @param {String} str configure a engine from a JSON string
+         * Add nodes to engine from a JSON string
+         * @param data JSON string
+         * @param keep_old
          */
         configure(data, keep_old = false) {
             if (!keep_old)

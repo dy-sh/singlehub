@@ -64,6 +64,7 @@ export class NodeEditor {
 
 		renderer.resize();
 		//renderer.draw(true,true);
+
 	}
 
 	addMiniWindow(w:number, h:number) :void {

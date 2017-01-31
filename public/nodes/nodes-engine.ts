@@ -63,12 +63,6 @@ export class NodesEngine {
     frame: number;
 
 
-    /**
-     * NodesEngine is the class that contain a full engine. We instantiate one and add nodes to it, and then we can run the execution loop.
-     *
-     * @class NodesEngine
-     * @constructor
-     */
     constructor() {
         console.log("Nodes engine created");
         //todo
@@ -97,7 +91,6 @@ export class NodesEngine {
 
     /**
      * Removes all nodes from this engine
-     * @method clear
      */
     clear(): void {
         this.stop();
@@ -138,7 +131,6 @@ export class NodesEngine {
 
     /**
      * Stops the execution loop of the engine
-     * @method stop execution
      */
     stop(): void {
         if (!this.isRunning)
@@ -159,8 +151,7 @@ export class NodesEngine {
 
     /**
      * Attach Renderer to this engine
-     * @method attachRenderer
-     * @param {Redrerer} renderer
+     * @param renderer
      */
     attachRenderer(renderer: Renderer): void {
         if (renderer.engine && renderer.engine != this)
@@ -174,8 +165,7 @@ export class NodesEngine {
 
     /**
      * Detach Renderer from this engine
-     * @method detachRenderer
-     * @param {Renderer} renderer
+     * @param renderer
      */
     detachRenderer(renderer: Renderer): void {
         if (!this.list_of_renderers)
@@ -190,10 +180,9 @@ export class NodesEngine {
 
     /**
      * Starts running this engine every interval milliseconds.
-     * @method start
-     * @param {number} interval amount of milliseconds between executions, default is 1
+     * @param interval amount of milliseconds between executions
      */
-    start(interval: number): void {
+    start(interval: number = 1): void {
         if (this.isRunning)
             return;
 
@@ -206,7 +195,6 @@ export class NodesEngine {
 
         //launch
         this.starttime = Nodes.getTime();
-        interval = interval || 1;
         let that = this;
 
         this.execution_timer_id = setInterval(function () {
@@ -218,8 +206,7 @@ export class NodesEngine {
 
     /**
      * Run N steps (cycles) of the engine
-     * @method runStep
-     * @param {number} num number of steps to run, default is 1
+     * @param num number of steps to run, default is 1
      */
     runStep(num: number = 1): void {
 
@@ -345,7 +332,7 @@ export class NodesEngine {
     /**
      * Returns the amount of time the engine has been running in milliseconds
      * @method getTime
-     * @return {number} number of milliseconds the engine has been running
+     * @returns number of milliseconds the engine has been running
      */
     getTime(): number {
         return this.globaltime;
@@ -354,7 +341,7 @@ export class NodesEngine {
     /**
      * Returns the amount of time accumulated using the fixedtime_lapse var. This is used in context where the time increments should be constant
      * @method getFixedTime
-     * @return {number} number of milliseconds the engine has been running
+     * @returns number of milliseconds the engine has been running
      */
     getFixedTime(): number {
         return this.fixedtime;
@@ -364,7 +351,7 @@ export class NodesEngine {
      * Returns the amount of time it took to compute the latest iteration. Take into account that this number could be not correct
      * if the nodes are using graphical actions
      * @method getElapsedTime
-     * @return {number} number of milliseconds it took the last cycle
+     * @returns number of milliseconds it took the last cycle
      */
     getElapsedTime(): number {
         return this.elapsed_time;
@@ -373,9 +360,8 @@ export class NodesEngine {
 //
     /**
      * Sends an event to all the nodes, useful to trigger stuff
-     * @method sendEventToAllNodes
-     * @param {String} eventname the name of the event (function to be called)
-     * @param {Array} params parameters in array format
+     * @param eventname the name of the event (function to be called)
+     * @param params parameters in array format
      */
     sendEventToAllNodes(eventname: string, params?: Array<any>): void {
         let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
@@ -395,6 +381,11 @@ export class NodesEngine {
         }
     }
 
+    /**
+     * Sends action to renderer
+     * @param action
+     * @param params
+     */
     sendActionToRenderer(action: string, params?: Array<any>): void {
         if (!this.list_of_renderers)
             return;
@@ -409,8 +400,8 @@ export class NodesEngine {
 
     /**
      * Adds a new node instasnce to this engine
-     * @method add
-     * @param {Node} node the instance of the node
+     * @param node the instance of the node
+     * @param node skip_compute_order
      */
     add(node: Node, skip_compute_order?: boolean): Node {
         if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
@@ -457,8 +448,7 @@ export class NodesEngine {
 
     /**
      * Removes a node from the engine
-     * @method remove
-     * @param {Node} node the instance of the node
+     * @param node the instance of the node
      */
     remove(node: Node): void {
         if (this._nodes_by_id[node.id] == null)
@@ -520,65 +510,62 @@ export class NodesEngine {
 
     /**
      * Returns a node by its id.
-     * @method getNodeById
-     * @param {String} id
+     * @param id
      */
     getNodeById(id: string|number): Node {
         if (id == null) return null;
         return this._nodes_by_id[id];
     }
 
-//
-//     /**
-//      * Returns a list of nodes that matches a class
-//      * @method findNodesByClass
-//      * @param {Class} classObject the class itself (not an string)
-//      * @return {Array} a list with all the nodes of this type
-//      */
-//     findNodesByClass(classObject) {
-//         let r = [];
-//         for (let i = 0, l = this._nodes.length; i < l; ++i)
-//             if (this._nodes[i].constructor === classObject)
-//                 r.push(this._nodes[i]);
-//         return r;
-//     }
-//
-//     /**
-//      * Returns a list of nodes that matches a type
-//      * @method findNodesByType
-//      * @param {String} type the name of the node type
-//      * @return {Array} a list with all the nodes of this type
-//      */
-//     findNodesByType(type) {
-//         let type = type.toLowerCase();
-//         let r = [];
-//         for (let i = 0, l = this._nodes.length; i < l; ++i)
-//             if (this._nodes[i].type.toLowerCase() == type)
-//                 r.push(this._nodes[i]);
-//         return r;
-//     }
-//
-//     /**
-//      * Returns a list of nodes that matches a name
-//      * @method findNodesByName
-//      * @param {String} name the name of the node to search
-//      * @return {Array} a list with all the nodes with this name
-//      */
-//     findNodesByTitle(title) {
-//         let result = [];
-//         for (let i = 0, l = this._nodes.length; i < l; ++i)
-//             if (this._nodes[i].title == title)
-//                 result.push(this._nodes[i]);
-//         return result;
-//     }
-//
+
+    /**
+     * Returns a list of nodes that matches a class
+     * @param classObject the class itself (not an string)
+     * @returns a list with all the nodes of this type
+     */
+
+
+    findNodesByClass(classObject: any): Array<Node> {
+        let r = [];
+        for (let i = 0, l = this._nodes.length; i < l; ++i)
+            if (this._nodes[i].constructor === classObject)
+                r.push(this._nodes[i]);
+        return r;
+    }
+
+    /**
+     * Returns a list of nodes that matches a type
+     * @param type the name of the node type
+     * @returns a list with all the nodes of this type
+     */
+    findNodesByType(type: string): Array<Node> {
+        type = type.toLowerCase();
+        let r = [];
+        for (let i = 0, l = this._nodes.length; i < l; ++i)
+            if (this._nodes[i].type.toLowerCase() == type)
+                r.push(this._nodes[i]);
+        return r;
+    }
+
+    /**
+     * Returns a list of nodes that matches a name
+     * @param name the name of the node to search
+     * @returns a list with all the nodes with this name
+     */
+    findNodesByTitle(title: string): Array<Node> {
+        let result = [];
+        for (let i = 0, l = this._nodes.length; i < l; ++i)
+            if (this._nodes[i].title == title)
+                result.push(this._nodes[i]);
+        return result;
+    }
+
     /**
      * Returns the top-most node in this position of the renderer
-     * @method getNodeOnPos
-     * @param {number} x the x coordinate in renderer space
-     * @param {number} y the y coordinate in renderer space
-     * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
-     * @return {Array} a list with all the nodes that intersect this coordinate
+     * @param x the x coordinate in renderer space
+     * @param y the y coordinate in renderer space
+     * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
+     * @returns a list with all the nodes that intersect this coordinate
      */
     getNodeOnPos(x: number, y: number, nodes_list?: Array<Node>): Node {
         nodes_list = nodes_list || this._nodes;
@@ -744,7 +731,7 @@ export class NodesEngine {
 //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
 //      * can be easily accesed from the outside of the engine
 //      * @method setInputData
-//      * @param {String} name the name of the node
+//      * @param name the name of the node
 //      * @param {*} value value to assign to this node
 //      */
 //     setInputData(name, value) {
@@ -756,8 +743,8 @@ export class NodesEngine {
 //     /**
 //      * Returns the value of the first node with this name. This is used to access global variables of the engine from the outside
 //      * @method setInputData
-//      * @param {String} name the name of the node
-//      * @return {*} value of the node
+//      * @param name the name of the node
+//      * @returns {*} value of the node
 //      */
 //     getOutputData(name) {
 //         let n = this.findNodesByName(name);
@@ -803,7 +790,9 @@ export class NodesEngine {
         return false;
     }
 
-    /* Called when something visually changed */
+    /**
+     * Called when something visually changed
+     */
     change(): void {
         this.sendActionToRenderer("setDirty", [true, true]);
 
@@ -812,17 +801,21 @@ export class NodesEngine {
     }
 
 
-    setDirtyCanvas(fg?: boolean, bg?: boolean): void {
-        this.sendActionToRenderer("setDirty", [fg, bg]);
+    /**
+     * Set canvas to dirty for update
+     * @param foreground
+     * @param backgroud
+     */
+    setDirtyCanvas(foreground?: boolean, backgroud?: boolean): void {
+        this.sendActionToRenderer("setDirty", [foreground, backgroud]);
     }
 
 
     /**
      * Creates a Object containing all the info about this engine, it can be serialized
-     * @method serialize
-     * @return {Object} value of the node
+     * @returns value of the node
      */
-    serialize() {
+    serialize(): any {
         let nodes_info = [];
         for (let i = 0, l = this._nodes.length; i < l; ++i)
             nodes_info.push(this._nodes[i].serialize());
@@ -848,6 +841,13 @@ export class NodesEngine {
         return data;
     }
 
+
+    /***
+     * Clone object
+     * @param obj
+     * @param target
+     * @returns {any}
+     */
     cloneObject(obj: any, target?: any): any {
         if (obj == null) return null;
         let r = JSON.parse(JSON.stringify(obj));
@@ -859,9 +859,9 @@ export class NodesEngine {
     };
 
     /**
-     * Configure a engine from a JSON string
-     * @method configure
-     * @param {String} str configure a engine from a JSON string
+     * Add nodes to engine from a JSON string
+     * @param data JSON string
+     * @param keep_old
      */
     configure(data: any, keep_old = false): boolean {
         if (!keep_old)
