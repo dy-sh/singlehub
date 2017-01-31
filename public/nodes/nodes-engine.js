@@ -30,6 +30,7 @@
          */
         constructor() {
             this.supported_types = ["number", "string", "boolean"];
+            this._nodes = [];
             this._nodes_by_id = {};
             this.links = {};
             this.global_inputs = {};

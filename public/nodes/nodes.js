@@ -87,6 +87,9 @@
     class Input {
     }
     exports.Input = Input;
+    class Link {
+    }
+    exports.Link = Link;
     class Nodes {
         //   debug: config.engine.debugEngine,
         /**
@@ -364,7 +367,7 @@
             //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
             for (let i in this.inputs) {
                 let input = this.inputs[i];
-                if (!input.link || !input.link.length)
+                if (!input.link)
                     continue;
                 let link = input.link;
                 if (typeof (link) != "object")
@@ -872,7 +875,7 @@
             if (target_slot == -1) {
                 if (output.links == null)
                     output.links = [];
-                output.links.push({ id: node.id, slot: -1 });
+                output.links.push(node.id); //todo ES6 push({id: node.id, slot: -1})
             }
             else if (!output.type ||
                 !node.inputs[target_slot].type ||

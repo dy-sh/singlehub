@@ -3,7 +3,7 @@
  */
 
 
-import {Nodes, Node} from "./nodes";
+import {Nodes, Node, Link} from "./nodes";
 import {NodeEditorCanvas} from "../js/node-editor/node-editor-canvas";
 
 
@@ -28,10 +28,10 @@ export class NodesEngine {
     list_of_graphcanvas: Array<NodeEditorCanvas>;
     isRunning: boolean;
     last_node_id: number;
-    _nodes: Array<Node>;
+    _nodes: Array<Node> = [];
     _nodes_by_id = {};
     last_link_id: number;
-    links = {};
+    links: {[id: string]: Link;} = {};
     iteration: number;
     config: {
         align_to_grid?: boolean;
@@ -80,16 +80,16 @@ export class NodesEngine {
     }
 
 //used to know which types of connections support this graph (some graphs do not allow certain types)
-    getSupportedTypes() :Array<string>{
+    getSupportedTypes(): Array<string> {
         return this.supported_types;
     }
 
 
-    debug(mess:any):void {
+    debug(mess: any): void {
         console.log(mess)
     }
 
-    debugErr(mess:any):void {
+    debugErr(mess: any): void {
         console.log(mess)
     }
 
@@ -98,7 +98,7 @@ export class NodesEngine {
      * Removes all nodes from this graph
      * @method clear
      */
-    clear() :void{
+    clear(): void {
         this.stop();
         this.isRunning = false;
         this.last_node_id = 0;
@@ -139,7 +139,7 @@ export class NodesEngine {
      * Stops the execution loop of the graph
      * @method stop execution
      */
-    stop() :void{
+    stop(): void {
         if (!this.isRunning)
             return;
 
@@ -161,7 +161,7 @@ export class NodesEngine {
      * @method attachCanvas
      * @param {GraphCanvas} graph_canvas
      */
-    attachCanvas(graphcanvas: NodeEditorCanvas):void {
+    attachCanvas(graphcanvas: NodeEditorCanvas): void {
         // if (graphcanvas.constructor != NodesCanvas)
         //     throw("attachCanvas expects a NodesCanvas instance");
         if (graphcanvas.graph && graphcanvas.graph != this)
@@ -178,7 +178,7 @@ export class NodesEngine {
      * @method detachCanvas
      * @param {GraphCanvas} graph_canvas
      */
-    detachCanvas(graphcanvas: NodeEditorCanvas):void {
+    detachCanvas(graphcanvas: NodeEditorCanvas): void {
         if (!this.list_of_graphcanvas)
             return;
 
@@ -194,7 +194,7 @@ export class NodesEngine {
      * @method start
      * @param {number} interval amount of milliseconds between executions, default is 1
      */
-    start(interval: number) :void{
+    start(interval: number): void {
         if (this.isRunning)
             return;
 
@@ -222,7 +222,7 @@ export class NodesEngine {
      * @method runStep
      * @param {number} num number of steps to run, default is 1
      */
-    runStep(num: number = 1) :void{
+    runStep(num: number = 1): void {
 
         let start = Nodes.getTime();
         this.globaltime = 0.001 * (start - this.starttime);
@@ -259,13 +259,13 @@ export class NodesEngine {
      * nodes with only inputs.
      * @method updateExecutionOrder
      */
-    updateExecutionOrder():void {
+    updateExecutionOrder(): void {
         this._nodes_in_order = this.computeExecutionOrder();
     }
 
 //This is more internal, it computes the order and returns it
     computeExecutionOrder(): Array<Node> {
-        let L:Array<Node> = [];
+        let L: Array<Node> = [];
         let S = [];
         let M = {};
         let visited_links = {}; //to avoid repeating links
@@ -378,7 +378,7 @@ export class NodesEngine {
      * @param {String} eventname the name of the event (function to be called)
      * @param {Array} params parameters in array format
      */
-    sendEventToAllNodes(eventname: string, params?: Array<any>) :void {
+    sendEventToAllNodes(eventname: string, params?: Array<any>): void {
         let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
         if (!nodes)
             return;
@@ -396,7 +396,7 @@ export class NodesEngine {
         }
     }
 
-    sendActionToCanvas(action: string, params?: Array<any>) :void {
+    sendActionToCanvas(action: string, params?: Array<any>): void {
         if (!this.list_of_graphcanvas)
             return;
 
@@ -461,7 +461,7 @@ export class NodesEngine {
      * @method remove
      * @param {Node} node the instance of the node
      */
-    remove(node: Node) :void {
+    remove(node: Node): void {
         if (this._nodes_by_id[node.id] == null)
             return; //not found
 
@@ -780,7 +780,7 @@ export class NodesEngine {
 //             nodes[i].setTrigger(func);
 //     }
 //
-    connectionChange(node: Node) :void {
+    connectionChange(node: Node): void {
         this.updateExecutionOrder();
         if (this.onConnectionChange)
             this.onConnectionChange(node);
@@ -792,7 +792,7 @@ export class NodesEngine {
      * returns if the graph is in live mode
      * @method isLive
      */
-    isLive() :boolean {
+    isLive(): boolean {
         if (!this.list_of_graphcanvas)
             return false;
 
@@ -805,7 +805,7 @@ export class NodesEngine {
     }
 
     /* Called when something visually changed */
-    change():void  {
+    change(): void {
         this.sendActionToCanvas("setDirty", [true, true]);
 
         if (this.on_change)
@@ -813,7 +813,7 @@ export class NodesEngine {
     }
 
 
-    setDirtyCanvas(fg?: boolean, bg?: boolean) :void {
+    setDirtyCanvas(fg?: boolean, bg?: boolean): void {
         this.sendActionToCanvas("setDirty", [fg, bg]);
     }
 
@@ -849,7 +849,7 @@ export class NodesEngine {
         return data;
     }
 
-    cloneObject(obj:any, target?:any) :any {
+    cloneObject(obj: any, target?: any): any {
         if (obj == null) return null;
         let r = JSON.parse(JSON.stringify(obj));
         if (!target) return r;
@@ -864,7 +864,7 @@ export class NodesEngine {
      * @method configure
      * @param {String} str configure a graph from a JSON string
      */
-    configure(data:any, keep_old = false) :boolean {
+    configure(data: any, keep_old = false): boolean {
         if (!keep_old)
             this.clear();
 

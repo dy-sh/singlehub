@@ -99,9 +99,9 @@ export class NodesOptions {
 export class Output {
     name: string;
     type: string;
-    links: Array<any>;
+    links: Array<string|number>;
     label?: string;
-    locked?:boolean;
+    locked?: boolean;
     pos?: boolean;
     round?: number;
 }
@@ -109,12 +109,22 @@ export class Output {
 export class Input {
     name: string;
     type: string;
-    link: any;
+    link: number;
     label?: string;
-    locked?:boolean;
+    locked?: boolean;
     pos?: boolean;
     round?: number;
     isOptional?: boolean;
+}
+
+export class Link {
+    id: string|number;
+    slot?: number;
+    origin_id?: string|number;
+    origin_slot?: number;
+    target_id?: string|number;
+    target_slot?: number;
+    data?:any;
 }
 
 export class Nodes {
@@ -388,11 +398,11 @@ export class Node {
     size: [number, number];
     graph: NodesEngine;
     id: string|number;
-    type: any;
+    type: string;
     inputs: Array<Input>;
     outputs: Array<Output>;
-    connections: Array<any>;
-    properties: any;
+ //   connections: Array<any>;
+    properties: {};
     data: any;
     ignore_remove: boolean;
     flags: {
@@ -435,15 +445,15 @@ export class Node {
     color: string;
     bgcolor: string;
     boxcolor: string;
-    shape: any;
+    shape: string;
     onSerialize: Function;
-    setValue: any;
-    bgImage: any;
+    setValue: Function;
+    bgImage: HTMLImageElement;
     bgImageUrl: string;
     clonable: boolean;
     removable: boolean;
-    optional_inputs: any;
-    optional_outputs: any;
+    optional_inputs: {};
+    optional_outputs: {};
     order: string;
 
 
@@ -505,7 +515,7 @@ export class Node {
         //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
         for (let i in this.inputs) {
             let input = this.inputs[i];
-            if (!input.link || !input.link.length)
+            if (!input.link)//todo ES6:!input.link || !input.link.length
                 continue;
             let link = input.link;
             if (typeof(link) != "object")
@@ -785,7 +795,7 @@ export class Node {
      * @param {string} type string defining the input type ("vec3","number",...), it its a generic one use 0
      * @param {Object} extra_info this can be used to have special properties of an input (label, color, position, etc)
      */
-    addInput(name: string, type: string, extra_info?: any): void {
+    addInput(name: string, type?: string, extra_info?: any): void {
 
         let o: Input = {name: name, type: type, link: null};
         if (extra_info)
@@ -1061,7 +1071,7 @@ export class Node {
         if (target_slot == -1) {
             if (output.links == null)
                 output.links = [];
-            output.links.push({id: node.id, slot: -1});
+            output.links.push(node.id);//todo ES6 push({id: node.id, slot: -1})
         }
         else if (!output.type ||  //generic output
             !node.inputs[target_slot].type || //generic input
