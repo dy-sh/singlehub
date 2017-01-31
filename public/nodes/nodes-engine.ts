@@ -6,6 +6,7 @@
 import {Nodes, Node, Link} from "./nodes";
 import {Renderer} from "../js/node-editor/renderer";
 import Timer = NodeJS.Timer;
+import Utils from  "./utils"
 
 
 //todo
@@ -61,10 +62,11 @@ export class NodesEngine {
     onNodeRemoved: Function;
     onPlayEvent: Function;
     frame: number;
+    private MODULE_NAME= "NodesEngine";
 
 
     constructor() {
-        console.log("Nodes engine created");
+        Utils.debug("Engine created",this.MODULE_NAME);
         //todo
         // this.debug = config.engine.debugEngine;
         // if (this.debug)
@@ -80,13 +82,6 @@ export class NodesEngine {
     }
 
 
-    debug(mess: any): void {
-        console.log(mess)
-    }
-
-    debugErr(mess: any): void {
-        console.log(mess)
-    }
 
 
     /**
@@ -229,7 +224,7 @@ export class NodesEngine {
             this.errors_in_execution = true;
             if (Nodes.throw_errors)
                 throw err;
-            this.debugErr("NodesEngine: Error during execution: " + err);
+            Utils.debugErr("Error during execution: " + err,this.MODULE_NAME);
             this.stop();
         }
 
@@ -320,7 +315,7 @@ export class NodesEngine {
             L.push(M[i]);
 
         if (L.length != this._nodes.length)
-            this.debug("NodesEngine: something went wrong, nodes missing");
+            Utils.debug("Something went wrong, nodes missing",this.MODULE_NAME);
 
         //save order number in the node
         for (let i in L)
@@ -832,7 +827,7 @@ export class NodesEngine {
             frame: this.frame,
             last_node_id: this.last_node_id,
             last_link_id: this.last_link_id,
-            links: this.cloneObject(this.links),
+            links: Utils.cloneObject(this.links),
 
             config: this.config,
             nodes: nodes_info
@@ -842,21 +837,7 @@ export class NodesEngine {
     }
 
 
-    /***
-     * Clone object
-     * @param obj
-     * @param target
-     * @returns {any}
-     */
-    cloneObject(obj: any, target?: any): any {
-        if (obj == null) return null;
-        let r = JSON.parse(JSON.stringify(obj));
-        if (!target) return r;
 
-        for (let i in r)
-            target[i] = r[i];
-        return target;
-    };
 
     /**
      * Add nodes to engine from a JSON string
@@ -881,7 +862,7 @@ export class NodesEngine {
             let n_info = nodes[i]; //stored info
             let node = Nodes.createNode(n_info.type, n_info.title);
             if (!node) {
-                this.debugErr("Node not found: " + n_info.type);
+                Utils.debugErr("Node not found: " + n_info.type,this.MODULE_NAME);
                 error = true;
                 continue;
             }

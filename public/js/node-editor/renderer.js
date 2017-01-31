@@ -4,7 +4,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,6 +12,7 @@
      * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
      */
     const nodes_1 = require("../../nodes/nodes");
+    const utils_1 = require("../../nodes/utils");
     class Renderer {
         constructor(canvas, socket, editor, engine, skip_render) {
             this.socket = socket;
@@ -417,7 +418,7 @@
                             for (let i = 0, l = n.outputs.length; i < l; ++i) {
                                 let output = n.outputs[i];
                                 let link_pos = n.getConnectionPos(false, i);
-                                if (isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
+                                if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     this.connecting_node = n;
                                     this.connecting_output = output;
                                     this.connecting_pos = n.getConnectionPos(false, i);
@@ -431,7 +432,7 @@
                             for (let i = 0, l = n.inputs.length; i < l; ++i) {
                                 let input = n.inputs[i];
                                 let link_pos = n.getConnectionPos(true, i);
-                                if (isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
+                                if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     if (input.link !== null) {
                                         //derwish removed
                                         //n.disconnectInput(i);
@@ -444,14 +445,14 @@
                             }
                         //Search for corner
                         //derwish edit 5 to 10
-                        if (!skip_action && isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10)) {
+                        if (!skip_action && utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10)) {
                             this.resizing_node = n;
                             this.canvas.style.cursor = "se-resize";
                             skip_action = true;
                         }
                     }
                     //Search for corner
-                    if (!skip_action && isInsideRectangle(e.canvasX, e.canvasY, n.pos[0], n.pos[1] - nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT)) {
+                    if (!skip_action && utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0], n.pos[1] - nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT)) {
                         n.collapse();
                         skip_action = true;
                     }
@@ -575,7 +576,7 @@
                     }
                     //Search for corner
                     //derwish edit 5 to 10
-                    if (isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10))
+                    if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10))
                         this.canvas.style.cursor = "se-resize";
                     else
                         this.canvas.style.cursor = null;
@@ -769,7 +770,7 @@
                 for (let i = 0, l = node.inputs.length; i < l; ++i) {
                     let input = node.inputs[i];
                     let link_pos = node.getConnectionPos(true, i);
-                    if (isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
+                    if (utils_1.default.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                         if (slot_pos) {
                             slot_pos[0] = link_pos[0];
                             slot_pos[1] = link_pos[1];
@@ -1067,7 +1068,7 @@
                 //skip rendering nodes in live mode
                 if (this.live_mode && !n.onDrawBackground && !n.onDrawForeground)
                     continue;
-                if (!overlapBounding(this.visible_area, n.getBounding()))
+                if (!utils_1.default.overlapBounding(this.visible_area, n.getBounding()))
                     continue; //out of the visible area
                 visible_nodes.push(n);
             }
@@ -1645,7 +1646,7 @@
                 ctx.stroke();
                 return;
             }
-            let dist = distance(a, b);
+            let dist = utils_1.default.distance(a, b);
             if (this.render_connections_border && this.scale > 0.6)
                 ctx.lineWidth = this.connections_width + this.connections_shadow;
             ctx.beginPath();
@@ -1695,7 +1696,7 @@
          * @returns {[number,number]}
          */
         computeConnectionPoint(a, b, t) {
-            let dist = distance(a, b);
+            let dist = utils_1.default.distance(a, b);
             let p0 = a;
             let p1 = [a[0] + dist * 0.25, a[1]];
             let p2 = [b[0] - dist * 0.25, b[1]];
@@ -2371,33 +2372,6 @@
                 if (result[i].parentNode)
                     result[i].parentNode.removeChild(result[i]);
         }
-        /**
-         * extend class
-         * @param target
-         * @param origin
-         */
-        extendClass(target, origin) {
-            for (let i in origin) {
-                if (target.hasOwnProperty(i))
-                    continue;
-                target[i] = origin[i];
-            }
-            if (origin.prototype)
-                for (let i in origin.prototype) {
-                    if (!origin.prototype.hasOwnProperty(i))
-                        continue;
-                    if (target.prototype.hasOwnProperty(i))
-                        continue;
-                    //copy getters
-                    if (origin.prototype.__lookupGetter__(i))
-                        target.prototype.__defineGetter__(i, origin.prototype.__lookupGetter__(i));
-                    else
-                        target.prototype[i] = origin.prototype[i];
-                    //and setters
-                    if (origin.prototype.__lookupSetter__(i))
-                        target.prototype.__defineSetter__(i, origin.prototype.__lookupSetter__(i));
-                }
-        }
     }
     exports.Renderer = Renderer;
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius = 5, radius_low) {
@@ -2414,135 +2388,6 @@
         this.lineTo(x, y + radius);
         this.quadraticCurveTo(x, y, x + radius, y);
     };
-    /**
-     * Compare objects
-     * @param a
-     * @param b
-     * @returns {boolean}
-     */
-    function compareObjects(a, b) {
-        for (let i in a)
-            if (a[i] != b[i])
-                return false;
-        return true;
-    }
-    /**
-     * Calculate distance
-     * @param a
-     * @param b
-     * @returns {number}
-     */
-    function distance(a, b) {
-        return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
-    }
-    /**
-     * Conver color to string
-     * @param c
-     * @returns {string}
-     */
-    function colorToString(c) {
-        return "rgba(" + Math.round(c[0] * 255).toFixed() + "," + Math.round(c[1] * 255).toFixed() + "," + Math.round(c[2] * 255).toFixed() + "," + (c.length == 4 ? c[3].toFixed(2) : "1.0") + ")";
-    }
-    /**
-     * Compute is shape inside a rectangle
-     * @param x
-     * @param y
-     * @param left
-     * @param top
-     * @param width
-     * @param height
-     * @returns {boolean}
-     */
-    function isInsideRectangle(x, y, left, top, width, height) {
-        if (left < x && (left + width) > x &&
-            top < y && (top + height) > y)
-            return true;
-        return false;
-    }
-    /**
-     * Grow bounding
-     * @param bounding [minx,miny,maxx,maxy]
-     * @param x
-     * @param y
-     */
-    function growBounding(bounding, x, y) {
-        if (x < bounding[0])
-            bounding[0] = x;
-        else if (x > bounding[2])
-            bounding[2] = x;
-        if (y < bounding[1])
-            bounding[1] = y;
-        else if (y > bounding[3])
-            bounding[3] = y;
-    }
-    /**
-     * Compute is point inside bounding
-     * @param p
-     * @param bb
-     * @returns {boolean}
-     */
-    function isInsideBounding(p, bb) {
-        if (p[0] < bb[0][0] ||
-            p[1] < bb[0][1] ||
-            p[0] > bb[1][0] ||
-            p[1] > bb[1][1])
-            return false;
-        return true;
-    }
-    /**
-     * Compute is bounings overlap
-     * @param a
-     * @param b
-     * @returns {boolean}
-     */
-    function overlapBounding(a, b) {
-        if (a[0] > b[2] ||
-            a[1] > b[3] ||
-            a[2] < b[0] ||
-            a[3] < b[1])
-            return false;
-        return true;
-    }
-    /**
-     * Convert a hex value to its decimal value - the inputted hex must be in the
-     * format of a hex triplet - the kind we use for HTML colours. The function
-     * will return an array with three values.
-     * @param hex
-     * @returns {[number,number,number]}
-     */
-    function hex2num(hex) {
-        if (hex.charAt(0) == "#")
-            hex = hex.slice(1); //Remove the '#' char - if there is one.
-        hex = hex.toUpperCase();
-        let hex_alphabets = "0123456789ABCDEF";
-        let value;
-        let k = 0;
-        let int1, int2;
-        for (let i = 0; i < 6; i += 2) {
-            int1 = hex_alphabets.indexOf(hex.charAt(i));
-            int2 = hex_alphabets.indexOf(hex.charAt(i + 1));
-            value[k] = (int1 * 16) + int2;
-            k++;
-        }
-        return value;
-    }
-    /**
-     * Give a array with three values as the argument and the function will return
-     * the corresponding hex triplet.
-     * @param triplet
-     * @returns {string}
-     */
-    function num2hex(triplet) {
-        let hex_alphabets = "0123456789ABCDEF";
-        let hex = "#";
-        let int1, int2;
-        for (let i = 0; i < 3; i++) {
-            int1 = triplet[i] / 16;
-            int2 = triplet[i] % 16;
-            hex += hex_alphabets.charAt(int1) + hex_alphabets.charAt(int2);
-        }
-        return (hex);
-    }
     if (!window["requestAnimationFrame"]) {
         window.requestAnimationFrame = window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||

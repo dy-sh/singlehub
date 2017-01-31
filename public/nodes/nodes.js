@@ -6,10 +6,11 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
+        define(["require", "exports", "./utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const utils_1 = require("./utils");
     class NodesOptions {
         constructor() {
             this.MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
@@ -238,19 +239,6 @@
             return (typeof (performance) != "undefined") ? performance.now() : Date.now();
         }
         ;
-        /**
-         * Generate GUID string
-         * @returns {string}
-         */
-        static guid() {
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            }
-            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                s4() + '-' + s4() + s4() + s4();
-        }
     }
     Nodes.options = new NodesOptions;
     Nodes.MAIN_PANEL_ID = "Main";
@@ -273,23 +261,6 @@
             this.title = title;
             this.id = -1; //not know till not added
         }
-        debug(mess) {
-            console.log(mess);
-        }
-        debugErr(mess) {
-            console.log(mess);
-        }
-        cloneObject(obj, target) {
-            if (obj == null)
-                return null;
-            let r = JSON.parse(JSON.stringify(obj));
-            if (!target)
-                return r;
-            for (let i in r)
-                target[i] = r[i];
-            return target;
-        }
-        ;
         /**
          * Configure a node from an object containing the serialized info
          * @param info object with properties for configure
@@ -310,7 +281,7 @@
                     if (this[j] && this[j].configure)
                         this[j].configure(info[j]);
                     else
-                        this[j] = this.cloneObject(info[j], this[j]);
+                        this[j] = utils_1.default.cloneObject(info[j], this[j]);
                 }
                 else
                     this[j] = info[j];
@@ -355,7 +326,7 @@
                 pos: this.pos,
                 size: this.size,
                 data: this.data,
-                lags: this.cloneObject(this.flags),
+                lags: utils_1.default.cloneObject(this.flags),
                 inputs: this.inputs,
                 outputs: this.outputs,
                 properties: null,
@@ -365,7 +336,7 @@
                 shape: null
             };
             if (this.properties)
-                o.properties = this.cloneObject(this.properties);
+                o.properties = utils_1.default.cloneObject(this.properties);
             //todo ES6
             // if (!o.type)
             //     o.type = this.constructor.type;
@@ -752,12 +723,12 @@
             if (typeof slot == "string") {
                 slot = this.findOutputSlot(slot);
                 if (slot == -1) {
-                    this.debugErr("Connect: Error, no slot of name " + slot);
+                    this.debugErr("Connect error, no slot of name " + slot);
                     return false;
                 }
             }
             else if (!this.outputs || slot >= this.outputs.length) {
-                this.debugErr("Connect: Error, slot number not found");
+                this.debugErr("Connect error, slot number not found");
                 return false;
             }
             if (node && node.constructor === Number)
@@ -1061,6 +1032,22 @@
         localToScreen(x, y, canvas) {
             return [(x + this.pos[0]) * canvas.scale + canvas.offset[0],
                 (y + this.pos[1]) * canvas.scale + canvas.offset[1]];
+        }
+        /**
+         * Print debug message to console
+         * @param message
+         * @param module
+         */
+        debug(message) {
+            utils_1.default.debug(message, "Node: " + this.type + "(id:" + this.id + ")");
+        }
+        /**
+         * Print error message to console
+         * @param message
+         * @param module
+         */
+        debugErr(message, module) {
+            utils_1.default.debugErr(message, "Node: " + this.type + "(id:" + this.id + ")");
         }
     }
     exports.Node = Node;

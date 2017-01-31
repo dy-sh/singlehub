@@ -6,11 +6,12 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./nodes"], factory);
+        define(["require", "exports", "./nodes", "./utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("./nodes");
+    const utils_1 = require("./utils");
     //todo
     // if (!(<any>window)) {
     //     let debug = require('debug')('nodes-engine:     ');
@@ -29,7 +30,8 @@
             this.links = {};
             this.global_inputs = {};
             this.global_outputs = {};
-            console.log("Nodes engine created");
+            this.MODULE_NAME = "NodesEngine";
+            utils_1.default.debug("Engine created", this.MODULE_NAME);
             //todo
             // this.debug = config.engine.debugEngine;
             // if (this.debug)
@@ -40,12 +42,6 @@
         //used to know which types of connections support this engine (some graphs do not allow certain types)
         getSupportedTypes() {
             return this.supported_types;
-        }
-        debug(mess) {
-            console.log(mess);
-        }
-        debugErr(mess) {
-            console.log(mess);
         }
         /**
          * Removes all nodes from this engine
@@ -157,7 +153,7 @@
                 this.errors_in_execution = true;
                 if (nodes_1.Nodes.throw_errors)
                     throw err;
-                this.debugErr("NodesEngine: Error during execution: " + err);
+                utils_1.default.debugErr("Error during execution: " + err, this.MODULE_NAME);
                 this.stop();
             }
             let elapsed = nodes_1.Nodes.getTime() - start;
@@ -235,7 +231,7 @@
             for (let i in M)
                 L.push(M[i]);
             if (L.length != this._nodes.length)
-                this.debug("NodesEngine: something went wrong, nodes missing");
+                utils_1.default.debug("Something went wrong, nodes missing", this.MODULE_NAME);
             //save order number in the node
             for (let i in L)
                 L[i].order = i;
@@ -688,29 +684,12 @@
                 frame: this.frame,
                 last_node_id: this.last_node_id,
                 last_link_id: this.last_link_id,
-                links: this.cloneObject(this.links),
+                links: utils_1.default.cloneObject(this.links),
                 config: this.config,
                 nodes: nodes_info
             };
             return data;
         }
-        /***
-         * Clone object
-         * @param obj
-         * @param target
-         * @returns {any}
-         */
-        cloneObject(obj, target) {
-            if (obj == null)
-                return null;
-            let r = JSON.parse(JSON.stringify(obj));
-            if (!target)
-                return r;
-            for (let i in r)
-                target[i] = r[i];
-            return target;
-        }
-        ;
         /**
          * Add nodes to engine from a JSON string
          * @param data JSON string
@@ -730,7 +709,7 @@
                 let n_info = nodes[i]; //stored info
                 let node = nodes_1.Nodes.createNode(n_info.type, n_info.title);
                 if (!node) {
-                    this.debugErr("Node not found: " + n_info.type);
+                    utils_1.default.debugErr("Node not found: " + n_info.type, this.MODULE_NAME);
                     error = true;
                     continue;
                 }

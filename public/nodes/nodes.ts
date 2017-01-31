@@ -2,23 +2,8 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-
-
-//todo
-// const debug = require('debug')('nodes-engine:     ');
-// const debugLog = require('debug')('nodes-engine:log  ');
-// const debugMes = require('debug')('modes-engine:mes  ');
-// const debugErr = require('debug')('nodes-engine:error');
-// const nodeDebug = require('debug')('nodes:     ');
-// const nodeDebugErr = require('debug')('nodes:error');
-//
-// const config = require('../../config');
-
-// *************************************************************
-//   Nodes CLASS                                     *******
-// *************************************************************
-
 import {NodesEngine} from "./nodes-engine";
+import Utils from "./utils";
 
 // interface Boundings{
 //     [4]: Float32Array;
@@ -338,20 +323,7 @@ export class Nodes {
         return (typeof(performance) != "undefined") ? performance.now() : Date.now();
     };
 
-    /**
-     * Generate GUID string
-     * @returns {string}
-     */
-    static guid(): string {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
 
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
-    }
 }
 
 
@@ -443,24 +415,6 @@ export class Node {
         this.id = -1; //not know till not added
     }
 
-    debug(mess: any): void {
-        console.log(mess)
-    }
-
-    debugErr(mess: any): void {
-        console.log(mess)
-    }
-
-    cloneObject(obj: any, target?: any): any {
-        if (obj == null) return null;
-        let r = JSON.parse(JSON.stringify(obj));
-        if (!target) return r;
-
-        for (let i in r)
-            target[i] = r[i];
-        return target;
-    };
-
 
     /**
      * Configure a node from an object containing the serialized info
@@ -484,7 +438,7 @@ export class Node {
                 if (this[j] && this[j].configure)
                     this[j].configure(info[j]);
                 else
-                    this[j] = this.cloneObject(info[j], this[j]);
+                    this[j] = Utils.cloneObject(info[j], this[j]);
             }
             else //value
                 this[j] = info[j];
@@ -532,7 +486,7 @@ export class Node {
             pos: this.pos,
             size: this.size,
             data: this.data,
-            lags: this.cloneObject(this.flags),
+            lags: Utils.cloneObject(this.flags),
             inputs: this.inputs,
             outputs: this.outputs,
             properties: null,
@@ -543,7 +497,7 @@ export class Node {
         };
 
         if (this.properties)
-            o.properties = this.cloneObject(this.properties);
+            o.properties = Utils.cloneObject(this.properties);
 
         //todo ES6
         // if (!o.type)
@@ -692,8 +646,6 @@ export class Node {
     // }
 
 
-
-
     //todo ES6
 //     triggerOutput(slot, param) {
 //         let n = this.getOutputNode(slot);
@@ -726,7 +678,7 @@ export class Node {
      * Add a new output slot to use in this node
      * @param  array of triplets like [[name,type,extra_info],[...]]
      */
-    addOutputs(array:Array<Output>) :void{
+    addOutputs(array: Array<Output>): void {
         for (let i = 0; i < array.length; ++i) {
             let info = array[i];
             let o = {name: info[0], type: info[1], links: null};
@@ -782,7 +734,7 @@ export class Node {
      * add several new input slots in this node
      * @param {Array} array of triplets like [[name,type,extra_info],[...]]
      */
-    addInputs(array:Array<Input>):void {
+    addInputs(array: Array<Input>): void {
         for (let i = 0; i < array.length; ++i) {
             let info = array[i];
             let o = {name: info[0], type: info[1], link: null};
@@ -990,12 +942,12 @@ export class Node {
         if (typeof slot == "string") {
             slot = this.findOutputSlot(slot);
             if (slot == -1) {
-                this.debugErr("Connect: Error, no slot of name " + slot);
+                this.debugErr("Connect error, no slot of name " + slot);
                 return false;
             }
         }
         else if (!this.outputs || slot >= this.outputs.length) {
-            this.debugErr("Connect: Error, slot number not found");
+            this.debugErr("Connect error, slot number not found");
             return false;
         }
 
@@ -1223,7 +1175,6 @@ export class Node {
     }
 
 
-
     /**
      * Force align to grid
      */
@@ -1275,13 +1226,12 @@ export class Node {
     }
 
 
-
     /**
      * safe Node action execution (not sure if safe)
      * @param action
      * @returns {boolean}
      */
-    executeAction(action:string):boolean {
+    executeAction(action: string): boolean {
         if (action == "") return false;
 
         if (action.indexOf(";") != -1 || action.indexOf("}") != -1) {
@@ -1299,7 +1249,7 @@ export class Node {
         let code = action;
 
         try {
-        	//todo ES6
+            //todo ES6
             // let _foo = eval;
             // eval = null;
             // (new Function("with(this) { " + code + "}")).call(this);
@@ -1318,7 +1268,7 @@ export class Node {
      * Allows to get onMouseMove and onMouseUp events even if the mouse is out of focus
      * @param v
      */
-    captureInput(v:any):void {
+    captureInput(v: any): void {
         if (!this.engine || !this.engine.list_of_renderers)
             return;
 
@@ -1359,6 +1309,24 @@ export class Node {
     localToScreen(x, y, canvas): [number, number] {
         return [(x + this.pos[0]) * canvas.scale + canvas.offset[0],
             (y + this.pos[1]) * canvas.scale + canvas.offset[1]];
+    }
+
+    /**
+     * Print debug message to console
+     * @param message
+     * @param module
+     */
+    debug(message: string): void {
+        Utils.debug(message, "Node: " + this.type + "(id:" + this.id + ")");
+    }
+
+    /**
+     * Print error message to console
+     * @param message
+     * @param module
+     */
+    debugErr(message: string, module?: string): void {
+        Utils.debugErr(message, "Node: " + this.type + "(id:" + this.id + ")");
     }
 }
 
