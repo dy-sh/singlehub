@@ -6,44 +6,44 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor-canvas", "./node-editor-socket", "./node-editor-themes"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./renderer", "./editor-socket", "./node-editor-themes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
-    const node_editor_canvas_1 = require("./node-editor-canvas");
-    const node_editor_socket_1 = require("./node-editor-socket");
+    const renderer_1 = require("./renderer");
+    const editor_socket_1 = require("./editor-socket");
     const node_editor_themes_1 = require("./node-editor-themes");
     class NodeEditor {
         //nodes: Nodes;
         constructor() {
             //fill container
-            let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
+            let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
             let root = document.createElement("div");
             this.root = root;
             root.className = "node-editor";
             root.innerHTML = html;
-            let canvas = root.querySelector(".graphcanvas");
+            let canvas = root.querySelector(".canvas");
             //nodes options theme
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
             //create graph
-            let graph = this.graph = nodes_engine_1.engine;
+            let graph = this.engine = nodes_engine_1.engine;
             //create socket
-            this.socket = node_editor_socket_1.socket;
+            this.socket = editor_socket_1.socket;
             //create canvas
-            let graphcanvas = this.graphcanvas = new node_editor_canvas_1.NodeEditorCanvas(canvas, this.socket, this, graph);
-            // graphcanvas.background_image = "/images/litegraph/grid.png";
-            graph.onAfterExecute = function () { graphcanvas.draw(true); };
+            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.socket, this, graph);
+            // renderer.background_image = "/images/litegraph/grid.png";
+            graph.onAfterExecute = function () { renderer.draw(true); };
             //add stuff
             this.addMiniWindow(200, 200);
             //append to DOM
             let parent = document.getElementById("main");
             if (parent)
                 parent.appendChild(root);
-            graphcanvas.resize();
-            //graphcanvas.draw(true,true);
+            renderer.resize();
+            //renderer.draw(true,true);
         }
         addMiniWindow(w, h) {
             if (minimap_opened)
@@ -51,16 +51,16 @@
             minimap_opened = true;
             let miniwindow = document.createElement("div");
             miniwindow.className = "litegraph miniwindow";
-            miniwindow.innerHTML = "<canvas class='graphcanvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
+            miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
             let canvas = miniwindow.querySelector("canvas");
-            let graphcanvas = new node_editor_canvas_1.NodeEditorCanvas(canvas, this.socket, this, this.graph);
-            //  graphcanvas.background_image = "images/litegraph/grid.png";
+            let renderer = new renderer_1.Renderer(canvas, this.socket, this, this.engine);
+            //  renderer.background_image = "images/grid.png";
             //derwish edit
-            graphcanvas.scale = 0.1;
-            //graphcanvas.allow_dragnodes = false;
-            graphcanvas.offset = [0, 0];
-            graphcanvas.scale = 0.1;
-            graphcanvas.setZoom(0.1, [1, 1]);
+            renderer.scale = 0.1;
+            //renderer.allow_dragnodes = false;
+            renderer.offset = [0, 0];
+            renderer.scale = 0.1;
+            renderer.setZoom(0.1, [1, 1]);
             miniwindow.style.position = "absolute";
             miniwindow.style.top = "4px";
             miniwindow.style.right = "4px";
@@ -69,7 +69,7 @@
             close_button.innerHTML = "X";
             close_button.addEventListener("click", function (e) {
                 minimap_opened = false;
-                graphcanvas.setGraph(null);
+                renderer.setGraph(null);
                 miniwindow.parentNode.removeChild(miniwindow);
             });
             miniwindow.appendChild(close_button);
@@ -78,9 +78,9 @@
             reset_button.className = "corner-button2";
             reset_button.innerHTML = "R";
             reset_button.addEventListener("click", function (e) {
-                graphcanvas.offset = [0, 0];
-                graphcanvas.scale = 0.1;
-                graphcanvas.setZoom(0.1, [1, 1]);
+                renderer.offset = [0, 0];
+                renderer.scale = 0.1;
+                renderer.setZoom(0.1, [1, 1]);
             });
             miniwindow.appendChild(reset_button);
             this.root.querySelector(".content").appendChild(miniwindow);

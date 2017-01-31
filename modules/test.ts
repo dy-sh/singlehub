@@ -2,19 +2,13 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-
 import {Nodes as nodes, Node} from "../public/nodes/nodes";
 import {engine} from "../public/nodes/nodes-engine";
 
 
-
-
-
 module.exports.test = function () {
 
-	//graph.start(1);
-
-
+	//engine.start(1);
 
 	let node_const_A = nodes.createNode("basic/const");
 	node_const_A.pos = [200, 200];

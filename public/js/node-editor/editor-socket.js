@@ -6,13 +6,14 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
-    class NodeEditorSocket {
+    const node_editor_1 = require("./node-editor");
+    class EditorSocket {
         constructor() {
             this.engine = nodes_engine_1.engine;
             let socket = io();
@@ -93,7 +94,7 @@
             this.socket.on('removeLink', function (link) {
                 if (link.panel_id != window.this_panel_id)
                     return;
-                //let node = graph.getNodeById(link.origin_id);
+                //let node = this.engine.getNodeById(link.origin_id);
                 let targetNode = this.engine.getNodeById(link.target_id);
                 //node.disconnectOutput(link.target_slot, targetNode);
                 targetNode.disconnectInput(link.target_slot);
@@ -104,12 +105,12 @@
                 let node = this.engine.getNodeById(link.origin_id);
                 let targetNode = this.engine.getNodeById(link.target_id);
                 node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
-                //  graph.change();
+                //  this.engine.change();
             });
             this.getNodes();
             // this.getGatewayInfo();
             $("#sendButton").click(function () {
-                //console.log(graph);
+                //console.log(engine);
                 let gr = JSON.stringify(this.engine.serialize());
                 $.ajax({
                     url: '/NodeEditorAPI/PutGraph',
@@ -233,8 +234,8 @@
         getGraph() {
             $.ajax({
                 url: "/NodeEditorAPI/GetGraph",
-                success: function (loadedGraph) {
-                    this.engine.configure(loadedGraph);
+                success: function (graph) {
+                    this.engine.configure(graph);
                 }
             });
         }
@@ -305,11 +306,10 @@
                 oldNode.size[1] = this.calculateNodeMinHeight(oldNode);
                 //calculate pos
                 if (node.pos) {
-                    //todo ES6
-                    // if (!graph.Editor.graphcanvas.node_dragged)
-                    // 	oldNode.pos = node.pos;
-                    // else if (!graph.Editor.graphcanvas.selected_nodes[node.id])
-                    oldNode.pos = node.pos;
+                    if (!node_editor_1.editor.renderer.node_dragged)
+                        oldNode.pos = node.pos;
+                    else if (!node_editor_1.editor.renderer.selected_nodes[node.id])
+                        oldNode.pos = node.pos;
                 }
                 oldNode.setDirtyCanvas(true, true);
             }
@@ -367,7 +367,7 @@
             return result;
         }
     }
-    exports.NodeEditorSocket = NodeEditorSocket;
-    exports.socket = new NodeEditorSocket();
+    exports.EditorSocket = EditorSocket;
+    exports.socket = new EditorSocket();
 });
-//# sourceMappingURL=node-editor-socket.js.map
+//# sourceMappingURL=editor-socket.js.map

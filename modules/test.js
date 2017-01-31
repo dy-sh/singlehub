@@ -13,7 +13,7 @@
     const nodes_1 = require("../public/nodes/nodes");
     const nodes_engine_1 = require("../public/nodes/nodes-engine");
     module.exports.test = function () {
-        //graph.start(1);
+        //engine.start(1);
         let node_const_A = nodes_1.Nodes.createNode("basic/const");
         node_const_A.pos = [200, 200];
         nodes_engine_1.engine.add(node_const_A);

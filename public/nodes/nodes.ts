@@ -83,7 +83,7 @@ export class NodesOptions {
     SHADOWS_WIDTH = 2;
     MENU_TEXT_COLOR = "#BBD";
     MENU_BG_COLOR = "#353535";
-    BG_IMAGE = "/images/litegraph/grid.png";
+    BG_IMAGE = "/images/grid.png";
     NODE_IMAGES_PATH = "";
 
     RENDER_CONNECTION_ARROWS = true;
@@ -205,7 +205,7 @@ export class Nodes {
 
     /**
      * Adds this method to all nodetypes, existing and to be created
-     * (You can add it to LGraphNode.prototype but then existing node types wont have it)
+     * (You can add it to Node.prototype but then existing node types wont have it)
      * @method addNodeMethod
      * @param {Function} func
      */
@@ -217,7 +217,7 @@ export class Nodes {
     };
 
     /**
-     * Create a node of a given type with a name. The node is not attached to any graph yet.
+     * Create a node of a given type with a name. The node is not attached to any engine yet.
      * @method createNode
      * @param {String} type full name of the node class. p.e. "math/sin"
      * @param {String} name a name to distinguish from other nodes
@@ -379,8 +379,8 @@ export class Nodes {
  + unsafe_execution: not allowed for safe execution
 
  supported callbacks:
- + onAdded: when added to graph
- + onRemoved: when removed from graph
+ + onAdded: when added to engine
+ + onRemoved: when removed from engine
  + onStart:	when starts playing
  + onStop:	when stops playing
  + onDrawForeground: render the inside widgets inside the node
@@ -410,7 +410,7 @@ export class Node {
     title: string;
     desc: string;
     size: [number, number];
-    graph: NodesEngine;
+    engine: NodesEngine;
     id: number;
     type: string;
     inputs: Array<Input>;
@@ -537,7 +537,7 @@ export class Node {
             if (typeof(link) != "object")
                 continue;
             input.link = link[0];
-            this.graph.links[link[0]] = {
+            this.engine.links[link[0]] = {
                 id: link[0],
                 origin_id: link[1],
                 origin_slot: link[2],
@@ -644,7 +644,7 @@ export class Node {
         if (slot > -1 && slot < this.outputs.length && this.outputs[slot] && this.outputs[slot].links != null) {
             for (let i = 0; i < this.outputs[slot].links.length; i++) {
                 let link_id = this.outputs[slot].links[i];
-                this.graph.links[link_id].data = data;
+                this.engine.links[link_id].data = data;
             }
         }
     }
@@ -659,7 +659,7 @@ export class Node {
         if (!this.inputs)
             return; //undefined;
         if (slot < this.inputs.length && this.inputs[slot].link != null)
-            return this.graph.links[this.inputs[slot].link].data;
+            return this.engine.links[this.inputs[slot].link].data;
         return; //undefined;
     }
 
@@ -729,7 +729,7 @@ export class Node {
 //             let output = this.outputs[slot];
 //             let r = [];
 //             for (let i = 0; i < output.length; i++)
-//                 r.push(this.graph.getNodeById(output.links[i].target_id));
+//                 r.push(this.engine.getNodeById(output.links[i].target_id));
 //             return r;
 //         }
 //         return null;
@@ -951,7 +951,7 @@ export class Node {
     isPointInsideNode(x: number, y: number, margin: number): boolean {
         margin = margin || 0;
 
-        let margin_top = this.graph && this.graph.isLive() ? 0 : 20;
+        let margin_top = this.engine && this.engine.isLive() ? 0 : 20;
         if (this.flags.collapsed) {
             //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
             if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT - margin, Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))
@@ -1046,7 +1046,7 @@ export class Node {
         }
 
         if (node && node.constructor === Number)
-            node = this.graph.getNodeById(node.id);
+            node = this.engine.getNodeById(node.id);
         if (!node)
             throw("Node not found");
 
@@ -1074,8 +1074,8 @@ export class Node {
         //why here??
         this.setDirtyCanvas(false, true);
 
-        if (this.graph)
-            this.graph.connectionChange(this);
+        if (this.engine)
+            this.engine.connectionChange(this);
 
         //special case: -1 means node-connection, used for triggers
         let output = this.outputs[slot];
@@ -1095,16 +1095,16 @@ export class Node {
             output.type.toLowerCase() == node.inputs[target_slot].type.toLowerCase()) //same type
         {
             //info: link structure => [ 0:link_id, 1:start_node_id, 2:start_slot, 3:end_node_id, 4:end_slot ]
-            //let link = [ this.graph.last_link_id++, this.id, slot, node.id, target_slot ];
+            //let link = [ this.engine.last_link_id++, this.id, slot, node.id, target_slot ];
             let link = {
-                id: this.graph.last_link_id++,
+                id: this.engine.last_link_id++,
                 origin_id: this.id,
                 origin_slot: slot,
                 target_id: node.id,
                 target_slot: target_slot
             };
 
-            this.graph.links[link.id] = link;
+            this.engine.links[link.id] = link;
 
             //connect
             if (output.links == null) output.links = [];
@@ -1114,8 +1114,8 @@ export class Node {
         }
 
         this.setDirtyCanvas(false, true);
-        if (this.graph)
-            this.graph.connectionChange(this);
+        if (this.engine)
+            this.engine.connectionChange(this);
 
         return true;
     }
@@ -1149,19 +1149,19 @@ export class Node {
         //one of the links
         if (target_node) {
             if (target_node.constructor === Number)
-                target_node = this.graph.getNodeById(target_node.id);
+                target_node = this.engine.getNodeById(target_node.id);
             if (!target_node)
                 throw("Target Node not found");
 
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.graph.links[link_id];
+                let link_info = this.engine.links[link_id];
 
                 //is the link we are searching for...
                 if (link_info.target_id == target_node.id) {
                     output.links.splice(i, 1); //remove here
                     target_node.inputs[link_info.target_slot].link = null; //remove there
-                    delete this.graph.links[link_id]; //remove the link from the links pool
+                    delete this.engine.links[link_id]; //remove the link from the links pool
                     break;
                 }
             }
@@ -1170,19 +1170,19 @@ export class Node {
         {
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.graph.links[link_id];
+                let link_info = this.engine.links[link_id];
 
-                let target_node = this.graph.getNodeById(link_info.target_id);
+                let target_node = this.engine.getNodeById(link_info.target_id);
                 if (target_node)
                     target_node.inputs[link_info.target_slot].link = null; //remove other side link
-                delete this.graph.links[link_id]; //remove the link from the links pool
+                delete this.engine.links[link_id]; //remove the link from the links pool
             }
             output.links = null;
         }
 
         this.setDirtyCanvas(false, true);
-        if (this.graph)
-            this.graph.connectionChange(this);
+        if (this.engine)
+            this.engine.connectionChange(this);
         return true;
     }
 
@@ -1213,9 +1213,9 @@ export class Node {
         this.inputs[slot].link = null;
 
         //remove other side
-        let link_info = this.graph.links[link_id];
+        let link_info = this.engine.links[link_id];
         if (link_info) {
-            let node = this.graph.getNodeById(link_info.origin_id);
+            let node = this.engine.getNodeById(link_info.origin_id);
             if (!node)
                 return false;
 
@@ -1226,7 +1226,7 @@ export class Node {
             //check outputs
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.graph.links[link_id];
+                let link_info = this.engine.links[link_id];
                 if (link_info.target_id == this.id) {
                     output.links.splice(i, 1);
                     break;
@@ -1235,14 +1235,14 @@ export class Node {
         }
 
         this.setDirtyCanvas(false, true);
-        if (this.graph)
-            this.graph.connectionChange(this);
+        if (this.engine)
+            this.engine.connectionChange(this);
         return true;
     }
 
 //
     /**
-     * returns the center of a connection point in canvas coords
+     * returns the center of a connection point in renderer coords
      * @method getConnectionPos
      * @param {boolean} is_input true if if a input slot, false if it is an output
      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
@@ -1301,11 +1301,11 @@ export class Node {
 //         nodeDebugErr(this.title + ": " + msg);
 //     }
 //
-    /* Forces to redraw or the main canvas (Node) or the bg canvas (links) */
+    /* Forces to redraw or the main renderer (Node) or the bg renderer (links) */
     setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean): void {
-        if (!this.graph)
+        if (!this.engine)
             return;
-        this.graph.sendActionToCanvas("setDirty", [dirty_foreground, dirty_background]);
+        this.engine.sendActionToRenderer("setDirty", [dirty_foreground, dirty_background]);
     }
 
     loadImage(url: string): HTMLImageElement {
@@ -1357,10 +1357,10 @@ export class Node {
 //
 // 	/* Allows to get onMouseMove and onMouseUp events even if the mouse is out of focus */
 //     captureInput(v) {
-//         if (!this.graph || !this.graph.list_of_graphcanvas)
+//         if (!this.engine || !this.engine.list_of_canvas)
 //             return;
 //
-//         let list = this.graph.list_of_graphcanvas;
+//         let list = this.engine.list_of_canvas;
 //
 //         for (let i = 0; i < list.length; ++i) {
 //             let c = list[i];
@@ -1374,7 +1374,7 @@ export class Node {
 //     }
 //
     /**
-     * Collapse the node to make it smaller on the canvas
+     * Collapse the node to make it smaller on the renderer
      * @method collapse
      **/
     collapse(): void {
@@ -1396,9 +1396,9 @@ export class Node {
             this.flags.pinned = v;
     }
 
-    localToScreen(x, y, graphcanvas): [number, number] {
-        return [(x + this.pos[0]) * graphcanvas.scale + graphcanvas.offset[0],
-            (y + this.pos[1]) * graphcanvas.scale + graphcanvas.offset[1]];
+    localToScreen(x, y, canvas): [number, number] {
+        return [(x + this.pos[0]) * canvas.scale + canvas.offset[0],
+            (y + this.pos[1]) * canvas.scale + canvas.offset[1]];
     }
 }
 

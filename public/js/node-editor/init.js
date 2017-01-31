@@ -6,25 +6,25 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/nodes/base", "../../nodes/nodes/math", "./node-editor", "./node-editor-socket"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/nodes/base", "../../nodes/nodes/math", "./node-editor", "./editor-socket"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
-    // import {NodeEditorCanvas} from "./litegraph-canvas"
+    // import {Renderer} from "./litegraph-renderer"
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     require("../../nodes/nodes/base");
     require("../../nodes/nodes/math");
     const node_editor_1 = require("./node-editor");
-    const node_editor_socket_1 = require("./node-editor-socket");
-    // (<any>window).graph = engine;
+    const editor_socket_1 = require("./editor-socket");
+    // (<any>window).engine = engine;
     window.engine = nodes_engine_1.engine;
     window.editor = node_editor_1.editor;
     window.nodes = nodes_1.Nodes;
     window.addEventListener("resize", function () {
-        node_editor_1.editor.graphcanvas.resize();
+        node_editor_1.editor.renderer.resize();
     });
-    node_editor_socket_1.socket.getNodes();
+    editor_socket_1.socket.getNodes();
     //
     //
     let node_const_A = nodes_1.Nodes.createNode("basic/const");

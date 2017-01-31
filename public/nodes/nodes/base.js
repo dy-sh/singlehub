@@ -64,14 +64,14 @@
 //
 //
 //
-// //Subgraph: a node that contains a graph
+// //Subgraph: a node that contains a engine
 //         class Subgraph extends Node {
 //             constructor() {
 //                 super();
 //                 let that = this;
 //                 this.size = [120, 60];
 //
-//                 //create inner graph
+//                 //create inner engine
 //                 this.subgraph = new engine();
 //                 this.subgraph._subgraph_node = this;
 //                 this.subgraph._is_subgraph = true;
@@ -130,11 +130,11 @@
 //                 info.type = type;
 //             }
 //
-//             getExtraMenuOptions(graphcanvas) {
+//             getExtraMenuOptions(renderer) {
 //                 let that = this;
 //                 return [{
 //                     content: "Open", callback: function () {
-//                         graphcanvas.openSubgraph(that.subgraph);
+//                         renderer.openSubgraph(that.subgraph);
 //                     }
 //                 }];
 //             }
@@ -162,7 +162,7 @@
 //
 //             configure(o) {
 //                 Node.prototype.configure.call(this, o);
-//                 //this.subgraph.configure(o.graph);
+//                 //this.subgraph.configure(o.engine);
 //             }
 //
 //             serialize() {
@@ -186,7 +186,7 @@
 //         Subgraph.desc = "Graph inside a node";
 //
 //
-//         nodes.registerNodeType("graph/subgraph", Subgraph);
+//         nodes.registerNodeType("engine/subgraph", Subgraph);
 //
 //
 // //Input for a subgraph
@@ -215,8 +215,8 @@
 //                         if (info.name == v)
 //                             return;
 //                         info.name = v;
-//                         if (that.graph)
-//                             that.graph.renameGlobalInput(input_name, v);
+//                         if (that.engine)
+//                             that.engine.renameGlobalInput(input_name, v);
 //                         input_name = v;
 //                     },
 //                     enumerable: true
@@ -228,23 +228,23 @@
 //                     },
 //                     set: function (v) {
 //                         that.outputs[0].type = v;
-//                         if (that.graph)
-//                             that.graph.changeGlobalInputType(input_name, that.outputs[0].type);
+//                         if (that.engine)
+//                             that.engine.changeGlobalInputType(input_name, that.outputs[0].type);
 //                     },
 //                     enumerable: true
 //                 });
 //             }
 //
-// //When added to graph tell the graph this is a new global input
+// //When added to engine tell the engine this is a new global input
 //             onAdded() {
-//                 this.graph.addGlobalInput(this.properties.name, this.properties.type);
+//                 this.engine.addGlobalInput(this.properties.name, this.properties.type);
 //             }
 //
 //             onExecute() {
 //                 let name = this.properties.name;
 //
 //                 //read from global input
-//                 let data = this.graph.global_inputs[name];
+//                 let data = this.engine.global_inputs[name];
 //                 if (!data) return;
 //
 //                 //put through output
@@ -253,9 +253,9 @@
 //         }
 //
 //         GlobalInput.title = "Input";
-//         GlobalInput.desc = "Input of the graph";
+//         GlobalInput.desc = "Input of the engine";
 //
-//         nodes.registerNodeType("graph/input", GlobalInput);
+//         nodes.registerNodeType("engine/input", GlobalInput);
 //
 //
 // //Output for a subgraph
@@ -283,8 +283,8 @@
 //                         if (info.name == v)
 //                             return;
 //                         info.name = v;
-//                         if (that.graph)
-//                             that.graph.renameGlobalOutput(output_name, v);
+//                         if (that.engine)
+//                             that.engine.renameGlobalOutput(output_name, v);
 //                         output_name = v;
 //                     },
 //                     enumerable: true
@@ -296,26 +296,26 @@
 //                     },
 //                     set: function (v) {
 //                         that.inputs[0].type = v;
-//                         if (that.graph)
-//                             that.graph.changeGlobalInputType(output_name, that.inputs[0].type);
+//                         if (that.engine)
+//                             that.engine.changeGlobalInputType(output_name, that.inputs[0].type);
 //                     },
 //                     enumerable: true
 //                 });
 //             }
 //
 //             onAdded() {
-//                 let name = this.graph.addGlobalOutput(this.properties.name, this.properties.type);
+//                 let name = this.engine.addGlobalOutput(this.properties.name, this.properties.type);
 //             }
 //
 //             onExecute() {
-//                 this.graph.setGlobalOutputData(this.properties.name, this.getInputData(0));
+//                 this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
 //             }
 //         }
 //
 //         GlobalOutput.title = "Ouput";
-//         GlobalOutput.desc = "Output of the graph";
+//         GlobalOutput.desc = "Output of the engine";
 //
-//         nodes.registerNodeType("graph/output", GlobalOutput);
+//         nodes.registerNodeType("engine/output", GlobalOutput);
 //
 //
 //

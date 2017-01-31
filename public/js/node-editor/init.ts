@@ -3,27 +3,27 @@
  */
 
 import {Nodes, Node} from "../../nodes/nodes"
-// import {NodeEditorCanvas} from "./litegraph-canvas"
+// import {Renderer} from "./litegraph-renderer"
 import {engine} from "../../nodes/nodes-engine"
 
 import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
 
 import {editor} from "./node-editor";
-import {socket} from "./node-editor-socket"
+import {socket} from "./editor-socket"
 
 
 
 
 
 
-// (<any>window).graph = engine;
+// (<any>window).engine = engine;
 (<any>window).engine = engine;
 (<any>window).editor = editor;
 (<any>window).nodes = Nodes;
 
 window.addEventListener("resize", function () {
-    editor.graphcanvas.resize();
+    editor.renderer.resize();
 });
 
 socket.getNodes();

@@ -4,9 +4,10 @@
 
 import {Nodes,Node} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine";
+import { editor} from "./node-editor";
 
 
-export class NodeEditorSocket {
+export class EditorSocket {
 
     socketConnected: boolean;
     socket: SocketIOClient.Socket;
@@ -120,7 +121,7 @@ export class NodeEditorSocket {
             if (link.panel_id != (<any>window).this_panel_id)
                 return;
 
-            //let node = graph.getNodeById(link.origin_id);
+            //let node = this.engine.getNodeById(link.origin_id);
             let targetNode = this.engine.getNodeById(link.target_id);
             //node.disconnectOutput(link.target_slot, targetNode);
             targetNode.disconnectInput(link.target_slot);
@@ -133,7 +134,7 @@ export class NodeEditorSocket {
             let node = this.engine.getNodeById(link.origin_id);
             let targetNode = this.engine.getNodeById(link.target_id);
             node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
-            //  graph.change();
+            //  this.engine.change();
 
         });
 
@@ -144,7 +145,7 @@ export class NodeEditorSocket {
 
         $("#sendButton").click(
             function () {
-                //console.log(graph);
+                //console.log(engine);
                 let gr = JSON.stringify(this.engine.serialize());
                 $.ajax({
                     url: '/NodeEditorAPI/PutGraph',
@@ -301,8 +302,8 @@ export class NodeEditorSocket {
 
         $.ajax({
             url: "/NodeEditorAPI/GetGraph",
-            success: function (loadedGraph) {
-                this.engine.configure(loadedGraph);
+            success: function (graph) {
+                this.engine.configure(graph);
             }
         });
     }
@@ -395,10 +396,9 @@ export class NodeEditorSocket {
             //calculate pos
 
             if (node.pos) {
-                //todo ES6
-                // if (!graph.Editor.graphcanvas.node_dragged)
-                // 	oldNode.pos = node.pos;
-                // else if (!graph.Editor.graphcanvas.selected_nodes[node.id])
+                if (!editor.renderer.node_dragged)
+                	oldNode.pos = node.pos;
+                else if (!editor.renderer.selected_nodes[node.id])
                 oldNode.pos = node.pos;
             }
 
@@ -489,4 +489,4 @@ export class NodeEditorSocket {
     }
 }
 
-export let socket = new NodeEditorSocket();
+export let socket = new EditorSocket();

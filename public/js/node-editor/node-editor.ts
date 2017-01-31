@@ -4,29 +4,29 @@
 
 import {Nodes,Node} from "../../nodes/nodes"
 import {NodesEngine,engine} from "../../nodes/nodes-engine"
-import {NodeEditorCanvas} from "./node-editor-canvas"
-import {NodeEditorSocket,socket} from "./node-editor-socket";
+import {Renderer} from "./renderer"
+import {EditorSocket,socket} from "./editor-socket";
 import {themes} from "./node-editor-themes"
 
 
 export class NodeEditor {
 	private root: HTMLDivElement;
-	graph: NodesEngine;
-	graphcanvas: NodeEditorCanvas;
-	socket: NodeEditorSocket;
+	engine: NodesEngine;
+	renderer: Renderer;
+	socket: EditorSocket;
 	//nodes: Nodes;
 
 
 	constructor() {
 		//fill container
-		let html = "<div class='content'><div class='editor-area'><canvas class='graphcanvas' width='1000' height='500' tabindex=10></canvas></div></div>";
+		let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
 
 		let root = document.createElement("div");
 		this.root = root;
 		root.className = "node-editor";
 		root.innerHTML = html;
 
-		let canvas = root.querySelector(".graphcanvas");
+		let canvas = root.querySelector(".canvas");
 
 		//nodes options theme
 		if ((<any>window).theme)
@@ -35,19 +35,19 @@ export class NodeEditor {
 
 
 		//create graph
-		let graph = this.graph = engine;
+		let graph = this.engine = engine;
 
 		//create socket
 		this.socket = socket;
 
 		//create canvas
-		let graphcanvas = this.graphcanvas = new NodeEditorCanvas(
+		let renderer = this.renderer = new Renderer(
 			<HTMLCanvasElement>canvas,
 			this.socket,
 			this,
 			graph);
-	   // graphcanvas.background_image = "/images/litegraph/grid.png";
-		graph.onAfterExecute = function () { graphcanvas.draw(true) };
+	   // renderer.background_image = "/images/litegraph/grid.png";
+		graph.onAfterExecute = function () { renderer.draw(true) };
 
 
 
@@ -62,8 +62,8 @@ export class NodeEditor {
 		if (parent)
 			parent.appendChild(root);
 
-		graphcanvas.resize();
-		//graphcanvas.draw(true,true);
+		renderer.resize();
+		//renderer.draw(true,true);
 	}
 
 	addMiniWindow(w:number, h:number) :void {
@@ -75,18 +75,18 @@ export class NodeEditor {
 
 		let miniwindow = document.createElement("div");
 		miniwindow.className = "litegraph miniwindow";
-		miniwindow.innerHTML = "<canvas class='graphcanvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
+		miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
 		let canvas = miniwindow.querySelector("canvas");
 
-		let graphcanvas = new NodeEditorCanvas(canvas, this.socket,this,this.graph);
-		//  graphcanvas.background_image = "images/litegraph/grid.png";
+		let renderer = new Renderer(canvas, this.socket,this,this.engine);
+		//  renderer.background_image = "images/grid.png";
 		//derwish edit
-		graphcanvas.scale = 0.1;
-		//graphcanvas.allow_dragnodes = false;
+		renderer.scale = 0.1;
+		//renderer.allow_dragnodes = false;
 
-		graphcanvas.offset = [0, 0];
-		graphcanvas.scale = 0.1;
-		graphcanvas.setZoom(0.1, [1, 1]);
+		renderer.offset = [0, 0];
+		renderer.scale = 0.1;
+		renderer.setZoom(0.1, [1, 1]);
 
 		miniwindow.style.position = "absolute";
 		miniwindow.style.top = "4px";
@@ -97,7 +97,7 @@ export class NodeEditor {
 		close_button.innerHTML = "X";
 		close_button.addEventListener("click", function (e) {
 			minimap_opened = false;
-			graphcanvas.setGraph(null);
+			renderer.setGraph(null);
 			miniwindow.parentNode.removeChild(miniwindow);
 		});
 		miniwindow.appendChild(close_button);
@@ -107,9 +107,9 @@ export class NodeEditor {
 		reset_button.className = "corner-button2";
 		reset_button.innerHTML = "R";
 		reset_button.addEventListener("click", function (e) {
-			graphcanvas.offset = [0, 0];
-			graphcanvas.scale = 0.1;
-			graphcanvas.setZoom(0.1, [1, 1]);
+			renderer.offset = [0, 0];
+			renderer.scale = 0.1;
+			renderer.setZoom(0.1, [1, 1]);
 		});
 		miniwindow.appendChild(reset_button);
 

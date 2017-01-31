@@ -12,28 +12,28 @@
      * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
      */
     const nodes_1 = require("../../nodes/nodes");
-    class NodeEditorCanvas {
+    class Renderer {
         /**
          * The Global Scope. It contains all the registered node classes.
          *
-         * @class LGraphCanvas
+         * @class Renderer
          * @constructor
-         * @param {HTMLCanvas} canvas the canvas where you want to render (it accepts a selector in string format or the canvas itself)
-         * @param {LGraph} graph [optional]
+         * @param {HTMLCanvas} canvas the renderer where you want to render (it accepts a selector in string format or the renderer itself)
+         * @param {Graph} engine [optional]
          */
-        constructor(canvas, socket, editor, graph, skip_render) {
-            //if(graph === undefined)
-            //	throw ("No graph assigned");
-            //     if (canvas && typeof canvas == "string")
-            //        canvas = <HTMLCanvasElement>document.querySelector(canvas);
+        constructor(canvas, socket, editor, engine, skip_render) {
+            //if(engine === undefined)
+            //	throw ("No engine assigned");
+            //     if (renderer && typeof renderer == "string")
+            //        renderer = <HTMLCanvasElement>document.querySelector(renderer);
             this.socket = socket;
             this.editor = editor;
             //derwish edit
             this.max_zoom = 2;
             this.min_zoom = 0.1;
-            //link canvas and graph
-            if (graph)
-                graph.attachCanvas(this);
+            //link renderer and engine
+            if (engine)
+                engine.attachRenderer(this);
             this.setCanvas(canvas);
             this.clear();
             if (!skip_render)
@@ -88,76 +88,76 @@
                 this.onClear();
         }
         /**
-         * assigns a graph, you can reasign graphs to the same canvas
+         * assigns a engine, you can reasign graphs to the same renderer
          *
          * @method setGraph
-         * @param {LGraph} graph
+         * @param {Graph} engine
          */
-        setGraph(graph, skip_clear = false) {
-            if (this.graph == graph)
+        setGraph(engine, skip_clear = false) {
+            if (this.engine == engine)
                 return;
             if (!skip_clear)
                 this.clear();
-            if (!graph && this.graph) {
-                this.graph.detachCanvas(this);
+            if (!engine && this.engine) {
+                this.engine.detachRenderer(this);
                 return;
             }
             /*
-             if(this.graph)
-             this.graph.canvas = null; //remove old graph link to the canvas
-             this.graph = graph;
-             if(this.graph)
-             this.graph.canvas = this;
+             if(this.engine)
+             this.engine.renderer = null; //remove old engine link to the renderer
+             this.engine = engine;
+             if(this.engine)
+             this.engine.renderer = this;
              */
-            graph.attachCanvas(this);
+            engine.attachRenderer(this);
             this.setDirty(true, true);
         }
         /**
-         * opens a graph contained inside a node in the current graph
+         * opens a engine contained inside a node in the current engine
          *
          * @method openSubgraph
-         * @param {LGraph} graph
+         * @param {Graph} engine
          */
-        openSubgraph(graph) {
-            if (!graph)
-                throw ("graph cannot be null");
-            if (this.graph == graph)
-                throw ("graph cannot be the same");
+        openSubgraph(engine) {
+            if (!engine)
+                throw ("engine cannot be null");
+            if (this.engine == engine)
+                throw ("engine cannot be the same");
             this.clear();
-            if (this.graph) {
-                if (!this._graph_stack)
-                    this._graph_stack = [];
-                this._graph_stack.push(this.graph);
+            if (this.engine) {
+                if (!this._engine_stack)
+                    this._engine_stack = [];
+                this._engine_stack.push(this.engine);
             }
-            graph.attachCanvas(this);
+            engine.attachRenderer(this);
             this.setDirty(true, true);
         }
         /**
          * closes a subgraph contained inside a node
          *
          * @method closeSubgraph
-         * @param {LGraph} assigns a graph
+         * @param {Graph} assigns a engine
          */
         closeSubgraph() {
-            if (!this._graph_stack || this._graph_stack.length == 0)
+            if (!this._engine_stack || this._engine_stack.length == 0)
                 return;
-            let graph = this._graph_stack.pop();
-            graph.attachCanvas(this);
+            let engine = this._engine_stack.pop();
+            engine.attachRenderer(this);
             this.setDirty(true, true);
         }
         /**
-         * assigns a canvas
+         * assigns a renderer
          *
          * @method setCanvas
-         * @param {Canvas} assigns a canvas
+         * @param {Canvas} assigns a renderer
          */
         setCanvas(canvas, skip_events = false) {
             let that = this;
-            // if (canvas) {
-            //     if (canvas.constructor === String) {
-            //         canvas = document.getElementById(canvas);
-            //         if (!canvas)
-            //             throw ("Error creating LiteGraph canvas: Canvas not found");
+            // if (renderer) {
+            //     if (renderer.constructor === String) {
+            //         renderer = document.getElementById(renderer);
+            //         if (!renderer)
+            //             throw ("Error creating renderer: Canvas not found");
             //     }
             // }
             if (canvas === this.canvas)
@@ -170,10 +170,10 @@
             this.canvas = canvas;
             if (!canvas)
                 return;
-            //this.canvas.tabindex = "1000";
+            //this.renderer.tabindex = "1000";
             canvas.className += " lgraphcanvas";
             canvas.data = this;
-            //bg canvas: used for non changing stuff
+            //bg renderer: used for non changing stuff
             this.bgcanvas = null;
             if (!this.bgcanvas) {
                 this.bgcanvas = document.createElement("canvas");
@@ -205,7 +205,7 @@
         }
         bindEvents() {
             if (this._events_binded) {
-                console.warn("NodeEditorCanvas: events already binded");
+                console.warn("Renderer: events already binded");
                 return;
             }
             let canvas = this.canvas;
@@ -259,7 +259,7 @@
             this._ondrop_callback = null;
             this._events_binded = false;
         }
-        //this file allows to render the canvas using WebGL instead of Canvas2D
+        //this file allows to render the renderer using WebGL instead of Canvas2D
         //this is useful if you plant to render 3D objects inside your nodes
         enableWebGL() {
             if (typeof (this.GL) === undefined)
@@ -271,18 +271,17 @@
             this.bgcanvas = this.canvas;
             this.bgctx = this.gl;
             /*
-             GL.create({ canvas: this.bgcanvas });
+             GL.create({ renderer: this.bgcanvas });
              this.bgctx = enableWebGLCanvas( this.bgcanvas );
              window.gl = this.gl;
              */
         }
         /**
-         * marks as dirty the canvas, this way it will be rendered again
+         * marks as dirty the renderer, this way it will be rendered again
          *
-         * @class LGraphCanvas
          * @method setDirty
-         * @param {bool} fgcanvas if the foreground canvas is dirty (the one containing the nodes)
-         * @param {bool} bgcanvas if the background canvas is dirty (the one containing the wires)
+         * @param {bool} fgcanvas if the foreground renderer is dirty (the one containing the nodes)
+         * @param {bool} bgcanvas if the background renderer is dirty (the one containing the wires)
          */
         setDirty(fgcanvas, bgcanvas = false) {
             if (fgcanvas)
@@ -291,17 +290,17 @@
                 this.dirty_bgcanvas = true;
         }
         /**
-         * Used to attach the canvas in a popup
+         * Used to attach the renderer in a popup
          *
          * @method getCanvasWindow
-         * @return {window} returns the window where the canvas is attached (the DOM root node)
+         * @return {window} returns the window where the renderer is attached (the DOM root node)
          */
         getCanvasWindow() {
             let doc = this.canvas.ownerDocument;
             return doc.defaultView || doc.parentWindow; //check ES6
         }
         /**
-         * starts rendering the content of the canvas when needed
+         * starts rendering the content of the renderer when needed
          *
          * @method startRendering
          */
@@ -319,7 +318,7 @@
             }
         }
         /**
-         * stops rendering the content of the canvas (to save resources)
+         * stops rendering the content of the renderer (to save resources)
          *
          * @method stopRendering
          */
@@ -334,7 +333,7 @@
              */
         }
         /*
-         NodeEditorCanvas.prototype.UIinit = function()
+         Renderer.prototype.UIinit = function()
          {
          let that = this;
          $("#node-console input").change(function(e)
@@ -357,7 +356,7 @@
          node.trace("Special methods:");
          for(let i in node)
          {
-         if(typeof(node[i]) == "function" && LGraphNode.prototype[i] == null && i.substr(0,2) != "on" && i[0] != "_")
+         if(typeof(node[i]) == "function" && Node.prototype[i] == null && i.substr(0,2) != "on" && i[0] != "_")
          node.trace(" + " + i);
          }
          }
@@ -381,18 +380,18 @@
          });
          }
          */
-        /* LiteGraphCanvas input */
+        /* Canvas input */
         processMouseDown(e) {
-            if (!this.graph)
+            if (!this.engine)
                 return;
             this.adjustMouseEvent(e);
             let ref_window = this.getCanvasWindow();
             let document = ref_window.document;
-            //move mouse move event to the window in case it drags outside of the canvas
+            //move mouse move event to the window in case it drags outside of the renderer
             this.canvas.removeEventListener("mousemove", this._mousemove_callback);
             ref_window.document.addEventListener("mousemove", this._mousemove_callback, true); //catch for the entire window
             ref_window.document.addEventListener("mouseup", this._mouseup_callback, true);
-            let n = this.graph.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+            let n = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
             let skip_dragging = false;
             //derwish added
             this.closeAllContextualMenus();
@@ -444,7 +443,7 @@
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         //derwish added
-                                        this.socket.send_remove_link(this.graph.links[input.link]);
+                                        this.socket.send_remove_link(this.engine.links[input.link]);
                                         skip_action = true;
                                     }
                                 }
@@ -512,7 +511,7 @@
              if( (this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
              this.draw();
              */
-            this.graph.change();
+            this.engine.change();
             //this is to ensure to defocus(blur) if a text input element is on focus
             if (!ref_window.document.activeElement || (ref_window.document.activeElement.nodeName.toLowerCase() != "input" && ref_window.document.activeElement.nodeName.toLowerCase() != "textarea"))
                 e.preventDefault();
@@ -520,7 +519,7 @@
             return false;
         }
         processMouseMove(e) {
-            if (!this.graph)
+            if (!this.engine)
                 return;
             this.adjustMouseEvent(e);
             let mouse = [e.localX, e.localY];
@@ -537,12 +536,12 @@
                 if (this.connecting_node)
                     this.dirty_canvas = true;
                 //get node over
-                let n = this.graph.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                let n = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                 //remove mouseover flag
-                for (let i in this.graph._nodes) {
-                    if (this.graph._nodes[i].mouseOver && n != this.graph._nodes[i]) {
+                for (let i in this.engine._nodes) {
+                    if (this.engine._nodes[i].mouseOver && n != this.engine._nodes[i]) {
                         //mouse leave
-                        this.graph._nodes[i].mouseOver = false;
+                        this.engine._nodes[i].mouseOver = false;
                         if (this.node_over && this.node_over.onMouseLeave)
                             this.node_over.onMouseLeave(e);
                         this.node_over = null;
@@ -551,7 +550,7 @@
                 }
                 //mouse over a node
                 if (n) {
-                    //this.canvas.style.cursor = "move";
+                    //this.renderer.style.cursor = "move";
                     if (!n.mouseOver) {
                         //mouse enter
                         n.mouseOver = true;
@@ -609,8 +608,8 @@
                     this.resizing_node.size[0] += delta[0] / this.scale;
                     //this.resizing_node.size[1] += delta[1] / this.scale;
                     let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
-                    //	if(this.resizing_node.size[1] < max_slots * LiteGraph.NODE_SLOT_HEIGHT + 4)
-                    //		this.resizing_node.size[1] = max_slots * LiteGraph.NODE_SLOT_HEIGHT + 4;
+                    //	if(this.resizing_node.size[1] < max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4)
+                    //		this.resizing_node.size[1] = max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4;
                     if (this.resizing_node.size[0] < nodes_1.Nodes.options.NODE_MIN_WIDTH)
                         this.resizing_node.size[0] = nodes_1.Nodes.options.NODE_MIN_WIDTH;
                     this.canvas.style.cursor = "se-resize";
@@ -626,14 +625,14 @@
             //e.stopPropagation();
             return false;
             //this is not really optimal
-            //this.graph.change();
+            //this.engine.change();
         }
         processMouseUp(e) {
-            if (!this.graph)
+            if (!this.engine)
                 return;
             let window = this.getCanvasWindow();
             let document = window.document;
-            //restore the mousemove event back to the canvas
+            //restore the mousemove event back to the renderer
             document.removeEventListener("mousemove", this._mousemove_callback, true);
             this.canvas.addEventListener("mousemove", this._mousemove_callback, true);
             document.removeEventListener("mouseup", this._mouseup_callback, true);
@@ -643,7 +642,7 @@
                 if (this.connecting_node) {
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
-                    let node = this.graph.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                    let node = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                     //node below mouse
                     if (node) {
                         if (this.connecting_output.type == 'node') {
@@ -698,7 +697,7 @@
                     this.dirty_bgcanvas = true;
                     this.node_dragged.pos[0] = Math.round(this.node_dragged.pos[0]);
                     this.node_dragged.pos[1] = Math.round(this.node_dragged.pos[1]);
-                    if (this.graph.config.align_to_grid)
+                    if (this.engine.config.align_to_grid)
                         this.node_dragged.alignToGrid();
                     //derwish added
                     for (let i in this.selected_nodes) {
@@ -732,13 +731,13 @@
              if((this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
              this.draw();
              */
-            this.graph.change();
+            this.engine.change();
             e.stopPropagation();
             e.preventDefault();
             return false;
         }
         processMouseWheel(e) {
-            if (!this.graph || !this.allow_dragcanvas)
+            if (!this.engine || !this.allow_dragcanvas)
                 return;
             let delta = (e.wheelDeltaY != null ? e.wheelDeltaY : e.detail * -60);
             this.adjustMouseEvent(e);
@@ -752,7 +751,7 @@
              if(this.rendering_timer_id == null)
              this.draw();
              */
-            this.graph.change();
+            this.engine.change();
             e.preventDefault();
             return false; // prevent default
         }
@@ -773,7 +772,7 @@
             return -1;
         }
         processKey(e) {
-            if (!this.graph)
+            if (!this.engine)
                 return;
             let block_default = false;
             if (e.type == "keydown") {
@@ -801,7 +800,7 @@
                         if (this.selected_nodes[i].onKeyUp)
                             this.selected_nodes[i].onKeyUp(e);
             }
-            this.graph.change();
+            this.engine.change();
             if (block_default) {
                 e.preventDefault();
                 return false;
@@ -811,7 +810,7 @@
             e.preventDefault();
             this.adjustMouseEvent(e);
             let pos = [e.canvasX, e.canvasY];
-            let node = this.graph.getNodeOnPos(pos[0], pos[1]);
+            let node = this.engine.getNodeOnPos(pos[0], pos[1]);
             if (!node) {
                 if (this.onDropItem)
                     this.onDropItem(event);
@@ -895,12 +894,12 @@
             this.setDirty(true);
         }
         selectAllNodes() {
-            for (let i in this.graph._nodes) {
-                let n = this.graph._nodes[i];
+            for (let i in this.engine._nodes) {
+                let n = this.engine._nodes[i];
                 if (!n.selected && n.onSelected)
                     n.onSelected();
                 n.selected = true;
-                this.selected_nodes[this.graph._nodes[i].id] = n;
+                this.selected_nodes[this.engine._nodes[i].id] = n;
             }
             this.setDirty(true);
         }
@@ -918,7 +917,7 @@
             for (let i in this.selected_nodes) {
                 let m = this.selected_nodes[i];
                 //if(m == this.node_in_panel) this.showNodePanel(null);
-                this.graph.remove(m);
+                this.engine.remove(m);
             }
             this.selected_nodes = {};
             this.setDirty(true);
@@ -963,25 +962,25 @@
             return this.convertOffsetToCanvas([e.pageX - rect.left, e.pageY - rect.top]);
         }
         bringToFront(n) {
-            let i = this.graph._nodes.indexOf(n);
+            let i = this.engine._nodes.indexOf(n);
             if (i == -1)
                 return;
-            this.graph._nodes.splice(i, 1);
-            this.graph._nodes.push(n);
+            this.engine._nodes.splice(i, 1);
+            this.engine._nodes.push(n);
         }
         sendToBack(n) {
-            let i = this.graph._nodes.indexOf(n);
+            let i = this.engine._nodes.indexOf(n);
             if (i == -1)
                 return;
-            this.graph._nodes.splice(i, 1);
-            this.graph._nodes.unshift(n);
+            this.engine._nodes.splice(i, 1);
+            this.engine._nodes.unshift(n);
         }
         /* Interaction */
         /* NodeEditorCanvas render */
         computeVisibleNodes() {
             let visible_nodes = [];
-            for (let i in this.graph._nodes) {
-                let n = this.graph._nodes[i];
+            for (let i in this.engine._nodes) {
+                let n = this.engine._nodes[i];
                 //skip rendering nodes in live mode
                 if (this.live_mode && !n.onDrawBackground && !n.onDrawForeground)
                     continue;
@@ -996,7 +995,7 @@
             let now = nodes_1.Nodes.getTime();
             this.render_time = (now - this.last__time) * 0.001;
             this.last_draw_time = now;
-            if (this.graph) {
+            if (this.engine) {
                 let start = [-this.offset[0], -this.offset[1]];
                 let end = [start[0] + this.canvas.width / this.scale, start[1] + this.canvas.height / this.scale];
                 this.visible_area = [start[0], start[1], end[0], end[1]];
@@ -1020,7 +1019,7 @@
             //reset in case of error
             ctx.restore();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            //clip dirty area if there is one, otherwise work in full canvas
+            //clip dirty area if there is one, otherwise work in full renderer
             if (this.dirty_area) {
                 ctx.save();
                 ctx.beginPath();
@@ -1028,10 +1027,10 @@
                 ctx.clip();
             }
             //clear
-            //canvas.width = canvas.width;
+            //renderer.width = renderer.width;
             if (this.clear_background)
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-            //draw bg canvas
+            //draw bg renderer
             if (this.bgcanvas == this.canvas)
                 this.drawBackCanvas();
             else
@@ -1042,7 +1041,7 @@
             //info widget
             if (this.show_info)
                 this.renderInfo(ctx);
-            if (this.graph) {
+            if (this.engine) {
                 //apply transformations
                 ctx.save();
                 ctx.scale(this.scale, this.scale);
@@ -1063,7 +1062,7 @@
                     ctx.restore();
                 }
                 //connections ontop?
-                if (this.graph.config.links_ontop)
+                if (this.engine.config.links_ontop)
                     if (!this.live_mode)
                         this.drawConnections(ctx);
                 //current connection
@@ -1102,14 +1101,14 @@
             ctx.translate(x, y);
             ctx.font = "10px Arial";
             ctx.fillStyle = "#888";
-            if (this.graph) {
-                ctx.fillText("T: " + this.graph.globaltime.toFixed(2) + "s", 5, 13 * 1);
-                ctx.fillText("I: " + this.graph.iteration, 5, 13 * 2);
+            if (this.engine) {
+                ctx.fillText("T: " + this.engine.globaltime.toFixed(2) + "s", 5, 13 * 1);
+                ctx.fillText("I: " + this.engine.iteration, 5, 13 * 2);
                 ctx.fillText("F: " + this.frame, 5, 13 * 3);
                 ctx.fillText("FPS:" + this.fps.toFixed(2), 5, 13 * 4);
             }
             else
-                ctx.fillText("No graph selected", 5, 13 * 1);
+                ctx.fillText("No engine selected", 5, 13 * 1);
             ctx.restore();
         }
         drawBackCanvas() {
@@ -1125,7 +1124,7 @@
             //reset in case of error
             ctx.restore();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            if (this.graph) {
+            if (this.engine) {
                 //apply transformations
                 ctx.save();
                 ctx.scale(this.scale, this.scale);
@@ -1166,7 +1165,7 @@
                 //ctx.fillRect( this.visible_area[0] + 10, this.visible_area[1] + 10, this.visible_area[2] - this.visible_area[0] - 20, this.visible_area[3] - this.visible_area[1] - 20);
                 //bg
                 //   ctx.strokeStyle = "#235";
-                //   ctx.strokeRect(0, 0, canvas.width, canvas.height);
+                //   ctx.strokeRect(0, 0, renderer.width, renderer.height);
                 if (this.render_connections_shadows) {
                     ctx.shadowColor = "#000";
                     ctx.shadowOffsetX = 0;
@@ -1185,9 +1184,9 @@
             if (ctx.finish)
                 ctx.finish();
             this.dirty_bgcanvas = false;
-            this.dirty_canvas = true; //to force to repaint the front canvas with the bgcanvas
+            this.dirty_canvas = true; //to force to repaint the front renderer with the bgcanvas
         }
-        /* Renders the LGraphNode on the canvas */
+        /* Renders node on the renderer */
         drawNode(node, ctx) {
             let glow = false;
             let color = node.color || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
@@ -1197,7 +1196,7 @@
                 color = nodes_1.Nodes.options.IO_NODE_COLOR;
             //if (this.selected) color = "#88F";
             let render_title = true;
-            if (node.flags.skip_title_render || node.graph.isLive())
+            if (node.flags.skip_title_render || node.engine.isLive())
                 render_title = false;
             if (node.mouseOver)
                 render_title = true;
@@ -1361,8 +1360,8 @@
             /* gradient test
              let grad = ctx.createLinearGradient(0,0,0,node.size[1]);
              grad.addColorStop(0, "#AAA");
-             grad.addColorStop(0.5, fgcolor || LiteGraph.NODE_DEFAULT_COLOR);
-             grad.addColorStop(1, bgcolor || LiteGraph.NODE_DEFAULT_BGCOLOR);
+             grad.addColorStop(0.5, fgcolor || Nodes.options.NODE_DEFAULT_COLOR);
+             grad.addColorStop(1, bgcolor || Nodes.options.NODE_DEFAULT_BGCOLOR);
              ctx.fillStyle = grad;
              //*/
             let title_height = nodes_1.Nodes.options.NODE_TITLE_HEIGHT;
@@ -1479,8 +1478,8 @@
             ctx.strokeStyle = "#AAA";
             ctx.globalAlpha = this.editor_alpha;
             //for every node
-            for (let n in this.graph._nodes) {
-                let node = this.graph._nodes[n];
+            for (let n in this.engine._nodes) {
+                let node = this.engine._nodes[n];
                 //for every input (we render just inputs because it is easier as every slot can only have one input)
                 if (node.inputs && node.inputs.length)
                     for (let i in node.inputs) {
@@ -1488,10 +1487,10 @@
                         if (!input || input.link == null)
                             continue;
                         let link_id = input.link;
-                        let link = this.graph.links[link_id];
+                        let link = this.engine.links[link_id];
                         if (!link)
                             continue;
-                        let start_node = this.graph.getNodeById(link.origin_id);
+                        let start_node = this.engine.getNodeById(link.origin_id);
                         if (start_node == null)
                             continue;
                         let start_node_slot = link.origin_slot;
@@ -1575,12 +1574,12 @@
         /*
          NodeEditorCanvas.prototype.resizeCanvas = function(width,height)
          {
-         this.canvas.width = width;
+         this.renderer.width = width;
          if(height)
-         this.canvas.height = height;
+         this.renderer.height = height;
     
-         this.bgcanvas.width = this.canvas.width;
-         this.bgcanvas.height = this.canvas.height;
+         this.bgcanvas.width = this.renderer.width;
+         this.bgcanvas.height = this.renderer.height;
          this.draw(true,true);
          }
          */
@@ -1669,9 +1668,9 @@
                 options.push({
                     content: "Reset View",
                     callback: () => {
-                        this.editor.graphcanvas.offset = [0, 0];
-                        this.editor.graphcanvas.scale = 1;
-                        this.editor.graphcanvas.setZoom(1, [1, 1]);
+                        this.editor.renderer.offset = [0, 0];
+                        this.editor.renderer.scale = 1;
+                        this.editor.renderer.setZoom(1, [1, 1]);
                     }
                 });
                 options.push({
@@ -1692,7 +1691,7 @@
                         }
                     });
                 }
-                if (this._graph_stack && this._graph_stack.length > 0)
+                if (this._engine_stack && this._engine_stack.length > 0)
                     options.push({ content: "Close subgraph", callback: this.closeSubgraph.bind(this) });
             }
             if (this.getExtraMenuOptions) {
@@ -1809,7 +1808,7 @@
                 if (node) {
                     node.pos = canvas.convertEventToCanvas(first_event);
                     //derwish removed
-                    //canvas.graph.add(node);
+                    //renderer.engine.add(node);
                     //derwish added
                     node.pos[0] = Math.round(node.pos[0]);
                     node.pos[1] = Math.round(node.pos[1]);
@@ -1964,7 +1963,7 @@
             else
                 this.socket.send_remove_node(node);
             //derwish remove
-            //node.graph.remove(uiNode);
+            //node.engine.remove(uiNode);
             //node.setDirtyCanvas(true, true);
         }
         onMenuNodeClone(node) {
@@ -1974,7 +1973,7 @@
             //let newnode = node.clone();
             //if(!newnode) return;
             //newnode.pos = [node.pos[0]+10,node.pos[1]+10];
-            //node.graph.add(newnode);
+            //node.engine.add(newnode);
             //node.setDirtyCanvas(true, true);
             //derwish added
             this.socket.send_clone_node(node);
@@ -1982,7 +1981,7 @@
         createContextualMenu(values, options, ref_window) {
             options = options || {};
             this.options = options;
-            //allows to create graph canvas in separate window
+            //allows to create engine renderer in separate window
             ref_window = ref_window || window;
             if (!options.from)
                 this.closeAllContextualMenus();
@@ -2142,7 +2141,7 @@
                 }
         }
     }
-    exports.NodeEditorCanvas = NodeEditorCanvas;
+    exports.Renderer = Renderer;
     //function roundRect(ctx, x, y, width, height, radius, radius_low) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius = 5, radius_low) {
         if (radius_low === undefined)
@@ -2245,4 +2244,4 @@
             });
     }
 });
-//# sourceMappingURL=node-editor-canvas.js.map
+//# sourceMappingURL=renderer.js.map

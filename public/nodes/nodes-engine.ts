@@ -4,7 +4,7 @@
 
 
 import {Nodes, Node, Link} from "./nodes";
-import {NodeEditorCanvas} from "../js/node-editor/node-editor-canvas";
+import {Renderer} from "../js/node-editor/renderer";
 import Timer = NodeJS.Timer;
 
 
@@ -26,7 +26,7 @@ export class NodesEngine {
     supported_types = ["number", "string", "boolean"];
 
     static NodesEngine = 2;
-    list_of_graphcanvas: Array<NodeEditorCanvas>;
+    list_of_renderers: Array<Renderer>;
     isRunning: boolean;
     last_node_id: number;
     _nodes: Array<Node> = [];
@@ -64,7 +64,7 @@ export class NodesEngine {
 
 
     /**
-     * NodesEngine is the class that contain a full graph. We instantiate one and add nodes to it, and then we can run the execution loop.
+     * NodesEngine is the class that contain a full engine. We instantiate one and add nodes to it, and then we can run the execution loop.
      *
      * @class NodesEngine
      * @constructor
@@ -76,11 +76,11 @@ export class NodesEngine {
         // if (this.debug)
         //     debug("Nodes engine created");
 
-        this.list_of_graphcanvas = null;
+        this.list_of_renderers = null;
         this.clear();
     }
 
-//used to know which types of connections support this graph (some graphs do not allow certain types)
+//used to know which types of connections support this engine (some graphs do not allow certain types)
     getSupportedTypes(): Array<string> {
         return this.supported_types;
     }
@@ -96,7 +96,7 @@ export class NodesEngine {
 
 
     /**
-     * Removes all nodes from this graph
+     * Removes all nodes from this engine
      * @method clear
      */
     clear(): void {
@@ -129,15 +129,15 @@ export class NodesEngine {
         this.global_inputs = {};
         this.global_outputs = {};
 
-        //this.graph = {};
+        //this.engine = {};
 
         this.change();
 
-        this.sendActionToCanvas("clear");
+        this.sendActionToRenderer("clear");
     }
 
     /**
-     * Stops the execution loop of the graph
+     * Stops the execution loop of the engine
      * @method stop execution
      */
     stop(): void {
@@ -158,40 +158,38 @@ export class NodesEngine {
 
 
     /**
-     * Attach Canvas to this graph
-     * @method attachCanvas
-     * @param {GraphCanvas} graph_canvas
+     * Attach Renderer to this engine
+     * @method attachRenderer
+     * @param {Redrerer} renderer
      */
-    attachCanvas(graphcanvas: NodeEditorCanvas): void {
-        // if (graphcanvas.constructor != NodesCanvas)
-        //     throw("attachCanvas expects a NodesCanvas instance");
-        if (graphcanvas.graph && graphcanvas.graph != this)
-            graphcanvas.graph.detachCanvas(graphcanvas);
+    attachRenderer(renderer: Renderer): void {
+        if (renderer.engine && renderer.engine != this)
+            renderer.engine.detachRenderer(renderer);
 
-        graphcanvas.graph = this;
-        if (!this.list_of_graphcanvas)
-            this.list_of_graphcanvas = [];
-        this.list_of_graphcanvas.push(graphcanvas);
+        renderer.engine = this;
+        if (!this.list_of_renderers)
+            this.list_of_renderers = [];
+        this.list_of_renderers.push(renderer);
     }
 
     /**
-     * Detach Canvas from this graph
-     * @method detachCanvas
-     * @param {GraphCanvas} graph_canvas
+     * Detach Renderer from this engine
+     * @method detachRenderer
+     * @param {Renderer} renderer
      */
-    detachCanvas(graphcanvas: NodeEditorCanvas): void {
-        if (!this.list_of_graphcanvas)
+    detachRenderer(renderer: Renderer): void {
+        if (!this.list_of_renderers)
             return;
 
-        let pos = this.list_of_graphcanvas.indexOf(graphcanvas);
+        let pos = this.list_of_renderers.indexOf(renderer);
         if (pos == -1)
             return;
-        graphcanvas.graph = null;
-        this.list_of_graphcanvas.splice(pos, 1);
+        renderer.engine = null;
+        this.list_of_renderers.splice(pos, 1);
     }
 
     /**
-     * Starts running this graph every interval milliseconds.
+     * Starts running this engine every interval milliseconds.
      * @method start
      * @param {number} interval amount of milliseconds between executions, default is 1
      */
@@ -219,7 +217,7 @@ export class NodesEngine {
 
 
     /**
-     * Run N steps (cycles) of the graph
+     * Run N steps (cycles) of the engine
      * @method runStep
      * @param {number} num number of steps to run, default is 1
      */
@@ -256,7 +254,7 @@ export class NodesEngine {
     }
 
     /**
-     * Updates the graph execution order according to relevance of the nodes (nodes with only outputs have more relevance than
+     * Updates the engine execution order according to relevance of the nodes (nodes with only outputs have more relevance than
      * nodes with only inputs.
      * @method updateExecutionOrder
      */
@@ -345,9 +343,9 @@ export class NodesEngine {
     }
 
     /**
-     * Returns the amount of time the graph has been running in milliseconds
+     * Returns the amount of time the engine has been running in milliseconds
      * @method getTime
-     * @return {number} number of milliseconds the graph has been running
+     * @return {number} number of milliseconds the engine has been running
      */
     getTime(): number {
         return this.globaltime;
@@ -356,7 +354,7 @@ export class NodesEngine {
     /**
      * Returns the amount of time accumulated using the fixedtime_lapse var. This is used in context where the time increments should be constant
      * @method getFixedTime
-     * @return {number} number of milliseconds the graph has been running
+     * @return {number} number of milliseconds the engine has been running
      */
     getFixedTime(): number {
         return this.fixedtime;
@@ -397,12 +395,12 @@ export class NodesEngine {
         }
     }
 
-    sendActionToCanvas(action: string, params?: Array<any>): void {
-        if (!this.list_of_graphcanvas)
+    sendActionToRenderer(action: string, params?: Array<any>): void {
+        if (!this.list_of_renderers)
             return;
 
-        for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-            let c = this.list_of_graphcanvas[i];
+        for (let i = 0; i < this.list_of_renderers.length; ++i) {
+            let c = this.list_of_renderers[i];
             if (c[action])
                 c[action].apply(c, params);
         }
@@ -410,7 +408,7 @@ export class NodesEngine {
 
 
     /**
-     * Adds a new node instasnce to this graph
+     * Adds a new node instasnce to this engine
      * @method add
      * @param {Node} node the instance of the node
      */
@@ -419,13 +417,13 @@ export class NodesEngine {
             return; //already added
 
         if (this._nodes.length >= Nodes.options.MAX_NUMBER_OF_NODES)
-            throw("Nodes: max number of nodes in a graph reached");
+            throw("Nodes: max number of nodes in a engine reached");
 
         //give him an id
         if (node.id == null || node.id == -1)
             node.id = this.last_node_id++;
 
-        node.graph = this;
+        node.engine = this;
 
         this._nodes.push(node);
         this._nodes_by_id[node.id] = node;
@@ -458,7 +456,7 @@ export class NodesEngine {
 
 
     /**
-     * Removes a node from the graph
+     * Removes a node from the engine
      * @method remove
      * @param {Node} node the instance of the node
      */
@@ -491,16 +489,16 @@ export class NodesEngine {
         if (node.onRemoved)
             node.onRemoved();
 
-        node.graph = null;
+        node.engine = null;
 
-        //remove from canvas render
-        if (this.list_of_graphcanvas) {
-            for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-                let canvas = this.list_of_graphcanvas[i];
-                if (canvas.selected_nodes[node.id])
-                    delete canvas.selected_nodes[node.id];
-                if (canvas.node_dragged == node)
-                    canvas.node_dragged = null;
+        //remove from renderer render
+        if (this.list_of_renderers) {
+            for (let i = 0; i < this.list_of_renderers.length; ++i) {
+                let renderer = this.list_of_renderers[i];
+                if (renderer.selected_nodes[node.id])
+                    delete renderer.selected_nodes[node.id];
+                if (renderer.node_dragged == node)
+                    renderer.node_dragged = null;
             }
         }
 
@@ -575,11 +573,11 @@ export class NodesEngine {
 //     }
 //
     /**
-     * Returns the top-most node in this position of the canvas
+     * Returns the top-most node in this position of the renderer
      * @method getNodeOnPos
-     * @param {number} x the x coordinate in canvas space
-     * @param {number} y the y coordinate in canvas space
-     * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the graph
+     * @param {number} x the x coordinate in renderer space
+     * @param {number} y the y coordinate in renderer space
+     * @param {Array} nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
      * @return {Array} a list with all the nodes that intersect this coordinate
      */
     getNodeOnPos(x: number, y: number, nodes_list?: Array<Node>): Node {
@@ -595,7 +593,7 @@ export class NodesEngine {
 //
 // // ********** GLOBALS *****************
 //
-// //Tell this graph has a global input of this type
+// //Tell this engine has a global input of this type
 //     addGlobalInput(name, type, value) {
 //         this.global_inputs[name] = {name: name, type: type, value: value};
 //
@@ -744,7 +742,7 @@ export class NodesEngine {
 //
 //     /**
 //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
-//      * can be easily accesed from the outside of the graph
+//      * can be easily accesed from the outside of the engine
 //      * @method setInputData
 //      * @param {String} name the name of the node
 //      * @param {*} value value to assign to this node
@@ -756,7 +754,7 @@ export class NodesEngine {
 //     }
 //
 //     /**
-//      * Returns the value of the first node with this name. This is used to access global variables of the graph from the outside
+//      * Returns the value of the first node with this name. This is used to access global variables of the engine from the outside
 //      * @method setInputData
 //      * @param {String} name the name of the node
 //      * @return {*} value of the node
@@ -785,20 +783,20 @@ export class NodesEngine {
         this.updateExecutionOrder();
         if (this.onConnectionChange)
             this.onConnectionChange(node);
-        this.sendActionToCanvas("onConnectionChange");
+        this.sendActionToRenderer("onConnectionChange");
     }
 
 
     /**
-     * returns if the graph is in live mode
+     * returns if the engine is in live mode
      * @method isLive
      */
     isLive(): boolean {
-        if (!this.list_of_graphcanvas)
+        if (!this.list_of_renderers)
             return false;
 
-        for (let i = 0; i < this.list_of_graphcanvas.length; ++i) {
-            let c = this.list_of_graphcanvas[i];
+        for (let i = 0; i < this.list_of_renderers.length; ++i) {
+            let c = this.list_of_renderers[i];
             if (c.live_mode)
                 return true;
         }
@@ -807,7 +805,7 @@ export class NodesEngine {
 
     /* Called when something visually changed */
     change(): void {
-        this.sendActionToCanvas("setDirty", [true, true]);
+        this.sendActionToRenderer("setDirty", [true, true]);
 
         if (this.on_change)
             this.on_change(this);
@@ -815,12 +813,12 @@ export class NodesEngine {
 
 
     setDirtyCanvas(fg?: boolean, bg?: boolean): void {
-        this.sendActionToCanvas("setDirty", [fg, bg]);
+        this.sendActionToRenderer("setDirty", [fg, bg]);
     }
 
 
     /**
-     * Creates a Object containing all the info about this graph, it can be serialized
+     * Creates a Object containing all the info about this engine, it can be serialized
      * @method serialize
      * @return {Object} value of the node
      */
@@ -835,7 +833,7 @@ export class NodesEngine {
 
 
         let data = {
-            //		graph: this.graph,
+            //		engine: this.engine,
 
             iteration: this.iteration,
             frame: this.frame,
@@ -861,9 +859,9 @@ export class NodesEngine {
     };
 
     /**
-     * Configure a graph from a JSON string
+     * Configure a engine from a JSON string
      * @method configure
-     * @param {String} str configure a graph from a JSON string
+     * @param {String} str configure a engine from a JSON string
      */
     configure(data: any, keep_old = false): boolean {
         if (!keep_old)
