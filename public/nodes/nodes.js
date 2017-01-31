@@ -10,23 +10,6 @@
     }
 })(function (require, exports) {
     "use strict";
-    /**
-     * The Global Scope. It contains all the registered node classes.
-     *
-     * @class Nodes
-     * @constructor
-     */
-    // interface Boundings{
-    //     [4]: Float32Array;
-    // }
-    //
-    // interface Position{
-    //     [2]: Float32Array;
-    // }
-    //
-    // interface Size{
-    //     [2]: Float32Array;
-    // }
     class NodesOptions {
         constructor() {
             this.MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops

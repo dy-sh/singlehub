@@ -5,6 +5,7 @@
 
 import {Nodes, Node, Link} from "./nodes";
 import {NodeEditorCanvas} from "../js/node-editor/node-editor-canvas";
+import Timer = NodeJS.Timer;
 
 
 //todo
@@ -35,7 +36,7 @@ export class NodesEngine {
     iteration: number;
     config: {
         align_to_grid?: boolean;
-        links_ontop?: any;
+        links_ontop?: boolean;
     };
     globaltime: number;
     runningtime: number;
@@ -45,8 +46,8 @@ export class NodesEngine {
     starttime: number;
     global_inputs = {};
     global_outputs = {};
-    execution_timer_id: any;
-    _nodes_in_order: any;
+    execution_timer_id: Timer;
+    _nodes_in_order: Array<Node>;
     errors_in_execution: boolean;
 
     M: any;
@@ -59,7 +60,7 @@ export class NodesEngine {
     onConnectionChange: Function;
     onNodeRemoved: Function;
     onPlayEvent: Function;
-    frame: any;
+    frame: number;
 
 
     /**

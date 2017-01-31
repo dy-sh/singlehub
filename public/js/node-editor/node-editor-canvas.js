@@ -906,7 +906,7 @@
         }
         deselectAllNodes() {
             for (let i in this.selected_nodes) {
-                let n = this.selected_nodes;
+                let n = this.selected_nodes[i];
                 if (n.onDeselected)
                     n.onDeselected();
                 n.selected = false;
@@ -1503,7 +1503,7 @@
                         let color = nodes_1.Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
                         if (color == null && typeof node.id == "number")
                             color = nodes_1.Nodes.options.LINK_COLORS[node.id % nodes_1.Nodes.options.LINK_COLORS.length];
-                        this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
+                        this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, +i), color);
                     }
             }
             ctx.globalAlpha = 1;

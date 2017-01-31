@@ -4,7 +4,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 
-import {Node, Nodes} from "../../nodes/nodes"
+import {Node, Nodes, Output, IInputInfo,IOutputInfo} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {NodeEditor, editor} from "./node-editor";
 import {NodeEditorSocket} from "./node-editor-socket";
@@ -33,7 +33,7 @@ export class NodeEditorCanvas {
     fps: number;
     scale: number;
     offset: [number, number];
-    selected_nodes: Array<Node>|any;
+    selected_nodes: {[id: number]: Node};
     node_dragged: Node;
     node_over: Node;
     node_capturing_input: Node;
@@ -51,7 +51,7 @@ export class NodeEditorCanvas {
     allow_dragnodes: boolean;
     dirty_canvas: boolean;
     dirty_bgcanvas: boolean;
-    dirty_area: Array<any>;
+    dirty_area: [number,number,number,number];
     node_in_panel: Node;
     last_mouse: [number, number];
     last_mouseclick: number;
@@ -80,12 +80,12 @@ export class NodeEditorCanvas {
     gl: CanvasRenderingContext2D;
     is_rendering: boolean;
     visible_nodes: Array<Node>;
-    connecting_output: any;
+    connecting_output: Output;
     connecting_pos: [number, number];
     connecting_slot: number;
     resizing_node: Node;
     dragging_canvas: boolean;
-    canvas_mouse: [any, any];
+    canvas_mouse: [number, number];
     _highlight_input: [number, number];
     onDropItem: Function;
     onNodeSelected: Function;
@@ -1209,7 +1209,7 @@ export class NodeEditorCanvas {
 
     deselectAllNodes(): void {
         for (let i in this.selected_nodes) {
-            let n = this.selected_nodes;
+            let n = this.selected_nodes[i];
             if (n.onDeselected)
                 n.onDeselected();
             n.selected = false;
@@ -1948,7 +1948,8 @@ export class NodeEditorCanvas {
                     let color = Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
                     if (color == null && typeof node.id == "number")//ES6 check this
                         color = Nodes.options.LINK_COLORS[node.id % Nodes.options.LINK_COLORS.length];
-                    this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, i), color);
+
+                    this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, +i), color);
                 }
         }
         ctx.globalAlpha = 1;
@@ -2137,7 +2138,7 @@ export class NodeEditorCanvas {
     }
 
 
-    getCanvasMenuOptions(): any {
+    getCanvasMenuOptions(): Array<any> {
         let options = [];
         if (this.getMenuOptions)
             options = this.getMenuOptions();
@@ -2202,14 +2203,14 @@ export class NodeEditorCanvas {
         return options;
     }
 
-    getNodeMenuOptions(node: Node): any {
+    getNodeMenuOptions(node: Node): Array<any> {
         let options = [];
 
         //derwish added
         if (node.properties["Settings"]) {
             options.push({
                 content: "Settings", callback: function () {
-                    (<any>this.NodeSettings)(node)
+                    this.NodeSettings(node)
                 }
             });
             options.push(null);
@@ -2265,7 +2266,7 @@ export class NodeEditorCanvas {
         let options = {event: event, callback: inner_option_clicked};
 
         //check if mouse is in input
-        let slot = null;
+        let slot:IInputInfo|IOutputInfo = null;
         if (node)
             slot = node.getSlotInPosition(event.canvasX, event.canvasY);
 
@@ -2312,7 +2313,7 @@ export class NodeEditorCanvas {
     }
 
     /* CONTEXT MENU ********************/
-    onMenuAdd(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any): boolean {
+    onMenuAdd(node: Node, e: any, prev_menu: Element, canvas: NodeEditorCanvas, first_event: any): boolean {
         let window = canvas.getCanvasWindow();
 
         let values = Nodes.getNodeTypesCategories();
@@ -2359,7 +2360,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuImport(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any): boolean {
+    onMenuImport(node: Node, e: any, prev_menu: Element, canvas: NodeEditorCanvas, first_event: any): boolean {
         let window = canvas.getCanvasWindow();
 
         let entries = {};
@@ -2408,7 +2409,7 @@ export class NodeEditorCanvas {
 
     }
 
-    onMenuNodeInputs(node: Node, e: any, prev_menu: any): boolean {
+    onMenuNodeInputs(node: Node, e: any, prev_menu: Element): boolean {
         if (!node) return;
 
         let options = node.optional_inputs;
@@ -2434,7 +2435,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeOutputs(node: Node, e: any, prev_menu: any): boolean {
+    onMenuNodeOutputs(node: Node, e: any, prev_menu: Element): boolean {
         if (!node) return;
 
         let options = node.optional_outputs;
@@ -2486,7 +2487,7 @@ export class NodeEditorCanvas {
         node.pin();
     }
 
-    onMenuNodeColors(node: Node, e: any, prev_menu: any): boolean {
+    onMenuNodeColors(node: Node, e: any, prev_menu: Element): boolean {
         let values = [];
         for (let i in Nodes.options.NODE_COLORS) {
             let color = Nodes.options.NODE_COLORS[i];
@@ -2523,7 +2524,7 @@ export class NodeEditorCanvas {
         return false;
     }
 
-    onMenuNodeRemove(node: Node, e: any, prev_menu: any, canvas: NodeEditorCanvas, first_event: any): void {
+    onMenuNodeRemove(node: Node, e: any, prev_menu: Element, canvas: NodeEditorCanvas, first_event: any): void {
         //if (node.removable == false) return;
 
         if (node.id in canvas.selected_nodes)
@@ -2550,7 +2551,7 @@ export class NodeEditorCanvas {
     }
 
 
-    createContextualMenu(values: any, options?: any, ref_window?: any): HTMLDivElement {
+    createContextualMenu(values: any, options?: any, ref_window?: Window): HTMLDivElement {
         options = options || {};
         this.options = options;
 
@@ -2619,7 +2620,7 @@ export class NodeEditorCanvas {
 
             element.style.cursor = "pointer";
             element.dataset["value"] = typeof (item) == "string" ? item : item.value;
-            element.data = item;
+            (<any>element).data = item;
             if (typeof (item) == "string")
                 element.innerHTML = values.constructor == Array ? values[i] : i;
             else
@@ -2630,7 +2631,7 @@ export class NodeEditorCanvas {
         }
 
         root.addEventListener("mouseover", function (e) {
-            this.mouse_inside = true;
+            (<any>this).mouse_inside = true;
         });
 
         root.addEventListener("mouseout", function (e) {
@@ -2638,10 +2639,10 @@ export class NodeEditorCanvas {
             //check if mouse leave a inner element
             let aux = e.relatedTarget || e.toElement;
             while (aux != this && aux != ref_window.document)
-                aux = aux.parentNode;
+                aux = (<any>aux).parentNode;
 
             if (aux == this) return;
-            this.mouse_inside = false;
+            (<any>this).mouse_inside = false;
         });
 
         //insert before checking position
@@ -2696,7 +2697,7 @@ export class NodeEditorCanvas {
             //root.closeMenu();
         }
 
-        root.closeMenu = function () {
+        (<any>root).closeMenu = function () {
             if (options.from) {
                 options.from.block_close = false;
                 if (!options.from.mouse_inside)

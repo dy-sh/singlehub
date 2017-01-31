@@ -38,6 +38,20 @@ import {NodesEngine} from "./nodes-engine";
 //     [2]: Float32Array;
 // }
 
+export interface IInputInfo {
+    input: Input;
+    slot: number;
+    link_pos: [number, number];
+    locked: boolean;
+}
+
+export interface IOutputInfo {
+    output: Output;
+    slot: number;
+    link_pos: [number, number];
+    locked: boolean;
+}
+
 export class NodesOptions {
 
     MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
@@ -124,7 +138,7 @@ export class Link {
     origin_slot?: number;
     target_id?: number;
     target_slot?: number;
-    data?:any;
+    data?: any;
 }
 
 export class Nodes {
@@ -144,7 +158,7 @@ export class Nodes {
 
 
     static throw_errors = true;
-    static registered_node_types = {};
+    static registered_node_types: {[type: string]: any} = {};
     static Nodes = {};
 
 
@@ -238,7 +252,7 @@ export class Nodes {
                 node[i] = options[i];
         }
 
-    //    node.id = this.guid();
+        //    node.id = this.guid();
 
         return node;
     };
@@ -401,7 +415,7 @@ export class Node {
     type: string;
     inputs: Array<Input>;
     outputs: Array<Output>;
- //   connections: Array<any>;
+    //   connections: Array<any>;
     properties: any;
     data: any;
     ignore_remove: boolean;
@@ -442,6 +456,8 @@ export class Node {
     onGetOutputs: Function;
     onInputRemoved: Function;
     onOutputRemoved: Function;
+    onKeyDown: Function;
+    onKeyUp: Function;
     color: string;
     bgcolor: string;
     boxcolor: string;
@@ -955,7 +971,8 @@ export class Node {
      * @param {number} y
      * @return {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
      */
-    getSlotInPosition(x: number, y: number): any {
+
+    getSlotInPosition(x: number, y: number): IInputInfo|IOutputInfo {
         //search for inputs
         if (this.inputs)
             for (let i = 0, l = this.inputs.length; i < l; ++i) {
@@ -1231,7 +1248,7 @@ export class Node {
      * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
      * @return {[x,y]} the position
      **/
-    getConnectionPos(is_input: boolean, slot_number: any): [number, number] {
+    getConnectionPos(is_input: boolean, slot_number: number): [number, number] {
         if (this.flags.collapsed) {
             if (is_input)
                 return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];

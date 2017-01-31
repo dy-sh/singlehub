@@ -265,7 +265,7 @@ export class NodeEditorSocket {
     };
 
 
-    send_remove_nodes(nodes:Array<Node>):void  {
+    send_remove_nodes(nodes:{[id:number]:Node}):void  {
 
         let array = [];
 
