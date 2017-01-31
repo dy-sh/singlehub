@@ -19,12 +19,6 @@
 // *************************************************************
 
 import {NodesEngine} from "./nodes-engine";
-/**
- * The Global Scope. It contains all the registered node classes.
- *
- * @class Nodes
- * @constructor
- */
 
 // interface Boundings{
 //     [4]: Float32Array;
@@ -164,12 +158,6 @@ export class Nodes {
 
     //   debug: config.engine.debugEngine,
 
-    /**
-     * Register a node class so it can be listed when the user wants to create a new one
-     * @method registerNodeType
-     * @param type name of the node and path
-     * @param {Class} base_class class containing the structure of a node
-     */
 
     static debug(mess): void {
         console.log(mess)
@@ -179,6 +167,11 @@ export class Nodes {
         console.log(mess)
     };
 
+    /**
+     * Register a node class so it can be listed when the user wants to create a new one
+     * @param type name of the node and path
+     * @param base_class class containing the structure of a node
+     */
     static registerNodeType(type: string, base_class: any): void {
         if (!base_class.prototype)
             throw("Cannot register a simple object, it must be a class with a prototype");
@@ -206,10 +199,9 @@ export class Nodes {
     /**
      * Adds this method to all nodetypes, existing and to be created
      * (You can add it to Node.prototype but then existing node types wont have it)
-     * @method addNodeMethod
-     * @param {Function} func
+     * @param name
+     * @param func
      */
-
     static addNodeMethod(name: string, func: Function): void {
         Node.prototype[name] = func;
         for (let i in this.registered_node_types)
@@ -218,12 +210,10 @@ export class Nodes {
 
     /**
      * Create a node of a given type with a name. The node is not attached to any engine yet.
-     * @method createNode
      * @param type full name of the node class. p.e. "math/sin"
      * @param name a name to distinguish from other nodes
-     * @param {Object} options to set options
+     * @param options to set options
      */
-
     static createNode(type: string, title?: string, options?: any): Node {
         let base_class = this.registered_node_types[type];
         if (!base_class) {
@@ -259,11 +249,9 @@ export class Nodes {
 
     /**
      * Returns a registered node type with a given name
-     * @method getNodeType
      * @param type full name of the node class. p.e. "math/sin"
-     * @returns {Class} the node class
+     * @returns {Node} the node class
      */
-
     static getNodeType(type: string): Node {
         return this.registered_node_types[type];
     };
@@ -271,11 +259,9 @@ export class Nodes {
 
     /**
      * Returns a list of node types matching one category
-     * @method getNodeType
      * @param category category name
      * @returns {Array} array with all the node classes
      */
-
     static getNodeTypesInCategory(category: string): Array<any> {
         let r = [];
         for (let i in this.registered_node_types)
@@ -291,10 +277,8 @@ export class Nodes {
 
     /**
      * Returns a list with all the node type categories
-     * @method getNodeTypesCategories
      * @returns {Array} array with all the names of the categories
      */
-
     static getNodeTypesCategories(): Array<any> {
         let categories = {"": 1};
         for (let i in this.registered_node_types)
@@ -306,7 +290,11 @@ export class Nodes {
         return result;
     };
 
-    //debug purposes: reloads all the js scripts that matches a wilcard
+
+    /**
+     * debug purposes: reloads all the js scripts that matches a wilcard
+     * @param folder_wildcard
+     */
     static reloadNodes(folder_wildcard): void {
         let tmp = document.getElementsByTagName("script");
         //weird, this array changes by its own, so we use a copy
@@ -342,11 +330,18 @@ export class Nodes {
     };
 
 
+    /**
+     * Get current time
+     * @returns {number}
+     */
     static getTime(): number {
         return (typeof(performance) != "undefined") ? performance.now() : Date.now();
     };
 
-
+    /**
+     * Generate GUID string
+     * @returns {string}
+     */
     static guid(): string {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
@@ -358,50 +353,11 @@ export class Nodes {
             s4() + '-' + s4() + s4() + s4();
     }
 }
-;
 
 
 // *************************************************************
 //   Node CLASS                                          *******
 // *************************************************************
-
-/*
- title: string
- pos: [x,y]
- size: [x,y]
-
- input|output: every connection
- +  { name:string, type:string, pos: [x,y]=Optional, direction: "input"|"output", links: Array });
-
- flags:
- + skip_title_render
- + clip_area
- + unsafe_execution: not allowed for safe execution
-
- supported callbacks:
- + onAdded: when added to engine
- + onRemoved: when removed from engine
- + onStart:	when starts playing
- + onStop:	when stops playing
- + onDrawForeground: render the inside widgets inside the node
- + onDrawBackground: render the background area inside the node (only in edit mode)
- + onMouseDown
- + onMouseMove
- + onMouseUp
- + onMouseEnter
- + onMouseLeave
- + onExecute: execute the node
- + onPropertyChange: when a property is changed in the panel (return true to skip default behaviour)
- + onGetInputs: returns an array of possible inputs
- + onGetOutputs: returns an array of possible outputs
- + onDblClick
- + onSerialize
- + onSelected
- + onDeselected
- + onDropItem : DOM item dropped over the node
- + onDropFile : file dropped over the node
- + onConnectInput : if returns false the incoming connection will be canceled
- */
 
 
 export class Node {
@@ -409,6 +365,7 @@ export class Node {
     panel_id: string;
     title: string;
     desc: string;
+    pos: [number, number] = [10, 10];
     size: [number, number];
     engine: NodesEngine;
     id: number;
@@ -431,33 +388,11 @@ export class Node {
         type: string
     };
 
-    onAdded: Function;
-    onInputAdded: Function;
-    onOutputAdded: Function;
-    onConnectInput: Function;
     mouseOver: boolean;
     selected: boolean;
-    onSelected: Function;
-    onDeselected: Function;
-    onDrawBackground: Function;
-    onDrawForeground: Function;
-    onRemoved: Function;
-    onDblClick: Function;
-    onMouseDown: Function;
-    onMouseEnter: Function;
-    onMouseMove: Function;
-    onDropFile: Function;
-    onDropItem: Function;
-    onMouseUp: Function;
-    onMouseLeave: Function;
     getMenuOptions: Function;
     getExtraMenuOptions: Function;
-    onGetInputs: Function;
-    onGetOutputs: Function;
-    onInputRemoved: Function;
-    onOutputRemoved: Function;
-    onKeyDown: Function;
-    onKeyUp: Function;
+
     color: string;
     bgcolor: string;
     boxcolor: string;
@@ -472,8 +407,35 @@ export class Node {
     optional_outputs: {};
     order: string;
 
+//events
+    onAdded: Function;
+    onRemoved: Function;
 
-    pos: [number, number] = [10, 10];
+    onDrawBackground: Function;
+    onDrawForeground: Function;
+
+    //if returns false the incoming connection will be canceled
+    onConnectInput: Function;
+    onInputAdded: Function;
+    onOutputAdded: Function;
+    onGetInputs: Function;
+    onGetOutputs: Function;
+    onInputRemoved: Function;
+    onOutputRemoved: Function;
+
+    onMouseDown: Function;
+    onMouseUp: Function;
+    onMouseEnter: Function;
+    onMouseMove: Function;
+    onMouseLeave: Function;
+    onDblClick: Function;
+    onDropFile: Function;
+    onDropItem: Function;
+    onKeyDown: Function;
+    onKeyUp: Function;
+
+    onSelected: Function;
+    onDeselected: Function;
 
 
     constructor(title: string = "Unnamed") {
@@ -501,8 +463,8 @@ export class Node {
 
 
     /**
-     * configure a node from an object containing the serialized info
-     * @method configure
+     * Configure a node from an object containing the serialized info
+     * @param info object with properties for configure
      */
     configure(info: any): void {
         for (let j in info) {
@@ -560,8 +522,7 @@ export class Node {
     }
 
     /**
-     * serialize the content
-     * @method serialize
+     * Serialize node
      */
     serialize(): any {
         let o = {
@@ -603,39 +564,40 @@ export class Node {
         return o;
     }
 
-//
-// 	/* Creates a clone of this node */
-//     clone() {
-//         let node = Nodes.createNode(this.type);
-//
-//         let data = this.serialize();
-//         delete data["id"];
-//         node.configure(data);
-//
-//         return node;
-//     }
-//
-//     /**
-//      * serialize and stringify
-//      * @method toString
-//      */
-//     toString() {
-//         return JSON.stringify(this.serialize());
-//     }
-//
+
     /**
-     * get the title string
-     * @method getTitle
+     * Creates a clone of this node
+     * @returns {Node}
+     */
+    clone(): Node {
+        let node = Nodes.createNode(this.type);
+
+        let data = this.serialize();
+        delete data["id"];
+        node.configure(data);
+
+        return node;
+    }
+
+    /**
+     * Serialize and stringify
+     * @returns {string} json
+     */
+    toString(): string {
+        return JSON.stringify(this.serialize());
+    }
+
+    /**
+     * Get the title string
      */
     getTitle(): string {
         return this.title;
     }
 
     /**
-     * sets the output data
-     * @method setOutputData
-     * @param slot
-     * @param {*} data
+     * Sets the output data
+     * @param slot slot id
+     * @param data slot data
      */
     setOutputData(slot: number, data: any): void {
         if (!this.outputs)
@@ -650,10 +612,9 @@ export class Node {
     }
 
     /**
-     * retrieves the input data (data traveling through the connection) from one slot
-     * @method getInputData
-     * @param slot
-     * @returns {*} data or if it is not connected returns undefined
+     * Retrieves the input data (data traveling through the connection) from one slot
+     * @param slot slot id
+     * @returns {any} data or if it is not connected returns undefined
      */
     getInputData(slot: number): any {
         if (!this.inputs)
@@ -663,23 +624,20 @@ export class Node {
         return; //undefined;
     }
 
-//
-//     /**
-//      * tells you if there is a connection in one input slot
-//      * @method isInputConnected
-//      * @param slot
-//      * @returns {boolean}
-//      */
-//     isInputConnected(slot:number) {
-//         if (!this.inputs)
-//             return false;
-//         return (slot < this.inputs.length && this.inputs[slot].link != null);
-//     }
-//
     /**
-     * tells you info about an input connection (which node, type, etc)
-     * @method getInputInfo
-     * @param slot
+     * If there is a connection in one input slot
+     * @param slot slot id
+     * @returns {boolean}
+     */
+    isInputConnected(slot: number): boolean {
+        if (!this.inputs)
+            return false;
+        return (slot < this.inputs.length && this.inputs[slot].link != null);
+    }
+
+    /**
+     * Returns info about an input connection (which node, type, etc)
+     * @param slot slot id
      * @returns {Object} object or null
      */
     getInputInfo(slot: number): any {
@@ -690,67 +648,64 @@ export class Node {
         return null;
     }
 
-//
-//     /**
-//      * tells you info about an output connection (which node, type, etc)
-//      * @method getOutputInfo
-//      * @param slot
-//      * @returns {Object}  object or null
-//      */
-//     getOutputInfo(slot) {
-//         if (!this.outputs)
-//             return null;
-//         if (slot < this.outputs.length)
-//             return this.outputs[slot];
-//         return null;
-//     }
-//
-//     /**
-//      * tells you if there is a connection in one output slot
-//      * @method isOutputConnected
-//      * @param slot
-//      * @returns {boolean}
-//      */
-//     isOutputConnected(slot) {
-//         if (!this.outputs)
-//             return null;
-//         return (slot < this.outputs.length && this.outputs[slot].links && this.outputs[slot].links.length);
-//     }
-//
-//     /**
-//      * retrieves all the nodes connected to this output slot
-//      * @method getOutputNodes
-//      * @param slot
-//      * @returns {array}
-//      */
-//     getOutputNodes(slot) {
-//         if (!this.outputs || this.outputs.length == 0) return null;
-//         if (slot < this.outputs.length) {
-//             let output = this.outputs[slot];
-//             let r = [];
-//             for (let i = 0; i < output.length; i++)
-//                 r.push(this.engine.getNodeById(output.links[i].target_id));
-//             return r;
-//         }
-//         return null;
-//     }
-//
-// //Node.prototype.unserialize = function(info) {} //this cannot be done from within, must be done in Nodes
-//
-//
-// // Execution *************************
+
+    /**
+     * Returns info about an output connection (which node, type, etc)
+     * @param slot slot id
+     * @returns {Object}  object or null
+     */
+    getOutputInfo(slot: number): any {
+        if (!this.outputs)
+            return null;
+        if (slot < this.outputs.length)
+            return this.outputs[slot];
+        return null;
+    }
+
+    /**
+     * if there is a connection in one output slot
+     * @param slot slot id
+     * @returns {boolean}
+     */
+    isOutputConnected(slot: number): boolean {
+        if (!this.outputs)
+            return null;
+        return (slot < this.outputs.length && this.outputs[slot].links && this.outputs[slot].links.length > 0);
+    }
+
+    //todo ES6
+    // /**
+    //  * retrieves all the nodes connected to this output slot
+    //  * @param slot slot id
+    //  * @returns {array}
+    //  */
+    // getOutputNodes(slot:number):Array<Node> {
+    //     if (!this.outputs || this.outputs.length == 0) return null;
+    //     if (slot < this.outputs.length) {
+    //         let output = this.outputs[slot];
+    //         let r = [];
+    //         for (let i = 0; i < output.length; i++)
+    //             r.push(this.engine.getNodeById(output.links[i].target_id));
+    //         return r;
+    //     }
+    //     return null;
+    // }
+
+
+
+
+    //todo ES6
 //     triggerOutput(slot, param) {
 //         let n = this.getOutputNode(slot);
 //         if (n && n.onTrigger)
 //             n.onTrigger(param);
 //     }
-//
+
     /**
-     * add a new output slot to use in this node
-     * @method addOutput
+     * Add a new output slot to use in this node
      * @param name
      * @param type string defining the output type ("vec3","number",...)
-     * @param {Object} extra_info this can be used to have special properties of an output (label, special color, position, etc)
+     * @param extra_info this can be used to have special properties of an output (label, special color, position, etc)
      */
 
     addOutput(name: string, type?: string, extra_info?: any): void {
@@ -766,34 +721,32 @@ export class Node {
         this.size = this.computeSize();
     }
 
-//
-//     /**
-//      * add a new output slot to use in this node
-//      * @method addOutputs
-//      * @param {Array} array of triplets like [[name,type,extra_info],[...]]
-//      */
-//     addOutputs(array) {
-//         for (let i = 0; i < array.length; ++i) {
-//             let info = array[i];
-//             let o = {name: info[0], type: info[1], link: null};
-//             if (array[2])
-//                 for (let j in info[2])
-//                     o[j] = info[2][j];
-//
-//             if (!this.outputs)
-//                 this.outputs = [];
-//             this.outputs.push(o);
-//             if (this.onOutputAdded)
-//                 this.onOutputAdded(o);
-//         }
-//
-//         this.size = this.computeSize();
-//     }
-//
+
     /**
-     * remove an existing output slot
-     * @method removeOutput
-     * @param slot
+     * Add a new output slot to use in this node
+     * @param  array of triplets like [[name,type,extra_info],[...]]
+     */
+    addOutputs(array:Array<Output>) :void{
+        for (let i = 0; i < array.length; ++i) {
+            let info = array[i];
+            let o = {name: info[0], type: info[1], links: null};
+            if (array[2])
+                for (let j in info[2])
+                    o[j] = info[2][j];
+
+            if (!this.outputs)
+                this.outputs = [];
+            this.outputs.push(o);
+            if (this.onOutputAdded)
+                this.onOutputAdded(o);
+        }
+
+        this.size = this.computeSize();
+    }
+
+    /**
+     * Remove an existing output slot
+     * @param slot slot id
      */
     removeOutput(slot: number): void {
         this.disconnectOutput(slot);
@@ -803,13 +756,12 @@ export class Node {
             this.onOutputRemoved(slot);
     }
 
-//
+
     /**
-     * add a new input slot to use in this node
-     * @method addInput
+     * Add a new input slot to use in this node
      * @param name
      * @param type string defining the input type ("vec3","number",...), it its a generic one use 0
-     * @param {Object} extra_info this can be used to have special properties of an input (label, color, position, etc)
+     * @param extra_info this can be used to have special properties of an input (label, color, position, etc)
      */
     addInput(name: string, type?: string, extra_info?: any): void {
 
@@ -826,31 +778,30 @@ export class Node {
             this.onInputAdded(o);
     }
 
-    // /**
-    //  * add several new input slots in this node
-    //  * @method addInputs
-    //  * @param {Array} array of triplets like [[name,type,extra_info],[...]]
-    //  */
-    // addInputs(array) {
-    //     for (let i = 0; i < array.length; ++i) {
-    //         let info = array[i];
-    //         let o = {name: info[0], type: info[1], link: null};
-    //         if (array[2])
-    //             for (let j in info[2])
-    //                 o[j] = info[2][j];
-    //
-    //         if (!this.inputs)
-    //             this.inputs = [];
-    //         this.inputs.push(o);
-    //         if (this.onInputAdded)
-    //             this.onInputAdded(o);
-    //     }
-    //
-    //     this.size = this.computeSize();
-    // }
-//
     /**
-     * remove an existing input slot
+     * add several new input slots in this node
+     * @param {Array} array of triplets like [[name,type,extra_info],[...]]
+     */
+    addInputs(array:Array<Input>):void {
+        for (let i = 0; i < array.length; ++i) {
+            let info = array[i];
+            let o = {name: info[0], type: info[1], link: null};
+            if (array[2])
+                for (let j in info[2])
+                    o[j] = info[2][j];
+
+            if (!this.inputs)
+                this.inputs = [];
+            this.inputs.push(o);
+            if (this.onInputAdded)
+                this.onInputAdded(o);
+        }
+
+        this.size = this.computeSize();
+    }
+
+    /**
+     * Remove an existing input slot
      * @method removeInput
      * @param slot
      */
@@ -862,24 +813,23 @@ export class Node {
             this.onInputRemoved(slot);
     }
 
-//
-//     /**
-//      * add an special connection to this node (used for special kinds of graphs)
-//      * @method addConnection
-//      * @param name
-//      * @param type string defining the input type ("vec3","number",...)
-//      * @param {[x,y]} pos position of the connection inside the node
-//      * @param direction if is input or output
-//      */
-//     addConnection(name, type, pos, direction) {
-//         this.connections.push({name: name, type: type, pos: pos, direction: direction, links: null});
-//     }
-//
+
+    // /**
+    //  * add an special connection to this node (used for special kinds of graphs)
+    //  * @method addConnection
+    //  * @param name
+    //  * @param type string defining the input type ("vec3","number",...)
+    //  * @param {[x,y]} pos position of the connection inside the node
+    //  * @param direction if is input or output
+    //  */
+    // addConnection(name, type, pos, direction) {
+    //     this.connections.push({name: name, type: type, pos: pos, direction: direction, links: null});
+    // }
+
     /**
-     * computes the size of a node according to its inputs and output slots
-     * @method computeSize
+     * Computes the size of a node according to its inputs and output slots
      * @param minHeight
-     * @returns the total size
+     * @returns {[number, number]} the total size
      */
     computeSize(minHeight?: number): [number, number] {
         let rows = Math.max(this.inputs ? this.inputs.length : 1, this.outputs ? this.outputs.length : 1);
@@ -911,7 +861,7 @@ export class Node {
             }
 
         size[0] = Math.max(input_width + output_width + 10, title_width);
-        //todo ES5 size[0] = Math.max(size[0], Nodes.NODE_WIDTH);
+        size[0] = Math.max(size[0], Nodes.options.NODE_WIDTH);
 
         function compute_text_size(text) {
             if (!text)
@@ -924,9 +874,8 @@ export class Node {
 
 
     /**
-     * returns the bounding of the object, used for rendering purposes
-     * @method getBounding
-     * @returns {Float32Array[4]} the total size
+     * Returns the bounding of the object, used for rendering purposes
+     * @returns {[number, number, number, number]} the total size
      */
 
     getBounding(): [number, number, number, number] {
@@ -934,6 +883,16 @@ export class Node {
     }
 
 
+    /**
+     * Is inside rectangle
+     * @param x
+     * @param y
+     * @param left
+     * @param top
+     * @param width
+     * @param height
+     * @returns {boolean}
+     */
     isInsideRectangle(x: number, y: number, left: number, top: number, width: number, height: number): boolean {
         if (left < x && (left + width) > x &&
             top < y && (top + height) > y)
@@ -942,10 +901,10 @@ export class Node {
     }
 
     /**
-     * checks if a point is inside the shape of a node
-     * @method isPointInsideNode
+     * Checks if a point is inside the shape of a node
      * @param x
      * @param y
+     * @param margin
      * @returns {boolean}
      */
     isPointInsideNode(x: number, y: number, margin: number): boolean {
@@ -965,13 +924,11 @@ export class Node {
 
 
     /**
-     * checks if a point is inside a node slot, and returns info about which slot
-     * @method getSlotInPosition
+     * Checks if a point is inside a node slot, and returns info about which slot
      * @param x
      * @param y
-     * @returns {Object} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
+     * @returns {IInputInfo|IOutputInfo} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
      */
-
     getSlotInPosition(x: number, y: number): IInputInfo|IOutputInfo {
         //search for inputs
         if (this.inputs)
@@ -994,10 +951,9 @@ export class Node {
     }
 
     /**
-     * returns the input slot with a given name (used for dynamic slots), -1 if not found
-     * @method findInputSlot
+     * Returns the input slot with a given name (used for dynamic slots), -1 if not found
      * @param name the name of the slot
-     * @returns the slot (-1 if not found)
+     * @returns {number} the slot (-1 if not found)
      */
     findInputSlot(name: string): number {
         if (!this.inputs) return -1;
@@ -1008,10 +964,9 @@ export class Node {
     }
 
     /**
-     * returns the output slot with a given name (used for dynamic slots), -1 if not found
-     * @method findOutputSlot
+     * Returns the output slot with a given name (used for dynamic slots), -1 if not found
      * @param name the name of the slot
-     * @returns the slot (-1 if not found)
+     * @returns {number} the slot (-1 if not found)
      */
     findOutputSlot(name: string): number {
         if (!this.outputs) return -1;
@@ -1022,12 +977,11 @@ export class Node {
     }
 
     /**
-     * connect this node output to the input of another node
-     * @method connect
-     * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
+     * Connect this node output to the input of another node
+     * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
      * @param {Node} node the target node
-     * @param {number_or_string} target_slot the input slot of the target node (could be the number of the slot or the string with the name of the slot)
-     * @returns Canvasif it was connected succesfully
+     * @param {number|string} target_slot the input slot of the target node (could be the number of the slot or the string with the name of the slot)
+     * @returns {boolean} if it was connected succesfully
      */
     connect(slot: number|string, node: Node, target_slot: number|string): boolean {
         target_slot = target_slot || 0;
@@ -1122,11 +1076,10 @@ export class Node {
 
 
     /**
-     * disconnect one output to an specific node
-     * @method disconnectOutput
-     * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
-     * @param {Node} target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
-     * @returns Canvasif it was disconnected succesfully
+     * Disconnect one output to an specific node
+     * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
+     * @param target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
+     * @returns {boolean} if it was disconnected succesfully
      */
     disconnectOutput(slot: number|string, target_node?: Node): boolean {
         if (typeof slot == "string") {
@@ -1187,10 +1140,9 @@ export class Node {
     }
 
     /**
-     * disconnect one input
-     * @method disconnectInput
-     * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
-     * @returns Canvasif it was disconnected succesfully
+     * Disconnect one input
+     * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
+     * @returns {boolean} if it was disconnected succesfully
      */
     disconnectInput(slot: number|string): boolean {
         //seek for the output slot
@@ -1242,10 +1194,9 @@ export class Node {
 
 //
     /**
-     * returns the center of a connection point in renderer coords
-     * @method getConnectionPos
+     * Returns the center of a connection point in renderer coords
      * @param is_input true if if a input slot, false if it is an output
-     * @param {number_or_string} slot (could be the number of the slot or the string with the name of the slot)
+     * @param slot (could be the number of the slot or the string with the name of the slot)
      * @returns {[x,y]} the position
      **/
     getConnectionPos(is_input: boolean, slot_number: number): [number, number] {
@@ -1271,35 +1222,37 @@ export class Node {
         return [this.pos[0], this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
     }
 
-//connections
 
-    /* Force align to grid */
+
+    /**
+     * Force align to grid
+     */
     alignToGrid(): void {
         this.pos[0] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.options.CANVAS_GRID_SIZE);
         this.pos[1] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.options.CANVAS_GRID_SIZE);
     }
 
-//
-// 	/* Console output */
-//     trace(msg) {
-//         if (!this.console)
-//             this.console = [];
-//         this.console.push(msg);
-//         if (this.console.length > Node.MAX_CONSOLE)
-//             this.console.shift();
-//
-//         nodeDebug(this.title + ": " + msg);
-//     }
-//
-//     traceError(msg) {
-//         if (!this.console)
-//             this.console = [];
-//         this.console.push(msg);
-//         if (this.console.length > Node.MAX_CONSOLE)
-//             this.console.shift();
-//
-//         nodeDebugErr(this.title + ": " + msg);
-//     }
+    //
+    // /* Console output */
+    // trace(msg) {
+    //     if (!this.console)
+    //         this.console = [];
+    //     this.console.push(msg);
+    //     if (this.console.length > Node.MAX_CONSOLE)
+    //         this.console.shift();
+    //
+    //     nodeDebug(this.title + ": " + msg);
+    // }
+    //
+    // traceError(msg) {
+    //     if (!this.console)
+    //         this.console = [];
+    //     this.console.push(msg);
+    //     if (this.console.length > Node.MAX_CONSOLE)
+    //         this.console.shift();
+    //
+    //     nodeDebugErr(this.title + ": " + msg);
+    // }
 //
     /* Forces to redraw or the main renderer (Node) or the bg renderer (links) */
     setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean): void {
@@ -1321,61 +1274,69 @@ export class Node {
         return img;
     }
 
-//
-// //safe Node action execution (not sure if safe)
-//     executeAction(action) {
-//         if (action == "") return false;
-//
-//         if (action.indexOf(";") != -1 || action.indexOf("}") != -1) {
-//             this.traceError("Error: Action contains unsafe characters");
-//             return false;
-//         }
-//
-//         let tokens = action.split("(");
-//         let func_name = tokens[0];
-//         if (typeof(this[func_name]) != "function") {
-//             this.traceError("Error: Action not found on node: " + func_name);
-//             return false;
-//         }
-//
-//         let code = action;
-//
-//         try {
-//         	//todo ES6
-//             // let _foo = eval;
-//             // eval = null;
-//             // (new Function("with(this) { " + code + "}")).call(this);
-//             // eval = _foo;
-//         }
-//         catch (err) {
-//             this.traceError("Error executing action {" + action + "} :" + err);
-//             return false;
-//         }
-//
-//         return true;
-//     }
-//
-// 	/* Allows to get onMouseMove and onMouseUp events even if the mouse is out of focus */
-//     captureInput(v) {
-//         if (!this.engine || !this.engine.list_of_canvas)
-//             return;
-//
-//         let list = this.engine.list_of_canvas;
-//
-//         for (let i = 0; i < list.length; ++i) {
-//             let c = list[i];
-//             //releasing somebody elses capture?!
-//             if (!v && c.node_capturing_input != this)
-//                 continue;
-//
-//             //change
-//             c.node_capturing_input = v ? this : null;
-//         }
-//     }
-//
+
+
+    /**
+     * safe Node action execution (not sure if safe)
+     * @param action
+     * @returns {boolean}
+     */
+    executeAction(action:string):boolean {
+        if (action == "") return false;
+
+        if (action.indexOf(";") != -1 || action.indexOf("}") != -1) {
+            console.log("Error: Action contains unsafe characters");
+            return false;
+        }
+
+        let tokens = action.split("(");
+        let func_name = tokens[0];
+        if (typeof(this[func_name]) != "function") {
+            console.log("Error: Action not found on node: " + func_name);
+            return false;
+        }
+
+        let code = action;
+
+        try {
+        	//todo ES6
+            // let _foo = eval;
+            // eval = null;
+            // (new Function("with(this) { " + code + "}")).call(this);
+            // eval = _foo;
+        }
+        catch (err) {
+            console.log("Error executing action {" + action + "} :" + err);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Allows to get onMouseMove and onMouseUp events even if the mouse is out of focus
+     * @param v
+     */
+    captureInput(v:any):void {
+        if (!this.engine || !this.engine.list_of_renderers)
+            return;
+
+        let list = this.engine.list_of_renderers;
+
+        for (let i = 0; i < list.length; ++i) {
+            let c = list[i];
+            //releasing somebody elses capture?!
+            if (!v && c.node_capturing_input != this)
+                continue;
+
+            //change
+            c.node_capturing_input = v ? this : null;
+        }
+    }
+
     /**
      * Collapse the node to make it smaller on the renderer
-     * @method collapse
      **/
     collapse(): void {
         if (!this.flags.collapsed)
@@ -1387,9 +1348,8 @@ export class Node {
 
     /**
      * Forces the node to do not move or realign on Z
-     * @method pin
      **/
-    pin(v?: boolean): void {
+    pin(v?: any): void {
         if (v === undefined)
             this.flags.pinned = !this.flags.pinned;
         else
