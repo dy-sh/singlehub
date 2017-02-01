@@ -7,10 +7,10 @@ let router = express.Router();
 
 import {engine} from "../public/nodes/nodes-engine"
 import server from "../modules/web-server/server"
-import {Nodes} from "../public/nodes/nodes";
+import {Nodes, Link} from "../public/nodes/nodes";
 import Utils from "../public/nodes/utils";
 
-let MODULE_NAME="Socket";
+let MODULE_NAME = "Socket";
 
 //------------------ info ------------------------
 
@@ -69,17 +69,13 @@ router.post('/c/:cid/n/', function (req, res) {
     res.send("New node created: " + node.type);
 });
 
-router.post('/nodes/clone/:id', function (req, res) {
-
-});
-
 
 /**
  * delete node
  */
-router.delete('/c/:cid/n/:nid', function (req, res) {
+router.delete('/c/:cid/n/:id', function (req, res) {
     let cont = req.params.cid;
-    let id = req.params.nid;
+    let id = req.params.id;
 
     let node = engine.getNodeById(id);
     if (!node) {
@@ -91,7 +87,7 @@ router.delete('/c/:cid/n/:nid', function (req, res) {
 
     engine.remove(node);
 
-    var data = JSON.stringify({id: node.id, container: engine.container_id});
+    let data = JSON.stringify({id: node.id, container: engine.container_id});
     server.socket.io.emit('node-delete', data);
 
     Utils.debug("Node deleted: " + node.type);
@@ -119,7 +115,7 @@ router.delete('/c/:cid/n/', function (req, res) {
         engine.remove(node);
     }
 
-    var data = JSON.stringify(ids);
+    let data = JSON.stringify(ids);
     server.socket.io.emit('nodes-delete', data);
 
     Utils.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
@@ -140,6 +136,12 @@ router.put('/nodes', function (req, res) {
     res.send("ok");
 });
 
+
+router.post('/nodes/clone/:id', function (req, res) {
+
+});
+
+
 router.post('/nodes/settings/:id', function (req, res) {
 
 });
@@ -155,19 +157,67 @@ router.get('/nodes/description', function (req, res) {
 
 //------------------ links ------------------------
 
+/**
+ * create link
+ */
+router.post('/c/:cid/l/', function (req, res) {
+    let cont = req.params.cid;
+    let link: Link = req.body;
 
-router.get('/links', function (req, res) {
+    let node1=engine.getNodeById(link.origin_id);
+    let node2=engine.getNodeById(link.target_id);
 
+    // let input = node2.getInputInfo(0);
+    //prevent connection of different types
+    // if (input && !input.link && input.type == this.connecting_output.type) { //toLowerCase missing
+
+    //if user drag to node instead of slot
+    if(link.target_slot==-1){
+        //todo find free input
+        let input = node2.getInputInfo(0);
+        if (input == null) {
+            //no inputs
+            Utils.debugErr("Cant create link. No free inputs.", MODULE_NAME);
+            res.status(404).send("Cant create link. No free inputs.");
+            return;
+        }
+        link.target_slot=0;
+    }
+
+    node1.connect(link.origin_slot, node2, link.target_slot);
+
+    server.socket.io.emit('link-create', JSON.stringify(req.body));
+
+    Utils.debug("Link created");
+    res.send("Link created");
 });
 
 
-router.delete('/links/:id', function (req, res) {
+/**
+ * delete link
+ */
+router.delete('/c/:cid/l/:id', function (req, res) {
+    let cont = req.params.cid;
+    let id = req.params.id;
 
+    let link = engine.links[id];
+
+    let node = engine.getNodeById(link.target_id);
+    if (!node) {
+        Utils.debugErr("Cant delete link. Target node id does not exist.", MODULE_NAME);
+        res.status(404).send("Cant delete link. Target node id does not exist.");
+        return;
+    }
+    node.disconnectInput(link.target_slot);
+
+
+    let data = JSON.stringify({id: link.id, container: engine.container_id});
+    server.socket.io.emit('link-delete', data);
+
+    Utils.debug("Link deleted");
+    res.send("Link deleted" );
 });
 
-router.post('/links', function (req, res) {
-
-});
 
 //------------------ receiver ------------------------
 

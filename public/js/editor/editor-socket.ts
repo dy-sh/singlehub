@@ -2,7 +2,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
  */
 
-import {Nodes, Node} from "../../nodes/nodes"
+import {Nodes, Node, Link} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine";
 import {editor} from "./node-editor";
 import Utils from "../../nodes/utils";
@@ -74,7 +74,16 @@ export class EditorSocket {
 
             engine.remove(node);
             engine.setDirtyCanvas(true, true);
+
+            //if current container removed
+            if (n.id == engine.container_id) {
+                (<any>window).location = "/editor/";
+            }
         });
+
+
+
+
 
         socket.on('nodes-delete', function (data) {
             let ids = JSON.parse(data);
@@ -101,6 +110,24 @@ export class EditorSocket {
         });
 
 
+        socket.on('link-delete', function (data) {
+            let l = JSON.parse(data);
+            let link = engine.links[l.id];
+
+           // let node = this.engine.getNodeById(link.origin_id);
+            let targetNode = engine.getNodeById(link.target_id);
+            //node.disconnectOutput(link.target_slot, targetNode);
+            targetNode.disconnectInput(link.target_slot);
+        });
+
+        socket.on('link-create', function (link) {
+
+            let node = engine.getNodeById(link.origin_id);
+            let targetNode = engine.getNodeById(link.target_id);
+            node.connect(link.origin_slot, targetNode, link.target_slot);
+            //  this.engine.change();
+
+        });
 
         socket.on('gatewayConnected', function () {
             noty({text: 'Gateway connected.', type: 'alert', timeout: false});
@@ -130,57 +157,6 @@ export class EditorSocket {
         });
 
 
-        socket.on('removeNode', function (nodeId) {
-            //if current container removed
-            if (nodeId == engine.container_id) {
-                (<any>window).location = "/editor/";
-            }
-
-            let node = this.engine.getNodeById(nodeId);
-            if (node == null)
-                return;
-
-            this.engine.remove(node);
-            this.engine.setDirtyCanvas(true, true);
-        });
-
-
-        socket.on('nodeUpdated', function (node) {
-            if (node.container_id != engine.container_id)
-                return;
-
-            this.createOrUpdateNode(node);
-        });
-
-
-        socket.on('newNode', function (node) {
-            if (node.container_id != engine.container_id)
-                return;
-
-            this.createOrUpdateNode(node);
-        });
-
-
-        socket.on('removeLink', function (link) {
-            if (link.container_id != engine.container_id)
-                return;
-
-            //let node = this.engine.getNodeById(link.origin_id);
-            let targetNode = this.engine.getNodeById(link.target_id);
-            //node.disconnectOutput(link.target_slot, targetNode);
-            targetNode.disconnectInput(link.target_slot);
-        });
-
-        socket.on('newLink', function (link) {
-            if (link.container_id != engine.container_id)
-                return;
-
-            let node = this.engine.getNodeById(link.origin_id);
-            let targetNode = this.engine.getNodeById(link.target_id);
-            node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
-            //  this.engine.change();
-
-        });
 
 
         this.getNodes();
@@ -229,18 +205,17 @@ export class EditorSocket {
 
 
     sendCreateNode(type: string, position: [number, number]): void {
-        var data = JSON.stringify({type: type, position: position, container: engine.container_id});
+        let json = JSON.stringify({type: type, position: position, container: engine.container_id});
         $.ajax({
             url: "/api/editor/c/" + engine.container_id + "/n/",
             contentType: 'application/json',
             type: 'POST',
-            data: data
+            data: json
         })
     };
 
 
     sendRemoveNode(node: Node): void {
-
         $.ajax({
             url: "/api/editor/c/" + engine.container_id + "/n/" + node.id,
             type: 'DELETE'
@@ -251,7 +226,7 @@ export class EditorSocket {
     sendRemoveNodes(nodes: {[id: number]: Node}): void {
         let ids = [];
         for (let n in nodes) {
-            ids.push(nodes[n].id);
+            ids.push(n);
         }
 
         $.ajax({
@@ -263,28 +238,33 @@ export class EditorSocket {
     };
 
 
-    //---------------------------------------------------
 
-    sendCreateLink(link: any): void {
+    sendCreateLink(origin_id:number,origin_slot:number,target_id:number,target_slot): void {
+       let data= {
+            origin_id: target_id,
+            origin_slot: origin_slot,
+            target_id: target_id,
+            target_slot: target_slot,
+        };
 
         $.ajax({
-            url: '/api/editor/links',
+            url: "/api/editor/c/" + engine.container_id + "/l/",
             type: 'POST',
-            data: {'link': link}
+            contentType: 'application/json',
+            data: JSON.stringify(data)
+        });
+    };
+
+
+    sendRemoveLink(link: Link): void {
+        $.ajax({
+            url: "/api/editor/c/" + engine.container_id + "/l/" + link.id,
+            type: 'DELETE'
         })
     };
 
+    //---------------------------------------------------
 
-    sendRemoveLink(link: any): void {
-
-        $.ajax({
-            url: '/api/editor/links',
-            type: 'DELETE',
-            data: {'link': link}
-        }).done(function () {
-
-        });
-    };
 
 
     sendCloneNode(node: Node): void {

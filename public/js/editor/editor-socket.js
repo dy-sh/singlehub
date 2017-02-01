@@ -61,6 +61,10 @@
                 }
                 nodes_engine_1.engine.remove(node);
                 nodes_engine_1.engine.setDirtyCanvas(true, true);
+                //if current container removed
+                if (n.id == nodes_engine_1.engine.container_id) {
+                    window.location = "/editor/";
+                }
             });
             socket.on('nodes-delete', function (data) {
                 let ids = JSON.parse(data);
@@ -80,6 +84,20 @@
                     node.pos = n.pos;
                     node.setDirtyCanvas(true, true);
                 }
+            });
+            socket.on('link-delete', function (data) {
+                let l = JSON.parse(data);
+                let link = nodes_engine_1.engine.links[l.id];
+                // let node = this.engine.getNodeById(link.origin_id);
+                let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
+                //node.disconnectOutput(link.target_slot, targetNode);
+                targetNode.disconnectInput(link.target_slot);
+            });
+            socket.on('link-create', function (link) {
+                let node = nodes_engine_1.engine.getNodeById(link.origin_id);
+                let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
+                node.connect(link.origin_slot, targetNode, link.target_slot);
+                //  this.engine.change();
             });
             socket.on('gatewayConnected', function () {
                 noty({ text: 'Gateway connected.', type: 'alert', timeout: false });
@@ -102,43 +120,6 @@
                     node.boxcolor = nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR;
                     node.setDirtyCanvas(true, true);
                 }, 100);
-            });
-            socket.on('removeNode', function (nodeId) {
-                //if current container removed
-                if (nodeId == nodes_engine_1.engine.container_id) {
-                    window.location = "/editor/";
-                }
-                let node = this.engine.getNodeById(nodeId);
-                if (node == null)
-                    return;
-                this.engine.remove(node);
-                this.engine.setDirtyCanvas(true, true);
-            });
-            socket.on('nodeUpdated', function (node) {
-                if (node.container_id != nodes_engine_1.engine.container_id)
-                    return;
-                this.createOrUpdateNode(node);
-            });
-            socket.on('newNode', function (node) {
-                if (node.container_id != nodes_engine_1.engine.container_id)
-                    return;
-                this.createOrUpdateNode(node);
-            });
-            socket.on('removeLink', function (link) {
-                if (link.container_id != nodes_engine_1.engine.container_id)
-                    return;
-                //let node = this.engine.getNodeById(link.origin_id);
-                let targetNode = this.engine.getNodeById(link.target_id);
-                //node.disconnectOutput(link.target_slot, targetNode);
-                targetNode.disconnectInput(link.target_slot);
-            });
-            socket.on('newLink', function (link) {
-                if (link.container_id != nodes_engine_1.engine.container_id)
-                    return;
-                let node = this.engine.getNodeById(link.origin_id);
-                let targetNode = this.engine.getNodeById(link.target_id);
-                node.connect(link.origin_slot, targetNode, link.target_slot, link.id);
-                //  this.engine.change();
             });
             this.getNodes();
             // this.getGatewayInfo();
@@ -173,12 +154,12 @@
             });
         }
         sendCreateNode(type, position) {
-            var data = JSON.stringify({ type: type, position: position, container: nodes_engine_1.engine.container_id });
+            let json = JSON.stringify({ type: type, position: position, container: nodes_engine_1.engine.container_id });
             $.ajax({
                 url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
                 contentType: 'application/json',
                 type: 'POST',
-                data: data
+                data: json
             });
         }
         ;
@@ -192,7 +173,7 @@
         sendRemoveNodes(nodes) {
             let ids = [];
             for (let n in nodes) {
-                ids.push(nodes[n].id);
+                ids.push(n);
             }
             $.ajax({
                 url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
@@ -202,24 +183,29 @@
             });
         }
         ;
-        //---------------------------------------------------
-        sendCreateLink(link) {
+        sendCreateLink(origin_id, origin_slot, target_id, target_slot) {
+            let data = {
+                origin_id: target_id,
+                origin_slot: origin_slot,
+                target_id: target_id,
+                target_slot: target_slot,
+            };
             $.ajax({
-                url: '/api/editor/links',
+                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/l/",
                 type: 'POST',
-                data: { 'link': link }
+                contentType: 'application/json',
+                data: JSON.stringify(data)
             });
         }
         ;
         sendRemoveLink(link) {
             $.ajax({
-                url: '/api/editor/links',
-                type: 'DELETE',
-                data: { 'link': link }
-            }).done(function () {
+                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/l/" + link.id,
+                type: 'DELETE'
             });
         }
         ;
+        //---------------------------------------------------
         sendCloneNode(node) {
             $.ajax({
                 url: '/api/editor/nodes/clone',

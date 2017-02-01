@@ -612,12 +612,10 @@ export class Renderer {
                             let link_pos = n.getConnectionPos(true, i);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                 if (input.link !== null) {
-                                    //derwish removed
+                                    this.socket.sendRemoveLink(engine.links[input.link]);
+
                                     //n.disconnectInput(i);
                                     //this.dirty_bgcanvas = true;
-
-                                    //derwish added
-                                    this.socket.sendRemoveLink(this.engine.links[input.link]);
 
                                     skip_action = true;
                                 }
@@ -883,42 +881,15 @@ export class Renderer {
                     else {
                         //slot below mouse? connect
                         let slot = this.isOverNodeInput(node, e.canvasX, e.canvasY);
-                        if (slot != -1) {
-                            //derwish added
-                            let link = {
-                                origin_id: this.connecting_node.id,
-                                origin_slot: this.connecting_slot,
-                                target_id: node.id,
-                                target_slot: slot
-                            };
-                            this.socket.sendCreateLink(link);
 
-                            //derwish removed
-                            //this.connecting_node.connect(this.connecting_slot, node, slot);
-                        }
-                        else { //not on top of an input
-                            let input = node.getInputInfo(0);
-                            //simple connect
+                        this.socket.sendCreateLink(
+                            this.connecting_node.id, this.connecting_slot,
+                            node.id, slot
+                        );
 
-                            //prevent connection of different types
-                            // if (input && !input.link && input.type == this.connecting_output.type) { //toLowerCase missing
-
-                            //derwish added
-                            if (input != null) {
-                                let link = {
-                                    origin_id: this.connecting_node.id,
-                                    origin_slot: this.connecting_slot,
-                                    target_id: node.id,
-                                    target_slot: 0
-                                };
-                                this.socket.sendCreateLink(link);
-                            }
-                            //derwish removed
-                            //this.connecting_node.connect(this.connecting_slot, node, 0);
-                            // }
-                        }
-
-
+                        // if (slot != -1) {
+                        //     this.connecting_node.connect(this.connecting_slot, node, slot);
+                        // }
                     }
                 }
 
@@ -1030,6 +1001,14 @@ export class Renderer {
         return false; // prevent default
     }
 
+    /**
+     * Returns slot number at canvas position or -1 if no slots
+     * @param node
+     * @param canvasx
+     * @param canvasy
+     * @param slot_pos
+     * @returns {number}
+     */
     isOverNodeInput(node: Node, canvasx: number, canvasy: number, slot_pos?: [number, number]): number {
         if (node.inputs)
             for (let i = 0, l = node.inputs.length; i < l; ++i) {
