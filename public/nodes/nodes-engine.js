@@ -31,6 +31,7 @@
             this.global_inputs = {};
             this.global_outputs = {};
             this.MODULE_NAME = "NodesEngine";
+            this.container_id = 0;
             utils_1.default.debug("Engine created", this.MODULE_NAME);
             //todo
             // this.debug = config.engine.debugEngine;

@@ -173,7 +173,6 @@ export class EditorSocket {
      * Get nodes for container
      */
     getNodes(): void {
-        let that = this;
         $.ajax({
             url: "/api/editor/containers/"+engine.container_id,
             success: function (nodes) {

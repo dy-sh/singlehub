@@ -4,7 +4,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,6 +12,7 @@
      * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
      */
     const nodes_1 = require("../../nodes/nodes");
+    const nodes_engine_1 = require("../../nodes/nodes-engine");
     const utils_1 = require("../../nodes/utils");
     class Renderer {
         constructor(canvas, socket, editor, engine, skip_render) {
@@ -1838,11 +1839,11 @@
                         this.editor.addMiniWindow(200, 200);
                     }
                 });
-                if (window.owner_container_id != null && window.owner_container_id != "") {
+                if (nodes_engine_1.engine.parent_container_id) {
                     options.push(null);
                     let back_url = "/editor/";
-                    if (window.owner_container_id != nodes_1.Nodes.MAIN_CONTAINER_ID)
-                        back_url += "container/" + window.owner_container_id;
+                    if (nodes_engine_1.engine.parent_container_id != 0)
+                        back_url += "container/" + nodes_engine_1.engine.parent_container_id;
                     options.push({
                         content: "Close Container",
                         callback: function () {

@@ -4,7 +4,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 
-import {Node, Nodes, Output, IInputInfo,IOutputInfo} from "../../nodes/nodes"
+import {Node, Nodes, Output, IInputInfo, IOutputInfo} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {NodeEditor, editor} from "./node-editor";
 import {EditorSocket} from "./editor-socket";
@@ -52,7 +52,7 @@ export class Renderer {
     allow_dragnodes: boolean;
     dirty_canvas: boolean;
     dirty_bgcanvas: boolean;
-    dirty_area: [number,number,number,number];
+    dirty_area: [number, number, number, number];
     node_in_container: Node;
     last_mouse: [number, number];
     last_mouseclick: number;
@@ -2324,15 +2324,14 @@ export class Renderer {
                 }
             });
 
-            if ((<any>window).owner_container_id != null && (<any>window).owner_container_id != "") {
-
+            if (engine.parent_container_id) {
 
                 options.push(null);
 
                 let back_url = "/editor/";
 
-                if ((<any>window).owner_container_id != Nodes.MAIN_CONTAINER_ID)
-                    back_url += "container/" + (<any>window).owner_container_id;
+                if (engine.parent_container_id != 0)
+                    back_url += "container/" + engine.parent_container_id;
 
                 options.push({
                     content: "Close Container",
@@ -2433,7 +2432,7 @@ export class Renderer {
         let options = {event: event, callback: inner_option_clicked};
 
         //check if mouse is in input
-        let slot:IInputInfo|IOutputInfo = null;
+        let slot: IInputInfo|IOutputInfo = null;
         if (node)
             slot = node.getSlotInPosition(event.canvasX, event.canvasY);
 
@@ -2517,12 +2516,12 @@ export class Renderer {
         }
 
         function inner_create(v, e) {
-            let type=v.value;
-            let pos=canvas.convertEventToCanvas(first_event);
+            let type = v.value;
+            let pos = canvas.convertEventToCanvas(first_event);
             pos[0] = Math.round(pos[0]);
             pos[1] = Math.round(pos[1]);
 
-            canvas.editor.socket.sendCreateNode(type,pos);
+            canvas.editor.socket.sendCreateNode(type, pos);
 
             // let node = Nodes.createNode(v.value);
             // if (node) {
@@ -2969,7 +2968,6 @@ export class Renderer {
     }
 
 
-
     /*
      createNodetypeWrapper ( class_object )
      {
@@ -2979,7 +2977,6 @@ export class Renderer {
      */
 
 }
-
 
 
 declare global {

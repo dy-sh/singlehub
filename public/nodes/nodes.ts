@@ -125,9 +125,6 @@ export class Nodes {
     static options = new NodesOptions;
 
 
-    static MAIN_CONTAINER_ID = "Main";
-
-
     static DataType = {
         Text: 0,
         Number: 1,

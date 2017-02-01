@@ -62,12 +62,13 @@ export class NodesEngine {
     onNodeRemoved: Function;
     onPlayEvent: Function;
     frame: number;
-    private MODULE_NAME= "NodesEngine";
-    container_id:number;
+    private MODULE_NAME = "NodesEngine";
+    container_id: number = 0;
+    parent_container_id?: number;
 
 
     constructor() {
-        Utils.debug("Engine created",this.MODULE_NAME);
+        Utils.debug("Engine created", this.MODULE_NAME);
         //todo
         // this.debug = config.engine.debugEngine;
         // if (this.debug)
@@ -81,8 +82,6 @@ export class NodesEngine {
     getSupportedTypes(): Array<string> {
         return this.supported_types;
     }
-
-
 
 
     /**
@@ -225,7 +224,7 @@ export class NodesEngine {
             this.errors_in_execution = true;
             if (Nodes.throw_errors)
                 throw err;
-            Utils.debugErr("Error during execution: " + err,this.MODULE_NAME);
+            Utils.debugErr("Error during execution: " + err, this.MODULE_NAME);
             this.stop();
         }
 
@@ -316,7 +315,7 @@ export class NodesEngine {
             L.push(M[i]);
 
         if (L.length != this._nodes.length)
-            Utils.debug("Something went wrong, nodes missing",this.MODULE_NAME);
+            Utils.debug("Something went wrong, nodes missing", this.MODULE_NAME);
 
         //save order number in the node
         for (let i in L)
@@ -838,8 +837,6 @@ export class NodesEngine {
     }
 
 
-
-
     /**
      * Add nodes to engine from a JSON string
      * @param data JSON string
@@ -863,7 +860,7 @@ export class NodesEngine {
             let n_info = nodes[i]; //stored info
             let node = Nodes.createNode(n_info.type, n_info.title);
             if (!node) {
-                Utils.debugErr("Node not found: " + n_info.type,this.MODULE_NAME);
+                Utils.debugErr("Node not found: " + n_info.type, this.MODULE_NAME);
                 error = true;
                 continue;
             }

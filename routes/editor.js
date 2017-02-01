@@ -15,20 +15,19 @@
     var engine = require('./../public/nodes/nodes-engine');
     var router = express.Router();
     var config = require('./../config');
-    var MAIN_CONTAINER_ID = "main";
     router.get('/', function (req, res) {
         //todo if (engine.isNotStarted)
         //	res.render("Error", "Nodes Engine is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
         res.render('editor/index', {
             split: req.query.split,
-            containerId: MAIN_CONTAINER_ID,
+            containerId: 0,
             theme: config.nodeEditor.theme
         });
     });
     router.get('/container', function (req, res) {
         //todo if (engine.isNotStarted)
         //	res.render("Error", "Nodes Engine is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
-        if (!req.query.id || req.query.id == MAIN_CONTAINER_ID)
+        if (!req.query.id || req.query.id == 0)
             res.redirect("/editor");
         var container = engine.getContainerNode(req.query.id);
         if (!container)
@@ -37,7 +36,7 @@
         var p = container;
         while (true) {
             containerStack[p.id] = p.name;
-            if (p.containerId == MAIN_CONTAINER_ID)
+            if (p.containerId == 0)
                 break;
             p = engine.getContainerNode(p.containerId);
         }

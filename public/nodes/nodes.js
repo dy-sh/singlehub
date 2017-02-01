@@ -232,7 +232,6 @@
         ;
     }
     Nodes.options = new NodesOptions;
-    Nodes.MAIN_CONTAINER_ID = "Main";
     Nodes.DataType = {
         Text: 0,
         Number: 1,

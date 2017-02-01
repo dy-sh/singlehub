@@ -134,7 +134,6 @@
          * Get nodes for container
          */
         getNodes() {
-            let that = this;
             $.ajax({
                 url: "/api/editor/containers/" + nodes_engine_1.engine.container_id,
                 success: function (nodes) {
