@@ -75,15 +75,6 @@
     }
     exports.Link = Link;
     class Nodes {
-        //   debug: config.engine.debugEngine,
-        static debug(mess) {
-            console.log(mess);
-        }
-        ;
-        static debugErr(mess) {
-            console.log(mess);
-        }
-        ;
         /**
          * Register a node class so it can be listed when the user wants to create a new one
          * @param type name of the node and path
@@ -93,7 +84,7 @@
             if (!base_class.prototype)
                 throw ("Cannot register a simple object, it must be a class with a prototype");
             base_class.type = type;
-            this.debug("Node registered: " + type);
+            utils_1.default.debug("Node registered: " + type, this.MODULE_NAME);
             let categories = type.split("/");
             let pos = type.lastIndexOf("/");
             base_class.category = type.substr(0, pos);
@@ -129,7 +120,7 @@
         static createNode(type, title, options) {
             let base_class = this.registered_node_types[type];
             if (!base_class) {
-                this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
+                utils_1.default.debug("Can`t create node. Node type \"" + type + "\" not registered.", this.MODULE_NAME);
                 return null;
             }
             let prototype = base_class.prototype || base_class;
@@ -215,7 +206,7 @@
                 if (!src || src.substr(0, folder_wildcard.length) != folder_wildcard)
                     continue;
                 try {
-                    this.debug("Reloading: " + src);
+                    utils_1.default.debug("Reloading: " + src, this.MODULE_NAME);
                     let dynamicScript = document.createElement("script");
                     dynamicScript.type = "text/javascript";
                     dynamicScript.src = src;
@@ -225,10 +216,10 @@
                 catch (err) {
                     if (this.throw_errors)
                         throw err;
-                    this.debugErr("Error while reloading " + src);
+                    utils_1.default.debugErr("Error while reloading " + src, this.MODULE_NAME);
                 }
             }
-            this.debug("Nodes reloaded");
+            utils_1.default.debug("Nodes reloaded", this.MODULE_NAME);
         }
         ;
         /**
@@ -251,6 +242,8 @@
     Nodes.throw_errors = true;
     Nodes.registered_node_types = {};
     Nodes.Nodes = {};
+    //   debug: config.engine.debugEngine,
+    Nodes.MODULE_NAME = "Nodes";
     exports.Nodes = Nodes;
     // *************************************************************
     //   Node CLASS                                          *******

@@ -26,11 +26,7 @@
                     node.setDirtyCanvas(true, true);
                 }
             });
-        }
-        c() {
-            //configure socket.io
-            this.socket = io.connect('/nodeeditor');
-            this.socket.on('connect', function () {
+            socket.on('connect', function () {
                 //todo socket.join(this_panel_id);
                 if (this.socketConnected == false) {
                     noty({ text: 'Connected to web server.', type: 'alert' });
@@ -43,23 +39,23 @@
                 }
                 this.socketConnected = true;
             });
-            this.socket.on('disconnect', function () {
+            socket.on('disconnect', function () {
                 $("#main").fadeOut(300);
                 noty({ text: 'Web server is not responding!', type: 'error' });
                 this.socketConnected = false;
             });
-            this.socket.on('gatewayConnected', function () {
+            socket.on('gatewayConnected', function () {
                 noty({ text: 'Gateway connected.', type: 'alert', timeout: false });
             });
-            this.socket.on('gatewayDisconnected', function () {
+            socket.on('gatewayDisconnected', function () {
                 noty({ text: 'Gateway disconnected!', type: 'error', timeout: false });
             });
-            this.socket.on('removeAllNodesAndLinks', function () {
+            socket.on('removeAllNodesAndLinks', function () {
                 this.engine.clear();
                 window.location.replace("/NodeEditor/");
                 noty({ text: 'All nodes have been deleted!', type: 'error' });
             });
-            this.socket.on('nodeActivity', function (nodeId) {
+            socket.on('nodeActivity', function (nodeId) {
                 let node = this.engine.getNodeById(nodeId);
                 if (node == null)
                     return;
@@ -70,7 +66,7 @@
                     node.setDirtyCanvas(true, true);
                 }, 100);
             });
-            this.socket.on('removeNode', function (nodeId) {
+            socket.on('removeNode', function (nodeId) {
                 //if current panel removed
                 if (nodeId == window.this_panel_id) {
                     window.location = "/NodeEditor/";
@@ -81,17 +77,17 @@
                 this.engine.remove(node);
                 this.engine.setDirtyCanvas(true, true);
             });
-            this.socket.on('nodeUpdated', function (node) {
+            socket.on('nodeUpdated', function (node) {
                 if (node.panel_id != window.this_panel_id)
                     return;
                 this.createOrUpdateNode(node);
             });
-            this.socket.on('newNode', function (node) {
+            socket.on('newNode', function (node) {
                 if (node.panel_id != window.this_panel_id)
                     return;
                 this.createOrUpdateNode(node);
             });
-            this.socket.on('removeLink', function (link) {
+            socket.on('removeLink', function (link) {
                 if (link.panel_id != window.this_panel_id)
                     return;
                 //let node = this.engine.getNodeById(link.origin_id);
@@ -99,7 +95,7 @@
                 //node.disconnectOutput(link.target_slot, targetNode);
                 targetNode.disconnectInput(link.target_slot);
             });
-            this.socket.on('newLink', function (link) {
+            socket.on('newLink', function (link) {
                 if (link.panel_id != window.this_panel_id)
                     return;
                 let node = this.engine.getNodeById(link.origin_id);

@@ -1,5 +1,5 @@
 /**
- * Created by derwish on 01.02.17.
+ * Created by Derwish (derwish.pro@gmail.com) on 01.02.17.
  */
 
 export default class Utils {

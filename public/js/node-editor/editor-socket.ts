@@ -2,9 +2,9 @@
  * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
  */
 
-import {Nodes,Node} from "../../nodes/nodes"
+import {Nodes, Node} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine";
-import { editor} from "./node-editor";
+import {editor} from "./node-editor";
 
 
 export class EditorSocket {
@@ -22,21 +22,16 @@ export class EditorSocket {
 
         // socket.emit('chat message', "h1");
 
-        socket.on('node position update', function(n){
-            console.log("node position update "+JSON.stringify(n))
+        socket.on('node position update', function (n) {
+            console.log("node position update " + JSON.stringify(n))
             let node = engine.getNodeById(n.id);
-            if (node.pos!=n.pos) {
+            if (node.pos != n.pos) {
                 node.pos = n.pos;
-                node.setDirtyCanvas(true,true);
+                node.setDirtyCanvas(true, true);
             }
         });
-    }
 
-    c() {
-        //configure socket.io
-        this.socket = io.connect('/nodeeditor');
-
-        this.socket.on('connect', function () {
+        socket.on('connect', function () {
             //todo socket.join(this_panel_id);
 
             if (this.socketConnected == false) {
@@ -51,28 +46,28 @@ export class EditorSocket {
             this.socketConnected = true;
         });
 
-        this.socket.on('disconnect', function () {
+        socket.on('disconnect', function () {
             $("#main").fadeOut(300);
             noty({text: 'Web server is not responding!', type: 'error'});
             this.socketConnected = false;
         });
 
 
-        this.socket.on('gatewayConnected', function () {
+        socket.on('gatewayConnected', function () {
             noty({text: 'Gateway connected.', type: 'alert', timeout: false});
         });
 
-        this.socket.on('gatewayDisconnected', function () {
+        socket.on('gatewayDisconnected', function () {
             noty({text: 'Gateway disconnected!', type: 'error', timeout: false});
         });
 
-        this.socket.on('removeAllNodesAndLinks', function () {
+        socket.on('removeAllNodesAndLinks', function () {
             this.engine.clear();
             (<any>window).location.replace("/NodeEditor/");
             noty({text: 'All nodes have been deleted!', type: 'error'});
         });
 
-        this.socket.on('nodeActivity', function (nodeId) {
+        socket.on('nodeActivity', function (nodeId) {
             let node = this.engine.getNodeById(nodeId);
             if (node == null)
                 return;
@@ -86,7 +81,7 @@ export class EditorSocket {
         });
 
 
-        this.socket.on('removeNode', function (nodeId) {
+        socket.on('removeNode', function (nodeId) {
             //if current panel removed
             if (nodeId == (<any>window).this_panel_id) {
                 (<any>window).location = "/NodeEditor/";
@@ -101,7 +96,7 @@ export class EditorSocket {
         });
 
 
-        this.socket.on('nodeUpdated', function (node) {
+        socket.on('nodeUpdated', function (node) {
             if (node.panel_id != (<any>window).this_panel_id)
                 return;
 
@@ -109,7 +104,7 @@ export class EditorSocket {
         });
 
 
-        this.socket.on('newNode', function (node) {
+        socket.on('newNode', function (node) {
             if (node.panel_id != (<any>window).this_panel_id)
                 return;
 
@@ -117,7 +112,7 @@ export class EditorSocket {
         });
 
 
-        this.socket.on('removeLink', function (link) {
+        socket.on('removeLink', function (link) {
             if (link.panel_id != (<any>window).this_panel_id)
                 return;
 
@@ -127,7 +122,7 @@ export class EditorSocket {
             targetNode.disconnectInput(link.target_slot);
         });
 
-        this.socket.on('newLink', function (link) {
+        socket.on('newLink', function (link) {
             if (link.panel_id != (<any>window).this_panel_id)
                 return;
 
@@ -192,7 +187,7 @@ export class EditorSocket {
     }
 
 
-    getGatewayInfo() :void {
+    getGatewayInfo(): void {
         $.ajax({
             url: "/MySensorsAPI/GetGatewayInfo/",
             success: function (gatewayInfo) {
@@ -204,7 +199,7 @@ export class EditorSocket {
     }
 
 
-    send_create_link(link:any):void  {
+    send_create_link(link: any): void {
 
         $.ajax({
             url: '/NodeEditorAPI/CreateLink',
@@ -216,7 +211,7 @@ export class EditorSocket {
     };
 
 
-    send_remove_link(link:any):void  {
+    send_remove_link(link: any): void {
 
         $.ajax({
             url: '/NodeEditorAPI/RemoveLink',
@@ -228,7 +223,7 @@ export class EditorSocket {
     };
 
 
-    send_create_node(node:Node):void  {
+    send_create_node(node: Node): void {
         node.size = null;//reset size for autosizing
 
         let serializedNode = node.serialize();
@@ -242,7 +237,7 @@ export class EditorSocket {
     };
 
 
-    send_clone_node(node:Node):void  {
+    send_clone_node(node: Node): void {
         $.ajax({
             url: '/NodeEditorAPI/CloneNode',
             type: 'POST',
@@ -253,7 +248,7 @@ export class EditorSocket {
     };
 
 
-    send_remove_node(node:Node):void  {
+    send_remove_node(node: Node): void {
 
         let serializedNode = node.serialize();
         $.ajax({
@@ -266,7 +261,7 @@ export class EditorSocket {
     };
 
 
-    send_remove_nodes(nodes:{[id:number]:Node}):void  {
+    send_remove_nodes(nodes: {[id: number]: Node}): void {
 
         let array = [];
 
@@ -284,7 +279,7 @@ export class EditorSocket {
     };
 
 
-    send_update_node(node:Node):void  {
+    send_update_node(node: Node): void {
 
         let s = node.serialize();
         s = JSON.stringify(s);
@@ -298,7 +293,7 @@ export class EditorSocket {
     };
 
 
-    getGraph():void  {
+    getGraph(): void {
 
         $.ajax({
             url: "/NodeEditorAPI/GetGraph",
@@ -309,7 +304,7 @@ export class EditorSocket {
     }
 
 
-    getNodes():void  {
+    getNodes(): void {
         let that = this;
         $.ajax({
             url: "/NodeEditorAPI/GetNodesForPanel",
@@ -322,7 +317,7 @@ export class EditorSocket {
     }
 
 
-    onReturnNodes(nodes:Array<Node>):void  {
+    onReturnNodes(nodes: Array<Node>): void {
         //console.log(nodes);
         if (!nodes) return;
 
@@ -336,7 +331,7 @@ export class EditorSocket {
     }
 
 
-    createOrUpdateNode(node:Node):void  {
+    createOrUpdateNode(node: Node): void {
 
         let oldNode = this.engine.getNodeById(node.id);
         if (!oldNode) {
@@ -397,9 +392,9 @@ export class EditorSocket {
 
             if (node.pos) {
                 if (!editor.renderer.node_dragged)
-                	oldNode.pos = node.pos;
+                    oldNode.pos = node.pos;
                 else if (!editor.renderer.selected_nodes[node.id])
-                oldNode.pos = node.pos;
+                    oldNode.pos = node.pos;
             }
 
             oldNode.setDirtyCanvas(true, true);
@@ -407,7 +402,7 @@ export class EditorSocket {
     }
 
 
-    getLinks():void  {
+    getLinks(): void {
 
         $.ajax({
             url: "/NodeEditorAPI/GetLinks",
@@ -419,7 +414,7 @@ export class EditorSocket {
     }
 
 
-    onReturnLinks(links:Array<any>) :void {
+    onReturnLinks(links: Array<any>): void {
         //console.log(nodes);
 
         if (!links) return;
@@ -430,7 +425,7 @@ export class EditorSocket {
     }
 
 
-    createOrUpdateLink(link:any):void  {
+    createOrUpdateLink(link: any): void {
         let target = this.engine.getNodeById(link.target_id);
         this.engine.getNodeById(link.origin_id)
             .connect(link.origin_slot, target, link.target_slot);
@@ -439,7 +434,7 @@ export class EditorSocket {
     }
 
 
-    calculateNodeMinHeight(node:Node):number  {
+    calculateNodeMinHeight(node: Node): number {
 
         let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
         if (slotsMax == 0)
@@ -451,7 +446,7 @@ export class EditorSocket {
     }
 
 
-    findFreeSpaceY(node:Node):number  {
+    findFreeSpaceY(node: Node): number {
 
 
         let nodes = this.engine._nodes;

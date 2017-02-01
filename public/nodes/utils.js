@@ -1,5 +1,5 @@
 /**
- * Created by derwish on 01.02.17.
+ * Created by Derwish (derwish.pro@gmail.com) on 01.02.17.
  */
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {

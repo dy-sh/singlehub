@@ -144,13 +144,7 @@ export class Nodes {
     //   debug: config.engine.debugEngine,
 
 
-    static debug(mess): void {
-        console.log(mess)
-    };
-
-    static debugErr(mess): void {
-        console.log(mess)
-    };
+    private static MODULE_NAME= "Nodes";
 
     /**
      * Register a node class so it can be listed when the user wants to create a new one
@@ -162,7 +156,7 @@ export class Nodes {
             throw("Cannot register a simple object, it must be a class with a prototype");
         base_class.type = type;
 
-        this.debug("Node registered: " + type);
+        Utils.debug("Node registered: " + type,this.MODULE_NAME);
 
         let categories = type.split("/");
 
@@ -202,7 +196,7 @@ export class Nodes {
     static createNode(type: string, title?: string, options?: any): Node {
         let base_class = this.registered_node_types[type];
         if (!base_class) {
-            this.debug("Can`t create node. Node type \"" + type + "\" not registered.");
+            Utils.debug("Can`t create node. Node type \"" + type + "\" not registered.",this.MODULE_NAME);
             return null;
         }
 
@@ -297,7 +291,7 @@ export class Nodes {
                 continue;
 
             try {
-                this.debug("Reloading: " + src);
+                Utils.debug("Reloading: " + src,this.MODULE_NAME);
                 let dynamicScript = document.createElement("script");
                 dynamicScript.type = "text/javascript";
                 dynamicScript.src = src;
@@ -307,11 +301,11 @@ export class Nodes {
             catch (err) {
                 if (this.throw_errors)
                     throw err;
-                this.debugErr("Error while reloading " + src);
+                Utils.debugErr("Error while reloading " + src,this.MODULE_NAME);
             }
         }
 
-        this.debug("Nodes reloaded");
+        Utils.debug("Nodes reloaded",this.MODULE_NAME);
     };
 
 
