@@ -114,19 +114,21 @@ export class EditorSocket {
             let l = JSON.parse(data);
             let link = engine.links[l.id];
 
-           // let node = this.engine.getNodeById(link.origin_id);
+            let node = engine.getNodeById(link.origin_id);
             let targetNode = engine.getNodeById(link.target_id);
-            //node.disconnectOutput(link.target_slot, targetNode);
+            node.disconnectOutput(link.origin_slot, targetNode);
             targetNode.disconnectInput(link.target_slot);
         });
 
         socket.on('link-create', function (link) {
-
             let node = engine.getNodeById(link.origin_id);
             let targetNode = engine.getNodeById(link.target_id);
             node.connect(link.origin_slot, targetNode, link.target_slot);
             //  this.engine.change();
+            console.log(node);
+            console.log(targetNode);
 
+            engine.change();
         });
 
         socket.on('gatewayConnected', function () {
@@ -241,7 +243,7 @@ export class EditorSocket {
 
     sendCreateLink(origin_id:number,origin_slot:number,target_id:number,target_slot): void {
        let data= {
-            origin_id: target_id,
+            origin_id: origin_id,
             origin_slot: origin_slot,
             target_id: target_id,
             target_slot: target_slot,

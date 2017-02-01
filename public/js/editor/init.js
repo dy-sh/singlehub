@@ -21,16 +21,17 @@
     window.engine = nodes_engine_1.engine;
     window.editor = node_editor_1.editor;
     window.nodes = nodes_1.Nodes;
+    window.renderer = node_editor_1.editor.renderer;
     window.addEventListener("resize", function () {
         node_editor_1.editor.renderer.resize();
     });
     editor_socket_1.socket.getNodes();
     //
     //
-    let node_const_A = nodes_1.Nodes.createNode("basic/const");
-    node_const_A.pos = [200, 200];
-    nodes_engine_1.engine.add(node_const_A);
-    node_const_A.setValue(5);
+    // let node_const_A = Nodes.createNode("basic/const");
+    // node_const_A.pos = [200, 200];
+    // engine.add(node_const_A);
+    // node_const_A.setValue(5);
     //
     // let node_const_B =  Nodes.createNode("basic/const");
     // node_const_B.pos = [200, 300];

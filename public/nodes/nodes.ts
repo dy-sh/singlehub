@@ -921,13 +921,13 @@ export class Node {
     }
 
     /**
-     * Connect this node output to the input of another node
+     * Connect this target_node output to the input of another target_node
      * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
-     * @param {Node} node the target node
-     * @param {number|string} target_slot the input slot of the target node (could be the number of the slot or the string with the name of the slot)
+     * @param {Node} target_node the target target_node
+     * @param {number|string} target_slot the input slot of the target target_node (could be the number of the slot or the string with the name of the slot)
      * @returns {boolean} if it was connected succesfully
      */
-    connect(slot: number|string, node: Node, target_slot: number|string): boolean {
+    connect(slot: number|string, target_node: Node, target_slot: number|string): boolean {
         target_slot = target_slot || 0;
 
         //seek for the output slot
@@ -943,31 +943,31 @@ export class Node {
             return false;
         }
 
-        if (node && node.constructor === Number)
-            node = this.engine.getNodeById(node.id);
-        if (!node)
+        if (target_node && target_node.constructor === Number)
+            target_node = this.engine.getNodeById(target_node.id);
+        if (!target_node)
             throw("Node not found");
 
         //avoid loopback
-        if (node == this)
+        if (target_node == this)
             return false;
-        //if( node.constructor != Node ) throw ("Node.connect: node is not of type Node");
+        //if( target_node.constructor != Node ) throw ("Node.connect: target_node is not of type Node");
 
         if (typeof target_slot == "string") {
-            target_slot = node.findInputSlot(target_slot);
+            target_slot = target_node.findInputSlot(target_slot);
             if (target_slot == -1) {
                 this.debugErr("Connect: Error, no slot of name " + target_slot);
                 return false;
             }
         }
-        else if (!node.inputs || target_slot >= node.inputs.length) {
+        else if (!target_node.inputs || target_slot >= target_node.inputs.length) {
             this.debugErr("Connect: Error, slot number not found");
             return false;
         }
 
         //if there is something already plugged there, disconnect
-        if (target_slot != -1 && node.inputs[target_slot].link != null)
-            node.disconnectInput(target_slot);
+        if (target_slot != -1 && target_node.inputs[target_slot].link != null)
+            target_node.disconnectInput(target_slot);
 
         //why here??
         this.setDirtyCanvas(false, true);
@@ -975,30 +975,30 @@ export class Node {
         if (this.engine)
             this.engine.connectionChange(this);
 
-        //special case: -1 means node-connection, used for triggers
+        //special case: -1 means target_node-connection, used for triggers
         let output = this.outputs[slot];
 
         //allows nodes to block connection even if all test passes
-        if (node.onConnectInput)
-            if (node.onConnectInput(target_slot, output.type, output) === false)
+        if (target_node.onConnectInput)
+            if (target_node.onConnectInput(target_slot, output.type, output) === false)
                 return false;
 
         if (target_slot == -1) {
             if (output.links == null)
                 output.links = [];
-            output.links.push(node.id);//todo ES6 push({id: node.id, slot: -1})
+            output.links.push(target_node.id);//todo ES6 push({id: target_node.id, slot: -1})
         }
         else if (!output.type ||  //generic output
-            !node.inputs[target_slot].type || //generic input
-            output.type.toLowerCase() == node.inputs[target_slot].type.toLowerCase()) //same type
+            !target_node.inputs[target_slot].type || //generic input
+            output.type.toLowerCase() == target_node.inputs[target_slot].type.toLowerCase()) //same type
         {
             //info: link structure => [ 0:link_id, 1:start_node_id, 2:start_slot, 3:end_node_id, 4:end_slot ]
-            //let link = [ this.engine.last_link_id++, this.id, slot, node.id, target_slot ];
+            //let link = [ this.engine.last_link_id++, this.id, slot, target_node.id, target_slot ];
             let link = {
                 id: this.engine.last_link_id++,
                 origin_id: this.id,
                 origin_slot: slot,
-                target_id: node.id,
+                target_id: target_node.id,
                 target_slot: target_slot
             };
 
@@ -1007,7 +1007,7 @@ export class Node {
             //connect
             if (output.links == null) output.links = [];
             output.links.push(link.id);
-            node.inputs[target_slot].link = link.id;
+            target_node.inputs[target_slot].link = link.id;
 
         }
 

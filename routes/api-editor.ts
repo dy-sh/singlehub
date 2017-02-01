@@ -186,7 +186,7 @@ router.post('/c/:cid/l/', function (req, res) {
 
     node1.connect(link.origin_slot, node2, link.target_slot);
 
-    server.socket.io.emit('link-create', JSON.stringify(req.body));
+    server.socket.io.emit('link-create', req.body);
 
     Utils.debug("Link created");
     res.send("Link created");
@@ -202,13 +202,21 @@ router.delete('/c/:cid/l/:id', function (req, res) {
 
     let link = engine.links[id];
 
-    let node = engine.getNodeById(link.target_id);
+    let node = engine.getNodeById(link.origin_id);
+    let targetNode = engine.getNodeById(link.target_id);
     if (!node) {
+        Utils.debugErr("Cant delete link. Origin node id does not exist.", MODULE_NAME);
+        res.status(404).send("Cant delete link. Origin node id does not exist.");
+        return;
+    }
+    if (!targetNode) {
         Utils.debugErr("Cant delete link. Target node id does not exist.", MODULE_NAME);
         res.status(404).send("Cant delete link. Target node id does not exist.");
         return;
     }
-    node.disconnectInput(link.target_slot);
+
+    node.disconnectOutput(link.origin_slot, targetNode);
+    targetNode.disconnectInput(link.target_slot);
 
 
     let data = JSON.stringify({id: link.id, container: engine.container_id});

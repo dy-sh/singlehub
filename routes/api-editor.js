@@ -139,7 +139,7 @@
             link.target_slot = 0;
         }
         node1.connect(link.origin_slot, node2, link.target_slot);
-        server_1.default.socket.io.emit('link-create', JSON.stringify(req.body));
+        server_1.default.socket.io.emit('link-create', req.body);
         utils_1.default.debug("Link created");
         res.send("Link created");
     });
@@ -150,13 +150,20 @@
         let cont = req.params.cid;
         let id = req.params.id;
         let link = nodes_engine_1.engine.links[id];
-        let node = nodes_engine_1.engine.getNodeById(link.target_id);
+        let node = nodes_engine_1.engine.getNodeById(link.origin_id);
+        let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
         if (!node) {
+            utils_1.default.debugErr("Cant delete link. Origin node id does not exist.", MODULE_NAME);
+            res.status(404).send("Cant delete link. Origin node id does not exist.");
+            return;
+        }
+        if (!targetNode) {
             utils_1.default.debugErr("Cant delete link. Target node id does not exist.", MODULE_NAME);
             res.status(404).send("Cant delete link. Target node id does not exist.");
             return;
         }
-        node.disconnectInput(link.target_slot);
+        node.disconnectOutput(link.origin_slot, targetNode);
+        targetNode.disconnectInput(link.target_slot);
         let data = JSON.stringify({ id: link.id, container: nodes_engine_1.engine.container_id });
         server_1.default.socket.io.emit('link-delete', data);
         utils_1.default.debug("Link deleted");

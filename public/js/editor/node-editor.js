@@ -37,7 +37,7 @@
             // renderer.background_image = "/images/litegraph/grid.png";
             graph.onAfterExecute = function () { renderer.draw(true); };
             //add stuff
-            this.addMiniWindow(200, 200);
+            //todo temporary	this.addMiniWindow(200, 200);
             //append to DOM
             let parent = document.getElementById("main");
             if (parent)

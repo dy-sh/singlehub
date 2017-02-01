@@ -55,7 +55,7 @@ export class NodeEditor {
 
 		//add stuff
 
-		this.addMiniWindow(200, 200);
+	//todo temporary	this.addMiniWindow(200, 200);
 
 		//append to DOM
 		let parent = document.getElementById("main");

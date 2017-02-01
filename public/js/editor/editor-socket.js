@@ -88,9 +88,9 @@
             socket.on('link-delete', function (data) {
                 let l = JSON.parse(data);
                 let link = nodes_engine_1.engine.links[l.id];
-                // let node = this.engine.getNodeById(link.origin_id);
+                let node = nodes_engine_1.engine.getNodeById(link.origin_id);
                 let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
-                //node.disconnectOutput(link.target_slot, targetNode);
+                node.disconnectOutput(link.origin_slot, targetNode);
                 targetNode.disconnectInput(link.target_slot);
             });
             socket.on('link-create', function (link) {
@@ -98,6 +98,9 @@
                 let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
                 node.connect(link.origin_slot, targetNode, link.target_slot);
                 //  this.engine.change();
+                console.log(node);
+                console.log(targetNode);
+                nodes_engine_1.engine.change();
             });
             socket.on('gatewayConnected', function () {
                 noty({ text: 'Gateway connected.', type: 'alert', timeout: false });
@@ -185,7 +188,7 @@
         ;
         sendCreateLink(origin_id, origin_slot, target_id, target_slot) {
             let data = {
-                origin_id: target_id,
+                origin_id: origin_id,
                 origin_slot: origin_slot,
                 target_id: target_id,
                 target_slot: target_slot,

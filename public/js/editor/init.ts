@@ -17,10 +17,12 @@ import {socket} from "./editor-socket"
 
 
 
+
 // (<any>window).engine = engine;
 (<any>window).engine = engine;
 (<any>window).editor = editor;
 (<any>window).nodes = Nodes;
+(<any>window).renderer = editor.renderer;
 
 window.addEventListener("resize", function () {
     editor.renderer.resize();
@@ -30,10 +32,10 @@ socket.getNodes();
 
 //
 //
-let node_const_A = Nodes.createNode("basic/const");
-node_const_A.pos = [200, 200];
-engine.add(node_const_A);
-node_const_A.setValue(5);
+// let node_const_A = Nodes.createNode("basic/const");
+// node_const_A.pos = [200, 200];
+// engine.add(node_const_A);
+// node_const_A.setValue(5);
 //
 // let node_const_B =  Nodes.createNode("basic/const");
 // node_const_B.pos = [200, 300];
