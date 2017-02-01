@@ -5,6 +5,7 @@
 import {Nodes, Node} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine";
 import {editor} from "./node-editor";
+import Utils from "../../nodes/utils";
 
 
 export class EditorSocket {
@@ -22,14 +23,7 @@ export class EditorSocket {
 
         // socket.emit('chat message', "h1");
 
-        // socket.on('node position update', function (n) {
-        //     console.log("node position update " + JSON.stringify(n))
-        //     let node = engine.getNodeById(n.id);
-        //     if (node.pos != n.pos) {
-        //         node.pos = n.pos;
-        //         node.setDirtyCanvas(true, true);
-        //     }
-        // });
+
         //
         // socket.on('connect', function () {
         //     //todo socket.join(engine.container_id);
@@ -51,6 +45,33 @@ export class EditorSocket {
         //     noty({text: 'Web server is not responding!', type: 'error'});
         //     this.socketConnected = false;
         // });
+
+        socket.on('node-position', function (n) {
+            console.log("node position update " + JSON.stringify(n))
+            let node = engine.getNodeById(n.id);
+            if (node.pos != n.pos) {
+                node.pos = n.pos;
+                node.setDirtyCanvas(true, true);
+            }
+        });
+
+        socket.on('new-node', function (data) {
+            let n=JSON.parse(data);
+            console.log(n);
+            let node = engine.getNodeById(n.id);
+            if(node)
+            {
+                Utils.debugErr("Cant create node. Node exist","Socket");
+                return;
+            }
+
+            let newNode = Nodes.createNode(n.type);
+
+            newNode.configure(n);
+
+            engine.add(newNode);
+        });
+
 
 
         socket.on('gatewayConnected', function () {
@@ -187,10 +208,13 @@ export class EditorSocket {
      * @param position
      */
     sendCreateNode(type: string, position: [number, number]): void {
+        var data=JSON.stringify({type: type, position: position, container:engine.container_id});
+        console.log(data);
         $.ajax({
             url: '/api/editor/nodes',
+            contentType: 'application/json',
             type: 'POST',
-            data: {type: type, position: position, container:engine.container_id}
+            data: data
         })
     };
 

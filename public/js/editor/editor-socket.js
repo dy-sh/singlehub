@@ -6,26 +6,19 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     const node_editor_1 = require("./node-editor");
+    const utils_1 = require("../../nodes/utils");
     class EditorSocket {
         constructor() {
             this.engine = nodes_engine_1.engine;
             let socket = io();
             // socket.emit('chat message', "h1");
-            // socket.on('node position update', function (n) {
-            //     console.log("node position update " + JSON.stringify(n))
-            //     let node = engine.getNodeById(n.id);
-            //     if (node.pos != n.pos) {
-            //         node.pos = n.pos;
-            //         node.setDirtyCanvas(true, true);
-            //     }
-            // });
             //
             // socket.on('connect', function () {
             //     //todo socket.join(engine.container_id);
@@ -47,6 +40,26 @@
             //     noty({text: 'Web server is not responding!', type: 'error'});
             //     this.socketConnected = false;
             // });
+            socket.on('node-position', function (n) {
+                console.log("node position update " + JSON.stringify(n));
+                let node = nodes_engine_1.engine.getNodeById(n.id);
+                if (node.pos != n.pos) {
+                    node.pos = n.pos;
+                    node.setDirtyCanvas(true, true);
+                }
+            });
+            socket.on('new-node', function (data) {
+                let n = JSON.parse(data);
+                console.log(n);
+                let node = nodes_engine_1.engine.getNodeById(n.id);
+                if (node) {
+                    utils_1.default.debugErr("Cant create node. Node exist", "Socket");
+                    return;
+                }
+                let newNode = nodes_1.Nodes.createNode(n.type);
+                newNode.configure(n);
+                nodes_engine_1.engine.add(newNode);
+            });
             socket.on('gatewayConnected', function () {
                 noty({ text: 'Gateway connected.', type: 'alert', timeout: false });
             });
@@ -147,10 +160,13 @@
          * @param position
          */
         sendCreateNode(type, position) {
+            var data = JSON.stringify({ type: type, position: position, container: nodes_engine_1.engine.container_id });
+            console.log(data);
             $.ajax({
                 url: '/api/editor/nodes',
+                contentType: 'application/json',
                 type: 'POST',
-                data: { type: type, position: position, container: nodes_engine_1.engine.container_id }
+                data: data
             });
         }
         ;
