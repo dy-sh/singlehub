@@ -2759,9 +2759,9 @@ export class Renderer {
         //if (node.removable == false) return;
 
         if (node.id in canvas.selected_nodes)
-            this.socket.sendRemoveNodes(canvas.selected_nodes);
+            editor.socket.sendRemoveNodes(canvas.selected_nodes);
         else
-            this.socket.sendRemoveNode(node);
+            editor.socket.sendRemoveNode(node);
 
         //derwish remove
         //node.engine.remove(uiNode);

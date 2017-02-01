@@ -4,7 +4,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -13,6 +13,7 @@
      */
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
+    const node_editor_1 = require("./node-editor");
     const utils_1 = require("../../nodes/utils");
     class Renderer {
         constructor(canvas, socket, editor, engine, skip_render) {
@@ -2197,9 +2198,9 @@
         onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
             //if (node.removable == false) return;
             if (node.id in canvas.selected_nodes)
-                this.socket.sendRemoveNodes(canvas.selected_nodes);
+                node_editor_1.editor.socket.sendRemoveNodes(canvas.selected_nodes);
             else
-                this.socket.sendRemoveNode(node);
+                node_editor_1.editor.socket.sendRemoveNode(node);
             //derwish remove
             //node.engine.remove(uiNode);
             //node.setDirtyCanvas(true, true);

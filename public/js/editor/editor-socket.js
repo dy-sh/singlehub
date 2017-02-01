@@ -40,17 +40,8 @@
             //     noty({text: 'Web server is not responding!', type: 'error'});
             //     this.socketConnected = false;
             // });
-            socket.on('node-position', function (n) {
-                console.log("node position update " + JSON.stringify(n));
-                let node = nodes_engine_1.engine.getNodeById(n.id);
-                if (node.pos != n.pos) {
-                    node.pos = n.pos;
-                    node.setDirtyCanvas(true, true);
-                }
-            });
-            socket.on('new-node', function (data) {
+            socket.on('node-create', function (data) {
                 let n = JSON.parse(data);
-                console.log(n);
                 let node = nodes_engine_1.engine.getNodeById(n.id);
                 if (node) {
                     utils_1.default.debugErr("Cant create node. Node exist", "Socket");
@@ -59,6 +50,24 @@
                 let newNode = nodes_1.Nodes.createNode(n.type);
                 newNode.configure(n);
                 nodes_engine_1.engine.add(newNode);
+                nodes_engine_1.engine.setDirtyCanvas(true, true);
+            });
+            socket.on('node-delete', function (data) {
+                let n = JSON.parse(data);
+                let node = nodes_engine_1.engine.getNodeById(n.id);
+                if (!node) {
+                    utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
+                    return;
+                }
+                nodes_engine_1.engine.remove(node);
+                nodes_engine_1.engine.setDirtyCanvas(true, true);
+            });
+            socket.on('node-update-position', function (n) {
+                let node = nodes_engine_1.engine.getNodeById(n.id);
+                if (node.pos != n.pos) {
+                    node.pos = n.pos;
+                    node.setDirtyCanvas(true, true);
+                }
             });
             socket.on('gatewayConnected', function () {
                 noty({ text: 'Gateway connected.', type: 'alert', timeout: false });
@@ -148,7 +157,7 @@
          */
         getNodes() {
             $.ajax({
-                url: "/api/editor/containers/" + nodes_engine_1.engine.container_id,
+                url: "/api/editor/c/" + nodes_engine_1.engine.container_id,
                 success: function (nodes) {
                     nodes_engine_1.engine.configure(nodes, false);
                 }
@@ -163,10 +172,20 @@
             var data = JSON.stringify({ type: type, position: position, container: nodes_engine_1.engine.container_id });
             console.log(data);
             $.ajax({
-                url: '/api/editor/nodes',
+                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
                 contentType: 'application/json',
                 type: 'POST',
                 data: data
+            });
+        }
+        ;
+        sendRemoveNode(node) {
+            //  var data=JSON.stringify({id: node.id, container:engine.container_id});
+            $.ajax({
+                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/" + node.id,
+                type: 'DELETE',
+                contentType: 'application/json',
+            }).done(function () {
             });
         }
         ;
@@ -193,16 +212,6 @@
                 url: '/api/editor/nodes/clone',
                 type: 'POST',
                 data: { 'id': node.id }
-            }).done(function () {
-            });
-        }
-        ;
-        sendRemoveNode(node) {
-            let serializedNode = node.serialize();
-            $.ajax({
-                url: '/api/editor/nodes',
-                type: 'DELETE',
-                data: { 'node': serializedNode }
             }).done(function () {
             });
         }

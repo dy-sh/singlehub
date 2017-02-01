@@ -46,22 +46,13 @@ export class EditorSocket {
         //     this.socketConnected = false;
         // });
 
-        socket.on('node-position', function (n) {
-            console.log("node position update " + JSON.stringify(n))
-            let node = engine.getNodeById(n.id);
-            if (node.pos != n.pos) {
-                node.pos = n.pos;
-                node.setDirtyCanvas(true, true);
-            }
-        });
 
-        socket.on('new-node', function (data) {
-            let n=JSON.parse(data);
-            console.log(n);
+
+        socket.on('node-create', function (data) {
+            let n = JSON.parse(data);
             let node = engine.getNodeById(n.id);
-            if(node)
-            {
-                Utils.debugErr("Cant create node. Node exist","Socket");
+            if (node) {
+                Utils.debugErr("Cant create node. Node exist", "Socket");
                 return;
             }
 
@@ -70,6 +61,27 @@ export class EditorSocket {
             newNode.configure(n);
 
             engine.add(newNode);
+            engine.setDirtyCanvas(true, true);
+        });
+
+        socket.on('node-delete', function (data) {
+            let n = JSON.parse(data);
+            let node = engine.getNodeById(n.id);
+            if (!node) {
+                Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
+                return;
+            }
+
+            engine.remove(node);
+            engine.setDirtyCanvas(true, true);
+        });
+
+        socket.on('node-update-position', function (n) {
+            let node = engine.getNodeById(n.id);
+            if (node.pos != n.pos) {
+                node.pos = n.pos;
+                node.setDirtyCanvas(true, true);
+            }
         });
 
 
@@ -174,7 +186,6 @@ export class EditorSocket {
         );
 
 
-
     }
 
     //
@@ -195,7 +206,7 @@ export class EditorSocket {
      */
     getNodes(): void {
         $.ajax({
-            url: "/api/editor/containers/"+engine.container_id,
+            url: "/api/editor/c/" + engine.container_id,
             success: function (nodes) {
                 engine.configure(nodes, false)
             }
@@ -208,10 +219,10 @@ export class EditorSocket {
      * @param position
      */
     sendCreateNode(type: string, position: [number, number]): void {
-        var data=JSON.stringify({type: type, position: position, container:engine.container_id});
+        var data = JSON.stringify({type: type, position: position, container: engine.container_id});
         console.log(data);
         $.ajax({
-            url: '/api/editor/nodes',
+            url: "/api/editor/c/" + engine.container_id + "/n/",
             contentType: 'application/json',
             type: 'POST',
             data: data
@@ -219,6 +230,19 @@ export class EditorSocket {
     };
 
 
+    sendRemoveNode(node: Node): void {
+
+        //  var data=JSON.stringify({id: node.id, container:engine.container_id});
+
+        $.ajax({
+            url: "/api/editor/c/" + engine.container_id + "/n/" + node.id,
+            type: 'DELETE',
+            contentType: 'application/json',
+            //    data: data
+        }).done(function () {
+
+        });
+    };
 
 
     //---------------------------------------------------
@@ -245,26 +269,11 @@ export class EditorSocket {
     };
 
 
-
-
     sendCloneNode(node: Node): void {
         $.ajax({
             url: '/api/editor/nodes/clone',
             type: 'POST',
             data: {'id': node.id}
-        }).done(function () {
-
-        });
-    };
-
-
-    sendRemoveNode(node: Node): void {
-
-        let serializedNode = node.serialize();
-        $.ajax({
-            url: '/api/editor/nodes',
-            type: 'DELETE',
-            data: {'node': serializedNode}
         }).done(function () {
 
         });
@@ -312,8 +321,6 @@ export class EditorSocket {
             }
         });
     }
-
-
 
 
     onReturnNodes(nodes: Array<Node>): void {
@@ -403,7 +410,7 @@ export class EditorSocket {
     getLinks(): void {
 
         $.ajax({
-            url: "/api/editor/links/"+engine.container_id,
+            url: "/api/editor/links/" + engine.container_id,
             success: function (links) {
                 this.onReturnLinks(links);
             }

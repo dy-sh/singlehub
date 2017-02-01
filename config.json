@@ -63,6 +63,6 @@
 			"allowFullAccessWithoutAuthorization": false,
 			"allowRegistrationOfNewUsers": false
 		},
-		"debug": false
+		"debug": true
 	}
 }

@@ -20,40 +20,71 @@
     router.get('/info', function (req, res) {
     });
     //------------------ containers ------------------------
-    router.get('/containers/:id', function (req, res) {
-        console.log(req.params.id);
+    router.get('/c/:id', function (req, res) {
         let s = nodes_engine_1.engine.serialize();
         res.json(s);
     });
-    router.get('/containers/serialize', function (req, res) {
+    router.get('/c/serialize', function (req, res) {
     });
-    router.get('/containers/serialize-file', function (req, res) {
+    router.get('/c/serialize-file', function (req, res) {
     });
-    router.post('/containers/import', function (req, res) {
+    router.post('/c/import', function (req, res) {
     });
     //------------------ nodes ------------------------
-    router.post('/nodes', function (req, res) {
-        let contId = req.body.container;
+    /**
+     * create node
+     */
+    router.post('/c/:cid/n/', function (req, res) {
+        let cont = req.params.cid;
         let node = nodes_1.Nodes.createNode(req.body.type);
+        if (!node) {
+            utils_1.default.debugErr("Cant create node. Check node type.", "Socket");
+            res.status(404).send("Cant create node. Check node type.");
+            return;
+        }
         node.pos = req.body.position;
         nodes_engine_1.engine.add(node);
         //let n =node.serialize();
-        let n = { id: node.id,
+        let n = {
+            id: node.id,
             type: node.type,
-            pos: node.pos };
-        server_1.default.socket.io.emit('new-node', JSON.stringify(n));
-        utils_1.default.debug("New node added: " + node.type);
+            pos: node.pos
+        };
+        server_1.default.socket.io.emit('node-create', JSON.stringify(n));
+        utils_1.default.debug("New node created: " + node.type);
+        res.send("New node created: " + node.type);
     });
     router.post('/nodes/clone/:id', function (req, res) {
     });
-    router.delete('/nodes/:id', function (req, res) {
+    /**
+     * delete node
+     */
+    router.delete('/c/:cid/n/:nid', function (req, res) {
+        let cont = req.params.cid;
+        let id = req.params.nid;
+        let node = nodes_engine_1.engine.getNodeById(id);
+        if (!node) {
+            utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
+            res.status(404).send("Cant delete node. Node id does not exist.");
+            return;
+        }
+        //let node = engine._nodes.find(n => n.id === id);
+        nodes_engine_1.engine.remove(node);
+        var data = JSON.stringify({ id: node.id, container: nodes_engine_1.engine.container_id });
+        server_1.default.socket.io.emit('node-delete', data);
+        utils_1.default.debug("Node deleted: " + node.type);
+        res.send("Node deleted: " + node.type);
     });
+    /**
+     * node update position
+     */
     router.put('/nodes', function (req, res) {
         let newNode = JSON.parse(req.body.node);
         // console.log(newNode);
         let node = nodes_engine_1.engine._nodes.find(n => n.id === newNode.id);
         node.pos = newNode.pos;
-        server_1.default.socket.io.emit('node-position', { id: node.id, pos: node.pos });
+        server_1.default.socket.io.emit('node-update-position', { id: node.id, pos: node.pos });
+        res.send("ok");
     });
     router.post('/nodes/settings/:id', function (req, res) {
     });
