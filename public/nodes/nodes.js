@@ -27,8 +27,8 @@
             this.NODE_TITLE_COLOR = "#222";
             this.NODE_DEFAULT_COLOR = "#777";
             this.NODE_DEFAULT_BGCOLOR = "#373737";
-            this.PANEL_NODE_COLOR = "#777";
-            this.PANEL_NODE_BGCOLOR = "#373737";
+            this.CONTAINER_NODE_COLOR = "#777";
+            this.CONTAINER_NODE_BGCOLOR = "#373737";
             this.IO_NODE_COLOR = "#777";
             this.IO_NODE_BGCOLOR = "#373737";
             this.NODE_DEFAULT_IO_COLOR = "#999";
@@ -232,7 +232,7 @@
         ;
     }
     Nodes.options = new NodesOptions;
-    Nodes.MAIN_PANEL_ID = "Main";
+    Nodes.MAIN_CONTAINER_ID = "Main";
     Nodes.DataType = {
         Text: 0,
         Number: 1,
@@ -968,20 +968,20 @@
             if (action == "")
                 return false;
             if (action.indexOf(";") != -1 || action.indexOf("}") != -1) {
-                console.log("Error: Action contains unsafe characters");
+                this.debugErr("Action contains unsafe characters");
                 return false;
             }
             let tokens = action.split("(");
             let func_name = tokens[0];
             if (typeof (this[func_name]) != "function") {
-                console.log("Error: Action not found on node: " + func_name);
+                this.debugErr("Action not found on node: " + func_name);
                 return false;
             }
             let code = action;
             try {
             }
             catch (err) {
-                console.log("Error executing action {" + action + "} :" + err);
+                this.debugErr("Error executing action {" + action + "} :" + err);
                 return false;
             }
             return true;

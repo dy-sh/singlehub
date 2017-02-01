@@ -12,11 +12,14 @@
     "use strict";
     const express = require('express');
     var router = express.Router();
-    /* GET home page. */
-    router.get('/', function (req, res, next) {
-        res.redirect('/editor/');
-        //res.render('index', { title: 'Express' });
+    var gateway = require('../modules/mysensors/gateway');
+    //var config = require('./../config');
+    router.get('/IsConnected', function (req, res) {
+        res.json(gateway.isConnected === true);
+    });
+    router.get('/GetAllNodes', function (req, res) {
+        res.json(gateway.nodes);
     });
     module.exports = router;
 });
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=api-mysensors.js.map

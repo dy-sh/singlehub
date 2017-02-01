@@ -93,7 +93,7 @@ $(document).ready(function () {
         $('#nodes-engine-delete-nodes-confirm').modal({
             onApprove: function () {
                 $.ajax({
-                    type: "POST", url: "/NodeEditorAPI/RemoveAllNodesAndLinks",
+                    type: "POST", url: "/api/editor/RemoveAllNodesAndLinks",
                     success: function (result) {
                         if (result) noty({ text: 'Nodes have been deleted.' });
                     }
@@ -108,7 +108,7 @@ $(document).ready(function () {
 
 function getNodesEngineInfo() {
     $.ajax({
-        url: "/NodeEditorAPI/GetNodesEngineInfo/",
+        url: "/api/editor/GetNodesEngineInfo/",
         type: "POST",
         success: function (info) {
             $('#main-content').show();

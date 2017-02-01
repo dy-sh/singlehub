@@ -1,0 +1,42 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='Gateway'
+	- var activeStep=2
+
+
+block page
+	.ui.basic.segment
+		h2.ui.header Select gateway
+	.ui.basic.segment
+		| Select which gateway you have.
+		br
+		| You can skip this step if you have no gateway for now.
+	.ui.basic.segment
+		.ui.two.column.middle.aligned.very.relaxed.stackable.grid
+			.column
+				h3 Serial gateway
+				.ui.bulleted.list
+					.item Connects to the server via USB cable
+					.item Better performance
+			.ui.vertical.divider Or
+			.column
+				h3 Ethernet gateway
+				.ui.bulleted.list
+					.item This can be Ethernet or Wi-Fi gateway
+					.item Connection is made remotely via TCP port
+					.item
+						| If the gateway is not in the same network with the server, then you need to forward the port in the router
+	.ui.attached.segment
+		.ui.two.column.middle.aligned.very.relaxed.stackable.grid
+			.center.aligned.column
+				a.ui.primary.button(href='/FirstRun/Gateway/Serial') Serial gateway
+			.center.aligned.column
+				a.ui.primary.button(href='/FirstRun/Gateway/Ethernet') Ethernet gateway
+	.ui.center.aligned.attached.segment
+		a(href='/first-run/gateway/none') Skip this step. Don't use a gateway.
+
+
+
+

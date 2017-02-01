@@ -1,0 +1,39 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='Gateway'
+	- var activeStep=3
+	//- var canSkip=true
+
+
+block page
+	.ui.basic.segment
+		h2.ui.header Admin profile
+	form.ui.form(method='Post')
+		.ui.basic.segment
+			.field
+				label Login
+				input(type='text', name='name')
+			.field
+				label Email
+				input(type='text', name='email')
+			.fields
+				.field
+					label Password
+					input(type='password', name='password')
+				.field
+					label Confirm Password
+					input(type='password', name='confirmPassword')
+		.ui.center.aligned.attached.segment
+			.ui.buttons
+				input.ui.button.primary(type='submit', value='Register')
+		if canSkip
+			.ui.center.aligned.attached.segment
+				a(href='/first-run/user/complete') Skip this step. Use an existing profile.
+
+
+
+
+
+

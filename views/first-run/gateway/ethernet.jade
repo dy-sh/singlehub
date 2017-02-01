@@ -1,0 +1,31 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='Database'
+	- var activeStep=2
+	//- var address="192.168.1.3"
+	//- var port=5003
+
+block page
+	.ui.basic.segment
+		h2.ui.header Ethernet gateway
+	form.ui.form(method='Post')
+		.ui.attached.segment
+			h5 Enter ethernet gateway address and port
+			.fields
+				.twelve.wide.field
+					label Ip
+					input(type='text', name='address' value= address)
+				.four.wide.field
+					label Port
+					input(type='text', name='port' value= port)
+				.validation(asp-validation-summary='ValidationSummary.All')
+		.ui.center.aligned.attached.segment
+			.ui.buttons
+				a.ui.button(href='/first-run/gateway') Cancel
+				input.ui.button.primary(type='submit', value='Select')
+
+
+
+

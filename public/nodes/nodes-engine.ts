@@ -4,7 +4,7 @@
 
 
 import {Nodes, Node, Link} from "./nodes";
-import {Renderer} from "../js/node-editor/renderer";
+import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
 
@@ -63,6 +63,7 @@ export class NodesEngine {
     onPlayEvent: Function;
     frame: number;
     private MODULE_NAME= "NodesEngine";
+    container_id:number;
 
 
     constructor() {

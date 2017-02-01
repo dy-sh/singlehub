@@ -1,0 +1,42 @@
+extends ../firstrun_layout
+
+
+block vars
+	- var title='Database'
+	- var activeStep=1
+	//- var currentPort="COM3"
+	//- var ports=["COM1","COM3"]
+	//- var baudRate=115200
+
+
+block page
+	.ui.basic.segment
+		h2.ui.header Serial gateway
+	form.ui.form(method='Post')
+		.ui.basic.segment
+			h5 Select serial port that is connected to the gateway
+			.fields
+				.ten.wide.field
+					.ui.selection.button.dropdown
+						input(type='hidden', name='port', value= currentPort)
+						i.dropdown.icon
+						if currentPort
+							.text= currentPort
+						else
+							.text.default Serial Port
+						.menu
+							each port in ports
+								.item(data-value= port)= port
+				.two.wide.field
+					a.ui.button(href='/first-run/gateway/serial') Refresh
+			.six.wide.field
+				label Baud Rate
+				input(type='text', name='baudRate' value= baudRate)
+		.ui.center.aligned.attached.segment
+			.ui.buttons
+				a.ui.button(href='/first-run/gateway') Cancel
+				input.ui.button.primary(type='submit', value='Select')
+
+
+
+

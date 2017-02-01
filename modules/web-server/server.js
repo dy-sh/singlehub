@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', "../../routes/node-editor-io"], factory);
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', "../../routes/editor-io"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -17,7 +17,7 @@
     const bodyParser = require('body-parser');
     const http = require('http');
     const debug = require('debug');
-    const node_editor_io_1 = require("../../routes/node-editor-io");
+    const editor_io_1 = require("../../routes/editor-io");
     let config = require('./../../config.json');
     class Server {
         constructor() {
@@ -46,13 +46,13 @@
             this.express.use(express.static(path.join(this.__rootdirname, 'public')));
         }
         routes() {
-            this.express.use('/', require('./../../routes/firstrun'));
+            this.express.use('/', require('./../../routes/first-run'));
             this.express.use('/', require('./../../routes/index'));
-            this.express.use('/Dashboard', require('./../../routes/dashboard'));
-            this.express.use('/NodeEditor', require('./../../routes/node-editor'));
-            this.express.use('/NodeEditorAPI', require('./../../routes/node-editor-api'));
-            this.express.use('/MySensors', require('./../../routes/mysensors'));
-            this.express.use('/MySensorsAPI', require('./../../routes/mysensors-api'));
+            this.express.use('/dashboard', require('./../../routes/dashboard'));
+            this.express.use('/editor', require('./../../routes/editor'));
+            this.express.use('/api/editor', require('./../../routes/api-editor'));
+            this.express.use('/mysensors', require('./../../routes/mysensors'));
+            this.express.use('/api/mysensors', require('./../../routes/api-mysensors'));
         }
         handeErrors() {
             // // catch 404 and forward to error handler
@@ -127,7 +127,7 @@
             console.log("Server started at port " + port);
         }
         start_io() {
-            this.socket = new node_editor_io_1.NodesServerSocket(this.server);
+            this.socket = new editor_io_1.NodesServerSocket(this.server);
         }
     }
     Object.defineProperty(exports, "__esModule", { value: true });

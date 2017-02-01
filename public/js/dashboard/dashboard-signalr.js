@@ -129,7 +129,7 @@ function getNodes() {
         $.ajax({
             url: "/DashboardAPI/GetUINodesForPanel/",
             type: "POST",
-            data: { 'panelId': window.this_panel_id },
+            data: { "containerId": window.this_panel_id },
             success: function (nodes) {
                 onReturnNodes(nodes);
             }

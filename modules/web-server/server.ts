@@ -13,7 +13,7 @@ import * as bodyParser from 'body-parser';
 import * as http from 'http';
 import * as debug from 'debug';
 
-import {NodesServerSocket} from "../../routes/node-editor-io"
+import {NodesServerSocket} from "../../routes/editor-io"
 
 import * as socket from 'socket.io';
 
@@ -56,13 +56,13 @@ class Server {
     }
 
     private routes() {
-        this.express.use('/', require('./../../routes/firstrun'));
+        this.express.use('/', require('./../../routes/first-run'));
         this.express.use('/', require('./../../routes/index'));
-        this.express.use('/Dashboard', require('./../../routes/dashboard'));
-        this.express.use('/NodeEditor', require('./../../routes/node-editor'));
-        this.express.use('/NodeEditorAPI', require('./../../routes/node-editor-api'));
-        this.express.use('/MySensors', require('./../../routes/mysensors'));
-        this.express.use('/MySensorsAPI', require('./../../routes/mysensors-api'));
+        this.express.use('/dashboard', require('./../../routes/dashboard'));
+        this.express.use('/editor', require('./../../routes/editor'));
+        this.express.use('/api/editor', require('./../../routes/api-editor'));
+        this.express.use('/mysensors', require('./../../routes/mysensors'));
+        this.express.use('/api/mysensors', require('./../../routes/api-mysensors'));
     }
 
     private handeErrors() {
