@@ -16,6 +16,7 @@
     const server_1 = require("../modules/web-server/server");
     const nodes_1 = require("../public/nodes/nodes");
     const utils_1 = require("../public/nodes/utils");
+    let MODULE_NAME = "Socket";
     //------------------ info ------------------------
     router.get('/info', function (req, res) {
     });
@@ -38,7 +39,7 @@
         let cont = req.params.cid;
         let node = nodes_1.Nodes.createNode(req.body.type);
         if (!node) {
-            utils_1.default.debugErr("Cant create node. Check node type.", "Socket");
+            utils_1.default.debugErr("Cant create node. Check node type.", MODULE_NAME);
             res.status(404).send("Cant create node. Check node type.");
             return;
         }
@@ -64,7 +65,7 @@
         let id = req.params.nid;
         let node = nodes_engine_1.engine.getNodeById(id);
         if (!node) {
-            utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
+            utils_1.default.debugErr("Cant delete node. Node id does not exist.", MODULE_NAME);
             res.status(404).send("Cant delete node. Node id does not exist.");
             return;
         }
@@ -74,6 +75,27 @@
         server_1.default.socket.io.emit('node-delete', data);
         utils_1.default.debug("Node deleted: " + node.type);
         res.send("Node deleted: " + node.type);
+    });
+    /**
+     * delete nodes
+     */
+    router.delete('/c/:cid/n/', function (req, res) {
+        let cont = req.params.cid;
+        let ids = req.body;
+        for (let id of ids) {
+            let node = nodes_engine_1.engine.getNodeById(id);
+            if (!node) {
+                utils_1.default.debugErr("Cant delete node. Node id does not exist.", MODULE_NAME);
+                res.status(404).send("Cant delete node. Node id does not exist.");
+                return;
+            }
+            //let node = engine._nodes.find(n => n.id === id);
+            nodes_engine_1.engine.remove(node);
+        }
+        var data = JSON.stringify(ids);
+        server_1.default.socket.io.emit('nodes-delete', data);
+        utils_1.default.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
+        res.send("Nodes deleted: " + JSON.stringify(ids));
     });
     /**
      * node update position

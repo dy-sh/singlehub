@@ -10,6 +10,7 @@ import server from "../modules/web-server/server"
 import {Nodes} from "../public/nodes/nodes";
 import Utils from "../public/nodes/utils";
 
+let MODULE_NAME="Socket";
 
 //------------------ info ------------------------
 
@@ -48,7 +49,7 @@ router.post('/c/:cid/n/', function (req, res) {
 
     let node = Nodes.createNode(req.body.type);
     if (!node) {
-        Utils.debugErr("Cant create node. Check node type.", "Socket");
+        Utils.debugErr("Cant create node. Check node type.", MODULE_NAME);
         res.status(404).send("Cant create node. Check node type.");
         return;
     }
@@ -82,7 +83,7 @@ router.delete('/c/:cid/n/:nid', function (req, res) {
 
     let node = engine.getNodeById(id);
     if (!node) {
-        Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
+        Utils.debugErr("Cant delete node. Node id does not exist.", MODULE_NAME);
         res.status(404).send("Cant delete node. Node id does not exist.");
         return;
     }
@@ -95,6 +96,34 @@ router.delete('/c/:cid/n/:nid', function (req, res) {
 
     Utils.debug("Node deleted: " + node.type);
     res.send("Node deleted: " + node.type);
+});
+
+
+/**
+ * delete nodes
+ */
+router.delete('/c/:cid/n/', function (req, res) {
+    let cont = req.params.cid;
+    let ids = req.body;
+
+    for (let id of ids) {
+        let node = engine.getNodeById(id);
+
+        if (!node) {
+            Utils.debugErr("Cant delete node. Node id does not exist.", MODULE_NAME);
+            res.status(404).send("Cant delete node. Node id does not exist.");
+            return;
+        }
+        //let node = engine._nodes.find(n => n.id === id);
+
+        engine.remove(node);
+    }
+
+    var data = JSON.stringify(ids);
+    server.socket.io.emit('nodes-delete', data);
+
+    Utils.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
+    res.send("Nodes deleted: " + JSON.stringify(ids));
 });
 
 

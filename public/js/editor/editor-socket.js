@@ -62,6 +62,18 @@
                 nodes_engine_1.engine.remove(node);
                 nodes_engine_1.engine.setDirtyCanvas(true, true);
             });
+            socket.on('nodes-delete', function (data) {
+                let ids = JSON.parse(data);
+                for (let id of ids) {
+                    let node = nodes_engine_1.engine.getNodeById(id);
+                    if (!node) {
+                        utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
+                        return;
+                    }
+                    nodes_engine_1.engine.remove(node);
+                }
+                nodes_engine_1.engine.setDirtyCanvas(true, true);
+            });
             socket.on('node-update-position', function (n) {
                 let node = nodes_engine_1.engine.getNodeById(n.id);
                 if (node.pos != n.pos) {
@@ -152,9 +164,6 @@
         //         }
         //     });
         // }
-        /**
-         * Get nodes for container
-         */
         getNodes() {
             $.ajax({
                 url: "/api/editor/c/" + nodes_engine_1.engine.container_id,
@@ -163,14 +172,8 @@
                 }
             });
         }
-        /**
-         * Send create new node
-         * @param type
-         * @param position
-         */
         sendCreateNode(type, position) {
             var data = JSON.stringify({ type: type, position: position, container: nodes_engine_1.engine.container_id });
-            console.log(data);
             $.ajax({
                 url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
                 contentType: 'application/json',
@@ -180,12 +183,22 @@
         }
         ;
         sendRemoveNode(node) {
-            //  var data=JSON.stringify({id: node.id, container:engine.container_id});
             $.ajax({
                 url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/" + node.id,
+                type: 'DELETE'
+            });
+        }
+        ;
+        sendRemoveNodes(nodes) {
+            let ids = [];
+            for (let n in nodes) {
+                ids.push(nodes[n].id);
+            }
+            $.ajax({
+                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
                 type: 'DELETE',
                 contentType: 'application/json',
-            }).done(function () {
+                data: JSON.stringify(ids)
             });
         }
         ;
@@ -212,19 +225,6 @@
                 url: '/api/editor/nodes/clone',
                 type: 'POST',
                 data: { 'id': node.id }
-            }).done(function () {
-            });
-        }
-        ;
-        sendRemoveNodes(nodes) {
-            let array = [];
-            for (let n in nodes) {
-                array.push(nodes[n].id);
-            }
-            $.ajax({
-                url: '/api/editor/nodes',
-                type: 'DELETE',
-                data: { 'nodes': array }
             }).done(function () {
             });
         }

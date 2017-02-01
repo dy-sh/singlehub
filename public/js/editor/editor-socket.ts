@@ -76,6 +76,22 @@ export class EditorSocket {
             engine.setDirtyCanvas(true, true);
         });
 
+        socket.on('nodes-delete', function (data) {
+            let ids = JSON.parse(data);
+
+            for (let id of ids) {
+                let node = engine.getNodeById(id);
+                if (!node) {
+                    Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
+                    return;
+                }
+
+                engine.remove(node);
+            }
+
+            engine.setDirtyCanvas(true, true);
+        });
+
         socket.on('node-update-position', function (n) {
             let node = engine.getNodeById(n.id);
             if (node.pos != n.pos) {
@@ -201,9 +217,7 @@ export class EditorSocket {
     // }
 
 
-    /**
-     * Get nodes for container
-     */
+
     getNodes(): void {
         $.ajax({
             url: "/api/editor/c/" + engine.container_id,
@@ -213,14 +227,9 @@ export class EditorSocket {
         });
     }
 
-    /**
-     * Send create new node
-     * @param type
-     * @param position
-     */
+
     sendCreateNode(type: string, position: [number, number]): void {
         var data = JSON.stringify({type: type, position: position, container: engine.container_id});
-        console.log(data);
         $.ajax({
             url: "/api/editor/c/" + engine.container_id + "/n/",
             contentType: 'application/json',
@@ -232,16 +241,25 @@ export class EditorSocket {
 
     sendRemoveNode(node: Node): void {
 
-        //  var data=JSON.stringify({id: node.id, container:engine.container_id});
-
         $.ajax({
             url: "/api/editor/c/" + engine.container_id + "/n/" + node.id,
+            type: 'DELETE'
+        })
+    };
+
+
+    sendRemoveNodes(nodes: {[id: number]: Node}): void {
+        let ids = [];
+        for (let n in nodes) {
+            ids.push(nodes[n].id);
+        }
+
+        $.ajax({
+            url: "/api/editor/c/" + engine.container_id + "/n/",
             type: 'DELETE',
             contentType: 'application/json',
-            //    data: data
-        }).done(function () {
-
-        });
+            data: JSON.stringify(ids)
+        })
     };
 
 
@@ -280,22 +298,6 @@ export class EditorSocket {
     };
 
 
-    sendRemoveNodes(nodes: {[id: number]: Node}): void {
-
-        let array = [];
-
-        for (let n in nodes) {
-            array.push(nodes[n].id);
-        }
-
-        $.ajax({
-            url: '/api/editor/nodes',
-            type: 'DELETE',
-            data: {'nodes': array}
-        }).done(function () {
-
-        });
-    };
 
 
     sendUpdateNode(node: Node): void {
