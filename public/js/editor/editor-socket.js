@@ -186,6 +186,24 @@
             });
         }
         ;
+        sendUpdateNodePosition(node) {
+            $.ajax({
+                url: `/api/editor/c/${nodes_engine_1.engine.container_id}/n/${node.id}/position`,
+                contentType: 'application/json',
+                type: 'PUT',
+                data: JSON.stringify({ position: node.pos })
+            });
+        }
+        ;
+        sendUpdateNodeSize(node) {
+            $.ajax({
+                url: `/api/editor/c/${nodes_engine_1.engine.container_id}/n/${node.id}/size`,
+                contentType: 'application/json',
+                type: 'PUT',
+                data: JSON.stringify({ size: node.size })
+            });
+        }
+        ;
         sendCreateLink(origin_id, origin_slot, target_id, target_slot) {
             let data = {
                 origin_id: origin_id,
@@ -214,17 +232,6 @@
                 url: '/api/editor/nodes/clone',
                 type: 'POST',
                 data: { 'id': node.id }
-            }).done(function () {
-            });
-        }
-        ;
-        sendUpdateNode(node) {
-            let s = node.serialize();
-            s = JSON.stringify(s);
-            $.ajax({
-                url: '/api/editor/nodes',
-                type: 'PUT',
-                data: { 'node': s }
             }).done(function () {
             });
         }

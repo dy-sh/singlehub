@@ -77,6 +77,7 @@ class Server {
         // development error handler: will print stacktrace
         if (this.express.get('env') === 'development') {
             this.express.use((err: Error & {status: number}, req: express.Request, res: express.Response, next: express.NextFunction): void => {
+                console.log(err);
                 res.status(err.status || 500);
                 res.render('error', {message: err.message, error: err});
             });
@@ -84,6 +85,7 @@ class Server {
 
         // production error handler: no stacktraces leaked to user
         this.express.use((err: Error & {status: number}, req: express.Request, res: express.Response, next: express.NextFunction): void => {
+            console.log(err);
             res.status(err.status || 500);
             res.render('error', {message: err.message, error: {}});
         });

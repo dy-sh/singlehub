@@ -21,6 +21,9 @@
     router.get('/info', function (req, res) {
     });
     //------------------ containers ------------------------
+    /**
+     * Get container
+     */
     router.get('/c/:id', function (req, res) {
         let s = nodes_engine_1.engine.serialize();
         res.json(s);
@@ -33,7 +36,7 @@
     });
     //------------------ nodes ------------------------
     /**
-     * create node
+     * Create node
      */
     router.post('/c/:cid/n/', function (req, res) {
         let cont = req.params.cid;
@@ -56,7 +59,7 @@
         res.send("New node created: " + node.type);
     });
     /**
-     * delete node
+     * Delete node
      */
     router.delete('/c/:cid/n/:id', function (req, res) {
         let cont = req.params.cid;
@@ -75,7 +78,7 @@
         res.send("Node deleted: " + node.type);
     });
     /**
-     * delete nodes
+     * Delete nodes
      */
     router.delete('/c/:cid/n/', function (req, res) {
         let cont = req.params.cid;
@@ -96,15 +99,22 @@
         res.send("Nodes deleted: " + JSON.stringify(ids));
     });
     /**
-     * node update position
+     * Update node position
      */
-    router.put('/nodes', function (req, res) {
-        let newNode = JSON.parse(req.body.node);
-        // console.log(newNode);
-        let node = nodes_engine_1.engine._nodes.find(n => n.id === newNode.id);
-        node.pos = newNode.pos;
+    router.put('/c/:cid/n/:id/position', function (req, res) {
+        let node = nodes_engine_1.engine.getNodeById(req.params.id);
+        node.pos = req.body.position;
         server_1.default.socket.io.emit('node-update-position', { id: node.id, pos: node.pos });
-        res.send("ok");
+        res.send("Node position updated");
+    });
+    /**
+     * Update node size
+     */
+    router.put('/c/:cid/n/:id/size', function (req, res) {
+        let node = nodes_engine_1.engine.getNodeById(req.params.id);
+        node.pos = req.body.size;
+        server_1.default.socket.io.emit('node-update-size', { id: node.id, size: node.size });
+        res.send("Node size updated");
     });
     router.post('/nodes/clone/:id', function (req, res) {
     });

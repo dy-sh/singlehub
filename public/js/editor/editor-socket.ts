@@ -47,7 +47,6 @@ export class EditorSocket {
         // });
 
 
-
         socket.on('node-create', function (data) {
             let n = JSON.parse(data);
             let node = engine.getNodeById(n.id);
@@ -80,9 +79,6 @@ export class EditorSocket {
                 (<any>window).location = "/editor/";
             }
         });
-
-
-
 
 
         socket.on('nodes-delete', function (data) {
@@ -159,8 +155,6 @@ export class EditorSocket {
         });
 
 
-
-
         this.getNodes();
         // this.getGatewayInfo();
 
@@ -193,7 +187,6 @@ export class EditorSocket {
     //         }
     //     });
     // }
-
 
 
     getNodes(): void {
@@ -239,10 +232,27 @@ export class EditorSocket {
         })
     };
 
+    sendUpdateNodePosition(node: Node): void {
+        $.ajax({
+            url: `/api/editor/c/${engine.container_id}/n/${node.id}/position`,
+            contentType: 'application/json',
+            type: 'PUT',
+            data: JSON.stringify({position: node.pos})
+        })
+    };
+
+    sendUpdateNodeSize(node: Node): void {
+        $.ajax({
+            url: `/api/editor/c/${engine.container_id}/n/${node.id}/size`,
+            contentType: 'application/json',
+            type: 'PUT',
+            data: JSON.stringify({size: node.size})
+        })
+    };
 
 
-    sendCreateLink(origin_id:number,origin_slot:number,target_id:number,target_slot): void {
-       let data= {
+    sendCreateLink(origin_id: number, origin_slot: number, target_id: number, target_slot): void {
+        let data = {
             origin_id: origin_id,
             origin_slot: origin_slot,
             target_id: target_id,
@@ -268,28 +278,11 @@ export class EditorSocket {
     //---------------------------------------------------
 
 
-
     sendCloneNode(node: Node): void {
         $.ajax({
             url: '/api/editor/nodes/clone',
             type: 'POST',
             data: {'id': node.id}
-        }).done(function () {
-
-        });
-    };
-
-
-
-
-    sendUpdateNode(node: Node): void {
-
-        let s = node.serialize();
-        s = JSON.stringify(s);
-        $.ajax({
-            url: '/api/editor/nodes',
-            type: 'PUT',
-            data: {'node': s}
         }).done(function () {
 
         });

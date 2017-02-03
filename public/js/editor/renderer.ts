@@ -904,8 +904,7 @@ export class Renderer {
                 this.dirty_canvas = true;
                 this.dirty_bgcanvas = true;
 
-                //derwish added
-                this.socket.sendUpdateNode(this.resizing_node);
+                this.socket.sendUpdateNodeSize(this.resizing_node);
 
                 this.resizing_node = null;
             }
@@ -918,13 +917,10 @@ export class Renderer {
                 if (this.engine.config.align_to_grid)
                     this.node_dragged.alignToGrid();
 
-
-                //derwish added
                 for (let i in this.selected_nodes) {
-                    //derwish added
                     this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                     this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                    this.socket.sendUpdateNode(this.selected_nodes[i]);
+                    this.socket.sendUpdateNodePosition(this.selected_nodes[i]);
                 }
 
                 this.node_dragged = null;
