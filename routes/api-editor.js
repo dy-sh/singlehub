@@ -112,7 +112,7 @@
      */
     router.put('/c/:cid/n/:id/size', function (req, res) {
         let node = nodes_engine_1.engine.getNodeById(req.params.id);
-        node.pos = req.body.size;
+        node.size = req.body.size;
         server_1.default.socket.io.emit('node-update-size', { id: node.id, size: node.size });
         res.send("Node size updated");
     });

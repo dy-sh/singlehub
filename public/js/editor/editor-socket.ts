@@ -105,6 +105,14 @@ export class EditorSocket {
             }
         });
 
+        socket.on('node-update-size', function (n) {
+            let node = engine.getNodeById(n.id);
+            if (node.pos != n.pos) {
+                node.size = n.size;
+                node.setDirtyCanvas(true, true);
+            }
+        });
+
 
         socket.on('link-delete', function (data) {
             let l = JSON.parse(data);
