@@ -21,7 +21,12 @@
         constructor() {
             super();
             this.onExecute = function () {
-                console.log("CONSOLE NODE: " + this.getInputData(0));
+                let val = this.getInputData(0);
+                if (val != this.oldVal) {
+                    console.log("CONSOLE NODE: " + val);
+                    this.isActive = true;
+                    this.oldVal = val;
+                }
             };
             this.title = "Console";
             this.desc = "Show value inside the console";

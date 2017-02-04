@@ -22,8 +22,15 @@ export class Console extends Node {
         this.addInput("data");
     }
 
+    oldVal:any;
+
     onExecute = function () {
-        console.log("CONSOLE NODE: " + this.getInputData(0));
+        let val=this.getInputData(0);
+        if (val!=this.oldVal) {
+            console.log("CONSOLE NODE: " +val);
+            this.isActive=true;
+            this.oldVal=val;
+        }
     }
 }
 

@@ -142,7 +142,7 @@ export class Nodes {
     //   debug: config.engine.debugEngine,
 
 
-    private static MODULE_NAME= "Nodes";
+    private static MODULE_NAME = "Nodes";
 
     /**
      * Register a node class so it can be listed when the user wants to create a new one
@@ -154,7 +154,7 @@ export class Nodes {
             throw("Cannot register a simple object, it must be a class with a prototype");
         base_class.type = type;
 
-        Utils.debug("Node registered: " + type,this.MODULE_NAME);
+        Utils.debug("Node registered: " + type, this.MODULE_NAME);
 
         let categories = type.split("/");
 
@@ -194,7 +194,7 @@ export class Nodes {
     static createNode(type: string, title?: string, options?: any): Node {
         let base_class = this.registered_node_types[type];
         if (!base_class) {
-            Utils.debug("Can`t create node. Node type \"" + type + "\" not registered.",this.MODULE_NAME);
+            Utils.debug("Can`t create node. Node type \"" + type + "\" not registered.", this.MODULE_NAME);
             return null;
         }
 
@@ -289,7 +289,7 @@ export class Nodes {
                 continue;
 
             try {
-                Utils.debug("Reloading: " + src,this.MODULE_NAME);
+                Utils.debug("Reloading: " + src, this.MODULE_NAME);
                 let dynamicScript = document.createElement("script");
                 dynamicScript.type = "text/javascript";
                 dynamicScript.src = src;
@@ -299,11 +299,11 @@ export class Nodes {
             catch (err) {
                 if (this.throw_errors)
                     throw err;
-                Utils.debugErr("Error while reloading " + src,this.MODULE_NAME);
+                Utils.debugErr("Error while reloading " + src, this.MODULE_NAME);
             }
         }
 
-        Utils.debug("Nodes reloaded",this.MODULE_NAME);
+        Utils.debug("Nodes reloaded", this.MODULE_NAME);
     };
 
 
@@ -401,7 +401,7 @@ export class Node {
     onSelected: Function;
     onDeselected: Function;
 
-    isActive:boolean;
+    isActive: boolean;
 
     constructor(title: string = "Unnamed") {
         this.title = title;
@@ -543,19 +543,24 @@ export class Node {
 
     /**
      * Sets the output data
-     * @param slot slot id
-     * @param data slot data
+     * @param slotId slotId id
+     * @param data slotId data
      */
-    setOutputData(slot: number, data: any): void {
+    setOutputData(slotId: number, data: any): void {
         if (!this.outputs)
             return;
 
-        this.isActive=true;
+        if (slotId < 0 || slotId >= this.outputs.length
+            || !this.outputs[slotId]
+            || this.outputs[slotId].links == null)
+            return;
 
-        if (slot > -1 && slot < this.outputs.length && this.outputs[slot] && this.outputs[slot].links != null) {
-            for (let i = 0; i < this.outputs[slot].links.length; i++) {
-                let link_id = this.outputs[slot].links[i];
-                this.engine.links[link_id].data = data;
+        for (let i = 0; i < this.outputs[slotId].links.length; i++) {
+            let linkId = this.outputs[slotId].links[i];
+
+            if (this.engine.links[linkId].data != data) {
+                this.engine.links[linkId].data = data;
+                this.isActive = true;
             }
         }
     }

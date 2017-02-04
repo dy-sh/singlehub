@@ -125,8 +125,6 @@ export class EditorSocket {
             let targetNode = engine.getNodeById(link.target_id);
             node.connect(link.origin_slot, targetNode, link.target_slot);
             //  this.engine.change();
-            console.log(node);
-            console.log(targetNode);
 
             engine.change();
         });

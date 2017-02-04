@@ -370,17 +370,21 @@
         }
         /**
          * Sets the output data
-         * @param slot slot id
-         * @param data slot data
+         * @param slotId slotId id
+         * @param data slotId data
          */
-        setOutputData(slot, data) {
+        setOutputData(slotId, data) {
             if (!this.outputs)
                 return;
-            this.isActive = true;
-            if (slot > -1 && slot < this.outputs.length && this.outputs[slot] && this.outputs[slot].links != null) {
-                for (let i = 0; i < this.outputs[slot].links.length; i++) {
-                    let link_id = this.outputs[slot].links[i];
-                    this.engine.links[link_id].data = data;
+            if (slotId < 0 || slotId >= this.outputs.length
+                || !this.outputs[slotId]
+                || this.outputs[slotId].links == null)
+                return;
+            for (let i = 0; i < this.outputs[slotId].links.length; i++) {
+                let linkId = this.outputs[slotId].links[i];
+                if (this.engine.links[linkId].data != data) {
+                    this.engine.links[linkId].data = data;
+                    this.isActive = true;
                 }
             }
         }
