@@ -105,6 +105,19 @@
                 console.log(targetNode);
                 nodes_engine_1.engine.change();
             });
+            socket.on('nodes-active', function (ids) {
+                for (let id of ids) {
+                    let node = nodes_engine_1.engine.getNodeById(id);
+                    if (node == null)
+                        return;
+                    node.boxcolor = nodes_1.Nodes.options.NODE_ACTIVE_BOXCOLOR;
+                    node.setDirtyCanvas(true, true);
+                    setTimeout(function () {
+                        node.boxcolor = nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR;
+                        node.setDirtyCanvas(true, true);
+                    }, 100);
+                }
+            });
             // socket.on('gateway-connected', function () {
             //     noty({text: 'Gateway connected.', type: 'alert', timeout: false});
             // });
@@ -112,17 +125,6 @@
             // socket.on('gateway-disconnected', function () {
             //     noty({text: 'Gateway disconnected!', type: 'error', timeout: false});
             // });
-            socket.on('node-activity', function (nodeId) {
-                let node = this.engine.getNodeById(nodeId);
-                if (node == null)
-                    return;
-                node.boxcolor = nodes_1.Nodes.options.NODE_ACTIVE_BOXCOLOR;
-                node.setDirtyCanvas(true, true);
-                setTimeout(function () {
-                    node.boxcolor = nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR;
-                    node.setDirtyCanvas(true, true);
-                }, 100);
-            });
             this.getNodes();
             // this.getGatewayInfo();
             $("#sendButton").click(function () {

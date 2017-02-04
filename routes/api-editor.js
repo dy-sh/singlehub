@@ -17,6 +17,17 @@
     const nodes_1 = require("../public/nodes/nodes");
     const utils_1 = require("../public/nodes/utils");
     let MODULE_NAME = "Socket";
+    setInterval(updateActiveNodes, 100);
+    function updateActiveNodes() {
+        let activeNodesIds = [];
+        for (let node of nodes_engine_1.engine._nodes) {
+            if (node.isActive) {
+                node.isActive = false;
+                activeNodesIds.push(node.id);
+            }
+        }
+        server_1.default.socket.io.emit('nodes-active', activeNodesIds);
+    }
     //------------------ info ------------------------
     router.get('/info', function (req, res) {
     });

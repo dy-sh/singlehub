@@ -376,6 +376,7 @@
         setOutputData(slot, data) {
             if (!this.outputs)
                 return;
+            this.isActive = true;
             if (slot > -1 && slot < this.outputs.length && this.outputs[slot] && this.outputs[slot].links != null) {
                 for (let i = 0; i < this.outputs[slot].links.length; i++) {
                     let link_id = this.outputs[slot].links[i];

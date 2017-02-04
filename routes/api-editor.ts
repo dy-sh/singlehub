@@ -12,6 +12,21 @@ import Utils from "../public/nodes/utils";
 
 let MODULE_NAME = "Socket";
 
+
+setInterval(updateActiveNodes,100);
+
+function updateActiveNodes(){
+    let activeNodesIds=[];
+    for (let node of engine._nodes){
+        if (node.isActive){
+            node.isActive=false;
+            activeNodesIds.push(node.id);
+        }
+    }
+
+    server.socket.io.emit('nodes-active', activeNodesIds);
+}
+
 //------------------ info ------------------------
 
 router.get('/info', function (req, res) {

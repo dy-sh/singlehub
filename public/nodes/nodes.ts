@@ -401,6 +401,7 @@ export class Node {
     onSelected: Function;
     onDeselected: Function;
 
+    isActive:boolean;
 
     constructor(title: string = "Unnamed") {
         this.title = title;
@@ -548,6 +549,8 @@ export class Node {
     setOutputData(slot: number, data: any): void {
         if (!this.outputs)
             return;
+
+        this.isActive=true;
 
         if (slot > -1 && slot < this.outputs.length && this.outputs[slot] && this.outputs[slot].links != null) {
             for (let i = 0; i < this.outputs[slot].links.length; i++) {

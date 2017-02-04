@@ -9,6 +9,7 @@ import Timer = NodeJS.Timer;
 import Utils from  "./utils"
 
 
+
 //todo
 // if (!(<any>window)) {
 //     let debug = require('debug')('nodes-engine:     ');
@@ -77,6 +78,8 @@ export class NodesEngine {
         this.list_of_renderers = null;
         this.clear();
     }
+
+
 
 //used to know which types of connections support this engine (some graphs do not allow certain types)
     getSupportedTypes(): Array<string> {
@@ -874,6 +877,8 @@ export class NodesEngine {
         this.setDirtyCanvas(true, true);
         return error;
     }
+
+
 }
 
 
