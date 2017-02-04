@@ -59,14 +59,12 @@ router.post('/c/:cid/n/', function (req, res) {
     node.pos = req.body.position;
     engine.add(node);
 
-    //let n =node.serialize();
-    let n = {
+
+    server.socket.io.emit('node-create', {
         id: node.id,
         type: node.type,
         pos: node.pos
-    };
-
-    server.socket.io.emit('node-create', JSON.stringify(n));
+    });
 
     Utils.debug("New node created: " + node.type);
     res.send("New node created: " + node.type);
@@ -90,8 +88,10 @@ router.delete('/c/:cid/n/:id', function (req, res) {
 
     engine.remove(node);
 
-    let data = JSON.stringify({id: node.id, container: engine.container_id});
-    server.socket.io.emit('node-delete', data);
+    server.socket.io.emit('node-delete', {
+        id: node.id,
+        container: engine.container_id
+    });
 
     Utils.debug("Node deleted: " + node.type);
     res.send("Node deleted: " + node.type);
@@ -118,8 +118,7 @@ router.delete('/c/:cid/n/', function (req, res) {
         engine.remove(node);
     }
 
-    let data = JSON.stringify(ids);
-    server.socket.io.emit('nodes-delete', data);
+    server.socket.io.emit('nodes-delete', ids);
 
     Utils.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
     res.send("Nodes deleted: " + JSON.stringify(ids));
@@ -231,8 +230,10 @@ router.delete('/c/:cid/l/:id', function (req, res) {
     targetNode.disconnectInput(link.target_slot);
 
 
-    let data = JSON.stringify({id: link.id, container: engine.container_id});
-    server.socket.io.emit('link-delete', data);
+    server.socket.io.emit('link-delete', {
+        id: link.id,
+        container: engine.container_id
+    });
 
     Utils.debug("Link deleted");
     res.send("Link deleted" );

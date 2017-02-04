@@ -48,13 +48,11 @@
         }
         node.pos = req.body.position;
         nodes_engine_1.engine.add(node);
-        //let n =node.serialize();
-        let n = {
+        server_1.default.socket.io.emit('node-create', {
             id: node.id,
             type: node.type,
             pos: node.pos
-        };
-        server_1.default.socket.io.emit('node-create', JSON.stringify(n));
+        });
         utils_1.default.debug("New node created: " + node.type);
         res.send("New node created: " + node.type);
     });
@@ -72,8 +70,10 @@
         }
         //let node = engine._nodes.find(n => n.id === id);
         nodes_engine_1.engine.remove(node);
-        let data = JSON.stringify({ id: node.id, container: nodes_engine_1.engine.container_id });
-        server_1.default.socket.io.emit('node-delete', data);
+        server_1.default.socket.io.emit('node-delete', {
+            id: node.id,
+            container: nodes_engine_1.engine.container_id
+        });
         utils_1.default.debug("Node deleted: " + node.type);
         res.send("Node deleted: " + node.type);
     });
@@ -93,8 +93,7 @@
             //let node = engine._nodes.find(n => n.id === id);
             nodes_engine_1.engine.remove(node);
         }
-        let data = JSON.stringify(ids);
-        server_1.default.socket.io.emit('nodes-delete', data);
+        server_1.default.socket.io.emit('nodes-delete', ids);
         utils_1.default.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
         res.send("Nodes deleted: " + JSON.stringify(ids));
     });
@@ -174,8 +173,10 @@
         }
         node.disconnectOutput(link.origin_slot, targetNode);
         targetNode.disconnectInput(link.target_slot);
-        let data = JSON.stringify({ id: link.id, container: nodes_engine_1.engine.container_id });
-        server_1.default.socket.io.emit('link-delete', data);
+        server_1.default.socket.io.emit('link-delete', {
+            id: link.id,
+            container: nodes_engine_1.engine.container_id
+        });
         utils_1.default.debug("Link deleted");
         res.send("Link deleted");
     });

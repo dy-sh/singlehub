@@ -40,8 +40,7 @@
             //     noty({text: 'Web server is not responding!', type: 'error'});
             //     this.socketConnected = false;
             // });
-            socket.on('node-create', function (data) {
-                let n = JSON.parse(data);
+            socket.on('node-create', function (n) {
                 let node = nodes_engine_1.engine.getNodeById(n.id);
                 if (node) {
                     utils_1.default.debugErr("Cant create node. Node exist", "Socket");
@@ -52,8 +51,7 @@
                 nodes_engine_1.engine.add(newNode);
                 nodes_engine_1.engine.setDirtyCanvas(true, true);
             });
-            socket.on('node-delete', function (data) {
-                let n = JSON.parse(data);
+            socket.on('node-delete', function (n) {
                 let node = nodes_engine_1.engine.getNodeById(n.id);
                 if (!node) {
                     utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
@@ -66,8 +64,7 @@
                     window.location = "/editor/";
                 }
             });
-            socket.on('nodes-delete', function (data) {
-                let ids = JSON.parse(data);
+            socket.on('nodes-delete', function (ids) {
                 for (let id of ids) {
                     let node = nodes_engine_1.engine.getNodeById(id);
                     if (!node) {
@@ -92,8 +89,7 @@
                     node.setDirtyCanvas(true, true);
                 }
             });
-            socket.on('link-delete', function (data) {
-                let l = JSON.parse(data);
+            socket.on('link-delete', function (l) {
                 let link = nodes_engine_1.engine.links[l.id];
                 let node = nodes_engine_1.engine.getNodeById(link.origin_id);
                 let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
@@ -109,18 +105,14 @@
                 console.log(targetNode);
                 nodes_engine_1.engine.change();
             });
-            socket.on('gatewayConnected', function () {
-                noty({ text: 'Gateway connected.', type: 'alert', timeout: false });
-            });
-            socket.on('gatewayDisconnected', function () {
-                noty({ text: 'Gateway disconnected!', type: 'error', timeout: false });
-            });
-            socket.on('removeAllNodesAndLinks', function () {
-                this.engine.clear();
-                window.location.replace("/editor/");
-                noty({ text: 'All nodes have been deleted!', type: 'error' });
-            });
-            socket.on('nodeActivity', function (nodeId) {
+            // socket.on('gateway-connected', function () {
+            //     noty({text: 'Gateway connected.', type: 'alert', timeout: false});
+            // });
+            //
+            // socket.on('gateway-disconnected', function () {
+            //     noty({text: 'Gateway disconnected!', type: 'error', timeout: false});
+            // });
+            socket.on('node-activity', function (nodeId) {
                 let node = this.engine.getNodeById(nodeId);
                 if (node == null)
                     return;
