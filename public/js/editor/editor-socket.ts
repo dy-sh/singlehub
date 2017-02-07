@@ -20,9 +20,9 @@ export class EditorSocket {
         this.engine = engine;
 
         let socket = io();
+        this.socket=socket;
 
         // socket.emit('chat message', "h1");
-
 
         //
         // socket.on('connect', function () {

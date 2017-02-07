@@ -1347,16 +1347,14 @@ export class Node {
 
     sendValueToFrontside(val: any) {
         if (this.isBackside() && this.id != -1) {
-            require("../../modules/web-server/server").server
-                .socket.io.emit('node-value-to-frontside',
+            this.engine.socket.emit('node-value-to-frontside',
                 {id: this.id, value: val});
         }
     }
 
     sendValueToBackside(val: any) {
         if (!this.isBackside() && this.id != -1) {
-            require("../js/editor/editor-socket").socket
-                .socket.io.emit('node-value-to-backside',
+            this.engine.socket.emit('node-value-to-backside',
                 {id: this.id, value: val});
         }
     }

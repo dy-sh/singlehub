@@ -283,6 +283,12 @@
             this.onGetValueToFrontside = function (data) {
                 this.properties.value = data.input;
             };
+            this.onGetValueToBackside = function (data) {
+                console.log(data);
+            };
+            this.onMouseDown = function () {
+                this.sendValueToBackside("test");
+            };
             this.onDrawBackground = function (ctx) {
                 //show the current value
                 if (this.properties.value) {

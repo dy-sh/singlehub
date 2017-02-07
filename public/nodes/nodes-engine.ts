@@ -24,7 +24,7 @@ import {Subgraph} from "./nodes/base"
 
 
 export class NodesEngine {
-
+    socket: SocketIOClient.Socket|SocketIO.Server;
 
     supported_types = ["number", "string", "boolean"];
 

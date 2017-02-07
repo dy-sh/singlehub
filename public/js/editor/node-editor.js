@@ -32,10 +32,13 @@
             let graph = this.engine = nodes_engine_1.engine;
             //create socket
             this.socket = editor_socket_1.socket;
+            this.engine.socket = editor_socket_1.socket.socket;
             //create canvas
             let renderer = this.renderer = new renderer_1.Renderer(canvas, this.socket, this, graph);
             // renderer.background_image = "/images/litegraph/grid.png";
-            graph.onAfterExecute = function () { renderer.draw(true); };
+            graph.onAfterExecute = function () {
+                renderer.draw(true);
+            };
             //add stuff
             //todo temporary	this.addMiniWindow(200, 200);
             //append to DOM

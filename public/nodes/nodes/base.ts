@@ -355,6 +355,14 @@ export class Watch extends Node {
         this.properties.value = data.input;
     };
 
+    onGetValueToBackside=function (data) {
+        console.log(data);
+    };
+
+    onMouseDown=function () {
+        this.sendValueToBackside("test");
+    };
+
     onDrawBackground = function (ctx) {
         //show the current value
         if (this.properties.value) {

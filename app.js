@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'path', './modules/web-server/server'], factory);
+        define(["require", "exports", 'path', './modules/web-server/server', './public/nodes/nodes-engine'], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -28,7 +28,9 @@
     //
     // //nodes engine
     // // if (config.nodesEngine.enable) {
-    require('./public/nodes/nodes-engine');
+    const nodes_engine_1 = require('./public/nodes/nodes-engine');
+    // let engine=require('./public/nodes/nodes-engine');
+    nodes_engine_1.engine.socket = server_1.server.socket.io;
     require('./public/nodes/nodes');
     require('./public/nodes/nodes/base');
     require('./public/nodes/nodes/math');

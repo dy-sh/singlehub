@@ -24,7 +24,9 @@ console.log("Server started at port " + server.server.address().port);
 //
 // //nodes engine
 // // if (config.nodesEngine.enable) {
-require('./public/nodes/nodes-engine');
+import {engine} from './public/nodes/nodes-engine'
+// let engine=require('./public/nodes/nodes-engine');
+engine.socket=server.socket.io;
 require('./public/nodes/nodes');
 require('./public/nodes/nodes/base');
 require('./public/nodes/nodes/math');
