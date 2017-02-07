@@ -89,6 +89,11 @@
                     node.setDirtyCanvas(true, true);
                 }
             });
+            socket.on('node-value-to-frontside', function (n) {
+                let node = nodes_engine_1.engine.getNodeById(n.id);
+                if (node.onGetValueToFrontside)
+                    node.onGetValueToFrontside(n.value);
+            });
             socket.on('link-delete', function (l) {
                 let link = nodes_engine_1.engine.links[l.id];
                 let node = nodes_engine_1.engine.getNodeById(link.origin_id);

@@ -1046,6 +1046,25 @@
         debugErr(message, module) {
             utils_1.default.debugErr(message, "Node: " + this.type + "(id:" + this.id + ")");
         }
+        /**
+         * is node running on back-side
+         * @returns {boolean}
+         */
+        isBackside() {
+            return (typeof window === 'undefined');
+        }
+        sendValueToFrontside(val) {
+            if (this.isBackside() && this.id != -1) {
+                require("../../modules/web-server/server").server
+                    .socket.io.emit('node-value-to-frontside', { id: this.id, value: val });
+            }
+        }
+        sendValueToBackside(val) {
+            if (!this.isBackside() && this.id != -1) {
+                require("../js/editor/editor-socket").socket
+                    .socket.io.emit('node-value-to-backside', { id: this.id, value: val });
+            }
+        }
     }
     exports.Node = Node;
 });

@@ -13,7 +13,8 @@
     console.log("-------- MyNodes ----------");
     const path = require('path');
     global.__rootdirname = path.resolve(__dirname);
-    require('./modules/web-server/server');
+    const server_1 = require('./modules/web-server/server');
+    console.log("Server started at port " + server_1.server.server.address().port);
     // import 'modules/debug/configure'
     // import {App} from '/modules/web-server/server'
     // import 'modules/mysensors/gateway'

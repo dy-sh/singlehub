@@ -6,7 +6,7 @@ import * as express from 'express';
 let router = express.Router();
 
 import {engine} from "../public/nodes/nodes-engine"
-import server from "../modules/web-server/server"
+import {server} from "../modules/web-server/server"
 import {Nodes, Link} from "../public/nodes/nodes";
 import Utils from "../public/nodes/utils";
 

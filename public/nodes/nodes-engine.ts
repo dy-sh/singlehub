@@ -7,6 +7,7 @@ import {Nodes, Node, Link} from "./nodes";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
+import {Subgraph} from "./nodes/base"
 
 
 
@@ -66,6 +67,20 @@ export class NodesEngine {
     private MODULE_NAME = "NodesEngine";
     container_id: number = 0;
     parent_container_id?: number;
+
+
+    _subgraph_node: Subgraph;
+    _is_subgraph: boolean;
+    onGlobalInputAdded: Function;
+    onGlobalInputRenamed: Function;
+    onGlobalInputTypeChanged: Function;
+    onGlobalOutputAdded: Function;
+    onGlobalOutputRenamed: Function;
+    onGlobalOutputTypeChanged: Function;
+    onGlobalsChange: Function;
+    private onGlobalInputRemoved: Function;
+    private onGlobalOutputRemoved: Function;
+
 
 
     constructor() {
@@ -577,153 +592,153 @@ export class NodesEngine {
 
 //
 // // ********** GLOBALS *****************
-//
-// //Tell this engine has a global input of this type
-//     addGlobalInput(name, type, value) {
-//         this.global_inputs[name] = {name: name, type: type, value: value};
-//
-//         if (this.onGlobalInputAdded)
-//             this.onGlobalInputAdded(name, type);
-//
-//         if (this.onGlobalsChange)
-//             this.onGlobalsChange();
-//     }
-//
-// //assign a data to the global input
-//     setGlobalInputData(name, data) {
-//         let input = this.global_inputs[name];
-//         if (!input)
-//             return;
-//         input.value = data;
-//     }
-//
-// //assign a data to the global input
-//     getGlobalInputData(name) {
-//         let input = this.global_inputs[name];
-//         if (!input)
-//             return null;
-//         return input.value;
-//     }
-//
-// //rename the global input
-//     renameGlobalInput(old_name, name) {
-//         if (name == old_name)
-//             return;
-//
-//         if (!this.global_inputs[old_name])
-//             return false;
-//
-//         if (this.global_inputs[name]) {
-//             console.error("there is already one input with that name");
-//             return false;
-//         }
-//
-//         this.global_inputs[name] = this.global_inputs[old_name];
-//         delete this.global_inputs[old_name];
-//
-//         if (this.onGlobalInputRenamed)
-//             this.onGlobalInputRenamed(old_name, name);
-//
-//         if (this.onGlobalsChange)
-//             this.onGlobalsChange();
-//     }
-//
-//     changeGlobalInputType(name, type) {
-//         if (!this.global_inputs[name])
-//             return false;
-//
-//         if (this.global_inputs[name].type.toLowerCase() == type.toLowerCase())
-//             return;
-//
-//         this.global_inputs[name].type = type;
-//         if (this.onGlobalInputTypeChanged)
-//             this.onGlobalInputTypeChanged(name, type);
-//     }
-//
-//     removeGlobalInput(name) {
-//         if (!this.global_inputs[name])
-//             return false;
-//
-//         delete this.global_inputs[name];
-//
-//         if (this.onGlobalInputRemoved)
-//             this.onGlobalInputRemoved(name);
-//
-//         if (this.onGlobalsChange)
-//             this.onGlobalsChange();
-//         return true;
-//     }
-//
-//     addGlobalOutput(name, type, value) {
-//         this.global_outputs[name] = {name: name, type: type, value: value};
-//
-//         if (this.onGlobalOutputAdded)
-//             this.onGlobalOutputAdded(name, type);
-//
-//         if (this.onGlobalsChange)
-//             this.onGlobalsChange();
-//     }
-//
-// //assign a data to the global output
-//     setGlobalOutputData(name, value) {
-//         let output = this.global_outputs[name];
-//         if (!output)
-//             return;
-//         output.value = value;
-//     }
-//
-// //assign a data to the global input
-//     getGlobalOutputData(name) {
-//         let output = this.global_outputs[name];
-//         if (!output)
-//             return null;
-//         return output.value;
-//     }
-//
-// //rename the global output
-//     renameGlobalOutput(old_name, name) {
-//         if (!this.global_outputs[old_name])
-//             return false;
-//
-//         if (this.global_outputs[name]) {
-//             console.error("there is already one output with that name");
-//             return false;
-//         }
-//
-//         this.global_outputs[name] = this.global_outputs[old_name];
-//         delete this.global_outputs[old_name];
-//
-//         if (this.onGlobalOutputRenamed)
-//             this.onGlobalOutputRenamed(old_name, name);
-//
-//         if (this.onGlobalsChange)
-//             this.onGlobalsChange();
-//     }
-//
-//     changeGlobalOutputType(name, type) {
-//         if (!this.global_outputs[name])
-//             return false;
-//
-//         if (this.global_outputs[name].type.toLowerCase() == type.toLowerCase())
-//             return;
-//
-//         this.global_outputs[name].type = type;
-//         if (this.onGlobalOutputTypeChanged)
-//             this.onGlobalOutputTypeChanged(name, type);
-//     }
-//
-//     removeGlobalOutput(name) {
-//         if (!this.global_outputs[name])
-//             return false;
-//         delete this.global_outputs[name];
-//
-//         if (this.onGlobalOutputRemoved)
-//             this.onGlobalOutputRemoved(name);
-//
-//         if (this.onGlobalsChange)
-//             this.onGlobalsChange();
-//         return true;
-//     }
+
+    //Tell this engine has a global input of this type
+    addGlobalInput(name, type, value) {
+        this.global_inputs[name] = {name: name, type: type, value: value};
+
+        if (this.onGlobalInputAdded)
+            this.onGlobalInputAdded(name, type);
+
+        if (this.onGlobalsChange)
+            this.onGlobalsChange();
+    }
+
+    //assign a data to the global input
+    setGlobalInputData(name, data) {
+        let input = this.global_inputs[name];
+        if (!input)
+            return;
+        input.value = data;
+    }
+
+    //assign a data to the global input
+    getGlobalInputData(name) {
+        let input = this.global_inputs[name];
+        if (!input)
+            return null;
+        return input.value;
+    }
+
+    //rename the global input
+    renameGlobalInput(old_name, name) {
+        if (name == old_name)
+            return;
+
+        if (!this.global_inputs[old_name])
+            return false;
+
+        if (this.global_inputs[name]) {
+            console.error("there is already one input with that name");
+            return false;
+        }
+
+        this.global_inputs[name] = this.global_inputs[old_name];
+        delete this.global_inputs[old_name];
+
+        if (this.onGlobalInputRenamed)
+            this.onGlobalInputRenamed(old_name, name);
+
+        if (this.onGlobalsChange)
+            this.onGlobalsChange();
+    }
+
+    changeGlobalInputType(name, type) {
+        if (!this.global_inputs[name])
+            return false;
+
+        if (this.global_inputs[name].type.toLowerCase() == type.toLowerCase())
+            return;
+
+        this.global_inputs[name].type = type;
+        if (this.onGlobalInputTypeChanged)
+            this.onGlobalInputTypeChanged(name, type);
+    }
+
+    removeGlobalInput(name) {
+        if (!this.global_inputs[name])
+            return false;
+
+        delete this.global_inputs[name];
+
+        if (this.onGlobalInputRemoved)
+            this.onGlobalInputRemoved(name);
+
+        if (this.onGlobalsChange)
+            this.onGlobalsChange();
+        return true;
+    }
+
+    addGlobalOutput(name, type, value) {
+        this.global_outputs[name] = {name: name, type: type, value: value};
+
+        if (this.onGlobalOutputAdded)
+            this.onGlobalOutputAdded(name, type);
+
+        if (this.onGlobalsChange)
+            this.onGlobalsChange();
+    }
+
+//assign a data to the global output
+    setGlobalOutputData(name, value) {
+        let output = this.global_outputs[name];
+        if (!output)
+            return;
+        output.value = value;
+    }
+
+//assign a data to the global input
+    getGlobalOutputData(name) {
+        let output = this.global_outputs[name];
+        if (!output)
+            return null;
+        return output.value;
+    }
+
+//rename the global output
+    renameGlobalOutput(old_name, name) {
+        if (!this.global_outputs[old_name])
+            return false;
+
+        if (this.global_outputs[name]) {
+            console.error("there is already one output with that name");
+            return false;
+        }
+
+        this.global_outputs[name] = this.global_outputs[old_name];
+        delete this.global_outputs[old_name];
+
+        if (this.onGlobalOutputRenamed)
+            this.onGlobalOutputRenamed(old_name, name);
+
+        if (this.onGlobalsChange)
+            this.onGlobalsChange();
+    }
+
+    changeGlobalOutputType(name, type) {
+        if (!this.global_outputs[name])
+            return false;
+
+        if (this.global_outputs[name].type.toLowerCase() == type.toLowerCase())
+            return;
+
+        this.global_outputs[name].type = type;
+        if (this.onGlobalOutputTypeChanged)
+            this.onGlobalOutputTypeChanged(name, type);
+    }
+
+    removeGlobalOutput(name) {
+        if (!this.global_outputs[name])
+            return false;
+        delete this.global_outputs[name];
+
+        if (this.onGlobalOutputRemoved)
+            this.onGlobalOutputRemoved(name);
+
+        if (this.onGlobalsChange)
+            this.onGlobalsChange();
+        return true;
+    }
 //
 //     /**
 //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that

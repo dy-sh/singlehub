@@ -2,7 +2,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-import {NodesEngine} from "./nodes-engine";
+import {NodesEngine, engine} from "./nodes-engine";
 import Utils from "./utils";
 import {debuglog} from "util";
 
@@ -338,6 +338,8 @@ export class Node {
     outputs: Array<Output>;
     //   connections: Array<any>;
     properties: any;
+
+
     data: any;
     ignore_remove: boolean;
     flags: {
@@ -401,7 +403,12 @@ export class Node {
     onSelected: Function;
     onDeselected: Function;
 
+    onGetValueToBackside: Function;
+    onGetValueToFrontside: Function;
+
     isActive: boolean;
+
+
 
     constructor(title: string = "Unnamed") {
         this.title = title;
@@ -1327,6 +1334,31 @@ export class Node {
      */
     debugErr(message: string, module?: string): void {
         Utils.debugErr(message, "Node: " + this.type + "(id:" + this.id + ")");
+    }
+
+
+    /**
+     * is node running on back-side
+     * @returns {boolean}
+     */
+    isBackside(): boolean {
+        return (typeof window === 'undefined')
+    }
+
+    sendValueToFrontside(val: any) {
+        if (this.isBackside() && this.id != -1) {
+            require("../../modules/web-server/server").server
+                .socket.io.emit('node-value-to-frontside',
+                {id: this.id, value: val});
+        }
+    }
+
+    sendValueToBackside(val: any) {
+        if (!this.isBackside() && this.id != -1) {
+            require("../js/editor/editor-socket").socket
+                .socket.io.emit('node-value-to-backside',
+                {id: this.id, value: val});
+        }
     }
 }
 

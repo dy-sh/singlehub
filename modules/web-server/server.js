@@ -126,13 +126,11 @@
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
                 debug(`Listening on ${bind}`);
             }
-            console.log("Server started at port " + port);
         }
         start_io() {
             this.socket = new editor_io_1.NodesServerSocket(this.server);
         }
     }
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = new Server();
+    exports.server = new Server();
 });
 //# sourceMappingURL=server.js.map

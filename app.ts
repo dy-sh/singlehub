@@ -7,8 +7,9 @@ console.log("-------- MyNodes ----------")
 import * as path from 'path';
 (<any>global).__rootdirname = path.resolve(__dirname);
 
-import  './modules/web-server/server';
+import {server} from './modules/web-server/server';
 
+console.log("Server started at port " + server.server.address().port);
 
 // import 'modules/debug/configure'
 // import {App} from '/modules/web-server/server'

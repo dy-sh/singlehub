@@ -16,9 +16,9 @@
             let io = socket(server);
             this.io = io;
             io.on('connection', function (socket) {
-                socket.on('chat message', function (msg) {
-                    io.emit('chat message', msg + "2");
-                });
+                // socket.on('test message', function (msg) {
+                //     io.emit('test message', msg + "2");
+                // });
             });
         }
     }

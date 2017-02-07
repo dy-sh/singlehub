@@ -26,7 +26,7 @@
                 activeNodesIds.push(node.id);
             }
         }
-        server_1.default.socket.io.emit('nodes-active', activeNodesIds);
+        server_1.server.socket.io.emit('nodes-active', activeNodesIds);
     }
     //------------------ info ------------------------
     router.get('/info', function (req, res) {
@@ -59,7 +59,7 @@
         }
         node.pos = req.body.position;
         nodes_engine_1.engine.add(node);
-        server_1.default.socket.io.emit('node-create', {
+        server_1.server.socket.io.emit('node-create', {
             id: node.id,
             type: node.type,
             pos: node.pos
@@ -81,7 +81,7 @@
         }
         //let node = engine._nodes.find(n => n.id === id);
         nodes_engine_1.engine.remove(node);
-        server_1.default.socket.io.emit('node-delete', {
+        server_1.server.socket.io.emit('node-delete', {
             id: node.id,
             container: nodes_engine_1.engine.container_id
         });
@@ -104,7 +104,7 @@
             //let node = engine._nodes.find(n => n.id === id);
             nodes_engine_1.engine.remove(node);
         }
-        server_1.default.socket.io.emit('nodes-delete', ids);
+        server_1.server.socket.io.emit('nodes-delete', ids);
         utils_1.default.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
         res.send("Nodes deleted: " + JSON.stringify(ids));
     });
@@ -114,7 +114,7 @@
     router.put('/c/:cid/n/:id/position', function (req, res) {
         let node = nodes_engine_1.engine.getNodeById(req.params.id);
         node.pos = req.body.position;
-        server_1.default.socket.io.emit('node-update-position', { id: node.id, pos: node.pos });
+        server_1.server.socket.io.emit('node-update-position', { id: node.id, pos: node.pos });
         res.send("Node position updated");
     });
     /**
@@ -123,7 +123,7 @@
     router.put('/c/:cid/n/:id/size', function (req, res) {
         let node = nodes_engine_1.engine.getNodeById(req.params.id);
         node.size = req.body.size;
-        server_1.default.socket.io.emit('node-update-size', { id: node.id, size: node.size });
+        server_1.server.socket.io.emit('node-update-size', { id: node.id, size: node.size });
         res.send("Node size updated");
     });
     router.post('/nodes/clone/:id', function (req, res) {
@@ -159,7 +159,7 @@
             link.target_slot = 0;
         }
         node1.connect(link.origin_slot, node2, link.target_slot);
-        server_1.default.socket.io.emit('link-create', req.body);
+        server_1.server.socket.io.emit('link-create', req.body);
         utils_1.default.debug("Link created");
         res.send("Link created");
     });
@@ -184,7 +184,7 @@
         }
         node.disconnectOutput(link.origin_slot, targetNode);
         targetNode.disconnectInput(link.target_slot);
-        server_1.default.socket.io.emit('link-delete', {
+        server_1.server.socket.io.emit('link-delete', {
             id: link.id,
             container: nodes_engine_1.engine.container_id
         });

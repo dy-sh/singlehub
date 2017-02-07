@@ -143,8 +143,6 @@ class Server {
             let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
             debug(`Listening on ${bind}`);
         }
-
-        console.log("Server started at port " + port);
     }
 
     private start_io() {
@@ -153,4 +151,4 @@ class Server {
 }
 
 
-export default new Server();
+export let server = new Server();

@@ -110,6 +110,12 @@ export class EditorSocket {
             }
         });
 
+        socket.on('node-value-to-frontside', function (n) {
+            let node = engine.getNodeById(n.id);
+            if (node.onGetValueToFrontside)
+                node.onGetValueToFrontside(n.value);
+        });
+
 
         socket.on('link-delete', function (l) {
             let link = engine.links[l.id];
@@ -151,10 +157,6 @@ export class EditorSocket {
         // socket.on('gateway-disconnected', function () {
         //     noty({text: 'Gateway disconnected!', type: 'error', timeout: false});
         // });
-
-
-
-
 
 
         this.getNodes();
