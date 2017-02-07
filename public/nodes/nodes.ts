@@ -326,7 +326,7 @@ export class Nodes {
 
 export class Node {
 
-    container_id: string;
+    container_id: number;
     title: string;
     desc: string;
     pos: [number, number] = [10, 10];
@@ -403,11 +403,10 @@ export class Node {
     onSelected: Function;
     onDeselected: Function;
 
-    onGetValueToBackside: Function;
-    onGetValueToFrontside: Function;
+    onGetMessageFromFrontSide: Function;
+    onGetMessageFromBackSide: Function;
 
     isActive: boolean;
-
 
 
     constructor(title: string = "Unnamed") {
@@ -946,7 +945,7 @@ export class Node {
         target_slot = target_slot || 0;
 
         //seek for the output slot
-        if (typeof slot == "string") {
+        if (typeof (slot) == "string") {
             slot = this.findOutputSlot(slot);
             if (slot == -1) {
                 this.debugErr("Connect error, no slot of name " + slot);
@@ -968,7 +967,7 @@ export class Node {
             return false;
         //if( target_node.constructor != Node ) throw ("Node.connect: target_node is not of type Node");
 
-        if (typeof target_slot == "string") {
+        if (typeof (target_slot) == "string") {
             target_slot = target_node.findInputSlot(target_slot);
             if (target_slot == -1) {
                 this.debugErr("Connect: Error, no slot of name " + target_slot);
@@ -1041,15 +1040,15 @@ export class Node {
      * @returns {boolean} if it was disconnected succesfully
      */
     disconnectOutput(slot: number|string, target_node?: Node): boolean {
-        if (typeof slot == "string") {
+        if (typeof (slot) == "string") {
             slot = this.findOutputSlot(slot);
             if (slot == -1) {
-                this.debugErr("Connect: Error, no slot of name " + slot);
+                this.debugErr("Disconnect error, no slot of name " + slot);
                 return false;
             }
         }
         else if (!this.outputs || slot >= this.outputs.length) {
-            this.debugErr("Connect: Error, slot number not found");
+            this.debugErr("Disconnect error, slot number not found");
             return false;
         }
 
@@ -1104,8 +1103,8 @@ export class Node {
      * @returns {boolean} if it was disconnected succesfully
      */
     disconnectInput(slot: number|string): boolean {
-        //seek for the output slot
-        if (typeof slot == "string") {
+        //find input by name
+        if (typeof (slot) == "string") {
             slot = this.findInputSlot(slot);
             if (slot == -1) {
                 this.debugErr("Connect: Error, no slot of name " + slot);
@@ -1122,6 +1121,7 @@ export class Node {
             return false;
         let link_id = this.inputs[slot].link;
         this.inputs[slot].link = null;
+
 
         //remove other side
         let link_info = this.engine.links[link_id];
@@ -1146,8 +1146,11 @@ export class Node {
         }
 
         this.setDirtyCanvas(false, true);
-        if (this.engine)
-            this.engine.connectionChange(this);
+
+        delete this.engine.links[link_id];
+
+        this.engine.connectionChange(this);
+
         return true;
     }
 
@@ -1342,20 +1345,20 @@ export class Node {
      * @returns {boolean}
      */
     isBackside(): boolean {
-        return (typeof window === 'undefined')
+        return (typeof (window) === 'undefined')
     }
 
-    sendValueToFrontside(val: any) {
+    sendMessageToFrontSide(mess: any) {
         if (this.isBackside() && this.id != -1) {
-            this.engine.socket.emit('node-value-to-frontside',
-                {id: this.id, value: val});
+            this.engine.socket.emit('node-message-to-front-side',
+                {id: this.id, value: mess});
         }
     }
 
-    sendValueToBackside(val: any) {
+    sendMessageToBackSide(mess: any) {
         if (!this.isBackside() && this.id != -1) {
-            this.engine.socket.emit('node-value-to-backside',
-                {id: this.id, value: val});
+            this.engine.socket.emit('node-message-to-back-side',
+                {id: this.id, value: mess});
         }
     }
 }

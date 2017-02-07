@@ -10,7 +10,6 @@ import Utils from  "./utils"
 import {Subgraph} from "./nodes/base"
 
 
-
 //todo
 // if (!(<any>window)) {
 //     let debug = require('debug')('nodes-engine:     ');
@@ -28,10 +27,12 @@ export class NodesEngine {
 
     supported_types = ["number", "string", "boolean"];
 
-    static NodesEngine = 2;
+
     list_of_renderers: Array<Renderer>;
     isRunning: boolean;
     last_node_id: number;
+    static last_container_id: number = 0;
+    static containers: {[id: number]: NodesEngine} = {};
     _nodes: Array<Node> = [];
     _nodes_by_id = {};
     last_link_id: number;
@@ -64,8 +65,8 @@ export class NodesEngine {
     onNodeRemoved: Function;
     onPlayEvent: Function;
     frame: number;
-    private MODULE_NAME = "NodesEngine";
-    container_id: number = 0;
+    private MODULE_NAME = "NODES_ENGINE";
+    container_id: number;
     parent_container_id?: number;
 
 
@@ -82,7 +83,6 @@ export class NodesEngine {
     private onGlobalOutputRemoved: Function;
 
 
-
     constructor() {
         Utils.debug("Engine created", this.MODULE_NAME);
         //todo
@@ -91,9 +91,10 @@ export class NodesEngine {
         //     debug("Nodes engine created");
 
         this.list_of_renderers = null;
+        this.container_id = NodesEngine.last_container_id++;
+        NodesEngine.containers[this.container_id] = this;
         this.clear();
     }
-
 
 
 //used to know which types of connections support this engine (some graphs do not allow certain types)
@@ -428,6 +429,7 @@ export class NodesEngine {
             node.id = this.last_node_id++;
 
         node.engine = this;
+        node.container_id = this.container_id;
 
         this._nodes.push(node);
         this._nodes_by_id[node.id] = node;
@@ -494,7 +496,7 @@ export class NodesEngine {
 
         node.engine = null;
 
-        //remove from renderer render
+        //remove from renderer
         if (this.list_of_renderers) {
             for (let i = 0; i < this.list_of_renderers.length; ++i) {
                 let renderer = this.list_of_renderers[i];
@@ -739,6 +741,7 @@ export class NodesEngine {
             this.onGlobalsChange();
         return true;
     }
+
 //
 //     /**
 //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
@@ -845,6 +848,7 @@ export class NodesEngine {
             frame: this.frame,
             last_node_id: this.last_node_id,
             last_link_id: this.last_link_id,
+            last_container_id: NodesEngine.last_container_id,
             links: Utils.cloneObject(this.links),
 
             config: this.config,

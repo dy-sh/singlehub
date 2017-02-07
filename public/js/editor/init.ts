@@ -4,7 +4,7 @@
 
 import {Nodes, Node} from "../../nodes/nodes"
 // import {Renderer} from "./litegraph-renderer"
-import {engine} from "../../nodes/nodes-engine"
+import {engine, NodesEngine} from "../../nodes/nodes-engine"
 
 import "../../nodes/nodes/base";
 import "../../nodes/nodes/math";
@@ -21,8 +21,10 @@ import {socket} from "./editor-socket"
 // (<any>window).engine = engine;
 (<any>window).engine = engine;
 (<any>window).editor = editor;
-(<any>window).nodes = Nodes;
+(<any>window).Nodes = Nodes;
+(<any>window).NodesEngine = NodesEngine;
 (<any>window).renderer = editor.renderer;
+socket.container_id=editor.renderer.engine.container_id;
 
 window.addEventListener("resize", function () {
     editor.renderer.resize();

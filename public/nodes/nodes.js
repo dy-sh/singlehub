@@ -717,7 +717,7 @@
         connect(slot, target_node, target_slot) {
             target_slot = target_slot || 0;
             //seek for the output slot
-            if (typeof slot == "string") {
+            if (typeof (slot) == "string") {
                 slot = this.findOutputSlot(slot);
                 if (slot == -1) {
                     this.debugErr("Connect error, no slot of name " + slot);
@@ -736,7 +736,7 @@
             if (target_node == this)
                 return false;
             //if( target_node.constructor != Node ) throw ("Node.connect: target_node is not of type Node");
-            if (typeof target_slot == "string") {
+            if (typeof (target_slot) == "string") {
                 target_slot = target_node.findInputSlot(target_slot);
                 if (target_slot == -1) {
                     this.debugErr("Connect: Error, no slot of name " + target_slot);
@@ -796,15 +796,15 @@
          * @returns {boolean} if it was disconnected succesfully
          */
         disconnectOutput(slot, target_node) {
-            if (typeof slot == "string") {
+            if (typeof (slot) == "string") {
                 slot = this.findOutputSlot(slot);
                 if (slot == -1) {
-                    this.debugErr("Connect: Error, no slot of name " + slot);
+                    this.debugErr("Disconnect error, no slot of name " + slot);
                     return false;
                 }
             }
             else if (!this.outputs || slot >= this.outputs.length) {
-                this.debugErr("Connect: Error, slot number not found");
+                this.debugErr("Disconnect error, slot number not found");
                 return false;
             }
             //get output slot
@@ -851,8 +851,8 @@
          * @returns {boolean} if it was disconnected succesfully
          */
         disconnectInput(slot) {
-            //seek for the output slot
-            if (typeof slot == "string") {
+            //find input by name
+            if (typeof (slot) == "string") {
                 slot = this.findInputSlot(slot);
                 if (slot == -1) {
                     this.debugErr("Connect: Error, no slot of name " + slot);
@@ -888,8 +888,8 @@
                 }
             }
             this.setDirtyCanvas(false, true);
-            if (this.engine)
-                this.engine.connectionChange(this);
+            delete this.engine.links[link_id];
+            this.engine.connectionChange(this);
             return true;
         }
         //
@@ -1051,16 +1051,16 @@
          * @returns {boolean}
          */
         isBackside() {
-            return (typeof window === 'undefined');
+            return (typeof (window) === 'undefined');
         }
-        sendValueToFrontside(val) {
+        sendMessageToFrontSide(mess) {
             if (this.isBackside() && this.id != -1) {
-                this.engine.socket.emit('node-value-to-frontside', { id: this.id, value: val });
+                this.engine.socket.emit('node-message-to-front-side', { id: this.id, value: mess });
             }
         }
-        sendValueToBackside(val) {
+        sendMessageToBackSide(mess) {
             if (!this.isBackside() && this.id != -1) {
-                this.engine.socket.emit('node-value-to-backside', { id: this.id, value: val });
+                this.engine.socket.emit('node-message-to-back-side', { id: this.id, value: mess });
             }
         }
     }

@@ -30,14 +30,15 @@
             this.links = {};
             this.global_inputs = {};
             this.global_outputs = {};
-            this.MODULE_NAME = "NodesEngine";
-            this.container_id = 0;
+            this.MODULE_NAME = "NODES_ENGINE";
             utils_1.default.debug("Engine created", this.MODULE_NAME);
             //todo
             // this.debug = config.engine.debugEngine;
             // if (this.debug)
             //     debug("Nodes engine created");
             this.list_of_renderers = null;
+            this.container_id = NodesEngine.last_container_id++;
+            NodesEngine.containers[this.container_id] = this;
             this.clear();
         }
         //used to know which types of connections support this engine (some graphs do not allow certain types)
@@ -313,6 +314,7 @@
             if (node.id == null || node.id == -1)
                 node.id = this.last_node_id++;
             node.engine = this;
+            node.container_id = this.container_id;
             this._nodes.push(node);
             this._nodes_by_id[node.id] = node;
             /*
@@ -360,7 +362,7 @@
             if (node.onRemoved)
                 node.onRemoved();
             node.engine = null;
-            //remove from renderer render
+            //remove from renderer
             if (this.list_of_renderers) {
                 for (let i = 0; i < this.list_of_renderers.length; ++i) {
                     let renderer = this.list_of_renderers[i];
@@ -651,6 +653,7 @@
                 frame: this.frame,
                 last_node_id: this.last_node_id,
                 last_link_id: this.last_link_id,
+                last_container_id: NodesEngine.last_container_id,
                 links: utils_1.default.cloneObject(this.links),
                 config: this.config,
                 nodes: nodes_info
@@ -689,7 +692,8 @@
             return error;
         }
     }
-    NodesEngine.NodesEngine = 2;
+    NodesEngine.last_container_id = 0;
+    NodesEngine.containers = {};
     exports.NodesEngine = NodesEngine;
     exports.engine = new NodesEngine();
 });

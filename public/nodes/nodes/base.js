@@ -72,6 +72,12 @@
     class Subgraph extends nodes_1.Node {
         constructor() {
             super();
+            this.onAdded = function () {
+                this.subgraph.parent_container_id = this.container_id;
+            };
+            this.onRemoved = function () {
+                delete nodes_engine_1.NodesEngine.containers[this.subgraph.container_id];
+            };
             this.getExtraMenuOptions = function (renderer) {
                 let that = this;
                 return [{
@@ -82,8 +88,8 @@
             };
             this.title = "Subgraph";
             this.desc = "Graph inside a node";
-            let that = this;
             this.size = [120, 60];
+            this.bgcolor = nodes_1.Nodes.options.CONTAINER_NODE_BGCOLOR;
             //create inner engine
             this.subgraph = new nodes_engine_1.NodesEngine();
             this.subgraph._subgraph_node = this;
@@ -94,7 +100,6 @@
             this.subgraph.onGlobalOutputAdded = this.onSubgraphNewGlobalOutput.bind(this);
             this.subgraph.onGlobalOutputRenamed = this.onSubgraphRenamedGlobalOutput.bind(this);
             this.subgraph.onGlobalOutputTypeChanged = this.onSubgraphTypeChangeGlobalOutput.bind(this);
-            this.bgcolor = "#940";
         }
         onSubgraphNewGlobalInput(name, type) {
             //add input to the node
@@ -280,41 +285,36 @@
     class Watch extends nodes_1.Node {
         constructor() {
             super();
-            this.onGetValueToFrontside = function (data) {
-                this.properties.value = data.input;
-            };
-            this.onGetValueToBackside = function (data) {
-                console.log(data);
-            };
-            this.onMouseDown = function () {
-                this.sendValueToBackside("test");
-            };
-            this.onDrawBackground = function (ctx) {
-                //show the current value
-                if (this.properties.value) {
-                    if (typeof (this.properties.value) == "number")
-                        this.inputs[0].label = this.properties.value.toFixed(3);
-                    else {
-                        let str = this.properties.value;
-                        if (str && str.length)
-                            str = Array.prototype.slice.call(str).join(",");
-                        this.inputs[0].label = str;
-                    }
-                }
-                else
-                    this.inputs[0].label = "";
+            this.onGetMessageFromBackSide = function (data) {
+                this.properties.value = data.value;
+                this.showValueOnInput(data.value);
             };
             this.title = "Watch";
             this.desc = "Show value of input";
             this.size = [60, 20];
             this.addInput("value", null, { label: "" });
             this.addOutput("value", null, { label: "" });
-            this.properties = { value: "" };
         }
         onExecute() {
-            this.properties.value = this.getInputData(0);
-            this.setOutputData(0, this.properties.value);
-            this.sendValueToFrontside({ input: this.properties.value });
+            let val = this.getInputData(0);
+            this.setOutputData(0, val);
+            this.sendMessageToFrontSide({ value: val });
+        }
+        showValueOnInput(value) {
+            //show the current value
+            if (value) {
+                if (typeof (value) == "number")
+                    this.inputs[0].label = value.toFixed(3);
+                else {
+                    let str = value;
+                    if (str && str.length)
+                        str = Array.prototype.slice.call(str).join(",");
+                    this.inputs[0].label = str;
+                }
+            }
+            else
+                this.inputs[0].label = "";
+            this.setDirtyCanvas(true, false);
         }
     }
     exports.Watch = Watch;

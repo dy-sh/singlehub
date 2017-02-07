@@ -1604,7 +1604,7 @@
                         else
                             start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
                         let color = nodes_1.Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
-                        if (color == null && typeof node.id == "number")
+                        if (color == null && typeof (node.id) == "number")
                             color = nodes_1.Nodes.options.LINK_COLORS[node.id % nodes_1.Nodes.options.LINK_COLORS.length];
                         this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, +i), color);
                     }
@@ -1818,18 +1818,23 @@
                         this.editor.addMiniWindow(200, 200);
                     }
                 });
-                if (nodes_engine_1.engine.parent_container_id) {
-                    options.push(null);
-                    let back_url = "/editor/";
-                    if (nodes_engine_1.engine.parent_container_id != 0)
-                        back_url += "container/" + nodes_engine_1.engine.parent_container_id;
-                    options.push({
-                        content: "Close Container",
-                        callback: function () {
-                            window.location = back_url;
-                        }
-                    });
-                }
+                // if (engine.parent_container_id) {
+                //
+                //     options.push(null);
+                //
+                //     let back_url = "/editor/";
+                //
+                //     if (engine.parent_container_id != 0)
+                //         back_url += "container/" + engine.parent_container_id;
+                //
+                //     options.push({
+                //         content: "Close Container",
+                //         callback: function () {
+                //             (<any>window).location = back_url
+                //         }
+                //     });
+                //
+                // }
                 if (this._engine_stack && this._engine_stack.length > 0)
                     options.push({ content: "Close subgraph", callback: this.closeSubgraph.bind(this) });
             }

@@ -20,8 +20,10 @@
     // (<any>window).engine = engine;
     window.engine = nodes_engine_1.engine;
     window.editor = node_editor_1.editor;
-    window.nodes = nodes_1.Nodes;
+    window.Nodes = nodes_1.Nodes;
+    window.NodesEngine = nodes_engine_1.NodesEngine;
     window.renderer = node_editor_1.editor.renderer;
+    editor_socket_1.socket.container_id = node_editor_1.editor.renderer.engine.container_id;
     window.addEventListener("resize", function () {
         node_editor_1.editor.renderer.resize();
     });

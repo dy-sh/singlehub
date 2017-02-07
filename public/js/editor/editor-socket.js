@@ -22,7 +22,7 @@
             // socket.emit('chat message', "h1");
             //
             // socket.on('connect', function () {
-            //     //todo socket.join(engine.container_id);
+            //     //todo socket.join(editor.renderer.engine.container_id);
             //
             //     if (this.socketConnected == false) {
             //         noty({text: 'Connected to web server.', type: 'alert'});
@@ -42,42 +42,47 @@
             //     this.socketConnected = false;
             // });
             socket.on('node-create', function (n) {
-                let node = nodes_engine_1.engine.getNodeById(n.id);
+                let container = nodes_engine_1.NodesEngine.containers[n.cid];
+                let node = container.getNodeById(n.id);
                 if (node) {
                     utils_1.default.debugErr("Cant create node. Node exist", "Socket");
                     return;
                 }
                 let newNode = nodes_1.Nodes.createNode(n.type);
-                newNode.configure(n);
-                nodes_engine_1.engine.add(newNode);
-                nodes_engine_1.engine.setDirtyCanvas(true, true);
+                newNode.pos = n.pos;
+                //newNode.configure(n);
+                container.add(newNode);
+                container.setDirtyCanvas(true, true);
             });
             socket.on('node-delete', function (n) {
-                let node = nodes_engine_1.engine.getNodeById(n.id);
+                let container = nodes_engine_1.NodesEngine.containers[n.cid];
+                let node = container.getNodeById(n.id);
                 if (!node) {
                     utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
                     return;
                 }
-                nodes_engine_1.engine.remove(node);
-                nodes_engine_1.engine.setDirtyCanvas(true, true);
+                container.remove(node);
+                container.setDirtyCanvas(true, true);
                 //if current container removed
-                if (n.id == nodes_engine_1.engine.container_id) {
-                    window.location = "/editor/";
-                }
+                // if (n.id == editor.renderer.engine.container_id) {
+                //     (<any>window).location = "/editor/";
+                // }
             });
-            socket.on('nodes-delete', function (ids) {
-                for (let id of ids) {
-                    let node = nodes_engine_1.engine.getNodeById(id);
+            socket.on('nodes-delete', function (data) {
+                let container = nodes_engine_1.NodesEngine.containers[data.cid];
+                for (let id of data.nodes) {
+                    let node = container.getNodeById(id);
                     if (!node) {
                         utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
                         return;
                     }
-                    nodes_engine_1.engine.remove(node);
+                    container.remove(node);
                 }
-                nodes_engine_1.engine.setDirtyCanvas(true, true);
+                container.setDirtyCanvas(true, true);
             });
             socket.on('node-update-position', function (n) {
-                let node = nodes_engine_1.engine.getNodeById(n.id);
+                let container = nodes_engine_1.NodesEngine.containers[n.cid];
+                let node = container.getNodeById(n.id);
                 if (node.pos != n.pos) {
                     node.pos = n.pos;
                     node.setDirtyCanvas(true, true);
@@ -90,21 +95,23 @@
                     node.setDirtyCanvas(true, true);
                 }
             });
-            socket.on('node-value-to-frontside', function (n) {
+            socket.on('node-message-to-front-side', function (n) {
                 let node = nodes_engine_1.engine.getNodeById(n.id);
-                if (node.onGetValueToFrontside)
-                    node.onGetValueToFrontside(n.value);
+                if (node.onGetMessageFromBackSide)
+                    node.onGetMessageFromBackSide(n.value);
             });
             socket.on('link-delete', function (l) {
                 let link = nodes_engine_1.engine.links[l.id];
-                let node = nodes_engine_1.engine.getNodeById(link.origin_id);
+                // let node = engine.getNodeById(link.origin_id);
                 let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
-                node.disconnectOutput(link.origin_slot, targetNode);
+                // node.disconnectOutput(link.origin_slot, targetNode);
                 targetNode.disconnectInput(link.target_slot);
             });
             socket.on('link-create', function (link) {
                 let node = nodes_engine_1.engine.getNodeById(link.origin_id);
                 let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
+                // node.disconnectOutput(link.origin_slot, targetNode);
+                // targetNode.disconnectInput(link.target_slot);
                 node.connect(link.origin_slot, targetNode, link.target_slot);
                 //  this.engine.change();
                 nodes_engine_1.engine.change();
@@ -129,7 +136,6 @@
             // socket.on('gateway-disconnected', function () {
             //     noty({text: 'Gateway disconnected!', type: 'error', timeout: false});
             // });
-            this.getNodes();
             // this.getGatewayInfo();
             $("#sendButton").click(function () {
                 //console.log(engine);
@@ -155,16 +161,16 @@
         // }
         getNodes() {
             $.ajax({
-                url: "/api/editor/c/" + nodes_engine_1.engine.container_id,
+                url: "/api/editor/c/" + node_editor_1.editor.renderer.engine.container_id,
                 success: function (nodes) {
                     nodes_engine_1.engine.configure(nodes, false);
                 }
             });
         }
         sendCreateNode(type, position) {
-            let json = JSON.stringify({ type: type, position: position, container: nodes_engine_1.engine.container_id });
+            let json = JSON.stringify({ type: type, position: position, container: node_editor_1.editor.renderer.engine.container_id });
             $.ajax({
-                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
+                url: "/api/editor/c/" + node_editor_1.editor.renderer.engine.container_id + "/n/",
                 contentType: 'application/json',
                 type: 'POST',
                 data: json
@@ -173,7 +179,7 @@
         ;
         sendRemoveNode(node) {
             $.ajax({
-                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/" + node.id,
+                url: "/api/editor/c/" + node_editor_1.editor.renderer.engine.container_id + "/n/" + node.id,
                 type: 'DELETE'
             });
         }
@@ -184,7 +190,7 @@
                 ids.push(n);
             }
             $.ajax({
-                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/n/",
+                url: "/api/editor/c/" + node_editor_1.editor.renderer.engine.container_id + "/n/",
                 type: 'DELETE',
                 contentType: 'application/json',
                 data: JSON.stringify(ids)
@@ -193,7 +199,7 @@
         ;
         sendUpdateNodePosition(node) {
             $.ajax({
-                url: `/api/editor/c/${nodes_engine_1.engine.container_id}/n/${node.id}/position`,
+                url: `/api/editor/c/${node_editor_1.editor.renderer.engine.container_id}/n/${node.id}/position`,
                 contentType: 'application/json',
                 type: 'PUT',
                 data: JSON.stringify({ position: node.pos })
@@ -202,7 +208,7 @@
         ;
         sendUpdateNodeSize(node) {
             $.ajax({
-                url: `/api/editor/c/${nodes_engine_1.engine.container_id}/n/${node.id}/size`,
+                url: `/api/editor/c/${node_editor_1.editor.renderer.engine.container_id}/n/${node.id}/size`,
                 contentType: 'application/json',
                 type: 'PUT',
                 data: JSON.stringify({ size: node.size })
@@ -217,7 +223,7 @@
                 target_slot: target_slot,
             };
             $.ajax({
-                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/l/",
+                url: "/api/editor/c/" + node_editor_1.editor.renderer.engine.container_id + "/l/",
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data)
@@ -226,7 +232,7 @@
         ;
         sendRemoveLink(link) {
             $.ajax({
-                url: "/api/editor/c/" + nodes_engine_1.engine.container_id + "/l/" + link.id,
+                url: "/api/editor/c/" + node_editor_1.editor.renderer.engine.container_id + "/l/" + link.id,
                 type: 'DELETE'
             });
         }
@@ -314,7 +320,7 @@
         }
         getLinks() {
             $.ajax({
-                url: "/api/editor/links/" + nodes_engine_1.engine.container_id,
+                url: "/api/editor/links/" + node_editor_1.editor.renderer.engine.container_id,
                 success: function (links) {
                     this.onReturnLinks(links);
                 }

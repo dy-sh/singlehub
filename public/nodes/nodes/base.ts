@@ -85,8 +85,10 @@ export class Subgraph extends Node {
         this.title = "Subgraph";
         this.desc = "Graph inside a node";
 
-        let that = this;
         this.size = [120, 60];
+
+        this.bgcolor = Nodes.options.CONTAINER_NODE_BGCOLOR;
+
 
         //create inner engine
         this.subgraph = new NodesEngine();
@@ -100,10 +102,17 @@ export class Subgraph extends Node {
         this.subgraph.onGlobalOutputAdded = this.onSubgraphNewGlobalOutput.bind(this);
         this.subgraph.onGlobalOutputRenamed = this.onSubgraphRenamedGlobalOutput.bind(this);
         this.subgraph.onGlobalOutputTypeChanged = this.onSubgraphTypeChangeGlobalOutput.bind(this);
-
-
-        this.bgcolor = "#940";
     }
+
+
+    onAdded = function () {
+        this.subgraph.parent_container_id = this.container_id;
+    };
+
+    onRemoved = function () {
+        delete NodesEngine.containers[this.subgraph.container_id];
+    };
+
 
     onSubgraphNewGlobalInput(name, type) {
         //add input to the node
@@ -197,6 +206,8 @@ export class Subgraph extends Node {
         node.configure(data);
         return node;
     }
+
+
 }
 
 
@@ -342,41 +353,35 @@ export class Watch extends Node {
         this.size = [60, 20];
         this.addInput("value", null, {label: ""});
         this.addOutput("value", null, {label: ""});
-        this.properties = {value: ""};
     }
 
     onExecute() {
-        this.properties.value = this.getInputData(0);
-        this.setOutputData(0, this.properties.value);
-        this.sendValueToFrontside({input:this.properties.value});
+        let val = this.getInputData(0);
+        this.setOutputData(0, val);
+        this.sendMessageToFrontSide({value: val});
     }
 
-    onGetValueToFrontside=function (data) {
-        this.properties.value = data.input;
+    onGetMessageFromBackSide = function (data) {
+        this.properties.value = data.value;
+        this.showValueOnInput(data.value);
     };
 
-    onGetValueToBackside=function (data) {
-        console.log(data);
-    };
-
-    onMouseDown=function () {
-        this.sendValueToBackside("test");
-    };
-
-    onDrawBackground = function (ctx) {
+    showValueOnInput(value: any) {
         //show the current value
-        if (this.properties.value) {
-            if (typeof (this.properties.value) == "number")
-                this.inputs[0].label = this.properties.value.toFixed(3);
+        if (value) {
+            if (typeof (value) == "number")
+                this.inputs[0].label = value.toFixed(3);
             else {
-                let str = this.properties.value;
+                let str = value;
                 if (str && str.length) //convert typed to array
                     str = Array.prototype.slice.call(str).join(",");
                 this.inputs[0].label = str;
 
             }
         }
-        else this.inputs[0].label="";
+        else this.inputs[0].label = "";
+
+        this.setDirtyCanvas(true, false);
     }
 }
 

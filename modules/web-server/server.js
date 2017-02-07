@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', "../../routes/editor-io"], factory);
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', 'chalk', "../../routes/editor-io"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -17,6 +17,11 @@
     const bodyParser = require('body-parser');
     const http = require('http');
     const debug = require('debug');
+    const chalk = require('chalk');
+    const log = console.log;
+    const error = function (txt) {
+        console.log(chalk.bold.red(txt));
+    };
     const editor_io_1 = require("../../routes/editor-io");
     let config = require('./../../config.json');
     class Server {
@@ -46,6 +51,18 @@
             this.express.use(express.static(path.join(this.__rootdirname, 'public')));
         }
         routes() {
+            //api console logger
+            this.express.use('/api/', function (req, res, next) {
+                var send = res.send;
+                res.send = function (body) {
+                    if (res.statusCode == 200)
+                        log(body);
+                    else
+                        error(body);
+                    send.call(this, body);
+                };
+                next();
+            });
             this.express.use('/', require('./../../routes/first-run'));
             this.express.use('/', require('./../../routes/index'));
             this.express.use('/dashboard', require('./../../routes/dashboard'));
@@ -56,7 +73,7 @@
         }
         handeErrors() {
             // // catch 404 and forward to error handler
-            // app.use(function (req, res, next) {
+            // this.express.use(function (req, res, next) {
             //     let err = new Error('Not Found');
             //     (<any>err).status = 404;
             //     next(err);
@@ -95,7 +112,7 @@
             //     });
             // });
             function normalizePort(val) {
-                let port = (typeof val === 'string') ? parseInt(val, 10) : val;
+                let port = (typeof (val) === 'string') ? parseInt(val, 10) : val;
                 if (isNaN(port))
                     return val;
                 else if (port >= 0)
@@ -107,7 +124,7 @@
             function onError(error) {
                 if (error.syscall !== 'listen')
                     throw error;
-                let bind = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
+                let bind = (typeof (port) === 'string') ? 'Pipe ' + port : 'Port ' + port;
                 switch (error.code) {
                     case 'EACCES':
                         console.error(`${bind} requires elevated privileges`);
@@ -123,7 +140,7 @@
             }
             function onListening() {
                 let addr = that.server.address();
-                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+                let bind = (typeof (addr) === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
                 debug(`Listening on ${bind}`);
             }
         }

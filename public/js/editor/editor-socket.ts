@@ -20,13 +20,13 @@ export class EditorSocket {
         this.engine = engine;
 
         let socket = io();
-        this.socket=socket;
+        this.socket = socket;
 
         // socket.emit('chat message', "h1");
 
         //
         // socket.on('connect', function () {
-        //     //todo socket.join(engine.container_id);
+        //     //todo socket.join(editor.renderer.engine.container_id);
         //
         //     if (this.socketConnected == false) {
         //         noty({text: 'Connected to web server.', type: 'alert'});
@@ -48,54 +48,60 @@ export class EditorSocket {
 
 
         socket.on('node-create', function (n) {
-            let node = engine.getNodeById(n.id);
+            let container = NodesEngine.containers[n.cid];
+
+            let node = container.getNodeById(n.id);
             if (node) {
                 Utils.debugErr("Cant create node. Node exist", "Socket");
                 return;
             }
 
             let newNode = Nodes.createNode(n.type);
+            newNode.pos = n.pos;
+            //newNode.configure(n);
 
-            newNode.configure(n);
-
-            engine.add(newNode);
-            engine.setDirtyCanvas(true, true);
+            container.add(newNode);
+            container.setDirtyCanvas(true, true);
         });
 
         socket.on('node-delete', function (n) {
-            let node = engine.getNodeById(n.id);
+            let container = NodesEngine.containers[n.cid];
+
+            let node = container.getNodeById(n.id);
             if (!node) {
                 Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
                 return;
             }
 
-            engine.remove(node);
-            engine.setDirtyCanvas(true, true);
+            container.remove(node);
+            container.setDirtyCanvas(true, true);
 
             //if current container removed
-            if (n.id == engine.container_id) {
-                (<any>window).location = "/editor/";
-            }
+            // if (n.id == editor.renderer.engine.container_id) {
+            //     (<any>window).location = "/editor/";
+            // }
         });
 
 
-        socket.on('nodes-delete', function (ids) {
-
-            for (let id of ids) {
-                let node = engine.getNodeById(id);
+        socket.on('nodes-delete', function (data) {
+            let container = NodesEngine.containers[data.cid];
+            for (let id of data.nodes) {
+                let node = container.getNodeById(id);
                 if (!node) {
                     Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
                     return;
                 }
 
-                engine.remove(node);
+                container.remove(node);
             }
 
-            engine.setDirtyCanvas(true, true);
+            container.setDirtyCanvas(true, true);
         });
 
         socket.on('node-update-position', function (n) {
-            let node = engine.getNodeById(n.id);
+            let container = NodesEngine.containers[n.cid];
+
+            let node = container.getNodeById(n.id);
             if (node.pos != n.pos) {
                 node.pos = n.pos;
                 node.setDirtyCanvas(true, true);
@@ -110,25 +116,29 @@ export class EditorSocket {
             }
         });
 
-        socket.on('node-value-to-frontside', function (n) {
+        socket.on('node-message-to-front-side', function (n) {
             let node = engine.getNodeById(n.id);
-            if (node.onGetValueToFrontside)
-                node.onGetValueToFrontside(n.value);
+            if (node.onGetMessageFromBackSide)
+                node.onGetMessageFromBackSide(n.value);
         });
 
 
         socket.on('link-delete', function (l) {
             let link = engine.links[l.id];
 
-            let node = engine.getNodeById(link.origin_id);
+            // let node = engine.getNodeById(link.origin_id);
             let targetNode = engine.getNodeById(link.target_id);
-            node.disconnectOutput(link.origin_slot, targetNode);
+            // node.disconnectOutput(link.origin_slot, targetNode);
             targetNode.disconnectInput(link.target_slot);
         });
 
         socket.on('link-create', function (link) {
             let node = engine.getNodeById(link.origin_id);
             let targetNode = engine.getNodeById(link.target_id);
+
+            // node.disconnectOutput(link.origin_slot, targetNode);
+            // targetNode.disconnectInput(link.target_slot);
+
             node.connect(link.origin_slot, targetNode, link.target_slot);
             //  this.engine.change();
 
@@ -159,7 +169,6 @@ export class EditorSocket {
         // });
 
 
-        this.getNodes();
         // this.getGatewayInfo();
 
 
@@ -195,7 +204,7 @@ export class EditorSocket {
 
     getNodes(): void {
         $.ajax({
-            url: "/api/editor/c/" + engine.container_id,
+            url: "/api/editor/c/" + editor.renderer.engine.container_id,
             success: function (nodes) {
                 engine.configure(nodes, false)
             }
@@ -204,9 +213,9 @@ export class EditorSocket {
 
 
     sendCreateNode(type: string, position: [number, number]): void {
-        let json = JSON.stringify({type: type, position: position, container: engine.container_id});
+        let json = JSON.stringify({type: type, position: position, container: editor.renderer.engine.container_id});
         $.ajax({
-            url: "/api/editor/c/" + engine.container_id + "/n/",
+            url: "/api/editor/c/" + editor.renderer.engine.container_id + "/n/",
             contentType: 'application/json',
             type: 'POST',
             data: json
@@ -216,7 +225,7 @@ export class EditorSocket {
 
     sendRemoveNode(node: Node): void {
         $.ajax({
-            url: "/api/editor/c/" + engine.container_id + "/n/" + node.id,
+            url: "/api/editor/c/" + editor.renderer.engine.container_id + "/n/" + node.id,
             type: 'DELETE'
         })
     };
@@ -229,7 +238,7 @@ export class EditorSocket {
         }
 
         $.ajax({
-            url: "/api/editor/c/" + engine.container_id + "/n/",
+            url: "/api/editor/c/" + editor.renderer.engine.container_id + "/n/",
             type: 'DELETE',
             contentType: 'application/json',
             data: JSON.stringify(ids)
@@ -238,7 +247,7 @@ export class EditorSocket {
 
     sendUpdateNodePosition(node: Node): void {
         $.ajax({
-            url: `/api/editor/c/${engine.container_id}/n/${node.id}/position`,
+            url: `/api/editor/c/${editor.renderer.engine.container_id}/n/${node.id}/position`,
             contentType: 'application/json',
             type: 'PUT',
             data: JSON.stringify({position: node.pos})
@@ -247,7 +256,7 @@ export class EditorSocket {
 
     sendUpdateNodeSize(node: Node): void {
         $.ajax({
-            url: `/api/editor/c/${engine.container_id}/n/${node.id}/size`,
+            url: `/api/editor/c/${editor.renderer.engine.container_id}/n/${node.id}/size`,
             contentType: 'application/json',
             type: 'PUT',
             data: JSON.stringify({size: node.size})
@@ -264,7 +273,7 @@ export class EditorSocket {
         };
 
         $.ajax({
-            url: "/api/editor/c/" + engine.container_id + "/l/",
+            url: "/api/editor/c/" + editor.renderer.engine.container_id + "/l/",
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data)
@@ -274,7 +283,7 @@ export class EditorSocket {
 
     sendRemoveLink(link: Link): void {
         $.ajax({
-            url: "/api/editor/c/" + engine.container_id + "/l/" + link.id,
+            url: "/api/editor/c/" + editor.renderer.engine.container_id + "/l/" + link.id,
             type: 'DELETE'
         })
     };
@@ -391,7 +400,7 @@ export class EditorSocket {
     getLinks(): void {
 
         $.ajax({
-            url: "/api/editor/links/" + engine.container_id,
+            url: "/api/editor/links/" + editor.renderer.engine.container_id,
             success: function (links) {
                 this.onReturnLinks(links);
             }

@@ -22,13 +22,13 @@
                 // socket.on('test message', function (msg) {
                 //     io.emit('test message', msg + "2");
                 // });
-                socket.on('node-value-to-backside', function (n) {
+                socket.on('node-message-to-back-side', function (n) {
                     let node = nodes_engine_1.engine.getNodeById(n.id);
                     if (!node) {
-                        utils_1.default.debugErr("Cant get node message from front-side. Node does not exist", "SOCKET");
+                        utils_1.default.debugErr("Cant get node message from front-side. Node id does not exist", "SOCKET");
                         return;
                     }
-                    node.onGetValueToBackside(n.value);
+                    node.onGetMessageFromFrontSide(n.value);
                 });
             });
         }

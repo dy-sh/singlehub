@@ -12,6 +12,11 @@ import * as bodyParser from 'body-parser';
 
 import * as http from 'http';
 import * as debug from 'debug';
+import * as chalk from 'chalk';
+const log = console.log;
+const error = function (txt) {
+    console.log(chalk.bold.red(txt))
+};
 
 import {NodesServerSocket} from "../../routes/editor-io"
 
@@ -56,6 +61,19 @@ class Server {
     }
 
     private routes() {
+        //api console logger
+        this.express.use('/api/', function (req, res, next) {
+            var send = res.send;
+            (<any>res).send = function (body) {
+                if (res.statusCode == 200)
+                    log(body);
+                else
+                    error(body);
+
+                send.call(this, body);
+            };
+            next();
+        });
         this.express.use('/', require('./../../routes/first-run'));
         this.express.use('/', require('./../../routes/index'));
         this.express.use('/dashboard', require('./../../routes/dashboard'));
@@ -67,7 +85,7 @@ class Server {
 
     private handeErrors() {
         // // catch 404 and forward to error handler
-        // app.use(function (req, res, next) {
+        // this.express.use(function (req, res, next) {
         //     let err = new Error('Not Found');
         //     (<any>err).status = 404;
         //     next(err);
@@ -113,7 +131,7 @@ class Server {
         // });
 
         function normalizePort(val: number|string): number|string|boolean {
-            let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
+            let port: number = (typeof (val) === 'string') ? parseInt(val, 10) : val;
             if (isNaN(port)) return val;
             else if (port >= 0) return port;
             else return false;
@@ -123,7 +141,7 @@ class Server {
 
         function onError(error: NodeJS.ErrnoException): void {
             if (error.syscall !== 'listen') throw error;
-            let bind = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
+            let bind = (typeof (port) === 'string') ? 'Pipe ' + port : 'Port ' + port;
             switch (error.code) {
                 case 'EACCES':
                     console.error(`${bind} requires elevated privileges`);
@@ -140,7 +158,7 @@ class Server {
 
         function onListening(): void {
             let addr = that.server.address();
-            let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+            let bind = (typeof (addr) === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
             debug(`Listening on ${bind}`);
         }
     }

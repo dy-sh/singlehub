@@ -5,21 +5,21 @@
 import * as express from 'express';
 let router = express.Router();
 
-import {engine} from "../public/nodes/nodes-engine"
+import {engine, NodesEngine} from "../public/nodes/nodes-engine"
 import {server} from "../modules/web-server/server"
 import {Nodes, Link} from "../public/nodes/nodes";
 import Utils from "../public/nodes/utils";
 
-let MODULE_NAME = "Socket";
+let MODULE_NAME = "SOCKET";
 
 
-setInterval(updateActiveNodes,100);
+setInterval(updateActiveNodes, 100);
 
-function updateActiveNodes(){
-    let activeNodesIds=[];
-    for (let node of engine._nodes){
-        if (node.isActive){
-            node.isActive=false;
+function updateActiveNodes() {
+    let activeNodesIds = [];
+    for (let node of engine._nodes) {
+        if (node.isActive) {
+            node.isActive = false;
             activeNodesIds.push(node.id);
         }
     }
@@ -63,7 +63,11 @@ router.post('/c/import', function (req, res) {
  * Create node
  */
 router.post('/c/:cid/n/', function (req, res) {
-    let cont = req.params.cid;
+    let container = NodesEngine.containers[req.params.cid];
+    if (!container) {
+        // Utils.debugErr("Cant create node. Container not found.", MODULE_NAME);
+        return res.status(404).send(MODULE_NAME+": Cant create node. Container not found.");
+    }
 
     let node = Nodes.createNode(req.body.type);
     if (!node) {
@@ -72,11 +76,15 @@ router.post('/c/:cid/n/', function (req, res) {
         return;
     }
     node.pos = req.body.position;
-    engine.add(node);
+
+
+
+    NodesEngine.containers[cid].add(node);
 
 
     server.socket.io.emit('node-create', {
         id: node.id,
+        cid: cid,
         type: node.type,
         pos: node.pos
     });
@@ -90,10 +98,16 @@ router.post('/c/:cid/n/', function (req, res) {
  * Delete node
  */
 router.delete('/c/:cid/n/:id', function (req, res) {
-    let cont = req.params.cid;
+    let cid = req.params.cid;
     let id = req.params.id;
 
-    let node = engine.getNodeById(id);
+    if (!NodesEngine.containers[cid]) {
+        Utils.debugErr("Cant delete node. Container not found.", MODULE_NAME);
+        res.status(404).send("Cant delete node. Container not found.");
+        return;
+    }
+
+    let node = NodesEngine.containers[cid].getNodeById(id);
     if (!node) {
         Utils.debugErr("Cant delete node. Node id does not exist.", MODULE_NAME);
         res.status(404).send("Cant delete node. Node id does not exist.");
@@ -101,10 +115,11 @@ router.delete('/c/:cid/n/:id', function (req, res) {
     }
     //let node = engine._nodes.find(n => n.id === id);
 
-    engine.remove(node);
+    NodesEngine.containers[cid].remove(node);
 
     server.socket.io.emit('node-delete', {
         id: node.id,
+        cid: cid,
         container: engine.container_id
     });
 
@@ -117,7 +132,7 @@ router.delete('/c/:cid/n/:id', function (req, res) {
  * Delete nodes
  */
 router.delete('/c/:cid/n/', function (req, res) {
-    let cont = req.params.cid;
+    let cid = req.params.cid;
     let ids = req.body;
 
     for (let id of ids) {
@@ -133,7 +148,7 @@ router.delete('/c/:cid/n/', function (req, res) {
         engine.remove(node);
     }
 
-    server.socket.io.emit('nodes-delete', ids);
+    server.socket.io.emit('nodes-delete', {nodes:ids,cid:cid});
 
     Utils.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
     res.send("Nodes deleted: " + JSON.stringify(ids));
@@ -190,27 +205,41 @@ router.post('/c/:cid/l/', function (req, res) {
     let cont = req.params.cid;
     let link: Link = req.body;
 
-    let node1=engine.getNodeById(link.origin_id);
-    let node2=engine.getNodeById(link.target_id);
+    let node = engine.getNodeById(link.origin_id);
+    let targetNode = engine.getNodeById(link.target_id);
 
-    // let input = node2.getInputInfo(0);
+    if (!node) {
+        Utils.debugErr("Cant create link. Origin node id does not exist.", MODULE_NAME);
+        res.status(404).send("Cant create link. Origin node id does not exist.");
+        return;
+    }
+    if (!targetNode) {
+        Utils.debugErr("Cant create link. Target node id does not exist.", MODULE_NAME);
+        res.status(404).send("Cant create link. Target node id does not exist.");
+        return;
+    }
+
+    // let input = targetNode.getInputInfo(0);
     //prevent connection of different types
     // if (input && !input.link && input.type == this.connecting_output.type) { //toLowerCase missing
 
     //if user drag to node instead of slot
-    if(link.target_slot==-1){
+    if (link.target_slot == -1) {
         //todo find free input
-        let input = node2.getInputInfo(0);
+        let input = targetNode.getInputInfo(0);
         if (input == null) {
             //no inputs
             Utils.debugErr("Cant create link. No free inputs.", MODULE_NAME);
             res.status(404).send("Cant create link. No free inputs.");
             return;
         }
-        link.target_slot=0;
+        link.target_slot = 0;
     }
 
-    node1.connect(link.origin_slot, node2, link.target_slot);
+    // node.disconnectOutput(link.origin_slot, targetNode);
+    // targetNode.disconnectInput(link.target_slot);
+
+    node.connect(link.origin_slot, targetNode, link.target_slot);
 
     server.socket.io.emit('link-create', req.body);
 
@@ -241,7 +270,7 @@ router.delete('/c/:cid/l/:id', function (req, res) {
         return;
     }
 
-    node.disconnectOutput(link.origin_slot, targetNode);
+    // node.disconnectOutput(link.origin_slot, targetNode);
     targetNode.disconnectInput(link.target_slot);
 
 
@@ -251,7 +280,7 @@ router.delete('/c/:cid/l/:id', function (req, res) {
     });
 
     Utils.debug("Link deleted");
-    res.send("Link deleted" );
+    res.send("Link deleted");
 });
 
 
