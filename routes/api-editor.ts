@@ -87,33 +87,20 @@ router.post('/c/:cid/n/', function (req, res) {
  * Delete node
  */
 router.delete('/c/:cid/n/:id', function (req, res) {
-    let cid = req.params.cid;
-    let id = req.params.id;
+    let container = NodesEngine.containers[req.params.cid];
+    if (!container) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
 
-    if (!NodesEngine.containers[cid]) {
-        Utils.debugErr("Cant delete node. Container not found.", MODULE_NAME);
-        res.status(404).send("Cant delete node. Container not found.");
-        return;
-    }
+    let node = container.getNodeById(req.params.id);
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.id}] not found.`);
 
-    let node = NodesEngine.containers[cid].getNodeById(id);
-    if (!node) {
-        Utils.debugErr("Cant delete node. Node id does not exist.", MODULE_NAME);
-        res.status(404).send("Cant delete node. Node id does not exist.");
-        return;
-    }
-    //let node = engine._nodes.find(n => n.id === id);
-
-    NodesEngine.containers[cid].remove(node);
+    container.remove(node);
 
     server.socket.io.emit('node-delete', {
-        id: node.id,
-        cid: cid,
-        container: engine.container_id
+        id: req.params.id,
+        cid: req.params.cid,
     });
 
-    Utils.debug("Node deleted: " + node.type);
-    res.send("Node deleted: " + node.type);
+    res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.id}]`);
 });
 
 
