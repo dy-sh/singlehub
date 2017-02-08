@@ -125,7 +125,7 @@ Nodes.registerNodeType("debug/watch", Watch);
 
 //Container: a node that contains a engine
 export class Container extends Node {
-    subgraph: NodesEngine;
+    container_engine: NodesEngine;
 
     constructor() {
         super();
@@ -139,26 +139,26 @@ export class Container extends Node {
 
 
         //create inner engine
-        this.subgraph = new NodesEngine();
-        this.subgraph._container_node = this;
-        this.subgraph._is_container = true;
+        this.container_engine = new NodesEngine();
+        this.container_engine._container_node = this;
+        this.container_engine._is_container = true;
 
-        this.subgraph.onContainerInputAdded = this.onContainerInputAdded.bind(this);
-        this.subgraph.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
-        this.subgraph.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
+        this.container_engine.onContainerInputAdded = this.onContainerInputAdded.bind(this);
+        this.container_engine.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
+        this.container_engine.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
 
-        this.subgraph.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
-        this.subgraph.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
-        this.subgraph.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
+        this.container_engine.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
+        this.container_engine.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
+        this.container_engine.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
     }
 
 
     onAdded = function () {
-        this.subgraph.parent_container_id = this.container_id;
+        this.container_engine.parent_container_id = this.container_id;
     };
 
     onRemoved = function () {
-        delete NodesEngine.containers[this.subgraph.container_id];
+        delete NodesEngine.containers[this.container_engine.container_id];
     };
 
 
@@ -208,40 +208,40 @@ export class Container extends Node {
         let that = this;
         return [{
             content: "Open", callback: function () {
-                renderer.openSubgraph(that.subgraph);
+                renderer.openContainer(that);
             }
         }];
     }
 
     onExecute() {
-        //send inputs to subgraph global inputs
+        //send inputs to container_engine global inputs
         if (this.inputs)
             for (let i = 0; i < this.inputs.length; i++) {
                 let input = this.inputs[i];
                 let value = this.getInputData(i);
-                this.subgraph.setGlobalInputData(input.name, value);
+                this.container_engine.setGlobalInputData(input.name, value);
             }
 
         //execute
-        this.subgraph.runStep();
+        this.container_engine.runStep();
 
-        //send subgraph global outputs to outputs
+        //send container_engine global outputs to outputs
         if (this.outputs)
             for (let i = 0; i < this.outputs.length; i++) {
                 let output = this.outputs[i];
-                let value = this.subgraph.getGlobalOutputData(output.name);
+                let value = this.container_engine.getGlobalOutputData(output.name);
                 this.setOutputData(i, value);
             }
     }
 
     configure(o) {
         Node.prototype.configure.call(this, o);
-        //this.subgraph.configure(o.engine);
+        //this.container_engine.configure(o.engine);
     }
 
     serialize() {
         let data = Node.prototype.serialize.call(this);
-        data.subgraph = this.subgraph.serialize();
+        data.container_engine = this.container_engine.serialize();
         return data;
     }
 

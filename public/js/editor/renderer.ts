@@ -9,6 +9,7 @@ import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {NodeEditor, editor} from "./node-editor";
 import {EditorSocket} from "./editor-socket";
 import Utils from "../../nodes/utils";
+import {Container} from "../../nodes/nodes/base";
 
 interface IgetMenuOptions {
     (): Array<any>;
@@ -217,10 +218,11 @@ export class Renderer {
     }
 
     /**
-     * Opens a engine contained inside a node in the current engine
-     * @param engine
+     * Open container
+     * @param container node
      */
-    openSubgraph(engine: NodesEngine): void {
+    openContainer(container: Container): void {
+        let engine = container.container_engine;
         if (!engine)
             throw ("engine cannot be null");
 
@@ -240,9 +242,9 @@ export class Renderer {
     }
 
     /**
-     * Closes a subgraph contained inside a node
+     * Close container
      */
-    closeSubgraph(): void {
+    closeContainer(): void {
         if (!this._engine_stack || this._engine_stack.length == 0)
             return;
         let engine = this._engine_stack.pop();
@@ -2319,7 +2321,7 @@ export class Renderer {
 
 
             if (this._engine_stack && this._engine_stack.length > 0)
-                options.push({content: "Close subgraph", callback: this.closeSubgraph.bind(this)});
+                options.push({content: "Close Container", callback: this.closeContainer.bind(this)});
 
         }
 

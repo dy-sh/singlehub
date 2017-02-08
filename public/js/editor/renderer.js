@@ -101,10 +101,11 @@
             this.setDirty(true, true);
         }
         /**
-         * Opens a engine contained inside a node in the current engine
-         * @param engine
+         * Open container
+         * @param container node
          */
-        openSubgraph(engine) {
+        openContainer(container) {
+            let engine = container.container_engine;
             if (!engine)
                 throw ("engine cannot be null");
             if (this.engine == engine)
@@ -119,9 +120,9 @@
             this.setDirty(true, true);
         }
         /**
-         * Closes a subgraph contained inside a node
+         * Close container
          */
-        closeSubgraph() {
+        closeContainer() {
             if (!this._engine_stack || this._engine_stack.length == 0)
                 return;
             let engine = this._engine_stack.pop();
@@ -1836,7 +1837,7 @@
                 //
                 // }
                 if (this._engine_stack && this._engine_stack.length > 0)
-                    options.push({ content: "Close subgraph", callback: this.closeSubgraph.bind(this) });
+                    options.push({ content: "Close Container", callback: this.closeContainer.bind(this) });
             }
             if (this.getExtraMenuOptions) {
                 let extra = this.getExtraMenuOptions(this);
