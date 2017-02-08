@@ -51,26 +51,20 @@
      */
     router.post('/c/:cid/n/', function (req, res) {
         let container = nodes_engine_1.NodesEngine.containers[req.params.cid];
-        if (!container) {
-            // Utils.debugErr("Cant create node. Container not found.", MODULE_NAME);
-            return res.status(404).send(MODULE_NAME + ": Cant create node. Container not found.");
-        }
+        if (!container)
+            return res.status(404).send(`${MODULE_NAME}: Cant create node. Container id [${req.params.cid}] not found.`);
         let node = nodes_1.Nodes.createNode(req.body.type);
-        if (!node) {
-            utils_1.default.debugErr("Cant create node. Check node type.", MODULE_NAME);
-            res.status(404).send("Cant create node. Check node type.");
-            return;
-        }
+        if (!node)
+            return res.status(404).send(`${MODULE_NAME}: Cant create node. Node type [${req.body.type}] not found.`);
         node.pos = req.body.position;
-        nodes_engine_1.NodesEngine.containers[cid].add(node);
+        container.add(node);
         server_1.server.socket.io.emit('node-create', {
             id: node.id,
-            cid: cid,
+            cid: req.params.cid,
             type: node.type,
             pos: node.pos
         });
-        utils_1.default.debug("New node created: " + node.type);
-        res.send("New node created: " + node.type);
+        res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.id}]`);
     });
     /**
      * Delete node

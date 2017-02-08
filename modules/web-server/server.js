@@ -18,9 +18,11 @@
     const http = require('http');
     const debug = require('debug');
     const chalk = require('chalk');
-    const log = console.log;
+    const log = function (txt) {
+        console.log(chalk.green(txt));
+    };
     const error = function (txt) {
-        console.log(chalk.bold.red(txt));
+        console.log(chalk.red(txt));
     };
     const editor_io_1 = require("../../routes/editor-io");
     let config = require('./../../config.json');

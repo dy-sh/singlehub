@@ -13,9 +13,11 @@ import * as bodyParser from 'body-parser';
 import * as http from 'http';
 import * as debug from 'debug';
 import * as chalk from 'chalk';
-const log = console.log;
+const log = function (txt) {
+    console.log(chalk.green(txt))
+};
 const error = function (txt) {
-    console.log(chalk.bold.red(txt))
+    console.log(chalk.red(txt))
 };
 
 import {NodesServerSocket} from "../../routes/editor-io"

@@ -64,33 +64,22 @@ router.post('/c/import', function (req, res) {
  */
 router.post('/c/:cid/n/', function (req, res) {
     let container = NodesEngine.containers[req.params.cid];
-    if (!container) {
-        // Utils.debugErr("Cant create node. Container not found.", MODULE_NAME);
-        return res.status(404).send(MODULE_NAME+": Cant create node. Container not found.");
-    }
+    if (!container) return res.status(404).send(`${MODULE_NAME}: Cant create node. Container id [${req.params.cid}] not found.`);
 
     let node = Nodes.createNode(req.body.type);
-    if (!node) {
-        Utils.debugErr("Cant create node. Check node type.", MODULE_NAME);
-        res.status(404).send("Cant create node. Check node type.");
-        return;
-    }
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant create node. Node type [${req.body.type}] not found.`);
+
     node.pos = req.body.position;
-
-
-
-    NodesEngine.containers[cid].add(node);
-
+    container.add(node);
 
     server.socket.io.emit('node-create', {
         id: node.id,
-        cid: cid,
+        cid: req.params.cid,
         type: node.type,
         pos: node.pos
     });
 
-    Utils.debug("New node created: " + node.type);
-    res.send("New node created: " + node.type);
+    res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.id}]`);
 });
 
 
@@ -148,7 +137,7 @@ router.delete('/c/:cid/n/', function (req, res) {
         engine.remove(node);
     }
 
-    server.socket.io.emit('nodes-delete', {nodes:ids,cid:cid});
+    server.socket.io.emit('nodes-delete', {nodes: ids, cid: cid});
 
     Utils.debug("Nodes deleted: " + JSON.stringify(ids), MODULE_NAME);
     res.send("Nodes deleted: " + JSON.stringify(ids));
