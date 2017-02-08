@@ -79,7 +79,7 @@ router.post('/c/:cid/n/', function (req, res) {
         pos: node.pos
     });
 
-    res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.id}]`);
+    res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container_id}/${node.id}]`);
 });
 
 
@@ -91,7 +91,7 @@ router.delete('/c/:cid/n/:id', function (req, res) {
     if (!container) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
 
     let node = container.getNodeById(req.params.id);
-    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.id}] not found.`);
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
     container.remove(node);
 
@@ -100,7 +100,7 @@ router.delete('/c/:cid/n/:id', function (req, res) {
         cid: req.params.cid,
     });
 
-    res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.id}]`);
+    res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.container_id}/${node.id}]`);
 });
 
 
@@ -113,7 +113,7 @@ router.delete('/c/:cid/n/', function (req, res) {
 
     for (let id of req.body.ids) {
         let node = engine.getNodeById(id);
-        if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.id}] not found.`);
+        if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
         engine.remove(node);
     }
 
@@ -122,7 +122,7 @@ router.delete('/c/:cid/n/', function (req, res) {
         cid: req.params.cid
     });
 
-    res.send(`${MODULE_NAME}: Node deleted: ids ${JSON.stringify(req.body.ids)}`);
+    res.send(`${MODULE_NAME}: Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
 });
 
 
@@ -134,7 +134,7 @@ router.put('/c/:cid/n/:id/position', function (req, res) {
     if (!container) return res.status(404).send(`${MODULE_NAME}: Cant update node position. Container id [${req.params.cid}] not found.`);
 
     let node = container.getNodeById(req.params.id);
-    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant update node position. Node id [${req.params.id}] not found.`);
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant update node position. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
     node.pos = req.body.position;
 
@@ -143,7 +143,7 @@ router.put('/c/:cid/n/:id/position', function (req, res) {
         cid: req.params.cid,
         pos: node.pos
     });
-    res.send(`${MODULE_NAME}: Node position updated: type [${node.type}] id [${node.id}]`);
+    res.send(`${MODULE_NAME}: Node position updated: type [${node.type}] id [${node.container_id}/${node.id}]`);
 });
 
 /**
@@ -154,7 +154,7 @@ router.put('/c/:cid/n/:id/size', function (req, res) {
     if (!container) return res.status(404).send(`${MODULE_NAME}: Cant update node size. Container id [${req.params.cid}] not found.`);
 
     let node = container.getNodeById(req.params.id);
-    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant update node size. Node id [${req.params.id}] not found.`);
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
     node.size = req.body.size;
 
@@ -163,7 +163,7 @@ router.put('/c/:cid/n/:id/size', function (req, res) {
         cid: req.params.cid,
         size: node.size
     });
-    res.send(`${MODULE_NAME}: Node size updated: type [${node.type}] id [${node.id}]`);
+    res.send(`${MODULE_NAME}: Node size updated: type [${node.type}] id [${node.container_id}/${node.id}]`);
 });
 
 

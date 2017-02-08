@@ -64,7 +64,7 @@
             type: node.type,
             pos: node.pos
         });
-        res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.id}]`);
+        res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container_id}/${node.id}]`);
     });
     /**
      * Delete node
@@ -75,13 +75,13 @@
             return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
         let node = container.getNodeById(req.params.id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.id}] not found.`);
+            return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
         container.remove(node);
         server_1.server.socket.io.emit('node-delete', {
             id: req.params.id,
             cid: req.params.cid,
         });
-        res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.id}]`);
+        res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.container_id}/${node.id}]`);
     });
     /**
      * Delete nodes
@@ -93,14 +93,14 @@
         for (let id of req.body.ids) {
             let node = nodes_engine_1.engine.getNodeById(id);
             if (!node)
-                return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.id}] not found.`);
+                return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
             nodes_engine_1.engine.remove(node);
         }
         server_1.server.socket.io.emit('nodes-delete', {
             nodes: req.body.ids,
             cid: req.params.cid
         });
-        res.send(`${MODULE_NAME}: Node deleted: ids ${JSON.stringify(req.body.ids)}`);
+        res.send(`${MODULE_NAME}: Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
     });
     /**
      * Update node position
@@ -111,14 +111,14 @@
             return res.status(404).send(`${MODULE_NAME}: Cant update node position. Container id [${req.params.cid}] not found.`);
         let node = container.getNodeById(req.params.id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Cant update node position. Node id [${req.params.id}] not found.`);
+            return res.status(404).send(`${MODULE_NAME}: Cant update node position. Node id [${req.params.cid}/${req.params.id}] not found.`);
         node.pos = req.body.position;
         server_1.server.socket.io.emit('node-update-position', {
             id: req.params.id,
             cid: req.params.cid,
             pos: node.pos
         });
-        res.send(`${MODULE_NAME}: Node position updated: type [${node.type}] id [${node.id}]`);
+        res.send(`${MODULE_NAME}: Node position updated: type [${node.type}] id [${node.container_id}/${node.id}]`);
     });
     /**
      * Update node size
@@ -129,14 +129,14 @@
             return res.status(404).send(`${MODULE_NAME}: Cant update node size. Container id [${req.params.cid}] not found.`);
         let node = container.getNodeById(req.params.id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Cant update node size. Node id [${req.params.id}] not found.`);
+            return res.status(404).send(`${MODULE_NAME}: Cant update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
         node.size = req.body.size;
         server_1.server.socket.io.emit('node-update-size', {
             id: req.params.id,
             cid: req.params.cid,
             size: node.size
         });
-        res.send(`${MODULE_NAME}: Node size updated: type [${node.type}] id [${node.id}]`);
+        res.send(`${MODULE_NAME}: Node size updated: type [${node.type}] id [${node.container_id}/${node.id}]`);
     });
     router.post('/nodes/clone/:id', function (req, res) {
     });
