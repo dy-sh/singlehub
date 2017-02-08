@@ -289,180 +289,56 @@ export class EditorSocket {
     };
 
 
-    getGraph(): void {
-
-        $.ajax({
-            url: "/api/editor/graph",
-            success: function (graph) {
-                this.engine.configure(graph);
-            }
-        });
-    }
-
-
-    onReturnNodes(nodes: Array<Node>): void {
-        if (!nodes) return;
-
-        console.log(nodes);
-
-        for (let i = 0; i < nodes.length; i++) {
-            this.createOrUpdateNode(nodes[i]);
-        }
-
-        this.getLinks();
-    }
-
-
-    createOrUpdateNode(node: Node): void {
-
-        let oldNode = this.engine.getNodeById(node.id);
-        if (!oldNode) {
-            //create new
-            let newNode = Nodes.createNode(node.type);
-
-            if (newNode == null) {
-                console.error("Can`t create node of type: [" + node.type + "]");
-                return;
-            }
-
-            newNode.title = node.title;
-
-            newNode.inputs = node.inputs;
-            newNode.outputs = node.outputs;
-            newNode.id = node.id;
-            newNode.properties = node.properties;
-
-            //calculate size
-            if (node.size)
-                newNode.size = node.size;
-            else
-                newNode.size = newNode.computeSize();
-
-            newNode.size[1] = this.calculateNodeMinHeight(newNode);
-
-            //calculate pos
-            if (node.pos)
-                newNode.pos = node.pos;
-            else
-                newNode.pos = [Nodes.options.START_POS, this.findFreeSpaceY(newNode)];
-
-            this.engine.add(newNode);
-        } else {
-            //update
-            oldNode.title = node.title;
-
-            if (node.properties['name'] != null)
-                oldNode.title += " [" + node.properties['name'] + "]";
-
-            if (node.properties['container-name'] != null)
-                oldNode.title = node.properties['container-name'];
-
-            oldNode.inputs = node.inputs;
-            oldNode.outputs = node.outputs;
-            oldNode.id = node.id;
-            oldNode.properties = node.properties;
-
-            //calculate size
-            if (node.size)
-                oldNode.size = node.size;
-            else
-                oldNode.size = oldNode.computeSize();
-
-            oldNode.size[1] = this.calculateNodeMinHeight(oldNode);
-
-            //calculate pos
-
-            if (node.pos) {
-                if (!editor.renderer.node_dragged)
-                    oldNode.pos = node.pos;
-                else if (!editor.renderer.selected_nodes[node.id])
-                    oldNode.pos = node.pos;
-            }
-
-            oldNode.setDirtyCanvas(true, true);
-        }
-    }
-
-
-    getLinks(): void {
-
-        $.ajax({
-            url: "/api/editor/links/" + editor.renderer.engine.container_id,
-            success: function (links) {
-                this.onReturnLinks(links);
-            }
-        });
-    }
-
-
-    onReturnLinks(links: Array<any>): void {
-        //console.log(nodes);
-
-        if (!links) return;
-
-        for (let i = 0; i < links.length; i++) {
-            this.createOrUpdateLink(links[i]);
-        }
-    }
-
-
-    createOrUpdateLink(link: any): void {
-        let target = this.engine.getNodeById(link.target_id);
-        this.engine.getNodeById(link.origin_id)
-            .connect(link.origin_slot, target, link.target_slot);
-
-        // .connect(link.origin_slot, target, link.target_slot, link.id);
-    }
-
-
-    calculateNodeMinHeight(node: Node): number {
-
-        let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
-        if (slotsMax == 0)
-            slotsMax = 1;
-
-        let height = Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
-
-        return height + 5;
-    }
-
-
-    findFreeSpaceY(node: Node): number {
-
-
-        let nodes = this.engine._nodes;
-
-
-        node.pos = [0, 0];
-
-        let result = Nodes.options.START_POS;
-
-
-        for (let i = 0; i < nodes.length; i++) {
-            let needFromY = result;
-            let needToY = result + node.size[1];
-
-            if (node.id == nodes[i].id)
-                continue;
-
-            if (!nodes[i].pos)
-                continue;
-
-            if (nodes[i].pos[0] > Nodes.options.NODE_WIDTH + 20 + Nodes.options.START_POS)
-                continue;
-
-            let occupyFromY = nodes[i].pos[1] - Nodes.options.FREE_SPACE_UNDER;
-            let occupyToY = nodes[i].pos[1] + nodes[i].size[1];
-
-            if (occupyFromY <= needToY && occupyToY >= needFromY) {
-                result = occupyToY + Nodes.options.FREE_SPACE_UNDER;
-                i = -1;
-            }
-        }
-
-        return result;
-
-    }
+    //
+    //
+    // calculateNodeMinHeight(node: Node): number {
+    //
+    //     let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
+    //     if (slotsMax == 0)
+    //         slotsMax = 1;
+    //
+    //     let height = Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
+    //
+    //     return height + 5;
+    // }
+    //
+    //
+    // findFreeSpaceY(node: Node): number {
+    //
+    //
+    //     let nodes = this.engine._nodes;
+    //
+    //
+    //     node.pos = [0, 0];
+    //
+    //     let result = Nodes.options.START_POS;
+    //
+    //
+    //     for (let i = 0; i < nodes.length; i++) {
+    //         let needFromY = result;
+    //         let needToY = result + node.size[1];
+    //
+    //         if (node.id == nodes[i].id)
+    //             continue;
+    //
+    //         if (!nodes[i].pos)
+    //             continue;
+    //
+    //         if (nodes[i].pos[0] > Nodes.options.NODE_WIDTH + 20 + Nodes.options.START_POS)
+    //             continue;
+    //
+    //         let occupyFromY = nodes[i].pos[1] - Nodes.options.FREE_SPACE_UNDER;
+    //         let occupyToY = nodes[i].pos[1] + nodes[i].size[1];
+    //
+    //         if (occupyFromY <= needToY && occupyToY >= needFromY) {
+    //             result = occupyToY + Nodes.options.FREE_SPACE_UNDER;
+    //             i = -1;
+    //         }
+    //     }
+    //
+    //     return result;
+    //
+    // }
 }
 
 export let socket = new EditorSocket();
