@@ -7,7 +7,7 @@ import {Nodes, Node, Link} from "./nodes";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
-import {Subgraph} from "./nodes/base"
+import {Container} from "./nodes/base"
 
 
 //todo
@@ -70,7 +70,7 @@ export class NodesEngine {
     parent_container_id?: number;
 
 
-    _subgraph_node: Subgraph;
+    _subgraph_node: Container;
     _is_subgraph: boolean;
     onGlobalInputAdded: Function;
     onGlobalInputRenamed: Function;

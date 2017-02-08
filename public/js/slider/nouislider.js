@@ -203,7 +203,7 @@
 		return j;
 	}
 
-	// (percentage) Input a value, find where, on a scale of 0-100, it applies.
+	// (percentage) NodeInput a value, find where, on a scale of 0-100, it applies.
 	function toStepping ( xVal, xPct, value ) {
 
 		if ( value >= xVal.slice(-1)[0] ){
@@ -220,7 +220,7 @@
 		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
 
-	// (value) Input a percentage, find where it is on the specified range.
+	// (value) NodeInput a percentage, find where it is on the specified range.
 	function fromStepping ( xVal, xPct, value ) {
 
 		// There is no range group that fits 100

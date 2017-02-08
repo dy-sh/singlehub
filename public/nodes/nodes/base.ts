@@ -35,7 +35,7 @@ export class Console extends Node {
     }
 }
 
-Nodes.registerNodeType("basic/console", Console);
+Nodes.registerNodeType("debug/console", Console);
 
 
 //Constant
@@ -71,18 +71,66 @@ export class Constant extends Node {
 
 
 Nodes.registerNodeType("basic/const", Constant);
-//
 
-//
 
-//Subgraph: a node that contains a engine
-export class Subgraph extends Node {
+
+
+//Watch a value in the editor
+export class Watch extends Node {
+    constructor() {
+        super();
+        this.title = "Watch";
+        this.desc = "Show value of input";
+        this.size = [60, 20];
+        this.addInput("value", null, {label: ""});
+        this.addOutput("value", null, {label: ""});
+    }
+
+    onExecute() {
+        let val = this.getInputData(0);
+        this.setOutputData(0, val);
+        this.sendMessageToFrontSide({value: val});
+    }
+
+    onGetMessageFromBackSide = function (data) {
+        this.properties.value = data.value;
+        this.showValueOnInput(data.value);
+    };
+
+    showValueOnInput(value: any) {
+        //show the current value
+        if (value) {
+            if (typeof (value) == "number")
+                this.inputs[0].label = value.toFixed(3);
+            else {
+                let str = value;
+                if (str && str.length) //convert typed to array
+                    str = Array.prototype.slice.call(str).join(",");
+                this.inputs[0].label = str;
+
+            }
+        }
+        else this.inputs[0].label = "";
+
+        this.setDirtyCanvas(true, false);
+    }
+}
+
+
+Nodes.registerNodeType("debug/watch", Watch);
+
+
+
+
+
+//Container: a node that contains a engine
+export class Container extends Node {
     subgraph: NodesEngine;
 
     constructor() {
         super();
 
-        this.title = "Subgraph";
+        this.title = "Container";
         this.desc = "Graph inside a node";
 
         this.size = [120, 60];
@@ -211,16 +259,16 @@ export class Subgraph extends Node {
 }
 
 
-Nodes.registerNodeType("engine/subgraph", Subgraph);
+Nodes.registerNodeType("engine/subgraph", Container);
 
 
-//Input for a subgraph
-export class GlobalInput extends Node {
+//NodeInput for a container
+export class Input extends Node {
     constructor() {
         super();
 
         this.title = "Input";
-        this.desc = "Input of the engine";
+        this.desc = "Input of the container";
 
         //random name to avoid problems with other outputs when added
         let input_name = "input_" + (Math.random() * 1000).toFixed();
@@ -281,15 +329,15 @@ export class GlobalInput extends Node {
 }
 
 
-Nodes.registerNodeType("engine/input", GlobalInput);
+Nodes.registerNodeType("engine/input", Input);
 
 
-//Output for a subgraph
-export class GlobalOutput extends Node {
+//NodeOutput for a container
+export class Output extends Node {
     constructor() {
         super();
         this.title = "Ouput";
-        this.desc = "Output of the engine";
+        this.desc = "Output of the container";
         //random name to avoid problems with other outputs when added
         let output_name = "output_" + (Math.random() * 1000).toFixed();
 
@@ -341,52 +389,4 @@ export class GlobalOutput extends Node {
 }
 
 
-Nodes.registerNodeType("engine/output", GlobalOutput);
-
-
-//Watch a value in the editor
-export class Watch extends Node {
-    constructor() {
-        super();
-        this.title = "Watch";
-        this.desc = "Show value of input";
-        this.size = [60, 20];
-        this.addInput("value", null, {label: ""});
-        this.addOutput("value", null, {label: ""});
-    }
-
-    onExecute() {
-        let val = this.getInputData(0);
-        this.setOutputData(0, val);
-        this.sendMessageToFrontSide({value: val});
-    }
-
-    onGetMessageFromBackSide = function (data) {
-        this.properties.value = data.value;
-        this.showValueOnInput(data.value);
-    };
-
-    showValueOnInput(value: any) {
-        //show the current value
-        if (value) {
-            if (typeof (value) == "number")
-                this.inputs[0].label = value.toFixed(3);
-            else {
-                let str = value;
-                if (str && str.length) //convert typed to array
-                    str = Array.prototype.slice.call(str).join(",");
-                this.inputs[0].label = str;
-
-            }
-        }
-        else this.inputs[0].label = "";
-
-        this.setDirtyCanvas(true, false);
-    }
-}
-
-
-Nodes.registerNodeType("basic/watch", Watch);
-
-
-// }
+Nodes.registerNodeType("engine/output", Output);

@@ -26,7 +26,7 @@ module.exports.test = function () {
 	node_math.addOutput("A-B");
 	engine.add(node_math);
 
-	let node_watch = nodes.createNode("basic/console");
+	let node_watch = nodes.createNode("debug/console");
 	node_watch.pos = [400, 50];
 	engine.add(node_watch);
 
@@ -35,9 +35,9 @@ module.exports.test = function () {
 	// engine.add(node_watch2);
 
 
-    // node_const_A.connect(0, node_math, 0);
-    // node_const_B.connect(0, node_math, 1);
-    // node_math.connect(0, node_watch, 0);
+    node_const_A.connect(0, node_math, 0);
+    node_const_B.connect(0, node_math, 1);
+    node_math.connect(0, node_watch, 0);
 	// node_math.connect(0, node_watch2, 0);
 
 	engine.runStep(1);

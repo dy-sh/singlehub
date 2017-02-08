@@ -65,12 +65,12 @@
         }
     }
     exports.NodesOptions = NodesOptions;
-    class Output {
+    class NodeOutput {
     }
-    exports.Output = Output;
-    class Input {
+    exports.NodeOutput = NodeOutput;
+    class NodeInput {
     }
-    exports.Input = Input;
+    exports.NodeInput = NodeInput;
     class Link {
     }
     exports.Link = Link;

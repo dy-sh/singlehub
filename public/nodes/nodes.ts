@@ -19,14 +19,14 @@ import {debuglog} from "util";
 // }
 
 export interface IInputInfo {
-    input: Input;
+    input: NodeInput;
     slot: number;
     link_pos: [number, number];
     locked: boolean;
 }
 
 export interface IOutputInfo {
-    output: Output;
+    output: NodeOutput;
     slot: number;
     link_pos: [number, number];
     locked: boolean;
@@ -90,7 +90,7 @@ export class NodesOptions {
     };
 }
 
-export class Output {
+export class NodeOutput {
     name: string;
     type: string;
     links: Array<number>;
@@ -100,7 +100,7 @@ export class Output {
     round?: number;
 }
 
-export class Input {
+export class NodeInput {
     name: string;
     type: string;
     link: number;
@@ -334,8 +334,8 @@ export class Node {
     engine: NodesEngine;
     id: number;
     type: string;
-    inputs: Array<Input>;
-    outputs: Array<Output>;
+    inputs: Array<NodeInput>;
+    outputs: Array<NodeOutput>;
     //   connections: Array<any>;
     properties: any;
 
@@ -667,7 +667,7 @@ export class Node {
      */
 
     addOutput(name: string, type?: string, extra_info?: any): void {
-        let o: Output = {name: name, type: type, links: null};
+        let o: NodeOutput = {name: name, type: type, links: null};
         if (extra_info)
             for (let i in extra_info)
                 o[i] = extra_info[i];
@@ -684,7 +684,7 @@ export class Node {
      * Add a new output slot to use in this node
      * @param  array of triplets like [[name,type,extra_info],[...]]
      */
-    addOutputs(array: Array<Output>): void {
+    addOutputs(array: Array<NodeOutput>): void {
         for (let i = 0; i < array.length; ++i) {
             let info = array[i];
             let o = {name: info[0], type: info[1], links: null};
@@ -723,7 +723,7 @@ export class Node {
      */
     addInput(name: string, type?: string, extra_info?: any): void {
 
-        let o: Input = {name: name, type: type, link: null};
+        let o: NodeInput = {name: name, type: type, link: null};
         if (extra_info)
             for (let i in extra_info)
                 o[i] = extra_info[i];
@@ -740,7 +740,7 @@ export class Node {
      * add several new input slots in this node
      * @param {Array} array of triplets like [[name,type,extra_info],[...]]
      */
-    addInputs(array: Array<Input>): void {
+    addInputs(array: Array<NodeInput>): void {
         for (let i = 0; i < array.length; ++i) {
             let info = array[i];
             let o = {name: info[0], type: info[1], link: null};

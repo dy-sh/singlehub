@@ -4,7 +4,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 
-import {Node, Nodes, Output, IInputInfo, IOutputInfo} from "../../nodes/nodes"
+import {Node, Nodes, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/nodes"
 import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {NodeEditor, editor} from "./node-editor";
 import {EditorSocket} from "./editor-socket";
@@ -81,7 +81,7 @@ export class Renderer {
     gl: CanvasRenderingContext2D;
     is_rendering: boolean;
     visible_nodes: Array<Node>;
-    connecting_output: Output;
+    connecting_output: NodeOutput;
     connecting_pos: [number, number];
     connecting_slot: number;
     resizing_node: Node;

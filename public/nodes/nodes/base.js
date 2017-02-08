@@ -36,7 +36,7 @@
         }
     }
     exports.Console = Console;
-    nodes_1.Nodes.registerNodeType("basic/console", Console);
+    nodes_1.Nodes.registerNodeType("debug/console", Console);
     //Constant
     class Constant extends nodes_1.Node {
         constructor() {
@@ -66,10 +66,46 @@
     }
     exports.Constant = Constant;
     nodes_1.Nodes.registerNodeType("basic/const", Constant);
-    //
-    //
-    //Subgraph: a node that contains a engine
-    class Subgraph extends nodes_1.Node {
+    //Watch a value in the editor
+    class Watch extends nodes_1.Node {
+        constructor() {
+            super();
+            this.onGetMessageFromBackSide = function (data) {
+                this.properties.value = data.value;
+                this.showValueOnInput(data.value);
+            };
+            this.title = "Watch";
+            this.desc = "Show value of input";
+            this.size = [60, 20];
+            this.addInput("value", null, { label: "" });
+            this.addOutput("value", null, { label: "" });
+        }
+        onExecute() {
+            let val = this.getInputData(0);
+            this.setOutputData(0, val);
+            this.sendMessageToFrontSide({ value: val });
+        }
+        showValueOnInput(value) {
+            //show the current value
+            if (value) {
+                if (typeof (value) == "number")
+                    this.inputs[0].label = value.toFixed(3);
+                else {
+                    let str = value;
+                    if (str && str.length)
+                        str = Array.prototype.slice.call(str).join(",");
+                    this.inputs[0].label = str;
+                }
+            }
+            else
+                this.inputs[0].label = "";
+            this.setDirtyCanvas(true, false);
+        }
+    }
+    exports.Watch = Watch;
+    nodes_1.Nodes.registerNodeType("debug/watch", Watch);
+    //Container: a node that contains a engine
+    class Container extends nodes_1.Node {
         constructor() {
             super();
             this.onAdded = function () {
@@ -86,7 +122,7 @@
                         }
                     }];
             };
-            this.title = "Subgraph";
+            this.title = "Container";
             this.desc = "Graph inside a node";
             this.size = [120, 60];
             this.bgcolor = nodes_1.Nodes.options.CONTAINER_NODE_BGCOLOR;
@@ -174,10 +210,10 @@
             return node;
         }
     }
-    exports.Subgraph = Subgraph;
-    nodes_1.Nodes.registerNodeType("engine/subgraph", Subgraph);
-    //Input for a subgraph
-    class GlobalInput extends nodes_1.Node {
+    exports.Container = Container;
+    nodes_1.Nodes.registerNodeType("engine/subgraph", Container);
+    //NodeInput for a container
+    class Input extends nodes_1.Node {
         constructor() {
             super();
             //When added to engine tell the engine this is a new global input
@@ -185,7 +221,7 @@
                 this.engine.addGlobalInput(this.properties.name, this.properties.type);
             };
             this.title = "Input";
-            this.desc = "Input of the engine";
+            this.desc = "Input of the container";
             //random name to avoid problems with other outputs when added
             let input_name = "input_" + (Math.random() * 1000).toFixed();
             this.addOutput(input_name, null);
@@ -230,17 +266,17 @@
             this.setOutputData(0, data.value);
         }
     }
-    exports.GlobalInput = GlobalInput;
-    nodes_1.Nodes.registerNodeType("engine/input", GlobalInput);
-    //Output for a subgraph
-    class GlobalOutput extends nodes_1.Node {
+    exports.Input = Input;
+    nodes_1.Nodes.registerNodeType("engine/input", Input);
+    //NodeOutput for a container
+    class Output extends nodes_1.Node {
         constructor() {
             super();
             this.onAdded = function () {
                 let name = this.engine.addGlobalOutput(this.properties.name, this.properties.type);
             };
             this.title = "Ouput";
-            this.desc = "Output of the engine";
+            this.desc = "Output of the container";
             //random name to avoid problems with other outputs when added
             let output_name = "output_" + (Math.random() * 1000).toFixed();
             this.addInput(output_name, null);
@@ -279,46 +315,7 @@
             this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
         }
     }
-    exports.GlobalOutput = GlobalOutput;
-    nodes_1.Nodes.registerNodeType("engine/output", GlobalOutput);
-    //Watch a value in the editor
-    class Watch extends nodes_1.Node {
-        constructor() {
-            super();
-            this.onGetMessageFromBackSide = function (data) {
-                this.properties.value = data.value;
-                this.showValueOnInput(data.value);
-            };
-            this.title = "Watch";
-            this.desc = "Show value of input";
-            this.size = [60, 20];
-            this.addInput("value", null, { label: "" });
-            this.addOutput("value", null, { label: "" });
-        }
-        onExecute() {
-            let val = this.getInputData(0);
-            this.setOutputData(0, val);
-            this.sendMessageToFrontSide({ value: val });
-        }
-        showValueOnInput(value) {
-            //show the current value
-            if (value) {
-                if (typeof (value) == "number")
-                    this.inputs[0].label = value.toFixed(3);
-                else {
-                    let str = value;
-                    if (str && str.length)
-                        str = Array.prototype.slice.call(str).join(",");
-                    this.inputs[0].label = str;
-                }
-            }
-            else
-                this.inputs[0].label = "";
-            this.setDirtyCanvas(true, false);
-        }
-    }
-    exports.Watch = Watch;
-    nodes_1.Nodes.registerNodeType("basic/watch", Watch);
+    exports.Output = Output;
+    nodes_1.Nodes.registerNodeType("engine/output", Output);
 });
-// } 
 //# sourceMappingURL=base.js.map

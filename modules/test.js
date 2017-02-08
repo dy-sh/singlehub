@@ -27,15 +27,15 @@
         node_math.properties.OP = "-";
         node_math.addOutput("A-B");
         nodes_engine_1.engine.add(node_math);
-        let node_watch = nodes_1.Nodes.createNode("basic/console");
+        let node_watch = nodes_1.Nodes.createNode("debug/console");
         node_watch.pos = [400, 50];
         nodes_engine_1.engine.add(node_watch);
         // let node_watch2 = nodes.createNode("basic/console");
         // node_watch2.pos = [700, 300];
         // engine.add(node_watch2);
-        // node_const_A.connect(0, node_math, 0);
-        // node_const_B.connect(0, node_math, 1);
-        // node_math.connect(0, node_watch, 0);
+        node_const_A.connect(0, node_math, 0);
+        node_const_B.connect(0, node_math, 1);
+        node_math.connect(0, node_watch, 0);
         // node_math.connect(0, node_watch2, 0);
         nodes_engine_1.engine.runStep(1);
         setInterval(function () {
