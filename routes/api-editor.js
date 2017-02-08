@@ -90,14 +90,14 @@
         let container = nodes_engine_1.NodesEngine.containers[req.params.cid];
         if (!container)
             return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
-        for (let id of req.body.ids) {
+        for (let id of req.body) {
             let node = nodes_engine_1.engine.getNodeById(id);
             if (!node)
                 return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
             nodes_engine_1.engine.remove(node);
         }
         server_1.server.socket.io.emit('nodes-delete', {
-            nodes: req.body.ids,
+            nodes: req.body,
             cid: req.params.cid
         });
         res.send(`${MODULE_NAME}: Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);

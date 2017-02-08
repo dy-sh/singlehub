@@ -111,14 +111,14 @@ router.delete('/c/:cid/n/', function (req, res) {
     let container = NodesEngine.containers[req.params.cid];
     if (!container) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
 
-    for (let id of req.body.ids) {
+    for (let id of req.body) {
         let node = engine.getNodeById(id);
         if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
         engine.remove(node);
     }
 
     server.socket.io.emit('nodes-delete', {
-        nodes: req.body.ids,
+        nodes: req.body,
         cid: req.params.cid
     });
 
