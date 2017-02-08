@@ -6,14 +6,13 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     const node_editor_1 = require("./node-editor");
-    const utils_1 = require("../../nodes/utils");
     class EditorSocket {
         constructor() {
             this.engine = nodes_engine_1.engine;
@@ -43,11 +42,6 @@
             // });
             socket.on('node-create', function (n) {
                 let container = nodes_engine_1.NodesEngine.containers[n.cid];
-                let node = container.getNodeById(n.id);
-                if (node) {
-                    utils_1.default.debugErr("Cant create node. Node exist", "Socket");
-                    return;
-                }
                 let newNode = nodes_1.Nodes.createNode(n.type);
                 newNode.pos = n.pos;
                 //newNode.configure(n);
@@ -57,10 +51,6 @@
             socket.on('node-delete', function (n) {
                 let container = nodes_engine_1.NodesEngine.containers[n.cid];
                 let node = container.getNodeById(n.id);
-                if (!node) {
-                    utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
-                    return;
-                }
                 container.remove(node);
                 container.setDirtyCanvas(true, true);
                 //if current container removed
@@ -72,10 +62,6 @@
                 let container = nodes_engine_1.NodesEngine.containers[data.cid];
                 for (let id of data.nodes) {
                     let node = container.getNodeById(id);
-                    if (!node) {
-                        utils_1.default.debugErr("Cant delete node. Node id does not exist.", "Socket");
-                        return;
-                    }
                     container.remove(node);
                 }
                 container.setDirtyCanvas(true, true);
@@ -89,36 +75,40 @@
                 }
             });
             socket.on('node-update-size', function (n) {
-                let node = nodes_engine_1.engine.getNodeById(n.id);
+                let container = nodes_engine_1.NodesEngine.containers[n.cid];
+                let node = container.getNodeById(n.id);
                 if (node.pos != n.pos) {
                     node.size = n.size;
                     node.setDirtyCanvas(true, true);
                 }
             });
             socket.on('node-message-to-front-side', function (n) {
-                let node = nodes_engine_1.engine.getNodeById(n.id);
+                let container = nodes_engine_1.NodesEngine.containers[n.cid];
+                let node = container.getNodeById(n.id);
                 if (node.onGetMessageFromBackSide)
                     node.onGetMessageFromBackSide(n.value);
             });
             socket.on('link-delete', function (l) {
-                let link = nodes_engine_1.engine.links[l.id];
-                // let node = engine.getNodeById(link.origin_id);
-                let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
-                // node.disconnectOutput(link.origin_slot, targetNode);
-                targetNode.disconnectInput(link.target_slot);
+                let container = nodes_engine_1.NodesEngine.containers[l.cid];
+                let link = container.links[l.id];
+                let node = container.getNodeById(link.origin_id);
+                let targetNode = container.getNodeById(link.target_id);
+                node.disconnectOutput(link.origin_slot, targetNode);
+                //targetNode.disconnectInput(link.target_slot);
             });
-            socket.on('link-create', function (link) {
-                let node = nodes_engine_1.engine.getNodeById(link.origin_id);
-                let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
-                // node.disconnectOutput(link.origin_slot, targetNode);
-                // targetNode.disconnectInput(link.target_slot);
-                node.connect(link.origin_slot, targetNode, link.target_slot);
-                //  this.engine.change();
-                nodes_engine_1.engine.change();
+            socket.on('link-create', function (l) {
+                let container = nodes_engine_1.NodesEngine.containers[l.cid];
+                let node = container.getNodeById(l.origin_id);
+                let targetNode = container.getNodeById(l.target_id);
+                // node.disconnectOutput(l.origin_slot, targetNode);
+                // targetNode.disconnectInput(l.target_slot);
+                node.connect(l.origin_slot, targetNode, l.target_slot);
+                container.change();
             });
-            socket.on('nodes-active', function (ids) {
-                for (let id of ids) {
-                    let node = nodes_engine_1.engine.getNodeById(id);
+            socket.on('nodes-active', function (data) {
+                let container = nodes_engine_1.NodesEngine.containers[data.cid];
+                for (let id of data.ids) {
+                    let node = container.getNodeById(id);
                     if (node == null)
                         return;
                     node.boxcolor = nodes_1.Nodes.options.NODE_ACTIVE_BOXCOLOR;

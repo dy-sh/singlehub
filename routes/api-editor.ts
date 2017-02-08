@@ -108,8 +108,8 @@ router.delete('/c/:cid/n/:id', function (req, res) {
  * Delete nodes
  */
 router.delete('/c/:cid/n/', function (req, res) {
-    let cid = req.params.cid;
-    let ids = req.body;
+    let container = NodesEngine.containers[req.params.cid];
+    if (!container) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
 
     for (let id of ids) {
         let node = engine.getNodeById(id);

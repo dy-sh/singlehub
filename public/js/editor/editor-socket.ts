@@ -49,30 +49,16 @@ export class EditorSocket {
 
         socket.on('node-create', function (n) {
             let container = NodesEngine.containers[n.cid];
-
-            let node = container.getNodeById(n.id);
-            if (node) {
-                Utils.debugErr("Cant create node. Node exist", "Socket");
-                return;
-            }
-
             let newNode = Nodes.createNode(n.type);
             newNode.pos = n.pos;
             //newNode.configure(n);
-
             container.add(newNode);
             container.setDirtyCanvas(true, true);
         });
 
         socket.on('node-delete', function (n) {
             let container = NodesEngine.containers[n.cid];
-
             let node = container.getNodeById(n.id);
-            if (!node) {
-                Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
-                return;
-            }
-
             container.remove(node);
             container.setDirtyCanvas(true, true);
 
@@ -87,11 +73,6 @@ export class EditorSocket {
             let container = NodesEngine.containers[data.cid];
             for (let id of data.nodes) {
                 let node = container.getNodeById(id);
-                if (!node) {
-                    Utils.debugErr("Cant delete node. Node id does not exist.", "Socket");
-                    return;
-                }
-
                 container.remove(node);
             }
 
@@ -109,7 +90,8 @@ export class EditorSocket {
         });
 
         socket.on('node-update-size', function (n) {
-            let node = engine.getNodeById(n.id);
+            let container = NodesEngine.containers[n.cid];
+            let node = container.getNodeById(n.id);
             if (node.pos != n.pos) {
                 node.size = n.size;
                 node.setDirtyCanvas(true, true);
@@ -117,37 +99,40 @@ export class EditorSocket {
         });
 
         socket.on('node-message-to-front-side', function (n) {
-            let node = engine.getNodeById(n.id);
+            let container = NodesEngine.containers[n.cid];
+            let node = container.getNodeById(n.id);
             if (node.onGetMessageFromBackSide)
                 node.onGetMessageFromBackSide(n.value);
         });
 
 
         socket.on('link-delete', function (l) {
-            let link = engine.links[l.id];
+            let container = NodesEngine.containers[l.cid];
+            let link = container.links[l.id];
 
-            // let node = engine.getNodeById(link.origin_id);
-            let targetNode = engine.getNodeById(link.target_id);
-            // node.disconnectOutput(link.origin_slot, targetNode);
-            targetNode.disconnectInput(link.target_slot);
+            let node = container.getNodeById(link.origin_id);
+            let targetNode = container.getNodeById(link.target_id);
+            node.disconnectOutput(link.origin_slot, targetNode);
+            //targetNode.disconnectInput(link.target_slot);
         });
 
-        socket.on('link-create', function (link) {
-            let node = engine.getNodeById(link.origin_id);
-            let targetNode = engine.getNodeById(link.target_id);
+        socket.on('link-create', function (l) {
+            let container = NodesEngine.containers[l.cid];
+            let node = container.getNodeById(l.origin_id);
+            let targetNode = container.getNodeById(l.target_id);
 
-            // node.disconnectOutput(link.origin_slot, targetNode);
-            // targetNode.disconnectInput(link.target_slot);
+            // node.disconnectOutput(l.origin_slot, targetNode);
+            // targetNode.disconnectInput(l.target_slot);
 
-            node.connect(link.origin_slot, targetNode, link.target_slot);
-            //  this.engine.change();
+            node.connect(l.origin_slot, targetNode, l.target_slot);
 
-            engine.change();
+            container.change();
         });
 
-        socket.on('nodes-active', function (ids) {
-            for (let id of ids) {
-                let node = engine.getNodeById(id);
+        socket.on('nodes-active', function (data) {
+            let container = NodesEngine.containers[data.cid];
+            for (let id of data.ids) {
+                let node = container.getNodeById(id);
                 if (node == null)
                     return;
 
