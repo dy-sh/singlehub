@@ -70,14 +70,14 @@ export class NodesEngine {
     parent_container_id?: number;
 
 
-    _subgraph_node: Container;
-    _is_subgraph: boolean;
-    onGlobalInputAdded: Function;
-    onGlobalInputRenamed: Function;
-    onGlobalInputTypeChanged: Function;
-    onGlobalOutputAdded: Function;
-    onGlobalOutputRenamed: Function;
-    onGlobalOutputTypeChanged: Function;
+    _container_node: Container;
+    _is_container: boolean;
+    onContainerInputAdded: Function;
+    onContainerInputRenamed: Function;
+    onContainerInputTypeChanged: Function;
+    onContainerOutputAdded: Function;
+    onContainerOutputRenamed: Function;
+    onContainerOutputTypeChanged: Function;
     onGlobalsChange: Function;
     private onGlobalInputRemoved: Function;
     private onGlobalOutputRemoved: Function;
@@ -599,8 +599,8 @@ export class NodesEngine {
     addGlobalInput(name, type, value) {
         this.global_inputs[name] = {name: name, type: type, value: value};
 
-        if (this.onGlobalInputAdded)
-            this.onGlobalInputAdded(name, type);
+        if (this.onContainerInputAdded)
+            this.onContainerInputAdded(name, type);
 
         if (this.onGlobalsChange)
             this.onGlobalsChange();
@@ -638,8 +638,8 @@ export class NodesEngine {
         this.global_inputs[name] = this.global_inputs[old_name];
         delete this.global_inputs[old_name];
 
-        if (this.onGlobalInputRenamed)
-            this.onGlobalInputRenamed(old_name, name);
+        if (this.onContainerInputRenamed)
+            this.onContainerInputRenamed(old_name, name);
 
         if (this.onGlobalsChange)
             this.onGlobalsChange();
@@ -653,8 +653,8 @@ export class NodesEngine {
             return;
 
         this.global_inputs[name].type = type;
-        if (this.onGlobalInputTypeChanged)
-            this.onGlobalInputTypeChanged(name, type);
+        if (this.onContainerInputTypeChanged)
+            this.onContainerInputTypeChanged(name, type);
     }
 
     removeGlobalInput(name) {
@@ -674,8 +674,8 @@ export class NodesEngine {
     addGlobalOutput(name, type, value) {
         this.global_outputs[name] = {name: name, type: type, value: value};
 
-        if (this.onGlobalOutputAdded)
-            this.onGlobalOutputAdded(name, type);
+        if (this.onContainerOutputAdded)
+            this.onContainerOutputAdded(name, type);
 
         if (this.onGlobalsChange)
             this.onGlobalsChange();
@@ -710,8 +710,8 @@ export class NodesEngine {
         this.global_outputs[name] = this.global_outputs[old_name];
         delete this.global_outputs[old_name];
 
-        if (this.onGlobalOutputRenamed)
-            this.onGlobalOutputRenamed(old_name, name);
+        if (this.onContainerOutputRenamed)
+            this.onContainerOutputRenamed(old_name, name);
 
         if (this.onGlobalsChange)
             this.onGlobalsChange();
@@ -725,8 +725,8 @@ export class NodesEngine {
             return;
 
         this.global_outputs[name].type = type;
-        if (this.onGlobalOutputTypeChanged)
-            this.onGlobalOutputTypeChanged(name, type);
+        if (this.onContainerOutputTypeChanged)
+            this.onContainerOutputTypeChanged(name, type);
     }
 
     removeGlobalOutput(name) {

@@ -123,50 +123,50 @@
                     }];
             };
             this.title = "Container";
-            this.desc = "Graph inside a node";
+            this.desc = "Contain other nodes";
             this.size = [120, 60];
             this.bgcolor = nodes_1.Nodes.options.CONTAINER_NODE_BGCOLOR;
             //create inner engine
             this.subgraph = new nodes_engine_1.NodesEngine();
-            this.subgraph._subgraph_node = this;
-            this.subgraph._is_subgraph = true;
-            this.subgraph.onGlobalInputAdded = this.onSubgraphNewGlobalInput.bind(this);
-            this.subgraph.onGlobalInputRenamed = this.onSubgraphRenamedGlobalInput.bind(this);
-            this.subgraph.onGlobalInputTypeChanged = this.onSubgraphTypeChangeGlobalInput.bind(this);
-            this.subgraph.onGlobalOutputAdded = this.onSubgraphNewGlobalOutput.bind(this);
-            this.subgraph.onGlobalOutputRenamed = this.onSubgraphRenamedGlobalOutput.bind(this);
-            this.subgraph.onGlobalOutputTypeChanged = this.onSubgraphTypeChangeGlobalOutput.bind(this);
+            this.subgraph._container_node = this;
+            this.subgraph._is_container = true;
+            this.subgraph.onContainerInputAdded = this.onContainerInputAdded.bind(this);
+            this.subgraph.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
+            this.subgraph.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
+            this.subgraph.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
+            this.subgraph.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
+            this.subgraph.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
         }
-        onSubgraphNewGlobalInput(name, type) {
+        onContainerInputAdded(name, type) {
             //add input to the node
             this.addInput(name, type);
         }
-        onSubgraphRenamedGlobalInput(oldname, name) {
+        onContainerInputRenamed(oldname, name) {
             let slot = this.findInputSlot(oldname);
             if (slot == -1)
                 return;
             let info = this.getInputInfo(slot);
             info.name = name;
         }
-        onSubgraphTypeChangeGlobalInput(name, type) {
+        onContainerInputTypeChanged(name, type) {
             let slot = this.findInputSlot(name);
             if (slot == -1)
                 return;
             let info = this.getInputInfo(slot);
             info.type = type;
         }
-        onSubgraphNewGlobalOutput(name, type) {
+        onContainerOutputAdded(name, type) {
             //add output to the node
             this.addOutput(name, type);
         }
-        onSubgraphRenamedGlobalOutput(oldname, name) {
+        onContainerOutputRenamed(oldname, name) {
             let slot = this.findOutputSlot(oldname);
             if (slot == -1)
                 return;
             let info = this.getOutputInfo(slot);
             info.name = name;
         }
-        onSubgraphTypeChangeGlobalOutput(name, type) {
+        onContainerOutputTypeChanged(name, type) {
             let slot = this.findOutputSlot(name);
             if (slot == -1)
                 return;
@@ -211,8 +211,8 @@
         }
     }
     exports.Container = Container;
-    nodes_1.Nodes.registerNodeType("engine/subgraph", Container);
-    //NodeInput for a container
+    nodes_1.Nodes.registerNodeType("main/container", Container);
+    //Input for a container
     class Input extends nodes_1.Node {
         constructor() {
             super();
@@ -267,8 +267,8 @@
         }
     }
     exports.Input = Input;
-    nodes_1.Nodes.registerNodeType("engine/input", Input);
-    //NodeOutput for a container
+    nodes_1.Nodes.registerNodeType("main/input", Input);
+    //Output for a container
     class Output extends nodes_1.Node {
         constructor() {
             super();
@@ -316,6 +316,6 @@
         }
     }
     exports.Output = Output;
-    nodes_1.Nodes.registerNodeType("engine/output", Output);
+    nodes_1.Nodes.registerNodeType("main/output", Output);
 });
 //# sourceMappingURL=base.js.map

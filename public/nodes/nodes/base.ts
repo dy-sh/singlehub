@@ -131,7 +131,7 @@ export class Container extends Node {
         super();
 
         this.title = "Container";
-        this.desc = "Graph inside a node";
+        this.desc = "Contain other nodes";
 
         this.size = [120, 60];
 
@@ -140,16 +140,16 @@ export class Container extends Node {
 
         //create inner engine
         this.subgraph = new NodesEngine();
-        this.subgraph._subgraph_node = this;
-        this.subgraph._is_subgraph = true;
+        this.subgraph._container_node = this;
+        this.subgraph._is_container = true;
 
-        this.subgraph.onGlobalInputAdded = this.onSubgraphNewGlobalInput.bind(this);
-        this.subgraph.onGlobalInputRenamed = this.onSubgraphRenamedGlobalInput.bind(this);
-        this.subgraph.onGlobalInputTypeChanged = this.onSubgraphTypeChangeGlobalInput.bind(this);
+        this.subgraph.onContainerInputAdded = this.onContainerInputAdded.bind(this);
+        this.subgraph.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
+        this.subgraph.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
 
-        this.subgraph.onGlobalOutputAdded = this.onSubgraphNewGlobalOutput.bind(this);
-        this.subgraph.onGlobalOutputRenamed = this.onSubgraphRenamedGlobalOutput.bind(this);
-        this.subgraph.onGlobalOutputTypeChanged = this.onSubgraphTypeChangeGlobalOutput.bind(this);
+        this.subgraph.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
+        this.subgraph.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
+        this.subgraph.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
     }
 
 
@@ -162,12 +162,12 @@ export class Container extends Node {
     };
 
 
-    onSubgraphNewGlobalInput(name, type) {
+    onContainerInputAdded(name, type) {
         //add input to the node
         this.addInput(name, type);
     }
 
-    onSubgraphRenamedGlobalInput(oldname, name) {
+    onContainerInputRenamed(oldname, name) {
         let slot = this.findInputSlot(oldname);
         if (slot == -1)
             return;
@@ -175,7 +175,7 @@ export class Container extends Node {
         info.name = name;
     }
 
-    onSubgraphTypeChangeGlobalInput(name, type) {
+    onContainerInputTypeChanged(name, type) {
         let slot = this.findInputSlot(name);
         if (slot == -1)
             return;
@@ -183,12 +183,12 @@ export class Container extends Node {
         info.type = type;
     }
 
-    onSubgraphNewGlobalOutput(name, type) {
+    onContainerOutputAdded(name, type) {
         //add output to the node
         this.addOutput(name, type);
     }
 
-    onSubgraphRenamedGlobalOutput(oldname, name) {
+    onContainerOutputRenamed(oldname, name) {
         let slot = this.findOutputSlot(oldname);
         if (slot == -1)
             return;
@@ -196,7 +196,7 @@ export class Container extends Node {
         info.name = name;
     }
 
-    onSubgraphTypeChangeGlobalOutput(name, type) {
+    onContainerOutputTypeChanged(name, type) {
         let slot = this.findOutputSlot(name);
         if (slot == -1)
             return;
@@ -259,10 +259,10 @@ export class Container extends Node {
 }
 
 
-Nodes.registerNodeType("engine/subgraph", Container);
+Nodes.registerNodeType("main/container", Container);
 
 
-//NodeInput for a container
+//Input for a container
 export class Input extends Node {
     constructor() {
         super();
@@ -329,10 +329,10 @@ export class Input extends Node {
 }
 
 
-Nodes.registerNodeType("engine/input", Input);
+Nodes.registerNodeType("main/input", Input);
 
 
-//NodeOutput for a container
+//Output for a container
 export class Output extends Node {
     constructor() {
         super();
@@ -389,4 +389,4 @@ export class Output extends Node {
 }
 
 
-Nodes.registerNodeType("engine/output", Output);
+Nodes.registerNodeType("main/output", Output);
