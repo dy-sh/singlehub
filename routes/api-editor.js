@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/nodes-engine", "../modules/web-server/server", "../public/nodes/nodes", "../public/nodes/utils"], factory);
+        define(["require", "exports", 'express', "../public/nodes/nodes-engine", "../modules/web-server/server", "../public/nodes/nodes"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,7 +15,6 @@
     const nodes_engine_1 = require("../public/nodes/nodes-engine");
     const server_1 = require("../modules/web-server/server");
     const nodes_1 = require("../public/nodes/nodes");
-    const utils_1 = require("../public/nodes/utils");
     let MODULE_NAME = "SOCKET";
     setInterval(updateActiveNodes, 100);
     function updateActiveNodes() {
@@ -151,20 +150,16 @@
      * create link
      */
     router.post('/c/:cid/l/', function (req, res) {
-        let cont = req.params.cid;
+        let container = nodes_engine_1.NodesEngine.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`${MODULE_NAME}: Cant create link. Container id [${req.params.cid}] not found.`);
         let link = req.body;
-        let node = nodes_engine_1.engine.getNodeById(link.origin_id);
-        let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
-        if (!node) {
-            utils_1.default.debugErr("Cant create link. Origin node id does not exist.", MODULE_NAME);
-            res.status(404).send("Cant create link. Origin node id does not exist.");
-            return;
-        }
-        if (!targetNode) {
-            utils_1.default.debugErr("Cant create link. Target node id does not exist.", MODULE_NAME);
-            res.status(404).send("Cant create link. Target node id does not exist.");
-            return;
-        }
+        let node = container.getNodeById(link.origin_id);
+        let targetNode = container.getNodeById(link.target_id);
+        if (!node)
+            return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
+        if (!targetNode)
+            return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
         // let input = targetNode.getInputInfo(0);
         //prevent connection of different types
         // if (input && !input.link && input.type == this.connecting_output.type) { //toLowerCase missing
@@ -172,48 +167,40 @@
         if (link.target_slot == -1) {
             //todo find free input
             let input = targetNode.getInputInfo(0);
-            if (input == null) {
-                //no inputs
-                utils_1.default.debugErr("Cant create link. No free inputs.", MODULE_NAME);
-                res.status(404).send("Cant create link. No free inputs.");
-                return;
-            }
+            if (!input)
+                return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.target_id}] has no free inputs.`);
             link.target_slot = 0;
         }
         // node.disconnectOutput(link.origin_slot, targetNode);
         // targetNode.disconnectInput(link.target_slot);
         node.connect(link.origin_slot, targetNode, link.target_slot);
-        server_1.server.socket.io.emit('link-create', req.body);
-        utils_1.default.debug("Link created");
-        res.send("Link created");
+        server_1.server.socket.io.emit('link-create', {
+            cid: req.params.cid,
+            link: req.body
+        });
+        res.send(`${MODULE_NAME}: Link created: from [${node.container_id}/${node.id}] to [${targetNode.container_id}/${targetNode.id}]`);
     });
     /**
      * delete link
      */
     router.delete('/c/:cid/l/:id', function (req, res) {
-        let cont = req.params.cid;
-        let id = req.params.id;
-        let link = nodes_engine_1.engine.links[id];
-        let node = nodes_engine_1.engine.getNodeById(link.origin_id);
-        let targetNode = nodes_engine_1.engine.getNodeById(link.target_id);
-        if (!node) {
-            utils_1.default.debugErr("Cant delete link. Origin node id does not exist.", MODULE_NAME);
-            res.status(404).send("Cant delete link. Origin node id does not exist.");
-            return;
-        }
-        if (!targetNode) {
-            utils_1.default.debugErr("Cant delete link. Target node id does not exist.", MODULE_NAME);
-            res.status(404).send("Cant delete link. Target node id does not exist.");
-            return;
-        }
+        let container = nodes_engine_1.NodesEngine.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`${MODULE_NAME}: Cant create link. Container id [${req.params.cid}] not found.`);
+        let link = container.links[req.params.id];
+        let node = container.getNodeById(link.origin_id);
+        let targetNode = container.getNodeById(link.target_id);
+        if (!node)
+            return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
+        if (!targetNode)
+            return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
         // node.disconnectOutput(link.origin_slot, targetNode);
         targetNode.disconnectInput(link.target_slot);
         server_1.server.socket.io.emit('link-delete', {
-            id: link.id,
-            container: nodes_engine_1.engine.container_id
+            cid: req.params.cid,
+            id: req.params.id
         });
-        utils_1.default.debug("Link deleted");
-        res.send("Link deleted");
+        res.send(`${MODULE_NAME}: Link deleted: from [${node.container_id}/${node.id}] to [${targetNode.container_id}/${targetNode.id}]`);
     });
     //------------------ receiver ------------------------
     router.post('/receiver/value', function (req, res) {

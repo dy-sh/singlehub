@@ -106,6 +106,19 @@ export class EditorSocket {
         });
 
 
+        socket.on('link-create', function (l) {
+            let container = NodesEngine.containers[l.cid];
+            let node = container.getNodeById(l.link.origin_id);
+            let targetNode = container.getNodeById(l.link.target_id);
+
+            // node.disconnectOutput(l.origin_slot, targetNode);
+            // targetNode.disconnectInput(l.target_slot);
+
+            node.connect(l.link.origin_slot, targetNode, l.link.target_slot);
+
+            container.change();
+        });
+
         socket.on('link-delete', function (l) {
             let container = NodesEngine.containers[l.cid];
             let link = container.links[l.id];
@@ -116,18 +129,7 @@ export class EditorSocket {
             //targetNode.disconnectInput(link.target_slot);
         });
 
-        socket.on('link-create', function (l) {
-            let container = NodesEngine.containers[l.cid];
-            let node = container.getNodeById(l.origin_id);
-            let targetNode = container.getNodeById(l.target_id);
 
-            // node.disconnectOutput(l.origin_slot, targetNode);
-            // targetNode.disconnectInput(l.target_slot);
-
-            node.connect(l.origin_slot, targetNode, l.target_slot);
-
-            container.change();
-        });
 
         socket.on('nodes-active', function (data) {
             let container = NodesEngine.containers[data.cid];

@@ -24,7 +24,7 @@ function updateActiveNodes() {
         }
     }
 
-    server.socket.io.emit('nodes-active', {ids:activeNodesIds,cid:engine.container_id});
+    server.socket.io.emit('nodes-active', {ids: activeNodesIds, cid: engine.container_id});
 }
 
 //------------------ info ------------------------
@@ -191,22 +191,15 @@ router.get('/nodes/description', function (req, res) {
  * create link
  */
 router.post('/c/:cid/l/', function (req, res) {
-    let cont = req.params.cid;
+    let container = NodesEngine.containers[req.params.cid];
+    if (!container) return res.status(404).send(`${MODULE_NAME}: Cant create link. Container id [${req.params.cid}] not found.`);
+
     let link: Link = req.body;
 
-    let node = engine.getNodeById(link.origin_id);
-    let targetNode = engine.getNodeById(link.target_id);
-
-    if (!node) {
-        Utils.debugErr("Cant create link. Origin node id does not exist.", MODULE_NAME);
-        res.status(404).send("Cant create link. Origin node id does not exist.");
-        return;
-    }
-    if (!targetNode) {
-        Utils.debugErr("Cant create link. Target node id does not exist.", MODULE_NAME);
-        res.status(404).send("Cant create link. Target node id does not exist.");
-        return;
-    }
+    let node = container.getNodeById(link.origin_id);
+    let targetNode = container.getNodeById(link.target_id);
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
+    if (!targetNode) return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
 
     // let input = targetNode.getInputInfo(0);
     //prevent connection of different types
@@ -216,12 +209,7 @@ router.post('/c/:cid/l/', function (req, res) {
     if (link.target_slot == -1) {
         //todo find free input
         let input = targetNode.getInputInfo(0);
-        if (input == null) {
-            //no inputs
-            Utils.debugErr("Cant create link. No free inputs.", MODULE_NAME);
-            res.status(404).send("Cant create link. No free inputs.");
-            return;
-        }
+        if (!input) return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.target_id}] has no free inputs.`);
         link.target_slot = 0;
     }
 
@@ -230,10 +218,12 @@ router.post('/c/:cid/l/', function (req, res) {
 
     node.connect(link.origin_slot, targetNode, link.target_slot);
 
-    server.socket.io.emit('link-create', req.body);
+    server.socket.io.emit('link-create', {
+        cid: req.params.cid,
+        link: req.body
+    });
 
-    Utils.debug("Link created");
-    res.send("Link created");
+    res.send(`${MODULE_NAME}: Link created: from [${node.container_id}/${node.id}] to [${targetNode.container_id}/${targetNode.id}]`);
 });
 
 
@@ -241,35 +231,27 @@ router.post('/c/:cid/l/', function (req, res) {
  * delete link
  */
 router.delete('/c/:cid/l/:id', function (req, res) {
-    let cont = req.params.cid;
-    let id = req.params.id;
+    let container = NodesEngine.containers[req.params.cid];
+    if (!container) return res.status(404).send(`${MODULE_NAME}: Cant create link. Container id [${req.params.cid}] not found.`);
 
-    let link = engine.links[id];
+    let link = container.links[req.params.id];
 
-    let node = engine.getNodeById(link.origin_id);
-    let targetNode = engine.getNodeById(link.target_id);
-    if (!node) {
-        Utils.debugErr("Cant delete link. Origin node id does not exist.", MODULE_NAME);
-        res.status(404).send("Cant delete link. Origin node id does not exist.");
-        return;
-    }
-    if (!targetNode) {
-        Utils.debugErr("Cant delete link. Target node id does not exist.", MODULE_NAME);
-        res.status(404).send("Cant delete link. Target node id does not exist.");
-        return;
-    }
+    let node = container.getNodeById(link.origin_id);
+    let targetNode = container.getNodeById(link.target_id);
+    if (!node) return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
+    if (!targetNode) return res.status(404).send(`${MODULE_NAME}: Cant create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
+
 
     // node.disconnectOutput(link.origin_slot, targetNode);
     targetNode.disconnectInput(link.target_slot);
 
 
     server.socket.io.emit('link-delete', {
-        id: link.id,
-        container: engine.container_id
+        cid: req.params.cid,
+        id: req.params.id
     });
 
-    Utils.debug("Link deleted");
-    res.send("Link deleted");
+    res.send(`${MODULE_NAME}: Link deleted: from [${node.container_id}/${node.id}] to [${targetNode.container_id}/${targetNode.id}]`);
 });
 
 
