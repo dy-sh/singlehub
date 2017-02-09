@@ -40,7 +40,7 @@
                 renderer.draw(true);
             };
             //add stuff
-            //todo temporary	this.addMiniWindow(200, 200);
+            //todo later this.addMiniWindow(200, 200);
             //append to DOM
             let parent = document.getElementById("main");
             if (parent)
@@ -85,7 +85,7 @@
                 return;
             minimap_opened = true;
             let miniwindow = document.createElement("div");
-            miniwindow.className = "litegraph miniwindow";
+            miniwindow.className = "miniwindow";
             miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
             let canvas = miniwindow.querySelector("canvas");
             let renderer = new renderer_1.Renderer(canvas, this.socket, this, this.engine);
@@ -139,7 +139,6 @@
                     $('#import-panel-message').show();
                     $('#import-panel-body').hide();
                 }
-                ;
                 let reader = new FileReader();
                 reader.onload = function (evt) {
                     if (evt.target.readyState != 2)

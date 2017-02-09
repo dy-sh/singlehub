@@ -283,7 +283,7 @@ export class Renderer {
             return;
 
         //this.renderer.tabindex = "1000";
-        canvas.className += " lgraphcanvas";
+        canvas.className += " editorcanvas";
         (<any>canvas).data = this;
 
         //bg renderer: used for non changing stuff
@@ -2781,7 +2781,7 @@ export class Renderer {
         else {
             //closing submenus
             //derwish edit
-            let menus = document.querySelectorAll(".graphcontextualmenu");
+            let menus = document.querySelectorAll(".contextualmenu");
             for (let key in menus) {
                 // todo ES6
                 if (menus[key].previousSibling == options.from)
@@ -2790,7 +2790,7 @@ export class Renderer {
         }
 
         let root = ref_window.document.createElement("div");
-        root.className = "graphcontextualmenu graphmenubar-panel";
+        root.className = "contextualmenu menubar-panel";
         this.root = root;
         let style = root.style;
 
@@ -2808,7 +2808,7 @@ export class Renderer {
         //title
         if (options.title) {
             let element = document.createElement("div");
-            element.className = "graphcontextualmenu-title";
+            element.className = "contextualmenu-title";
             element.innerHTML = options.title;
             root.appendChild(element);
         }
@@ -2822,10 +2822,10 @@ export class Renderer {
         for (let i in values) {
             let item = values[i];
             let element = ref_window.document.createElement("div");
-            element.className = "graphmenu-entry";
+            element.className = "menu-entry";
 
             if (item == null) {
-                element.className = "graphmenu-entry separator";
+                element.className = "menu-entry separator";
                 root.appendChild(element);
                 continue;
             }
@@ -2932,7 +2932,7 @@ export class Renderer {
      * Clone all contextual menus
      */
     closeAllContextualMenus(): void {
-        let elements = document.querySelectorAll(".graphcontextualmenu");
+        let elements = document.querySelectorAll(".contextualmenu");
         if (!elements.length) return;
 
         let result = [];
@@ -2943,15 +2943,6 @@ export class Renderer {
             if (result[i].parentNode)
                 result[i].parentNode.removeChild(result[i]);
     }
-
-
-    /*
-     createNodetypeWrapper ( class_object )
-     {
-     //create Nodetype object
-     }
-     //Nodes.registerNodeType("scene/global", LGraphGlobal );
-     */
 
 }
 

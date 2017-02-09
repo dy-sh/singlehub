@@ -154,7 +154,7 @@
             if (!canvas)
                 return;
             //this.renderer.tabindex = "1000";
-            canvas.className += " lgraphcanvas";
+            canvas.className += " editorcanvas";
             canvas.data = this;
             //bg renderer: used for non changing stuff
             this.bgcanvas = null;
@@ -2222,7 +2222,7 @@
             else {
                 //closing submenus
                 //derwish edit
-                let menus = document.querySelectorAll(".graphcontextualmenu");
+                let menus = document.querySelectorAll(".contextualmenu");
                 for (let key in menus) {
                     // todo ES6
                     if (menus[key].previousSibling == options.from)
@@ -2230,7 +2230,7 @@
                 }
             }
             let root = ref_window.document.createElement("div");
-            root.className = "graphcontextualmenu graphmenubar-panel";
+            root.className = "contextualmenu menubar-panel";
             this.root = root;
             let style = root.style;
             style.minWidth = "100px";
@@ -2245,7 +2245,7 @@
             //title
             if (options.title) {
                 let element = document.createElement("div");
-                element.className = "graphcontextualmenu-title";
+                element.className = "contextualmenu-title";
                 element.innerHTML = options.title;
                 root.appendChild(element);
             }
@@ -2257,9 +2257,9 @@
             for (let i in values) {
                 let item = values[i];
                 let element = ref_window.document.createElement("div");
-                element.className = "graphmenu-entry";
+                element.className = "menu-entry";
                 if (item == null) {
-                    element.className = "graphmenu-entry separator";
+                    element.className = "menu-entry separator";
                     root.appendChild(element);
                     continue;
                 }
@@ -2345,7 +2345,7 @@
          * Clone all contextual menus
          */
         closeAllContextualMenus() {
-            let elements = document.querySelectorAll(".graphcontextualmenu");
+            let elements = document.querySelectorAll(".contextualmenu");
             if (!elements.length)
                 return;
             let result = [];
