@@ -29,7 +29,7 @@
     theme0.CONTAINER_NODE_BGCOLOR = "#666B6F";
     theme0.IO_NODE_COLOR = "#262B2F";
     theme0.IO_NODE_BGCOLOR = "#868B8F";
-    //theme0.LiteGraph.NODE_DEFAULT_BOXCOLOR = "#262B2F";
+    //theme0.NODE_DEFAULT_BOXCOLOR = "#262B2F";
     theme0.NODE_ACTIVE_BOXCOLOR = "#C9CAC4";
     theme0.NODE_DEFAULT_IO_COLOR = "#C9CAC4";
     theme0.NODE_OPTIONAL_IO_COLOR = "#999A94";
@@ -37,7 +37,7 @@
     theme0.SHADOWS_WIDTH = 1;
     theme0.MENU_TEXT_COLOR = "#CCC";
     theme0.MENU_BG_COLOR = "#262B2F";
-    theme0.BG_IMAGE = "/images/litegraph/gridA1.png";
+    theme0.BG_IMAGE = "/images/node-editor/gridA1.png";
     theme0.TITLE_TEXT_FONT = "normal 13px Arial";
     theme0.INNER_TEXT_FONT = "normal 12px Arial";
     theme0.SELECTION_COLOR = "#FFF";
@@ -72,7 +72,7 @@
     theme1.SHADOWS_WIDTH = 1;
     theme1.MENU_TEXT_COLOR = "#CCC";
     theme1.MENU_BG_COLOR = "#262B2F";
-    theme1.BG_IMAGE = "/images/litegraph/gridA1.png";
+    theme1.BG_IMAGE = "/images/node-editor/gridA1.png";
     theme1.TITLE_TEXT_FONT = "normal 13px Arial";
     theme1.INNER_TEXT_FONT = "normal 12px Arial";
     theme1.SELECTION_COLOR = "#FFF";
@@ -107,7 +107,7 @@
     theme2.SHADOWS_WIDTH = 1;
     theme2.MENU_TEXT_COLOR = "#CCC";
     theme2.MENU_BG_COLOR = "#464B4F";
-    theme2.BG_IMAGE = "/images/theme2/gridA3.png";
+    theme2.BG_IMAGE = "/images/node-editor/gridA3.png";
     theme2.TITLE_TEXT_FONT = "normal 13px Arial";
     theme2.INNER_TEXT_FONT = "normal 12px Arial";
     theme2.SELECTION_COLOR = "#FFF";
@@ -212,7 +212,7 @@
     theme5.SHADOWS_WIDTH = 1;
     theme5.MENU_TEXT_COLOR = "#CCC";
     theme5.MENU_BG_COLOR = "#262B2F";
-    theme5.BG_IMAGE = "/images/theme5/bg1.png";
+    theme5.BG_IMAGE = "/images/node-editor/bg1.png";
     theme5.TITLE_TEXT_FONT = "normal 13px Arial";
     theme5.INNER_TEXT_FONT = "normal 12px Arial";
     theme5.SELECTION_COLOR = "#FFF";
@@ -247,7 +247,7 @@
     theme6.SHADOWS_WIDTH = 1;
     theme6.MENU_TEXT_COLOR = "#CCC";
     theme6.MENU_BG_COLOR = "#262B2F";
-    // theme6.BG_IMAGE = "/images/theme6/gridA0.png";
+    // theme6.BG_IMAGE = "/images/node-editor/gridA0.png";
     theme6.BG_IMAGE = null;
     theme6.TITLE_TEXT_FONT = "normal 13px Arial";
     theme6.INNER_TEXT_FONT = "normal 12px Arial";
@@ -283,7 +283,7 @@
     theme7.SHADOWS_WIDTH = 1;
     theme7.MENU_TEXT_COLOR = "#CCC";
     theme7.MENU_BG_COLOR = "#262B2F";
-    theme7.BG_IMAGE = "/images/theme7/bg1.png";
+    theme7.BG_IMAGE = "/images/node-editor/bg1.png";
     theme7.TITLE_TEXT_FONT = "normal 13px Arial";
     theme7.INNER_TEXT_FONT = "normal 12px Arial";
     theme7.SELECTION_COLOR = "#FFF";

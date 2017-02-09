@@ -81,7 +81,7 @@
          * @param engine
          * @param skip_clear
          */
-        setGraph(engine, skip_clear = false) {
+        setEngine(engine, skip_clear = false) {
             if (this.engine == engine)
                 return;
             if (!skip_clear)

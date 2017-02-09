@@ -63,7 +63,7 @@ export class NodesOptions {
     SHADOWS_WIDTH = 2;
     MENU_TEXT_COLOR = "#BBD";
     MENU_BG_COLOR = "#353535";
-    BG_IMAGE = "/images/grid.png";
+    BG_IMAGE = "/images/node-editor/grid.png";
     NODE_IMAGES_PATH = "";
 
     RENDER_CONNECTION_ARROWS = true;
@@ -773,7 +773,7 @@ export class Node {
 
 
     // /**
-    //  * add an special connection to this node (used for special kinds of graphs)
+    //  * add an special connection to this node (used for special kinds of containers)
     //  * @method addConnection
     //  * @param name
     //  * @param type string defining the input type ("vec3","number",...)

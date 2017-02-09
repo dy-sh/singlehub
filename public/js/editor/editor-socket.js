@@ -131,7 +131,7 @@
                 //console.log(engine);
                 let gr = JSON.stringify(this.engine.serialize());
                 $.ajax({
-                    url: '/api/editor/graph',
+                    url: '/api/editor',
                     type: 'POST',
                     data: { json: gr.toString() }
                 }).done(function () {

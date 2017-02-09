@@ -194,7 +194,7 @@ export class Renderer {
      * @param engine
      * @param skip_clear
      */
-    setGraph(engine?: NodesEngine, skip_clear = false): void {
+    setEngine(engine?: NodesEngine, skip_clear = false): void {
         if (this.engine == engine)
             return;
 

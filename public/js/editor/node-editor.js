@@ -28,15 +28,15 @@
             //nodes options theme
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
-            //create graph
-            let graph = this.engine = nodes_engine_1.engine;
+            //create engine
+            this.engine = nodes_engine_1.engine;
             //create socket
             this.socket = editor_socket_1.socket;
             this.engine.socket = editor_socket_1.socket.socket;
             //create canvas
-            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.socket, this, graph);
-            // renderer.background_image = "/images/litegraph/grid.png";
-            graph.onAfterExecute = function () {
+            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.socket, this, this.engine);
+            // renderer.background_image = "/images/node-editor/grid.png";
+            this.engine.onAfterExecute = function () {
                 renderer.draw(true);
             };
             //add stuff
@@ -89,7 +89,7 @@
             miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
             let canvas = miniwindow.querySelector("canvas");
             let renderer = new renderer_1.Renderer(canvas, this.socket, this, this.engine);
-            //  renderer.background_image = "images/grid.png";
+            //  renderer.background_image = "images/node-editor/grid.png";
             //derwish edit
             renderer.scale = 0.1;
             //renderer.allow_dragnodes = false;
@@ -104,7 +104,7 @@
             close_button.innerHTML = "X";
             close_button.addEventListener("click", function (e) {
                 minimap_opened = false;
-                renderer.setGraph(null);
+                renderer.setEngine(null);
                 miniwindow.parentNode.removeChild(miniwindow);
             });
             miniwindow.appendChild(close_button);

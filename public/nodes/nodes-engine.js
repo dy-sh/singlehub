@@ -41,7 +41,7 @@
             NodesEngine.containers[this.container_id] = this;
             this.clear();
         }
-        //used to know which types of connections support this engine (some graphs do not allow certain types)
+        //used to know which types of connections support this engine (some containers do not allow certain types)
         getSupportedTypes() {
             return this.supported_types;
         }
@@ -587,7 +587,7 @@
         //         return null;
         //     }
         //
-        // //This feature is not finished yet, is to create graphs where nodes are not executed unless a trigger message is received
+        // //This feature is not finished yet, is to create containers where nodes are not executed unless a trigger message is received
         //     triggerInput(name, value) {
         //         let nodes = this.findNodesByName(name);
         //         for (let i = 0; i < nodes.length; ++i)

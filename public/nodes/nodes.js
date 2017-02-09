@@ -41,7 +41,7 @@
             this.SHADOWS_WIDTH = 2;
             this.MENU_TEXT_COLOR = "#BBD";
             this.MENU_BG_COLOR = "#353535";
-            this.BG_IMAGE = "/images/grid.png";
+            this.BG_IMAGE = "/images/node-editor/grid.png";
             this.NODE_IMAGES_PATH = "";
             this.RENDER_CONNECTION_ARROWS = true;
             this.CONNECTIONS_WIDTH = 4;
@@ -565,7 +565,7 @@
                 this.onInputRemoved(slot);
         }
         // /**
-        //  * add an special connection to this node (used for special kinds of graphs)
+        //  * add an special connection to this node (used for special kinds of containers)
         //  * @method addConnection
         //  * @param name
         //  * @param type string defining the input type ("vec3","number",...)

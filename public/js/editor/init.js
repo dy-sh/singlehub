@@ -11,7 +11,6 @@
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
-    // import {Renderer} from "./litegraph-renderer"
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     require("../../nodes/nodes/base");
     require("../../nodes/nodes/math");
@@ -23,7 +22,7 @@
     window.Nodes = nodes_1.Nodes;
     window.NodesEngine = nodes_engine_1.NodesEngine;
     window.renderer = node_editor_1.editor.renderer;
-    editor_socket_1.socket.container_id = node_editor_1.editor.renderer.engine.container_id;
+    // socket.container_id=editor.renderer.engine.container_id;
     window.addEventListener("resize", function () {
         node_editor_1.editor.renderer.resize();
     });

@@ -33,8 +33,8 @@ export class NodeEditor {
             Nodes.options = themes[(<any>window).theme];
 
 
-        //create graph
-        let graph = this.engine = engine;
+        //create engine
+        this.engine = engine;
 
         //create socket
         this.socket = socket;
@@ -47,9 +47,9 @@ export class NodeEditor {
             <HTMLCanvasElement>canvas,
             this.socket,
             this,
-            graph);
-        // renderer.background_image = "/images/litegraph/grid.png";
-        graph.onAfterExecute = function () {
+            this.engine);
+        // renderer.background_image = "/images/node-editor/grid.png";
+        this.engine.onAfterExecute = function () {
             renderer.draw(true)
         };
 
@@ -116,7 +116,7 @@ export class NodeEditor {
         let canvas = miniwindow.querySelector("canvas");
 
         let renderer = new Renderer(canvas, this.socket, this, this.engine);
-        //  renderer.background_image = "images/grid.png";
+        //  renderer.background_image = "images/node-editor/grid.png";
         //derwish edit
         renderer.scale = 0.1;
         //renderer.allow_dragnodes = false;
@@ -134,7 +134,7 @@ export class NodeEditor {
         close_button.innerHTML = "X";
         close_button.addEventListener("click", function (e) {
             minimap_opened = false;
-            renderer.setGraph(null);
+            renderer.setEngine(null);
             miniwindow.parentNode.removeChild(miniwindow);
         });
         miniwindow.appendChild(close_button);
