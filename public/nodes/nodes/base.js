@@ -124,8 +124,7 @@
             };
             this.title = "Container";
             this.desc = "Contain other nodes";
-            this.size = [120, 60];
-            this.bgcolor = nodes_1.Nodes.options.CONTAINER_NODE_BGCOLOR;
+            this.size = [120, 20];
             //create inner engine
             this.container_engine = new nodes_engine_1.NodesEngine();
             this.container_engine._container_node = this;

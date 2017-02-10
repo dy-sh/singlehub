@@ -4,7 +4,7 @@
 
 import {NodesEngine, engine} from "./nodes-engine";
 import Utils from "./utils";
-import {debuglog} from "util";
+
 
 // interface Boundings{
 //     [4]: Float32Array;
@@ -142,7 +142,9 @@ export class Nodes {
     //   debug: config.engine.debugEngine,
 
 
-    private static MODULE_NAME = "Nodes";
+    private static MODULE_NAME = "NODES";
+
+
 
     /**
      * Register a node class so it can be listed when the user wants to create a new one

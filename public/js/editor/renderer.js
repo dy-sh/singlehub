@@ -1278,7 +1278,7 @@
             let color = node.color || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
             if (node.type == "main/container")
                 color = nodes_1.Nodes.options.CONTAINER_NODE_COLOR;
-            else if (node.type == "main/container-input" || node.type == "main/container-output")
+            else if (node.type == "main/input" || node.type == "main/output")
                 color = nodes_1.Nodes.options.IO_NODE_COLOR;
             //if (this.selected) color = "#88F";
             let render_title = true;
@@ -1448,7 +1448,7 @@
                 ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.CONTAINER_NODE_COLOR;
                 ctx.fillStyle = bgcolor || nodes_1.Nodes.options.CONTAINER_NODE_BGCOLOR;
             }
-            else if (node.type == "main/container-input" || node.type == "main/container-output") {
+            else if (node.type == "main/input" || node.type == "main/output") {
                 ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.IO_NODE_COLOR;
                 ctx.fillStyle = bgcolor || nodes_1.Nodes.options.IO_NODE_BGCOLOR;
             }

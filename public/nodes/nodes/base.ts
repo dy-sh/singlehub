@@ -133,10 +133,7 @@ export class Container extends Node {
         this.title = "Container";
         this.desc = "Contain other nodes";
 
-        this.size = [120, 60];
-
-        this.bgcolor = Nodes.options.CONTAINER_NODE_BGCOLOR;
-
+        this.size = [120, 20];
 
         //create inner engine
         this.container_engine = new NodesEngine();
@@ -214,6 +211,7 @@ export class Container extends Node {
     }
 
     onExecute() {
+
         //send inputs to container_engine global inputs
         if (this.inputs)
             for (let i = 0; i < this.inputs.length; i++) {
@@ -246,6 +244,7 @@ export class Container extends Node {
     }
 
     clone() {
+
         let node = Nodes.createNode(this.type);
         let data = this.serialize();
         delete data["id"];

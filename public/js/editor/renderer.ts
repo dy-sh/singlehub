@@ -466,6 +466,7 @@ export class Renderer {
         renderFrame.call(this);
 
         function renderFrame() {
+
             if (!this.pause_rendering)
                 this.draw();
 
@@ -1642,13 +1643,14 @@ export class Renderer {
      * @param ctx
      */
     drawNode(node: Node, ctx: CanvasRenderingContext2D): void {
+
         let glow = false;
 
         let color = node.color || Nodes.options.NODE_DEFAULT_COLOR;
 
         if (node.type == "main/container")
             color = Nodes.options.CONTAINER_NODE_COLOR;
-        else if (node.type == "main/container-input" || node.type == "main/container-output")
+        else if (node.type == "main/input" || node.type == "main/output")
             color = Nodes.options.IO_NODE_COLOR;
 
         //if (this.selected) color = "#88F";
@@ -1729,6 +1731,7 @@ export class Renderer {
         }
 
         //draw shape
+
         this.drawNodeShape(node, ctx, size, color, node.bgcolor, !render_title, node.selected);
         ctx.shadowColor = "transparent";
 
@@ -1855,7 +1858,7 @@ export class Renderer {
         if (node.type == "main/container") {
             ctx.strokeStyle = fgcolor || Nodes.options.CONTAINER_NODE_COLOR;
             ctx.fillStyle = bgcolor || Nodes.options.CONTAINER_NODE_BGCOLOR;
-        } else if (node.type == "main/container-input" || node.type == "main/container-output") {
+        } else if (node.type == "main/input" || node.type == "main/output") {
             ctx.strokeStyle = fgcolor || Nodes.options.IO_NODE_COLOR;
             ctx.fillStyle = bgcolor || Nodes.options.IO_NODE_BGCOLOR;
         }

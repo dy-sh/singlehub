@@ -28,6 +28,7 @@
             //nodes options theme
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
+            console.log("options");
             //create engine
             this.engine = nodes_engine_1.engine;
             //create socket

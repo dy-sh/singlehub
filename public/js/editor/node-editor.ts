@@ -31,7 +31,7 @@ export class NodeEditor {
         //nodes options theme
         if ((<any>window).theme)
             Nodes.options = themes[(<any>window).theme];
-
+console.log("options")
 
         //create engine
         this.engine = engine;

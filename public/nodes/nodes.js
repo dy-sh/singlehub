@@ -242,7 +242,7 @@
     Nodes.registered_node_types = {};
     Nodes.Nodes = {};
     //   debug: config.engine.debugEngine,
-    Nodes.MODULE_NAME = "Nodes";
+    Nodes.MODULE_NAME = "NODES";
     exports.Nodes = Nodes;
     // *************************************************************
     //   Node CLASS                                          *******
