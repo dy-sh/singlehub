@@ -196,7 +196,7 @@ export class NodesEngine {
      * Starts running this engine every interval milliseconds.
      * @param interval amount of milliseconds between executions
      */
-    start(interval: number = 1): void {
+    run(interval: number = 1): void {
         if (this.isRunning)
             return;
 
@@ -223,7 +223,7 @@ export class NodesEngine {
      * @param num number of steps to run, default is 1
      */
     runStep(num: number = 1): void {
-
+console.log("step");
         let start = Nodes.getTime();
         this.globaltime = 0.001 * (start - this.starttime);
 

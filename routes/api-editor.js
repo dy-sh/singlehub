@@ -147,7 +147,7 @@
     });
     //------------------ links ------------------------
     /**
-     * create link
+     * Create link
      */
     router.post('/c/:cid/l/', function (req, res) {
         let container = nodes_engine_1.NodesEngine.containers[req.params.cid];
@@ -181,7 +181,7 @@
         res.send(`${MODULE_NAME}: Link created: from [${node.container_id}/${node.id}] to [${targetNode.container_id}/${targetNode.id}]`);
     });
     /**
-     * delete link
+     * Delete link
      */
     router.delete('/c/:cid/l/:id', function (req, res) {
         let container = nodes_engine_1.NodesEngine.containers[req.params.cid];
@@ -201,6 +201,31 @@
             id: req.params.id
         });
         res.send(`${MODULE_NAME}: Link deleted: from [${node.container_id}/${node.id}] to [${targetNode.container_id}/${targetNode.id}]`);
+    });
+    //------------------ engine ------------------------
+    /**
+     * Run engine
+     */
+    router.post('/run', function (req, res) {
+        nodes_engine_1.engine.run();
+        server_1.server.socket.io.emit('engine-run');
+        res.send(`${MODULE_NAME}: Run engine`);
+    });
+    /**
+     * Stop engine
+     */
+    router.post('/stop', function (req, res) {
+        nodes_engine_1.engine.stop();
+        server_1.server.socket.io.emit('engine-stop');
+        res.send(`${MODULE_NAME}: Stop engine`);
+    });
+    /**
+     * Run step engine
+     */
+    router.post('/step', function (req, res) {
+        nodes_engine_1.engine.runStep();
+        server_1.server.socket.io.emit('engine-run-step');
+        res.send(`${MODULE_NAME}: Run step engine`);
     });
     //------------------ receiver ------------------------
     router.post('/receiver/value', function (req, res) {

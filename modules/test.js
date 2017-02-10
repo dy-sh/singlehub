@@ -37,10 +37,11 @@
         node_const_B.connect(0, node_math, 1);
         node_math.connect(0, node_watch, 0);
         // node_math.connect(0, node_watch2, 0);
-        nodes_engine_1.engine.runStep(1);
-        setInterval(function () {
-            nodes_engine_1.engine.runStep(1);
-        }, 1000);
+        // engine.runStep(1);
+        //
+        // setInterval(function () {
+        // 	engine.runStep(1);
+        // }, 1000);
     };
 });
 //# sourceMappingURL=test.js.map

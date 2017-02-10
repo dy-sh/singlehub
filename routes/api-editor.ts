@@ -188,7 +188,7 @@ router.get('/nodes/description', function (req, res) {
 //------------------ links ------------------------
 
 /**
- * create link
+ * Create link
  */
 router.post('/c/:cid/l/', function (req, res) {
     let container = NodesEngine.containers[req.params.cid];
@@ -228,7 +228,7 @@ router.post('/c/:cid/l/', function (req, res) {
 
 
 /**
- * delete link
+ * Delete link
  */
 router.delete('/c/:cid/l/:id', function (req, res) {
     let container = NodesEngine.containers[req.params.cid];
@@ -255,6 +255,37 @@ router.delete('/c/:cid/l/:id', function (req, res) {
 });
 
 
+//------------------ engine ------------------------
+
+
+/**
+ * Run engine
+ */
+router.post('/run', function (req, res) {
+    engine.run();
+    server.socket.io.emit('engine-run');
+    res.send(`${MODULE_NAME}: Run engine`);
+});
+
+
+/**
+ * Stop engine
+ */
+router.post('/stop', function (req, res) {
+    engine.stop();
+    server.socket.io.emit('engine-stop');
+    res.send(`${MODULE_NAME}: Stop engine`);
+});
+
+
+/**
+ * Run step engine
+ */
+router.post('/step', function (req, res) {
+    engine.runStep();
+    server.socket.io.emit('engine-run-step');
+    res.send(`${MODULE_NAME}: Run step engine`);
+});
 //------------------ receiver ------------------------
 
 

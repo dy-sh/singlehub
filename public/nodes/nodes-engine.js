@@ -118,7 +118,7 @@
          * Starts running this engine every interval milliseconds.
          * @param interval amount of milliseconds between executions
          */
-        start(interval = 1) {
+        run(interval = 1) {
             if (this.isRunning)
                 return;
             this.isRunning = true;
@@ -138,6 +138,7 @@
          * @param num number of steps to run, default is 1
          */
         runStep(num = 1) {
+            console.log("step");
             let start = nodes_1.Nodes.getTime();
             this.globaltime = 0.001 * (start - this.starttime);
             try {

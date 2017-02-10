@@ -278,6 +278,30 @@ export class EditorSocket {
     //---------------------------------------------------
 
 
+    sendRunEngine(): void {
+        $.ajax({
+            url: "/api/editor/run",
+            type: 'POST'
+        })
+    };
+
+    sendStopEngine(): void {
+        $.ajax({
+            url: "/api/editor/stop",
+            type: 'POST'
+        })
+    };
+
+    sendStepEngine(): void {
+        $.ajax({
+            url: "/api/editor/step",
+            type: 'POST'
+        })
+    };
+
+    //---------------------------------------------------
+
+
     sendCloneNode(node: Node): void {
         $.ajax({
             url: '/api/editor/nodes/clone',
@@ -287,6 +311,8 @@ export class EditorSocket {
 
         });
     };
+
+
 
 
     //

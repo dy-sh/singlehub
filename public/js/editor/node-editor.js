@@ -41,7 +41,7 @@
             };
             //add stuff
             //todo later
-            this.addMiniWindow(200, 200);
+            //  this.addMiniWindow(200, 200);
             //append to DOM
             let parent = document.getElementById("main");
             if (parent)
@@ -49,37 +49,8 @@
             renderer.resize();
             //renderer.draw(true,true);
             this.addFullscreenButton();
-        }
-        addFullscreenButton() {
-            $("#fullscreen-button").click(function () {
-                // editor.goFullscreen();
-                let elem = document.documentElement;
-                let fullscreenElement = document.fullscreenElement ||
-                    document.mozFullscreenElement ||
-                    document.webkitFullscreenElement;
-                if (fullscreenElement == null) {
-                    if (elem.requestFullscreen) {
-                        elem.requestFullscreen();
-                    }
-                    else if (elem.mozRequestFullScreen) {
-                        elem.mozRequestFullScreen();
-                    }
-                    else if (elem.webkitRequestFullscreen) {
-                        elem.webkitRequestFullscreen();
-                    }
-                }
-                else {
-                    if (document.cancelFullScreen) {
-                        document.cancelFullScreen();
-                    }
-                    else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    }
-                    else if (document.webkitCancelFullScreen) {
-                        document.webkitCancelFullScreen();
-                    }
-                }
-            });
+            this.addPlayButton();
+            this.addStepButton();
         }
         addMiniWindow(w, h) {
             if (minimap_opened)
@@ -120,6 +91,37 @@
             });
             miniwindow.appendChild(reset_button);
             this.root.querySelector(".content").appendChild(miniwindow);
+        }
+        addFullscreenButton() {
+            $("#fullscreen-button").click(function () {
+                // editor.goFullscreen();
+                let elem = document.documentElement;
+                let fullscreenElement = document.fullscreenElement ||
+                    document.mozFullscreenElement ||
+                    document.webkitFullscreenElement;
+                if (fullscreenElement == null) {
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    }
+                    else if (elem.mozRequestFullScreen) {
+                        elem.mozRequestFullScreen();
+                    }
+                    else if (elem.webkitRequestFullscreen) {
+                        elem.webkitRequestFullscreen();
+                    }
+                }
+                else {
+                    if (document.cancelFullScreen) {
+                        document.cancelFullScreen();
+                    }
+                    else if (document.mozCancelFullScreen) {
+                        document.mozCancelFullScreen();
+                    }
+                    else if (document.webkitCancelFullScreen) {
+                        document.webkitCancelFullScreen();
+                    }
+                }
+            });
         }
         importContainerFromFile(position) {
             $('#import-panel-title').html("Import Container");
@@ -351,6 +353,18 @@
                 }
             });
         }
+        addPlayButton() {
+            $("#play-button").click(function () {
+                editor_socket_1.socket.sendRunEngine();
+                // engine.run()
+            });
+        }
+        addStepButton() {
+            $("#step-button").click(function () {
+                editor_socket_1.socket.sendStepEngine();
+                // engine.runStep();
+            });
+        }
     }
     exports.NodeEditor = NodeEditor;
     let minimap_opened = false;
@@ -368,7 +382,7 @@
     let textSettingTemplate = Handlebars.compile($('#textSettingTemplate').html());
     let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
     let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
-    function NodeSettings(node) {
+    function nodeSettings(node) {
         $('#node-settings-title').html(node.type);
         //parse settings from json
         let settings = JSON.parse(node.properties['Settings']);

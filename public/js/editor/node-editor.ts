@@ -41,7 +41,6 @@ export class NodeEditor {
         this.engine.socket = socket.socket;
 
 
-
         //create canvas
         let renderer = this.renderer = new Renderer(
             <HTMLCanvasElement>canvas,
@@ -56,8 +55,8 @@ export class NodeEditor {
 
         //add stuff
 
-       //todo later
-        this.addMiniWindow(200, 200);
+        //todo later
+        //  this.addMiniWindow(200, 200);
 
         //append to DOM
         let parent = document.getElementById("main");
@@ -68,40 +67,8 @@ export class NodeEditor {
         //renderer.draw(true,true);
 
         this.addFullscreenButton();
-    }
-
-    addFullscreenButton() {
-
-        $("#fullscreen-button").click(
-            function () {
-                // editor.goFullscreen();
-
-                let elem = document.documentElement;
-
-                let fullscreenElement =
-                    document.fullscreenElement ||
-                    (<any>document).mozFullscreenElement ||
-                    document.webkitFullscreenElement;
-
-                if (fullscreenElement == null) {
-                    if (elem.requestFullscreen) {
-                        elem.requestFullscreen();
-                    } else if ((<any>elem).mozRequestFullScreen) {
-                        (<any>elem).mozRequestFullScreen();
-                    } else if (elem.webkitRequestFullscreen) {
-                        elem.webkitRequestFullscreen();
-                    }
-                } else {
-                    if ((<any>document).cancelFullScreen) {
-                        (<any>document).cancelFullScreen();
-                    } else if ((<any>document).mozCancelFullScreen) {
-                        (<any>document).mozCancelFullScreen();
-                    } else if (document.webkitCancelFullScreen) {
-                        document.webkitCancelFullScreen();
-                    }
-                }
-            }
-        )
+        this.addPlayButton();
+        this.addStepButton();
     }
 
     addMiniWindow(w: number, h: number): void {
@@ -153,6 +120,40 @@ export class NodeEditor {
 
         this.root.querySelector(".content").appendChild(miniwindow);
 
+    }
+
+    addFullscreenButton() {
+
+        $("#fullscreen-button").click(
+            function () {
+                // editor.goFullscreen();
+
+                let elem = document.documentElement;
+
+                let fullscreenElement =
+                    document.fullscreenElement ||
+                    (<any>document).mozFullscreenElement ||
+                    document.webkitFullscreenElement;
+
+                if (fullscreenElement == null) {
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    } else if ((<any>elem).mozRequestFullScreen) {
+                        (<any>elem).mozRequestFullScreen();
+                    } else if (elem.webkitRequestFullscreen) {
+                        elem.webkitRequestFullscreen();
+                    }
+                } else {
+                    if ((<any>document).cancelFullScreen) {
+                        (<any>document).cancelFullScreen();
+                    } else if ((<any>document).mozCancelFullScreen) {
+                        (<any>document).mozCancelFullScreen();
+                    } else if (document.webkitCancelFullScreen) {
+                        document.webkitCancelFullScreen();
+                    }
+                }
+            }
+        )
     }
 
     importContainerFromFile(position: [number, number]): void {
@@ -434,6 +435,20 @@ export class NodeEditor {
             }
         });
     }
+
+    private addPlayButton() {
+        $("#play-button").click(function () {
+            socket.sendRunEngine();
+            // engine.run()
+        });
+    }
+
+    private addStepButton() {
+        $("#step-button").click(function () {
+           socket.sendStepEngine();
+            // engine.runStep();
+        });
+    }
 }
 
 let minimap_opened = false;
@@ -456,7 +471,7 @@ let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html(
 let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
 
 
-function NodeSettings(node: Node): void {
+function nodeSettings(node: Node): void {
     $('#node-settings-title').html(node.type);
 
     //parse settings from json

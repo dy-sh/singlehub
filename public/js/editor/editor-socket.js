@@ -228,6 +228,28 @@
         }
         ;
         //---------------------------------------------------
+        sendRunEngine() {
+            $.ajax({
+                url: "/api/editor/run",
+                type: 'POST'
+            });
+        }
+        ;
+        sendStopEngine() {
+            $.ajax({
+                url: "/api/editor/stop",
+                type: 'POST'
+            });
+        }
+        ;
+        sendStepEngine() {
+            $.ajax({
+                url: "/api/editor/step",
+                type: 'POST'
+            });
+        }
+        ;
+        //---------------------------------------------------
         sendCloneNode(node) {
             $.ajax({
                 url: '/api/editor/nodes/clone',

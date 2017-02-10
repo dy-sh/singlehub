@@ -40,11 +40,11 @@ module.exports.test = function () {
     node_math.connect(0, node_watch, 0);
 	// node_math.connect(0, node_watch2, 0);
 
-	engine.runStep(1);
-
-	setInterval(function () {
-		engine.runStep(1);
-	}, 1000);
+	// engine.runStep(1);
+    //
+	// setInterval(function () {
+	// 	engine.runStep(1);
+	// }, 1000);
 };
 
 

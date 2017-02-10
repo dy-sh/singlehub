@@ -2351,7 +2351,7 @@ export class Renderer {
         if (node.properties["Settings"]) {
             options.push({
                 content: "Settings", callback: function () {
-                    this.NodeSettings(node)
+                    this.nodeSettings(node)
                 }
             });
             options.push(null);
