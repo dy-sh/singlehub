@@ -105,6 +105,15 @@
                 node.disconnectOutput(link.origin_slot, targetNode);
                 //targetNode.disconnectInput(link.target_slot);
             });
+            socket.on('engine-run', function (l) {
+                node_editor_1.editor.onEngineRun();
+            });
+            socket.on('engine-run-step', function (l) {
+                node_editor_1.editor.onEngineRunStep();
+            });
+            socket.on('engine-stop', function (l) {
+                node_editor_1.editor.onEngineStop();
+            });
             socket.on('nodes-active', function (data) {
                 let container = nodes_engine_1.NodesEngine.containers[data.cid];
                 for (let id of data.ids) {

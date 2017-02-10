@@ -16,8 +16,9 @@
     const editor_socket_1 = require("./editor-socket");
     const node_editor_themes_1 = require("./node-editor-themes");
     class NodeEditor {
-        //nodes: Nodes;
         constructor() {
+            //nodes: Nodes;
+            this.isRunning = false;
             //fill container
             let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
             let root = document.createElement("div");
@@ -354,9 +355,12 @@
             });
         }
         addPlayButton() {
+            var that = this;
             $("#play-button").click(function () {
-                editor_socket_1.socket.sendRunEngine();
-                // engine.run()
+                if (that.isRunning)
+                    editor_socket_1.socket.sendStopEngine();
+                else
+                    editor_socket_1.socket.sendRunEngine();
             });
         }
         addStepButton() {
@@ -364,6 +368,16 @@
                 editor_socket_1.socket.sendStepEngine();
                 // engine.runStep();
             });
+        }
+        onEngineRun() {
+            this.isRunning = true;
+            $("#step-button").fadeOut(100);
+        }
+        onEngineRunStep() {
+        }
+        onEngineStop() {
+            this.isRunning = false;
+            $("#step-button").fadeIn(100);
         }
     }
     exports.NodeEditor = NodeEditor;

@@ -16,6 +16,8 @@ export class NodeEditor {
     socket: EditorSocket;
     //nodes: Nodes;
 
+    isRunning = false;
+
 
     constructor() {
         //fill container
@@ -437,17 +439,35 @@ export class NodeEditor {
     }
 
     private addPlayButton() {
+        var that = this;
         $("#play-button").click(function () {
-            socket.sendRunEngine();
-            // engine.run()
+            if (that.isRunning)
+                socket.sendStopEngine();
+            else
+                socket.sendRunEngine();
+
         });
     }
 
     private addStepButton() {
         $("#step-button").click(function () {
-           socket.sendStepEngine();
+            socket.sendStepEngine();
             // engine.runStep();
         });
+    }
+
+    onEngineRun() {
+        this.isRunning = true;
+        $("#step-button").fadeOut(100);
+    }
+
+    onEngineRunStep() {
+
+    }
+
+    onEngineStop() {
+        this.isRunning = false;
+        $("#step-button").fadeIn(100);
     }
 }
 

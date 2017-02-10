@@ -131,6 +131,20 @@ export class EditorSocket {
 
 
 
+        socket.on('engine-run', function (l) {
+            editor.onEngineRun();
+        });
+
+
+        socket.on('engine-run-step', function (l) {
+            editor.onEngineRunStep();
+        });
+
+        socket.on('engine-stop', function (l) {
+            editor.onEngineStop();
+        });
+
+
         socket.on('nodes-active', function (data) {
             let container = NodesEngine.containers[data.cid];
             for (let id of data.ids) {
