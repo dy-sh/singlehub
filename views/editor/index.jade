@@ -20,33 +20,31 @@ html
 
 	body
 		// Header Menu
-		.ui.inverted.fixed.borderless.main.menu
-			.ui.container
-				a.ui.item.fadebefore(href='/about')
-					h3 MyNodes
+		.header
+			.ui.inverted.fixed.borderless.main.menu.fistline
+				.ui.container
+					a.ui.item.fadebefore(href='/about')
+						h3 MyNodes
+			.ui.container.secondline
+				p
+					if (panelId == "Main")
+						a.ui.inverted.small.basic.right.floated.button(href='/dashboard', target='_top') Dashboard
+							if (split)
+								a.ui.inverted.small.basic.right.floated.button(href='/editor', target='_top') Split
+							else
+								a.ui.inverted.small.basic.right.floated.button(href='/editor/split', target='_top') Split
+					else
+						a.ui.inverted.small.basic.right.floated.button(asp-controller='dashboard', asp-action='Panel', asp-route-id='@ViewBag.containerId', target='_top') Dashboard
+							if (split)
+								a.ui.inverted.small.basic.right.floated.button(href='/editor/panel?id=#{panelId}', target='_top') Split
+							else
+								a.ui.inverted.small.basic.right.floated.button(href='/editor/split?id=#{panelId}', target='_top') Split
+					.ui.tiny.buttons
+						a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
+						if panelsStack
+							each val, key in panelsStack
+								a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
 
-		br
-		br
-		.ui.container
-			p
-				if (panelId == "Main")
-					a.ui.inverted.small.basic.right.floated.button(href='/dashboard', target='_top') Dashboard
-						if (split)
-							a.ui.inverted.small.basic.right.floated.button(href='/editor', target='_top') Split
-						else
-							a.ui.inverted.small.basic.right.floated.button(href='/editor/split', target='_top') Split
-				else
-					a.ui.inverted.small.basic.right.floated.button(asp-controller='dashboard', asp-action='Panel', asp-route-id='@ViewBag.containerId', target='_top') Dashboard
-						if (split)
-							a.ui.inverted.small.basic.right.floated.button(href='/editor/panel?id=#{panelId}', target='_top') Split
-						else
-							a.ui.inverted.small.basic.right.floated.button(href='/editor/split?id=#{panelId}', target='_top') Split
-				.ui.tiny.buttons
-					a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
-					if panelsStack
-						each val, key in panelsStack
-							a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
-		br
 		#main
 		#node-settings-panel.ui.small.modal
 			#node-settings-title.header
