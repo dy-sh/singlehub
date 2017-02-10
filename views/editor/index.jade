@@ -45,7 +45,19 @@ html
 							each val, key in panelsStack
 								a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
 
-		#main
+
+		.footer
+			.navigation
+				.ui.black.tiny.compact.button Main
+				| |
+				.ui.black.tiny.compact.button Main2
+
+			.ui.black.compact.right.floated.icon.button
+				i.play.icon
+			.ui.black.compact.right.floated.icon.button
+				i.step.forward.icon
+
+	#main
 		#node-settings-panel.ui.small.modal
 			#node-settings-title.header
 			.content
