@@ -371,13 +371,18 @@
         }
         onEngineRun() {
             this.isRunning = true;
-            $("#step-button").fadeOut(100);
+            $("#step-button").fadeOut(200);
+            $("#play-icon").addClass("stop");
+            $("#play-icon").removeClass("play");
         }
         onEngineRunStep() {
         }
         onEngineStop() {
+            console.log("in");
             this.isRunning = false;
-            $("#step-button").fadeIn(100);
+            $("#step-button").fadeIn(200);
+            $("#play-icon").removeClass("stop");
+            $("#play-icon").addClass("play");
         }
     }
     exports.NodeEditor = NodeEditor;
