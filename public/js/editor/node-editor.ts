@@ -31,7 +31,7 @@ export class NodeEditor {
         //nodes options theme
         if ((<any>window).theme)
             Nodes.options = themes[(<any>window).theme];
-console.log("options")
+
 
         //create engine
         this.engine = engine;
@@ -56,7 +56,8 @@ console.log("options")
 
         //add stuff
 
-       //todo later this.addMiniWindow(200, 200);
+       //todo later
+        this.addMiniWindow(200, 200);
 
         //append to DOM
         let parent = document.getElementById("main");

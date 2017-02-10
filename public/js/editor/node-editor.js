@@ -28,7 +28,6 @@
             //nodes options theme
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
-            console.log("options");
             //create engine
             this.engine = nodes_engine_1.engine;
             //create socket
@@ -41,7 +40,8 @@
                 renderer.draw(true);
             };
             //add stuff
-            //todo later this.addMiniWindow(200, 200);
+            //todo later
+            this.addMiniWindow(200, 200);
             //append to DOM
             let parent = document.getElementById("main");
             if (parent)
