@@ -715,7 +715,7 @@
             return false;
         }
         /**
-         * Process mouse wheel
+         * Process mouse wheel, change zoom
          * @param e
          * @returns {boolean}
          */
@@ -726,9 +726,9 @@
             this.adjustMouseEvent(e);
             let zoom = this.scale;
             if (delta > 0)
-                zoom *= 1.1;
+                zoom *= 1.02;
             else if (delta < 0)
-                zoom *= 1 / (1.1);
+                zoom *= 1 / (1.02);
             this.setZoom(zoom, [e.localX, e.localY]);
             /*
              if(this.rendering_timer_id == null)
