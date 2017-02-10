@@ -21,41 +21,29 @@ html
 	body
 		// Header Menu
 		.header
-			.ui.inverted.fixed.borderless.main.menu.fistline
-				.ui.container
-					a.ui.item.fadebefore(href='/about')
-						h3 MyNodes
-			.ui.container.secondline
-				p
-					if (panelId == "Main")
-						a.ui.inverted.small.basic.right.floated.button(href='/dashboard', target='_top') Dashboard
-							if (split)
-								a.ui.inverted.small.basic.right.floated.button(href='/editor', target='_top') Split
-							else
-								a.ui.inverted.small.basic.right.floated.button(href='/editor/split', target='_top') Split
-					else
-						a.ui.inverted.small.basic.right.floated.button(asp-controller='dashboard', asp-action='Panel', asp-route-id='@ViewBag.containerId', target='_top') Dashboard
-							if (split)
-								a.ui.inverted.small.basic.right.floated.button(href='/editor/panel?id=#{panelId}', target='_top') Split
-							else
-								a.ui.inverted.small.basic.right.floated.button(href='/editor/split?id=#{panelId}', target='_top') Split
-					.ui.tiny.buttons
-						a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
-						if panelsStack
-							each val, key in panelsStack
-								a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
+			.logo
+				a.ui.black.button(href='/about') MyNodes
+			.rightmenu
+				if (panelId == "Main")
+					a.ui.black.tiny.compact.right.floated.button(href='/dashboard', target='_top') Dashboard
+						if (split)
+							a.ui.black.tiny.compact.right.floated.button(href='/editor', target='_top') Split
+						else
+							a.ui.black.tiny.compact.right.floated.button(href='/editor/split', target='_top') Split
+				else
+					a.ui.black.tiny.compact.right.floated.button Dashboard
+						if (split)
+							a.ui.black.tiny.compact.right.floated.button(href='/editor/panel?id=#{panelId}', target='_top') Split
+						else
+							a.ui.black.tiny.compact.right.floated.button(href='/editor/split?id=#{panelId}', target='_top') Split
+			//.ui.tiny.buttons
+			//	a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
+				//if panelsStack
+				//	each val, key in panelsStack
+				//		a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
 
 
-		.footer
-			.navigation
-				.ui.black.tiny.compact.button Main
-				| |
-				.ui.black.tiny.compact.button Main2
 
-			.ui.black.compact.right.floated.icon.button
-				i.play.icon
-			.ui.black.compact.right.floated.icon.button
-				i.step.forward.icon
 
 	#main
 		#node-settings-panel.ui.small.modal
@@ -107,11 +95,24 @@ html
 			var owner_panel_id = "#{ownerPanelId}";
 			var theme = "#{theme}"
 
-		script(src='/libs/jquery/dist/jquery.min.js')
-		script(src='/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js')
-		script(src='/libs/moment/min/moment.min.js')
-		script(src='/libs/handlebars/handlebars.min.js')
-		script(src='/libs/semantic/dist/semantic.min.js')
-		script(src='/libs/socket.io-client/dist/socket.io.js')
-		script(src='/libs/requirejs/require.js' data-main="/js/editor/init")
-		//script(src='/js/node-editor/node-editor-theme#{theme}.js')
+
+	.footer
+		.navigation
+			.ui.black.tiny.compact.button Main
+			//| |
+			//.ui.black.tiny.compact.button Main2
+
+		.ui.black.compact.right.floated.icon.button
+			i.play.icon
+		.ui.black.compact.right.floated.icon.button
+			i.step.forward.icon
+
+
+script(src='/libs/jquery/dist/jquery.min.js')
+script(src='/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js')
+script(src='/libs/moment/min/moment.min.js')
+script(src='/libs/handlebars/handlebars.min.js')
+script(src='/libs/semantic/dist/semantic.min.js')
+script(src='/libs/socket.io-client/dist/socket.io.js')
+script(src='/libs/requirejs/require.js' data-main="/js/editor/init")
+//script(src='/js/node-editor/node-editor-theme#{theme}.js')
