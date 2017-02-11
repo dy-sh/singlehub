@@ -6,8 +6,6 @@ import {Node} from "../node";
  */
 
 
-
-
 //Watch a value in the editor
 export class Watch extends Node {
     constructor() {
@@ -16,14 +14,12 @@ export class Watch extends Node {
         this.desc = "Show value of input";
         this.size = [60, 20];
         this.addInput("value", null, {label: ""});
-        this.addOutput("value", null, {label: ""});
     }
 
-    onExecute() {
+    onInputUpdated = function () {
         let val = this.getInputData(0);
-        this.setOutputData(0, val);
         this.sendMessageToFrontSide({value: val});
-    }
+    };
 
     onGetMessageFromBackSide = function (data) {
         this.properties.value = data.value;
@@ -60,16 +56,16 @@ export class Console extends Node {
         this.addInput("data");
     }
 
-    oldVal: any;
 
-    onExecute = function () {
+    onInputUpdated = function () {
         let val = this.getInputData(0);
-        if (val != this.oldVal) {
-            console.log("CONSOLE NODE: " + val);
-            this.isActive = true;
-            this.oldVal = val;
-        }
-    }
+        console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + val);
+        this.sendMessageToFrontSide({value: val});
+    };
+
+    onGetMessageFromBackSide = function (data) {
+        console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + data.value);
+    };
 }
 Nodes.registerNodeType("debug/console", Console);
 

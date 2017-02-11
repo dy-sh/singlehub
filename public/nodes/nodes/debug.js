@@ -16,6 +16,10 @@
     class Watch extends node_1.Node {
         constructor() {
             super();
+            this.onInputUpdated = function () {
+                let val = this.getInputData(0);
+                this.sendMessageToFrontSide({ value: val });
+            };
             this.onGetMessageFromBackSide = function (data) {
                 this.properties.value = data.value;
                 this.showValueOnInput(data.value);
@@ -24,12 +28,6 @@
             this.desc = "Show value of input";
             this.size = [60, 20];
             this.addInput("value", null, { label: "" });
-            this.addOutput("value", null, { label: "" });
-        }
-        onExecute() {
-            let val = this.getInputData(0);
-            this.setOutputData(0, val);
-            this.sendMessageToFrontSide({ value: val });
         }
         showValueOnInput(value) {
             //show the current value
@@ -54,13 +52,13 @@
     class Console extends node_1.Node {
         constructor() {
             super();
-            this.onExecute = function () {
+            this.onInputUpdated = function () {
                 let val = this.getInputData(0);
-                if (val != this.oldVal) {
-                    console.log("CONSOLE NODE: " + val);
-                    this.isActive = true;
-                    this.oldVal = val;
-                }
+                console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + val);
+                this.sendMessageToFrontSide({ value: val });
+            };
+            this.onGetMessageFromBackSide = function (data) {
+                console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + data.value);
             };
             this.title = "Console";
             this.desc = "Show value inside the console";

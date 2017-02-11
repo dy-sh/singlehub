@@ -65,6 +65,24 @@
                         }
                     }];
             };
+            this.onExecute = function () {
+                //send inputs to container_engine global inputs
+                if (this.inputs)
+                    for (let i = 0; i < this.inputs.length; i++) {
+                        let input = this.inputs[i];
+                        let value = this.getInputData(i);
+                        this.container_engine.setGlobalInputData(input.name, value);
+                    }
+                //execute
+                this.container_engine.runStep();
+                //send container_engine global outputs to outputs
+                if (this.outputs)
+                    for (let i = 0; i < this.outputs.length; i++) {
+                        let output = this.outputs[i];
+                        let value = this.container_engine.getGlobalOutputData(output.name);
+                        this.setOutputData(i, value);
+                    }
+            };
             this.title = "Container";
             this.desc = "Contain other nodes";
             this.size = [120, 20];
@@ -115,24 +133,6 @@
             let info = this.getOutputInfo(slot);
             info.type = type;
         }
-        onExecute() {
-            //send inputs to container_engine global inputs
-            if (this.inputs)
-                for (let i = 0; i < this.inputs.length; i++) {
-                    let input = this.inputs[i];
-                    let value = this.getInputData(i);
-                    this.container_engine.setGlobalInputData(input.name, value);
-                }
-            //execute
-            this.container_engine.runStep();
-            //send container_engine global outputs to outputs
-            if (this.outputs)
-                for (let i = 0; i < this.outputs.length; i++) {
-                    let output = this.outputs[i];
-                    let value = this.container_engine.getGlobalOutputData(output.name);
-                    this.setOutputData(i, value);
-                }
-        }
         configure(o) {
             node_1.Node.prototype.configure.call(this, o);
             //this.container_engine.configure(o.engine);
@@ -161,6 +161,15 @@
             //When added to engine tell the engine this is a new global input
             this.onAdded = function () {
                 this.engine.addGlobalInput(this.properties.name, this.properties.type);
+            };
+            this.onExecute = function () {
+                let name = this.properties.name;
+                //read from global input
+                let data = this.engine.global_inputs[name];
+                if (!data)
+                    return;
+                //put through output
+                this.setOutputData(0, data.value);
             };
             this.title = "Input";
             this.desc = "Input of the container";
@@ -198,15 +207,6 @@
                 enumerable: true
             });
         }
-        onExecute() {
-            let name = this.properties.name;
-            //read from global input
-            let data = this.engine.global_inputs[name];
-            if (!data)
-                return;
-            //put through output
-            this.setOutputData(0, data.value);
-        }
     }
     exports.Input = Input;
     nodes_1.Nodes.registerNodeType("main/input", Input);
@@ -216,6 +216,9 @@
             super();
             this.onAdded = function () {
                 let name = this.engine.addGlobalOutput(this.properties.name, this.properties.type);
+            };
+            this.onExecute = function () {
+                this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
             };
             this.title = "Ouput";
             this.desc = "Output of the container";
@@ -252,9 +255,6 @@
                 },
                 enumerable: true
             });
-        }
-        onExecute() {
-            this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
         }
     }
     exports.Output = Output;

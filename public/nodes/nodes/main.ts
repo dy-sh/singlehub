@@ -14,7 +14,6 @@ import {Node} from "../node";
 import {NodesEngine} from "../nodes-engine";
 
 
-
 //Constant
 export class Constant extends Node {
     constructor() {
@@ -46,10 +45,6 @@ export class Constant extends Node {
     }
 }
 Nodes.registerNodeType("main/constant", Constant);
-
-
-
-
 
 
 //Container: a node that contains a engine
@@ -139,7 +134,7 @@ export class Container extends Node {
         }];
     }
 
-    onExecute() {
+    onExecute = function () {
 
         //send inputs to container_engine global inputs
         if (this.inputs)
@@ -242,7 +237,7 @@ export class Input extends Node {
         this.engine.addGlobalInput(this.properties.name, this.properties.type);
     }
 
-    onExecute() {
+    onExecute = function () {
         let name = this.properties.name;
 
         //read from global input
@@ -307,7 +302,7 @@ export class Output extends Node {
         let name = this.engine.addGlobalOutput(this.properties.name, this.properties.type);
     }
 
-    onExecute() {
+    onExecute = function () {
         this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
     }
 }
