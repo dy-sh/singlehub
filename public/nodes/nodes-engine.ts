@@ -7,7 +7,7 @@ import {Nodes, Node, Link} from "./nodes";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
-import {Container} from "./nodes/base"
+import {Container} from "./nodes/main"
 
 
 //todo

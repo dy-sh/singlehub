@@ -29,7 +29,7 @@ import {engine} from './public/nodes/nodes-engine'
 // let engine=require('./public/nodes/nodes-engine');
 engine.socket=server.socket.io;
 require('./public/nodes/nodes');
-require('./public/nodes/nodes/base');
+require('./public/nodes/nodes/main');
 require('./public/nodes/nodes/math');
 require('./modules/test').test();
 

@@ -9,7 +9,7 @@ import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {NodeEditor, editor} from "./node-editor";
 import {EditorSocket} from "./editor-socket";
 import Utils from "../../nodes/utils";
-import {Container} from "../../nodes/nodes/base";
+import {Container} from "../../nodes/nodes/main";
 
 interface IgetMenuOptions {
     (): Array<any>;

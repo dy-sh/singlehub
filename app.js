@@ -33,7 +33,7 @@
     // let engine=require('./public/nodes/nodes-engine');
     nodes_engine_1.engine.socket = server_1.server.socket.io;
     require('./public/nodes/nodes');
-    require('./public/nodes/nodes/base');
+    require('./public/nodes/nodes/main');
     require('./public/nodes/nodes/math');
     require('./modules/test').test();
 });

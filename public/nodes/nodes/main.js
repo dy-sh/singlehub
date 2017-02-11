@@ -317,4 +317,4 @@
     exports.Output = Output;
     nodes_1.Nodes.registerNodeType("main/output", Output);
 });
-//# sourceMappingURL=base.js.map
+//# sourceMappingURL=main.js.map

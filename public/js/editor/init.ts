@@ -5,7 +5,7 @@
 import {Nodes, Node} from "../../nodes/nodes"
 import {engine, NodesEngine} from "../../nodes/nodes-engine"
 
-import "../../nodes/nodes/base";
+import "../../nodes/nodes/main";
 import "../../nodes/nodes/math";
 
 import {editor} from "./node-editor";
