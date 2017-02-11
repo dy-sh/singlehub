@@ -19,6 +19,7 @@
         constructor() {
             //nodes: Nodes;
             this.isRunning = false;
+            this.showSlotsValues = false;
             //fill container
             let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
             let root = document.createElement("div");
@@ -52,6 +53,7 @@
             this.addFullscreenButton();
             this.addPlayButton();
             this.addStepButton();
+            this.addSlotsValuesButton();
         }
         addMiniWindow(w, h) {
             if (minimap_opened)
@@ -371,7 +373,7 @@
         }
         onEngineRun() {
             this.isRunning = true;
-            $("#step-button").fadeOut(200);
+            $("#step-button").fadeTo(200, 0.3);
             $("#play-icon").addClass("stop");
             $("#play-icon").removeClass("play");
         }
@@ -379,9 +381,22 @@
         }
         onEngineStop() {
             this.isRunning = false;
-            $("#step-button").fadeIn(200);
+            $("#step-button").fadeTo(200, 1);
             $("#play-icon").removeClass("stop");
             $("#play-icon").addClass("play");
+        }
+        addSlotsValuesButton() {
+            $("#slots-values-button").click(function () {
+                this.showSlotsValues = !this.showSlotsValues;
+                if (this.showSlotsValues) {
+                    $("#slots-values-icon").addClass("hide");
+                    $("#slots-values-icon").removeClass("unhide");
+                }
+                else {
+                    $("#slots-values-icon").removeClass("hide");
+                    $("#slots-values-icon").addClass("unhide");
+                }
+            });
         }
     }
     exports.NodeEditor = NodeEditor;

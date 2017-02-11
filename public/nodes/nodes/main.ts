@@ -184,7 +184,7 @@ Nodes.registerNodeType("main/container", Container);
 
 
 //Input for a container
-export class Input extends Node {
+export class ContainerInput extends Node {
     constructor() {
         super();
 
@@ -248,11 +248,11 @@ export class Input extends Node {
         this.setOutputData(0, data.value);
     }
 }
-Nodes.registerNodeType("main/input", Input);
+Nodes.registerNodeType("main/input", ContainerInput);
 
 
 //Output for a container
-export class Output extends Node {
+export class ContainerOutput extends Node {
     constructor() {
         super();
         this.title = "Ouput";
@@ -306,4 +306,4 @@ export class Output extends Node {
         this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
     }
 }
-Nodes.registerNodeType("main/output", Output);
+Nodes.registerNodeType("main/output", ContainerOutput);

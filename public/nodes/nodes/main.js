@@ -155,7 +155,7 @@
     exports.Container = Container;
     nodes_1.Nodes.registerNodeType("main/container", Container);
     //Input for a container
-    class Input extends node_1.Node {
+    class ContainerInput extends node_1.Node {
         constructor() {
             super();
             //When added to engine tell the engine this is a new global input
@@ -208,10 +208,10 @@
             });
         }
     }
-    exports.Input = Input;
-    nodes_1.Nodes.registerNodeType("main/input", Input);
+    exports.ContainerInput = ContainerInput;
+    nodes_1.Nodes.registerNodeType("main/input", ContainerInput);
     //Output for a container
-    class Output extends node_1.Node {
+    class ContainerOutput extends node_1.Node {
         constructor() {
             super();
             this.onAdded = function () {
@@ -257,7 +257,7 @@
             });
         }
     }
-    exports.Output = Output;
-    nodes_1.Nodes.registerNodeType("main/output", Output);
+    exports.ContainerOutput = ContainerOutput;
+    nodes_1.Nodes.registerNodeType("main/output", ContainerOutput);
 });
 //# sourceMappingURL=main.js.map

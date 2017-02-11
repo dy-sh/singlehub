@@ -2,7 +2,8 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 
-import {Nodes, Node} from "../../nodes/nodes"
+import {Nodes} from "../../nodes/nodes"
+import {Node} from "../../nodes/node"
 import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {Renderer} from "./renderer"
 import {EditorSocket, socket} from "./editor-socket";
@@ -17,6 +18,7 @@ export class NodeEditor {
     //nodes: Nodes;
 
     isRunning = false;
+    showSlotsValues = false;
 
 
     constructor() {
@@ -71,6 +73,7 @@ export class NodeEditor {
         this.addFullscreenButton();
         this.addPlayButton();
         this.addStepButton();
+        this.addSlotsValuesButton();
     }
 
     addMiniWindow(w: number, h: number): void {
@@ -458,7 +461,7 @@ export class NodeEditor {
 
     onEngineRun() {
         this.isRunning = true;
-        $("#step-button").fadeOut(200);
+        $("#step-button").fadeTo(200,0.3);
         $("#play-icon").addClass( "stop" );
         $("#play-icon").removeClass( "play" );
     }
@@ -469,9 +472,22 @@ export class NodeEditor {
 
     onEngineStop() {
         this.isRunning = false;
-        $("#step-button").fadeIn(200);
+        $("#step-button").fadeTo(200,1);
         $("#play-icon").removeClass( "stop" );
         $("#play-icon").addClass( "play" );
+    }
+
+    private addSlotsValuesButton() {
+        $("#slots-values-button").click(function () {
+            this.showSlotsValues=!this.showSlotsValues;
+            if (this.showSlotsValues){
+                $("#slots-values-icon").addClass( "hide" );
+                $("#slots-values-icon").removeClass( "unhide" );
+            } else{
+                $("#slots-values-icon").removeClass( "hide" );
+                $("#slots-values-icon").addClass( "unhide" );
+            }
+        });
     }
 }
 
