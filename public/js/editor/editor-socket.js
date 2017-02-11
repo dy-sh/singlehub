@@ -83,7 +83,6 @@
                 }
             });
             socket.on('node-message-to-front-side', function (n) {
-                console.log(n);
                 let container = nodes_engine_1.NodesEngine.containers[n.cid];
                 let node = container.getNodeById(n.id);
                 if (node.onGetMessageFromBackSide)

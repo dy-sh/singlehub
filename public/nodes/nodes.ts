@@ -151,20 +151,14 @@ export class Nodes {
      * @param node_class class containing the structure of a node
      */
     static registerNodeType(type: string, node_class: any): void {
-        if (!node_class.prototype)
-            throw("Cannot register a simple object, it must be a class with a prototype");
+
+        if (!(node_class.prototype instanceof Node))
+            throw(`Can't register node of type [${type}]. Class must inherit Node base class!`);
+
         node_class.type = type;
-
-        let categories = type.split("/");
-
         node_class.category = type.substr(0, type.lastIndexOf("/"));
-        node_class.node_name = categories[categories.length-1];
+        node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
 
-        //extend class
-        if (node_class.prototype) //is a class
-            for (let i in Node.prototype)
-                if (!node_class.prototype[i])
-                    node_class.prototype[i] = Node.prototype[i];
 
         this.registered_node_types[type] = node_class;
         if (node_class.constructor.name)

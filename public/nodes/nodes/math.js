@@ -340,7 +340,7 @@
     //     nodes.registerNodeType("math/scale", MathScale);
     //
     //
-    //Math operation
+    //Math Plus
     class MathPlus extends nodes_1.Node {
         constructor() {
             super();
@@ -351,7 +351,7 @@
                 this.setOutputData(0, result);
             };
             this.title = "Plus";
-            this.desc = "Math plus";
+            this.desc = "Math plus operation";
             this.addInput("A", "number");
             this.addInput("B", "number");
             this.addOutput("A+B", "number");

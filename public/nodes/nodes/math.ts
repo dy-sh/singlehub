@@ -335,13 +335,15 @@ import {Nodes as nodes, Node} from "../nodes";
 //     nodes.registerNodeType("math/scale", MathScale);
 //
 //
-//Math operation
+
+
+//Math Plus
 class MathPlus extends Node {
     constructor() {
         super();
 
         this.title = "Plus";
-        this.desc = "Math plus";
+        this.desc = "Math plus operation";
 
         this.addInput("A", "number");
         this.addInput("B", "number");
