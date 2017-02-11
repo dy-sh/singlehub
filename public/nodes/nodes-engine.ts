@@ -52,7 +52,6 @@ export class NodesEngine {
     global_inputs = {};
     global_outputs = {};
     execution_timer_id: Timer;
-    _nodes_in_order: Array<Node>;
     errors_in_execution: boolean;
 
     M: any;
@@ -66,7 +65,6 @@ export class NodesEngine {
     onNodeRemoved: Function;
     onPlayEvent: Function;
     frame: number;
-    private MODULE_NAME = "NODES_ENGINE";
     container_id: number;
     parent_container_id?: number;
 
@@ -248,94 +246,7 @@ export class NodesEngine {
         this.iteration += 1;
     }
 
-    /**
-     * Updates the engine execution order according to relevance of the nodes (nodes with only outputs have more relevance than
-     * nodes with only inputs.
-     * @method updateExecutionOrder
-     */
-    updateExecutionOrder(): void {
-        this._nodes_in_order = this.computeExecutionOrder();
-    }
 
-//This is more internal, it computes the order and returns it
-    computeExecutionOrder(): Array<Node> {
-        let L: Array<Node> = [];
-        let S = [];
-        let M = {};
-        let visited_links = {}; //to avoid repeating links
-        let remaining_links = {}; //to a
-
-        //search for the nodes without inputs (starting nodes)
-        for (let i = 0, l = this._nodes.length; i < l; ++i) {
-            let n = this._nodes[i];
-            M[n.id] = n; //add to pending nodes
-
-            let num = 0; //num of input connections
-            if (n.inputs)
-                for (let j = 0, l2 = n.inputs.length; j < l2; j++)
-                    if (n.inputs[j] && n.inputs[j].link != null)
-                        num += 1;
-
-            if (num == 0) //is a starting node
-                S.push(n);
-            else //num of input links
-                remaining_links[n.id] = num;
-        }
-
-        while (true) {
-            if (S.length == 0)
-                break;
-
-            //get an starting node
-            let n = S.shift();
-            L.push(n); //add to ordered list
-            delete M[n.id]; //remove from the pending nodes
-
-            //for every output
-            if (n.outputs)
-                for (let i = 0; i < n.outputs.length; i++) {
-                    let output = n.outputs[i];
-                    //not connected
-                    if (output == null || output.links == null || output.links.length == 0)
-                        continue;
-
-                    //for every connection
-                    for (let j = 0; j < output.links.length; j++) {
-                        let link_id = output.links[j];
-                        let link = this.links[link_id];
-                        if (!link) continue;
-
-                        //already visited link (ignore it)
-                        if (visited_links[link.id])
-                            continue;
-
-                        let target_node = this.getNodeById(link.target_id);
-                        if (target_node == null) {
-                            visited_links[link.id] = true;
-                            continue;
-                        }
-
-                        visited_links[link.id] = true; //mark as visited
-                        remaining_links[target_node.id] -= 1; //reduce the number of links remaining
-                        if (remaining_links[target_node.id] == 0)
-                            S.push(target_node); //if no more links, then add to Starters array
-                    }
-                }
-        }
-
-        //the remaining ones (loops)
-        for (let i in M)
-            L.push(M[i]);
-
-        if (L.length != this._nodes.length)
-            Utils.debug("Something went wrong, nodes missing", this);
-
-        //save order number in the node
-        for (let i in L)
-            L[i].order = i;
-
-        return L;
-    }
 
     /**
      * Returns the amount of time the engine has been running in milliseconds
@@ -372,7 +283,7 @@ export class NodesEngine {
      * @param params parameters in array format
      */
     sendEventToAllNodes(eventname: string, params?: Array<any>): void {
-        let nodes = this._nodes_in_order ? this._nodes_in_order : this._nodes;
+        let nodes = this._nodes;
         if (!nodes)
             return;
 
@@ -409,9 +320,8 @@ export class NodesEngine {
     /**
      * Adds a new node instasnce to this engine
      * @param node the instance of the node
-     * @param node skip_compute_order
      */
-    add(node: Node, skip_compute_order?: boolean): Node {
+    add(node: Node): Node {
         if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
             return; //already added
 
@@ -439,9 +349,6 @@ export class NodesEngine {
 
         if (this.config.align_to_grid)
             node.alignToGrid();
-
-        if (!skip_compute_order)
-            this.updateExecutionOrder();
 
         if (this.onNodeAdded)
             this.onNodeAdded(node);
@@ -513,8 +420,6 @@ export class NodesEngine {
         this.setDirtyCanvas(true, true);
 
         this.change();
-
-        this.updateExecutionOrder();
     }
 
     /**
@@ -777,7 +682,6 @@ export class NodesEngine {
 //     }
 //
     connectionChange(node: Node): void {
-        this.updateExecutionOrder();
         if (this.onConnectionChange)
             this.onConnectionChange(node);
         this.sendActionToRenderer("onConnectionChange");
@@ -882,11 +786,10 @@ export class NodesEngine {
             }
 
             node.id = n_info.id; //id it or it will create a new id
-            this.add(node, true); //add before configure, otherwise configure cannot create links
+            this.add(node); //add before configure, otherwise configure cannot create links
             node.configure(n_info);
         }
 
-        this.updateExecutionOrder();
         this.setDirtyCanvas(true, true);
         return error;
     }

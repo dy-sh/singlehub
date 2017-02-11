@@ -12,6 +12,32 @@
 import {Nodes} from "../nodes";
 import {Node} from "../node";
 
+
+
+//Math Plus
+class MathPlus extends Node {
+    constructor() {
+        super();
+
+        this.title = "Plus";
+        this.desc = "Math plus operation";
+
+        this.addInput("A", "number");
+        this.addInput("B", "number");
+        this.addOutput("A+B", "number");
+    }
+
+    onExecute = function () {
+        let A = this.getInputData(0);
+        let B = this.getInputData(1);
+        let result = A + B;
+        this.setOutputData(0, result);
+    }
+}
+Nodes.registerNodeType("math/plus", MathPlus);
+
+
+
 //
 // //Converter
 // 	class Converter {
@@ -337,28 +363,6 @@ import {Node} from "../node";
 //
 //
 
-
-//Math Plus
-class MathPlus extends Node {
-    constructor() {
-        super();
-
-        this.title = "Plus";
-        this.desc = "Math plus operation";
-
-        this.addInput("A", "number");
-        this.addInput("B", "number");
-        this.addOutput("A+B", "number");
-    }
-
-    onExecute = function () {
-        let A = this.getInputData(0);
-        let B = this.getInputData(1);
-        let result = A + B;
-        this.setOutputData(0, result);
-    }
-}
-Nodes.registerNodeType("math/plus", MathPlus);
 
 //
 // //Math compare
