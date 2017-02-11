@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes"], factory);
+        define(["require", "exports", "../nodes", "../node"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -16,6 +16,7 @@
     // let debugMes = require('debug')('modes:mes         ');
     // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
+    const node_1 = require("../node");
     //
     // //Converter
     // 	class Converter {
@@ -341,7 +342,7 @@
     //
     //
     //Math Plus
-    class MathPlus extends nodes_1.Node {
+    class MathPlus extends node_1.Node {
         constructor() {
             super();
             this.onExecute = function () {

@@ -9,7 +9,8 @@
 // let debugMes = require('debug')('modes:mes         ');
 // let debugErr = require('debug')('nodes:error       ');
 
-import {Nodes, Node} from "../nodes";
+import {Nodes} from "../nodes";
+import {Node} from "../node";
 import {NodesEngine} from "../nodes-engine";
 
 

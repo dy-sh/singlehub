@@ -2,7 +2,7 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-import {Nodes as nodes, Node} from "../public/nodes/nodes";
+import {Nodes} from "../public/nodes/nodes";
 import {engine} from "../public/nodes/nodes-engine";
 
 
@@ -10,21 +10,21 @@ module.exports.test = function () {
 
 	//engine.start(1);
 
-	let node_const_A = nodes.createNode("main/constant");
+	let node_const_A = Nodes.createNode("main/constant");
 	node_const_A.pos = [10, 10];
 	engine.add(node_const_A);
 	node_const_A.setValue(5);
 
-	let node_const_B = nodes.createNode("main/constant");
+	let node_const_B = Nodes.createNode("main/constant");
 	node_const_B.pos = [10, 100];
 	engine.add(node_const_B);
 	node_const_B.setValue(10);
 
-	let node_math = nodes.createNode("math/plus");
+	let node_math = Nodes.createNode("math/plus");
 	node_math.pos = [200, 50];
 	engine.add(node_math);
 
-	let node_watch = nodes.createNode("debug/console");
+	let node_watch = Nodes.createNode("debug/console");
 	node_watch.pos = [400, 50];
 	engine.add(node_watch);
 

@@ -3,16 +3,17 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes"], factory);
+        define(["require", "exports", "../nodes", "../node"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../nodes");
+    const node_1 = require("../node");
     /**
      * Created by derwish on 11.02.17.
      */
     //Watch a value in the editor
-    class Watch extends nodes_1.Node {
+    class Watch extends node_1.Node {
         constructor() {
             super();
             this.onGetMessageFromBackSide = function (data) {
@@ -50,7 +51,7 @@
     exports.Watch = Watch;
     nodes_1.Nodes.registerNodeType("debug/watch", Watch);
     //Show value inside the debug console
-    class Console extends nodes_1.Node {
+    class Console extends node_1.Node {
         constructor() {
             super();
             this.onExecute = function () {

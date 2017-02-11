@@ -3,7 +3,8 @@
  */
 
 
-import {Nodes, Node, Link} from "./nodes";
+import {Nodes} from "./nodes";
+import {Node, Link} from "./node";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"

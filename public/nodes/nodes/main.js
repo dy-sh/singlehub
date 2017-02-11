@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes", "../nodes-engine"], factory);
+        define(["require", "exports", "../nodes", "../node", "../nodes-engine"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -16,9 +16,10 @@
     // let debugMes = require('debug')('modes:mes         ');
     // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
+    const node_1 = require("../node");
     const nodes_engine_1 = require("../nodes-engine");
     //Constant
-    class Constant extends nodes_1.Node {
+    class Constant extends node_1.Node {
         constructor() {
             super();
             this.setValue = function (v) {
@@ -47,7 +48,7 @@
     exports.Constant = Constant;
     nodes_1.Nodes.registerNodeType("main/constant", Constant);
     //Container: a node that contains a engine
-    class Container extends nodes_1.Node {
+    class Container extends node_1.Node {
         constructor() {
             super();
             this.onAdded = function () {
@@ -133,11 +134,11 @@
                 }
         }
         configure(o) {
-            nodes_1.Node.prototype.configure.call(this, o);
+            node_1.Node.prototype.configure.call(this, o);
             //this.container_engine.configure(o.engine);
         }
         serialize() {
-            let data = nodes_1.Node.prototype.serialize.call(this);
+            let data = node_1.Node.prototype.serialize.call(this);
             data.container_engine = this.container_engine.serialize();
             return data;
         }
@@ -154,7 +155,7 @@
     exports.Container = Container;
     nodes_1.Nodes.registerNodeType("main/container", Container);
     //Input for a container
-    class Input extends nodes_1.Node {
+    class Input extends node_1.Node {
         constructor() {
             super();
             //When added to engine tell the engine this is a new global input
@@ -210,7 +211,7 @@
     exports.Input = Input;
     nodes_1.Nodes.registerNodeType("main/input", Input);
     //Output for a container
-    class Output extends nodes_1.Node {
+    class Output extends node_1.Node {
         constructor() {
             super();
             this.onAdded = function () {

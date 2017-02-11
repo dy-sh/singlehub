@@ -1,4 +1,6 @@
-import {Nodes, Node} from "../nodes";
+import {Nodes} from "../nodes";
+import {Node} from "../node";
+
 /**
  * Created by derwish on 11.02.17.
  */

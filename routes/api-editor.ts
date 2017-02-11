@@ -7,7 +7,8 @@ let router = express.Router();
 
 import {engine, NodesEngine} from "../public/nodes/nodes-engine"
 import {server} from "../modules/web-server/server"
-import {Nodes, Link} from "../public/nodes/nodes";
+import {Nodes} from "../public/nodes/nodes";
+import {Link} from "../public/nodes/node";
 import Utils from "../public/nodes/utils";
 
 let MODULE_NAME = "SOCKET";

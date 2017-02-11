@@ -9,7 +9,8 @@
 // let debugMes = require('debug')('modes:mes         ');
 // let debugErr = require('debug')('nodes:error       ');
 
-import {Nodes as nodes, Node} from "../nodes";
+import {Nodes} from "../nodes";
+import {Node} from "../node";
 
 //
 // //Converter
@@ -357,7 +358,7 @@ class MathPlus extends Node {
         this.setOutputData(0, result);
     }
 }
-nodes.registerNodeType("math/plus", MathPlus);
+Nodes.registerNodeType("math/plus", MathPlus);
 
 //
 // //Math compare
