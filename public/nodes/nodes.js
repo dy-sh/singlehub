@@ -1055,12 +1055,12 @@
         }
         sendMessageToFrontSide(mess) {
             if (this.isBackside() && this.id != -1) {
-                this.engine.socket.emit('node-message-to-front-side', { id: this.id, value: mess });
+                this.engine.socket.emit('node-message-to-front-side', { id: this.id, cid: this.container_id, value: mess });
             }
         }
         sendMessageToBackSide(mess) {
             if (!this.isBackside() && this.id != -1) {
-                this.engine.socket.emit('node-message-to-back-side', { id: this.id, value: mess });
+                this.engine.socket.emit('node-message-to-back-side', { id: this.id, cid: this.container_id, value: mess });
             }
         }
     }

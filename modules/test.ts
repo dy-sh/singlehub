@@ -20,10 +20,8 @@ module.exports.test = function () {
 	engine.add(node_const_B);
 	node_const_B.setValue(10);
 
-	let node_math = nodes.createNode("math/operation");
+	let node_math = nodes.createNode("math/plus");
 	node_math.pos = [200, 50];
-	node_math.properties.OP="-";
-	node_math.addOutput("A-B");
 	engine.add(node_math);
 
 	let node_watch = nodes.createNode("debug/console");

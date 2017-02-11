@@ -378,7 +378,6 @@
         onEngineRunStep() {
         }
         onEngineStop() {
-            console.log("in");
             this.isRunning = false;
             $("#step-button").fadeIn(200);
             $("#play-icon").removeClass("stop");

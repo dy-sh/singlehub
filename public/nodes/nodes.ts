@@ -145,7 +145,6 @@ export class Nodes {
     private static MODULE_NAME = "NODES";
 
 
-
     /**
      * Register a node class so it can be listed when the user wants to create a new one
      * @param type name of the node and path
@@ -1353,14 +1352,14 @@ export class Node {
     sendMessageToFrontSide(mess: any) {
         if (this.isBackside() && this.id != -1) {
             this.engine.socket.emit('node-message-to-front-side',
-                {id: this.id, value: mess});
+                {id: this.id, cid: this.container_id, value: mess});
         }
     }
 
     sendMessageToBackSide(mess: any) {
         if (!this.isBackside() && this.id != -1) {
             this.engine.socket.emit('node-message-to-back-side',
-                {id: this.id, value: mess});
+                {id: this.id, cid: this.container_id, value: mess});
         }
     }
 }

@@ -4,10 +4,10 @@
 
 // namespace MyNodes {
 
-    // let debug = require('debug')('nodes:            ');
-    // let debugLog = require('debug')('nodes:log         ');
-    // let debugMes = require('debug')('modes:mes         ');
-    // let debugErr = require('debug')('nodes:error       ');
+// let debug = require('debug')('nodes:            ');
+// let debugLog = require('debug')('nodes:log         ');
+// let debugMes = require('debug')('modes:mes         ');
+// let debugErr = require('debug')('nodes:error       ');
 
 import {Nodes as nodes, Node} from "../nodes";
 
@@ -336,70 +336,28 @@ import {Nodes as nodes, Node} from "../nodes";
 //
 //
 //Math operation
-        class MathOperation extends Node {
+class MathPlus extends Node {
+    constructor() {
+        super();
+
+        this.title = "Plus";
+        this.desc = "Math plus";
+
+        this.addInput("A", "number");
+        this.addInput("B", "number");
+        this.addOutput("A+B", "number");
+    }
+
+    onExecute = function () {
+        let A = this.getInputData(0);
+        let B = this.getInputData(1);
+        let result = A + B;
+        this.setOutputData(0, result);
+    }
+}
 
 
-            constructor() {
-                super();
-
-                this.title = "Operation";
-                this.desc = "Easy math operators";
-                this["@OP"] = {type: "enum", title: "operation", values: ["+", "-", "*", "/", "%", "^"]};
-
-
-                this.addInput("A", "number");
-                this.addInput("B", "number");
-                this.addOutput("=", "number");
-                this.properties = {A: 1.0, B: 1.0, OP: "+"};
-            }
-
-            setValue= function(v) {
-                if (typeof(v) == "string") v = parseFloat(v);
-                this.properties["value"] = v;
-            }
-
-            onExecute= function() {
-                let A = this.getInputData(0);
-                let B = this.getInputData(1);
-                if (A != null)
-                    this.properties["A"] = A;
-                else
-                    A = this.properties["A"];
-
-                if (B != null)
-                    this.properties["B"] = B;
-                else
-                    B = this.properties["B"];
-
-                let result = 0;
-                switch (this.properties.OP) {
-                    case '+':
-                        result = A + B;
-                        break;
-                    case '-':
-                        result = A - B;
-                        break;
-                    case '/':
-                        result = A / B;
-                        break;
-                    case '%':
-                        result = A % B;
-                        break;
-                    case '^':
-                        result = Math.pow(A, B);
-                        break;
-                }
-                this.setOutputData(0, result);
-            }
-
-            onDrawBackground= function(ctx) {
-                this.outputs[0].label = "A" + this.properties.OP + "B";
-            }
-        }
-
-
-
-        nodes.registerNodeType("math/operation", MathOperation);
+nodes.registerNodeType("math/plus", MathPlus);
 
 //
 // //Math compare
