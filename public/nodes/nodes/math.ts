@@ -27,7 +27,7 @@ class MathPlus extends Node {
         this.addOutput("A+B", "number");
     }
 
-    onExecute = function () {
+    onInputUpdated = function () {
         let A = this.getInputData(0);
         let B = this.getInputData(1);
         let result = A + B;

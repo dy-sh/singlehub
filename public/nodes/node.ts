@@ -23,7 +23,6 @@ export interface IOutputInfo {
 }
 
 
-
 export class NodeOutput {
     name: string;
     type: string;
@@ -32,6 +31,7 @@ export class NodeOutput {
     locked?: boolean;
     pos?: boolean;
     round?: number;
+    data?: any;
 }
 
 export class NodeInput {
@@ -43,6 +43,7 @@ export class NodeInput {
     pos?: boolean;
     round?: number;
     isOptional?: boolean;
+    data?: any;
 }
 
 export class Link {
@@ -52,10 +53,7 @@ export class Link {
     origin_slot?: number;
     target_id?: number;
     target_slot?: number;
-    data?: any;
 }
-
-
 
 
 export class Node {
@@ -292,35 +290,19 @@ export class Node {
      * @param data slotId data
      */
     setOutputData(slotId: number, data: any): void {
-        if (!this.outputs)
-            return;
-
-        if (slotId < 0 || slotId >= this.outputs.length
-            || !this.outputs[slotId]
-            || this.outputs[slotId].links == null)
-            return;
-
-        for (let i = 0; i < this.outputs[slotId].links.length; i++) {
-            let linkId = this.outputs[slotId].links[i];
-
-            if (this.engine.links[linkId].data != data) {
-                this.engine.links[linkId].data = data;
-                this.isActive = true;
-            }
-        }
+        if (this.outputs && slotId < this.outputs.length && this.outputs[slotId])
+            this.outputs[slotId].data = data;
+        this.isActive = true;
     }
 
     /**
-     * Retrieves the input data (data traveling through the connection) from one slot
-     * @param slot slot id
+     * Retrieves the input data (data traveling through the connection) from one slotId
+     * @param slotId slotId id
      * @returns data or if it is not connected returns undefined
      */
-    getInputData(slot: number): any {
-        if (!this.inputs)
-            return; //undefined;
-        if (slot < this.inputs.length && this.inputs[slot].link != null)
-            return this.engine.links[this.inputs[slot].link].data;
-        return; //undefined;
+    getInputData(slotId: number): any {
+        if (this.inputs && slotId < this.inputs.length && this.inputs[slotId])
+            return this.inputs[slotId].data;
     }
 
     /**

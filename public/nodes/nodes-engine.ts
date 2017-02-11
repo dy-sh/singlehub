@@ -153,7 +153,7 @@ export class NodesEngine {
         this.execution_timer_id = null;
 
 
-        for (let node of this._nodes){
+        for (let node of this._nodes) {
             if (node.onStopEngine)
                 node.onStopEngine();
         }
@@ -202,7 +202,7 @@ export class NodesEngine {
         if (this.onPlayEvent)
             this.onPlayEvent();
 
-        for (let node of this._nodes){
+        for (let node of this._nodes) {
             if (node.onRunEngine)
                 node.onRunEngine();
         }
@@ -226,10 +226,12 @@ export class NodesEngine {
         let start = Nodes.getTime();
         this.globaltime = 0.001 * (start - this.starttime);
 
-        try {
+        // try {
             for (let i = 0; i < num; i++) {
 
-                for (let node of this._nodes){
+                this.updateNodesInputData();
+
+                for (let node of this._nodes) {
                     if (node.onExecute)
                         node.onExecute();
                 }
@@ -242,12 +244,13 @@ export class NodesEngine {
             if (this.onAfterExecute)
                 this.onAfterExecute();
             this.errors_in_execution = false;
-        }
-        catch (err) {
-            this.errors_in_execution = true;
-            Utils.debugErr("Error during execution: " + err, this);
-            this.stop();
-        }
+        // }
+        // catch (err) {
+        //     this.errors_in_execution = true;
+        //     Utils.debugErr("Error during execution: " + err, this);
+        //     this.stop();
+        //     throw err;
+        // }
 
         let elapsed = Nodes.getTime() - start;
         if (elapsed == 0) elapsed = 1;
@@ -256,6 +259,36 @@ export class NodesEngine {
         this.iteration += 1;
     }
 
+
+    updateNodesInputData() {
+        let updated_nodes: Array<Node> = [];
+        for (let node of this._nodes) {
+            if (!node.outputs)
+                continue;
+
+            for (let output of node.outputs) {
+                if (output.links == null)
+                    continue;
+
+                for (let linkId of output.links) {
+
+                    let link = this.links[linkId];
+                    let target_node = this._nodes[link.target_id];
+                    let target_input = target_node.inputs[link.target_slot];
+                    if (target_input.data != output.data) {
+                        target_input.data = output.data;
+                        if (updated_nodes.indexOf(target_node) == -1)
+                            updated_nodes.push(target_node);
+                    }
+                }
+            }
+        }
+
+        for (let node of updated_nodes) {
+            if (node.onInputUpdated)
+                node.onInputUpdated();
+        }
+    }
 
 
     /**
@@ -285,7 +318,6 @@ export class NodesEngine {
     getElapsedTime(): number {
         return this.elapsed_time;
     }
-
 
 
     /**
@@ -723,8 +755,8 @@ export class NodesEngine {
             nodes_info.push(this._nodes[i].serialize());
 
         //remove data from links, we dont want to store it
-        for (let i in this.links) //links is an OBJECT
-            this.links[i].data = null;
+        // for (let i in this.links) //links is an OBJECT
+        //     this.links[i].data = null;
 
 
         let data = {

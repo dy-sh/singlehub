@@ -4,7 +4,8 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 
-import {Node, Nodes, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/nodes"
+import {Nodes} from "../../nodes/nodes"
+import {Node, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/node"
 import {NodesEngine, engine} from "../../nodes/nodes-engine"
 import {NodeEditor, editor} from "./node-editor";
 import {EditorSocket} from "./editor-socket";
