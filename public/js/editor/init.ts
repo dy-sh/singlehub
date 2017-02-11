@@ -30,6 +30,7 @@ window.addEventListener("resize", function () {
 });
 
 socket.getNodes();
+socket.getEngineState();
 
 //
 //

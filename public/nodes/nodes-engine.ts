@@ -150,7 +150,7 @@ export class NodesEngine {
         if (!this.isRunning)
             return;
 
-        this.isRunning = true;
+        this.isRunning = false;
 
         if (this.onStopEvent)
             this.onStopEvent();

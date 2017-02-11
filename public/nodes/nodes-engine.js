@@ -81,7 +81,7 @@
         stop() {
             if (!this.isRunning)
                 return;
-            this.isRunning = true;
+            this.isRunning = false;
             if (this.onStopEvent)
                 this.onStopEvent();
             if (this.execution_timer_id != null)

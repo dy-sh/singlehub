@@ -259,6 +259,16 @@ router.delete('/c/:cid/l/:id', function (req, res) {
 
 
 /**
+ * Run step engine
+ */
+router.get('/state', function (req, res) {
+    let state={
+        isRunning:engine.isRunning
+    };
+    res.json(state);
+});
+
+/**
  * Run engine
  */
 router.post('/run', function (req, res) {

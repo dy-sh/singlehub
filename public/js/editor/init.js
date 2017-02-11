@@ -27,6 +27,7 @@
         node_editor_1.editor.renderer.resize();
     });
     editor_socket_1.socket.getNodes();
+    editor_socket_1.socket.getEngineState();
 });
 //
 //

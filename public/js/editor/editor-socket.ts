@@ -212,6 +212,18 @@ export class EditorSocket {
         });
     }
 
+    getEngineState(): void {
+        $.ajax({
+            url: "/api/editor/state",
+            success: function (state) {
+                if (state.isRunning)
+                    editor.onEngineRun();
+                else
+                    editor.onEngineStop();
+            }
+        });
+    }
+
 
     sendCreateNode(type: string, position: [number, number]): void {
         let json = JSON.stringify({type: type, position: position, container: editor.renderer.engine.container_id});

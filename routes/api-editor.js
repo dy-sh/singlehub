@@ -204,6 +204,15 @@
     });
     //------------------ engine ------------------------
     /**
+     * Run step engine
+     */
+    router.get('/state', function (req, res) {
+        let state = {
+            isRunning: nodes_engine_1.engine.isRunning
+        };
+        res.json(state);
+    });
+    /**
      * Run engine
      */
     router.post('/run', function (req, res) {

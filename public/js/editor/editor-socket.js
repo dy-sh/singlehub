@@ -166,6 +166,17 @@
                 }
             });
         }
+        getEngineState() {
+            $.ajax({
+                url: "/api/editor/state",
+                success: function (state) {
+                    if (state.isRunning)
+                        node_editor_1.editor.onEngineRun();
+                    else
+                        node_editor_1.editor.onEngineStop();
+                }
+            });
+        }
         sendCreateNode(type, position) {
             let json = JSON.stringify({ type: type, position: position, container: node_editor_1.editor.renderer.engine.container_id });
             $.ajax({
