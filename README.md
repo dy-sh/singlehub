@@ -1,11 +1,15 @@
-node.js port of MyNodes.NET
-is in an early stage of development
+Node.js port of MyNodes.NET<br>
+Is in an early stage of development
 
-install node v7
-clone repo:             git clone https://github.com/derwish-pro/mynodes.js
-open project folder:    cd mynodes.js
-install bower:          sudo npm install -g bower
-install front libs:     bower i
-install node libs:      npm i
-start:                  npm start
-open in browser:        http://localhost:1312
+**How to install:**
+
+- git clone https://github.com/derwish-pro/mynodes.js
+- cd mynodes.js
+- sudo npm install -g bower
+- bower i
+- npm i
+
+**How to run:**
+
+- npm start
+- open in browser: http://localhost:1312
