@@ -140,6 +140,8 @@ export class Node {
     onGetMessageFromFrontSide: Function;
     onGetMessageFromBackSide: Function;
 
+    onRunEngine: Function;
+    onStopEngine: Function;
     onExecute: Function;
     onInputUpdated: Function;
 

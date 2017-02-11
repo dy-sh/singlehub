@@ -82,7 +82,10 @@
             if (this.execution_timer_id != null)
                 clearInterval(this.execution_timer_id);
             this.execution_timer_id = null;
-            this.sendEventToAllNodes("onStop");
+            for (let node of this._nodes) {
+                if (node.onStopEngine)
+                    node.onStopEngine();
+            }
         }
         /**
          * Attach Renderer to this engine
@@ -119,7 +122,10 @@
             this.isRunning = true;
             if (this.onPlayEvent)
                 this.onPlayEvent();
-            this.sendEventToAllNodes("onStart");
+            for (let node of this._nodes) {
+                if (node.onRunEngine)
+                    node.onRunEngine();
+            }
             //launch
             this.starttime = nodes_1.Nodes.getTime();
             let that = this;
@@ -137,7 +143,10 @@
             this.globaltime = 0.001 * (start - this.starttime);
             try {
                 for (let i = 0; i < num; i++) {
-                    this.sendEventToAllNodes("onExecute");
+                    for (let node of this._nodes) {
+                        if (node.onExecute)
+                            node.onExecute();
+                    }
                     this.fixedtime += this.fixedtime_lapse;
                     if (this.onExecuteStep)
                         this.onExecuteStep();
@@ -182,28 +191,6 @@
          */
         getElapsedTime() {
             return this.elapsed_time;
-        }
-        //
-        /**
-         * Sends an event to all the nodes, useful to trigger stuff
-         * @param eventname the name of the event (function to be called)
-         * @param params parameters in array format
-         */
-        sendEventToAllNodes(eventname, params) {
-            let nodes = this._nodes;
-            if (!nodes)
-                return;
-            for (let i = 0; i < nodes.length; ++i) {
-                let node = nodes[i];
-                if (node[eventname]) {
-                    if (params === undefined)
-                        node[eventname]();
-                    else if (params && params.constructor === Array)
-                        node[eventname].apply(this.M[i], params);
-                    else
-                        node[eventname](params);
-                }
-            }
         }
         /**
          * Sends action to renderer

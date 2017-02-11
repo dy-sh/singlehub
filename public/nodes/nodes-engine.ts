@@ -54,8 +54,6 @@ export class NodesEngine {
     execution_timer_id: Timer;
     errors_in_execution: boolean;
 
-    M: any;
-
     onStopEvent: Function;
     on_change: Function;
     onNodeAdded: Function;
@@ -154,7 +152,11 @@ export class NodesEngine {
             clearInterval(this.execution_timer_id);
         this.execution_timer_id = null;
 
-        this.sendEventToAllNodes("onStop");
+
+        for (let node of this._nodes){
+            if (node.onStopEngine)
+                node.onStopEngine();
+        }
     }
 
 
@@ -200,7 +202,10 @@ export class NodesEngine {
         if (this.onPlayEvent)
             this.onPlayEvent();
 
-        this.sendEventToAllNodes("onStart");
+        for (let node of this._nodes){
+            if (node.onRunEngine)
+                node.onRunEngine();
+        }
 
         //launch
         this.starttime = Nodes.getTime();
@@ -223,7 +228,12 @@ export class NodesEngine {
 
         try {
             for (let i = 0; i < num; i++) {
-                this.sendEventToAllNodes("onExecute");
+
+                for (let node of this._nodes){
+                    if (node.onExecute)
+                        node.onExecute();
+                }
+
                 this.fixedtime += this.fixedtime_lapse;
                 if (this.onExecuteStep)
                     this.onExecuteStep();
@@ -276,29 +286,7 @@ export class NodesEngine {
         return this.elapsed_time;
     }
 
-//
-    /**
-     * Sends an event to all the nodes, useful to trigger stuff
-     * @param eventname the name of the event (function to be called)
-     * @param params parameters in array format
-     */
-    sendEventToAllNodes(eventname: string, params?: Array<any>): void {
-        let nodes = this._nodes;
-        if (!nodes)
-            return;
 
-        for (let i = 0; i < nodes.length; ++i) {
-            let node = nodes[i];
-            if (node[eventname]) {
-                if (params === undefined)
-                    node[eventname]();
-                else if (params && params.constructor === Array)
-                    node[eventname].apply(this.M[i], params);
-                else
-                    node[eventname](params);
-            }
-        }
-    }
 
     /**
      * Sends action to renderer
