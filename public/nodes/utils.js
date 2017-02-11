@@ -34,8 +34,10 @@
          * @param module
          */
         static debug(message, module) {
-            if (module)
-                console.log(module + ": " + message);
+            if (module && typeof module == "string")
+                console.log(module.toUpperCase() + ": " + message);
+            else if (module && module.name)
+                console.log(module.name.toUpperCase() + ": " + message);
             else
                 console.log(message);
         }
@@ -45,8 +47,10 @@
          * @param module
          */
         static debugErr(message, module) {
-            if (module)
-                console.log(module + ": ERROR: " + message);
+            if (module && typeof module == "string")
+                console.log(module.toUpperCase() + ": ERROR: " + message);
+            else if (module && module.name)
+                console.log(module.name.toUpperCase() + ": ERROR: " + message);
             else
                 console.log(message);
         }

@@ -22,16 +22,16 @@ export default class Utils {
     };
 
 
-
-
     /**
      * Print debug message to console
      * @param message
      * @param module
      */
-    static debug(message: string,module?:string): void {
-        if (module)
-            console.log(module+": "+message);
+    static debug(message: string, module?: string|any): void {
+        if (module && typeof module == "string")
+            console.log(module.toUpperCase() + ": " + message);
+        else if (module && module.name)
+            console.log(module.name.toUpperCase() + ": " + message);
         else
             console.log(message);
     }
@@ -41,9 +41,12 @@ export default class Utils {
      * @param message
      * @param module
      */
-    static debugErr(message: string,module?:string): void {
-        if (module)
-            console.log(module+": ERROR: "+message);
+    static debugErr(message: string, module?: string|any): void {
+
+        if (module && typeof module == "string")
+            console.log(module.toUpperCase() + ": ERROR: " + message);
+        else if (module && module.name)
+            console.log(module.name.toUpperCase() + ": ERROR: " + message);
         else
             console.log(message);
     }
@@ -62,7 +65,6 @@ export default class Utils {
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
     }
-
 
 
     /**

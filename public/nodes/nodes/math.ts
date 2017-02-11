@@ -357,8 +357,6 @@ class MathPlus extends Node {
         this.setOutputData(0, result);
     }
 }
-
-
 nodes.registerNodeType("math/plus", MathPlus);
 
 //

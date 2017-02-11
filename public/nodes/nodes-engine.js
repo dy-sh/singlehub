@@ -31,15 +31,11 @@
             this.global_inputs = {};
             this.global_outputs = {};
             this.MODULE_NAME = "NODES_ENGINE";
-            utils_1.default.debug("Engine created", this.MODULE_NAME);
-            //todo
-            // this.debug = config.engine.debugEngine;
-            // if (this.debug)
-            //     debug("Nodes engine created");
             this.list_of_renderers = null;
             this.container_id = NodesEngine.last_container_id++;
             NodesEngine.containers[this.container_id] = this;
             this.clear();
+            utils_1.default.debug("Engine created (id: " + this.container_id + ")", "NODES-ENGINE");
         }
         //used to know which types of connections support this engine (some containers do not allow certain types)
         getSupportedTypes() {
@@ -138,7 +134,6 @@
          * @param num number of steps to run, default is 1
          */
         runStep(num = 1) {
-            console.log("step");
             let start = nodes_1.Nodes.getTime();
             this.globaltime = 0.001 * (start - this.starttime);
             try {
@@ -154,9 +149,7 @@
             }
             catch (err) {
                 this.errors_in_execution = true;
-                if (nodes_1.Nodes.throw_errors)
-                    throw err;
-                utils_1.default.debugErr("Error during execution: " + err, this.MODULE_NAME);
+                utils_1.default.debugErr("Error during execution: " + err, this);
                 this.stop();
             }
             let elapsed = nodes_1.Nodes.getTime() - start;
@@ -234,7 +227,7 @@
             for (let i in M)
                 L.push(M[i]);
             if (L.length != this._nodes.length)
-                utils_1.default.debug("Something went wrong, nodes missing", this.MODULE_NAME);
+                utils_1.default.debug("Something went wrong, nodes missing", this);
             //save order number in the node
             for (let i in L)
                 L[i].order = i;
@@ -680,7 +673,7 @@
                 let n_info = nodes[i]; //stored info
                 let node = nodes_1.Nodes.createNode(n_info.type, n_info.title);
                 if (!node) {
-                    utils_1.default.debugErr("Node not found: " + n_info.type, this.MODULE_NAME);
+                    utils_1.default.debugErr("Node not found: " + n_info.type, this);
                     error = true;
                     continue;
                 }

@@ -84,16 +84,12 @@ export class NodesEngine {
 
 
     constructor() {
-        Utils.debug("Engine created", this.MODULE_NAME);
-        //todo
-        // this.debug = config.engine.debugEngine;
-        // if (this.debug)
-        //     debug("Nodes engine created");
-
         this.list_of_renderers = null;
         this.container_id = NodesEngine.last_container_id++;
         NodesEngine.containers[this.container_id] = this;
         this.clear();
+
+        Utils.debug("Engine created (id: " + this.container_id + ")", "NODES-ENGINE");
     }
 
 
@@ -223,7 +219,6 @@ export class NodesEngine {
      * @param num number of steps to run, default is 1
      */
     runStep(num: number = 1): void {
-console.log("step");
         let start = Nodes.getTime();
         this.globaltime = 0.001 * (start - this.starttime);
 
@@ -241,9 +236,7 @@ console.log("step");
         }
         catch (err) {
             this.errors_in_execution = true;
-            if (Nodes.throw_errors)
-                throw err;
-            Utils.debugErr("Error during execution: " + err, this.MODULE_NAME);
+            Utils.debugErr("Error during execution: " + err, this);
             this.stop();
         }
 
@@ -334,7 +327,7 @@ console.log("step");
             L.push(M[i]);
 
         if (L.length != this._nodes.length)
-            Utils.debug("Something went wrong, nodes missing", this.MODULE_NAME);
+            Utils.debug("Something went wrong, nodes missing", this);
 
         //save order number in the node
         for (let i in L)
@@ -882,7 +875,7 @@ console.log("step");
             let n_info = nodes[i]; //stored info
             let node = Nodes.createNode(n_info.type, n_info.title);
             if (!node) {
-                Utils.debugErr("Node not found: " + n_info.type, this.MODULE_NAME);
+                Utils.debugErr("Node not found: " + n_info.type, this);
                 error = true;
                 continue;
             }

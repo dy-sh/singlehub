@@ -1,3 +1,4 @@
+import Utils from "./public/nodes/utils";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
@@ -9,7 +10,7 @@ import * as path from 'path';
 
 import {server} from './modules/web-server/server';
 
-console.log("Server started at port " + server.server.address().port);
+Utils.debug("Server started at port " + server.server.address().port,"SERVER")
 
 // import 'modules/debug/configure'
 // import {App} from '/modules/web-server/server'

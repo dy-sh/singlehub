@@ -86,10 +86,8 @@
             node_class.type = type;
             node_class.category = type.substr(0, type.lastIndexOf("/"));
             node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
-            this.registered_node_types[type] = node_class;
-            if (node_class.constructor.name)
-                this.Nodes[node_class.constructor.name] = node_class;
-            utils_1.default.debug("Node registered: " + type, this.MODULE_NAME);
+            this.nodes_types[type] = node_class;
+            utils_1.default.debug("Node registered: " + type, this);
         }
         ;
         /**
@@ -100,8 +98,8 @@
          */
         static addNodeMethod(name, func) {
             Node.prototype[name] = func;
-            for (let i in this.registered_node_types)
-                this.registered_node_types[i].prototype[name] = func;
+            for (let i in this.nodes_types)
+                this.nodes_types[i].prototype[name] = func;
         }
         ;
         /**
@@ -111,9 +109,9 @@
          * @param options to set options
          */
         static createNode(type, title, options) {
-            let base_class = this.registered_node_types[type];
+            let base_class = this.nodes_types[type];
             if (!base_class) {
-                utils_1.default.debug("Can`t create node. Node type \"" + type + "\" not registered.", this.MODULE_NAME);
+                utils_1.default.debug("Can`t create node. Node type \"" + type + "\" not registered.", this);
                 return null;
             }
             let prototype = base_class.prototype || base_class;
@@ -147,7 +145,7 @@
          * @returns {Node} the node class
          */
         static getNodeType(type) {
-            return this.registered_node_types[type];
+            return this.nodes_types[type];
         }
         ;
         /**
@@ -157,13 +155,13 @@
          */
         static getNodeTypesInCategory(category) {
             let r = [];
-            for (let i in this.registered_node_types)
+            for (let i in this.nodes_types)
                 if (category == "") {
-                    if (this.registered_node_types[i].category == null)
-                        r.push(this.registered_node_types[i]);
+                    if (this.nodes_types[i].category == null)
+                        r.push(this.nodes_types[i]);
                 }
-                else if (this.registered_node_types[i].category == category)
-                    r.push(this.registered_node_types[i]);
+                else if (this.nodes_types[i].category == category)
+                    r.push(this.nodes_types[i]);
             return r;
         }
         ;
@@ -173,9 +171,9 @@
          */
         static getNodeTypesCategories() {
             let categories = { "": 1 };
-            for (let i in this.registered_node_types)
-                if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
-                    categories[this.registered_node_types[i].category] = 1;
+            for (let i in this.nodes_types)
+                if (this.nodes_types[i].category && !this.nodes_types[i].skip_list)
+                    categories[this.nodes_types[i].category] = 1;
             let result = [];
             for (let i in categories)
                 result.push(i);
@@ -199,7 +197,7 @@
                 if (!src || src.substr(0, folder_wildcard.length) != folder_wildcard)
                     continue;
                 try {
-                    utils_1.default.debug("Reloading: " + src, this.MODULE_NAME);
+                    utils_1.default.debug("Reloading: " + src, this);
                     let dynamicScript = document.createElement("script");
                     dynamicScript.type = "text/javascript";
                     dynamicScript.src = src;
@@ -207,12 +205,11 @@
                     docHeadObj.removeChild(script_files[i]);
                 }
                 catch (err) {
-                    if (this.throw_errors)
-                        throw err;
-                    utils_1.default.debugErr("Error while reloading " + src, this.MODULE_NAME);
+                    utils_1.default.debugErr("Error while reloading " + src, this);
+                    throw err;
                 }
             }
-            utils_1.default.debug("Nodes reloaded", this.MODULE_NAME);
+            utils_1.default.debug("Nodes reloaded", this);
         }
         ;
         /**
@@ -225,17 +222,7 @@
         ;
     }
     Nodes.options = new NodesOptions;
-    Nodes.DataType = {
-        Text: 0,
-        Number: 1,
-        Logical: 2
-    };
-    Nodes.proxy = null; //used to redirect calls
-    Nodes.throw_errors = true;
-    Nodes.registered_node_types = {};
-    Nodes.Nodes = {};
-    //   debug: config.engine.debugEngine,
-    Nodes.MODULE_NAME = "NODES";
+    Nodes.nodes_types = {};
     exports.Nodes = Nodes;
     // *************************************************************
     //   Node CLASS                                          *******

@@ -123,26 +123,8 @@ export class Link {
 
 export class Nodes {
     static options = new NodesOptions;
+    static nodes_types: {[type: string]: any} = {};
 
-
-    static DataType = {
-        Text: 0,
-        Number: 1,
-        Logical: 2
-    };
-
-    static proxy = null; //used to redirect calls
-
-
-    static throw_errors = true;
-    static registered_node_types: {[type: string]: any} = {};
-    static Nodes = {};
-
-
-    //   debug: config.engine.debugEngine,
-
-
-    private static MODULE_NAME = "NODES";
 
 
     /**
@@ -159,12 +141,9 @@ export class Nodes {
         node_class.category = type.substr(0, type.lastIndexOf("/"));
         node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
 
+        this.nodes_types[type] = node_class;
 
-        this.registered_node_types[type] = node_class;
-        if (node_class.constructor.name)
-            this.Nodes[node_class.constructor.name] = node_class;
-
-        Utils.debug("Node registered: " + type, this.MODULE_NAME);
+        Utils.debug("Node registered: " + type, this);
     };
 
     /**
@@ -175,8 +154,8 @@ export class Nodes {
      */
     static addNodeMethod(name: string, func: Function): void {
         Node.prototype[name] = func;
-        for (let i in this.registered_node_types)
-            this.registered_node_types[i].prototype[name] = func;
+        for (let i in this.nodes_types)
+            this.nodes_types[i].prototype[name] = func;
     };
 
     /**
@@ -186,9 +165,9 @@ export class Nodes {
      * @param options to set options
      */
     static createNode(type: string, title?: string, options?: any): Node {
-        let base_class = this.registered_node_types[type];
+        let base_class = this.nodes_types[type];
         if (!base_class) {
-            Utils.debug("Can`t create node. Node type \"" + type + "\" not registered.", this.MODULE_NAME);
+            Utils.debug("Can`t create node. Node type \"" + type + "\" not registered.", this);
             return null;
         }
 
@@ -224,7 +203,7 @@ export class Nodes {
      * @returns {Node} the node class
      */
     static getNodeType(type: string): Node {
-        return this.registered_node_types[type];
+        return this.nodes_types[type];
     };
 
 
@@ -235,13 +214,13 @@ export class Nodes {
      */
     static getNodeTypesInCategory(category: string): Array<any> {
         let r = [];
-        for (let i in this.registered_node_types)
+        for (let i in this.nodes_types)
             if (category == "") {
-                if (this.registered_node_types[i].category == null)
-                    r.push(this.registered_node_types[i]);
+                if (this.nodes_types[i].category == null)
+                    r.push(this.nodes_types[i]);
             }
-            else if (this.registered_node_types[i].category == category)
-                r.push(this.registered_node_types[i]);
+            else if (this.nodes_types[i].category == category)
+                r.push(this.nodes_types[i]);
 
         return r;
     };
@@ -252,9 +231,9 @@ export class Nodes {
      */
     static getNodeTypesCategories(): Array<any> {
         let categories = {"": 1};
-        for (let i in this.registered_node_types)
-            if (this.registered_node_types[i].category && !this.registered_node_types[i].skip_list)
-                categories[this.registered_node_types[i].category] = 1;
+        for (let i in this.nodes_types)
+            if (this.nodes_types[i].category && !this.nodes_types[i].skip_list)
+                categories[this.nodes_types[i].category] = 1;
         let result = [];
         for (let i in categories)
             result.push(i);
@@ -283,7 +262,7 @@ export class Nodes {
                 continue;
 
             try {
-                Utils.debug("Reloading: " + src, this.MODULE_NAME);
+                Utils.debug("Reloading: " + src, this);
                 let dynamicScript = document.createElement("script");
                 dynamicScript.type = "text/javascript";
                 dynamicScript.src = src;
@@ -291,13 +270,12 @@ export class Nodes {
                 docHeadObj.removeChild(script_files[i]);
             }
             catch (err) {
-                if (this.throw_errors)
-                    throw err;
-                Utils.debugErr("Error while reloading " + src, this.MODULE_NAME);
+                Utils.debugErr("Error while reloading " + src, this);
+                throw err;
             }
         }
 
-        Utils.debug("Nodes reloaded", this.MODULE_NAME);
+        Utils.debug("Nodes reloaded", this);
     };
 
 

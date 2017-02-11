@@ -1,20 +1,21 @@
-/**
- * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
- */
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'path', './modules/web-server/server', './public/nodes/nodes-engine'], factory);
+        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/nodes-engine'], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const utils_1 = require("./public/nodes/utils");
+    /**
+     * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
+     */
     console.log("-------- MyNodes ----------");
     const path = require('path');
     global.__rootdirname = path.resolve(__dirname);
     const server_1 = require('./modules/web-server/server');
-    console.log("Server started at port " + server_1.server.server.address().port);
+    utils_1.default.debug("Server started at port " + server_1.server.server.address().port, "SERVER");
     // import 'modules/debug/configure'
     // import {App} from '/modules/web-server/server'
     // import 'modules/mysensors/gateway'
