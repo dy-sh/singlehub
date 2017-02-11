@@ -34,6 +34,7 @@
     nodes_engine_1.engine.socket = server_1.server.socket.io;
     require('./public/nodes/nodes');
     require('./public/nodes/nodes/main');
+    require('./public/nodes/nodes/debug');
     require('./public/nodes/nodes/math');
     require('./modules/test').test();
 });

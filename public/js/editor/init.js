@@ -6,13 +6,14 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/nodes/main", "../../nodes/nodes/math", "./node-editor", "./editor-socket"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "./node-editor", "./editor-socket"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const nodes_engine_1 = require("../../nodes/nodes-engine");
     require("../../nodes/nodes/main");
+    require("../../nodes/nodes/debug");
     require("../../nodes/nodes/math");
     const node_editor_1 = require("./node-editor");
     const editor_socket_1 = require("./editor-socket");
@@ -31,12 +32,12 @@
 });
 //
 //
-// let node_const_A = Nodes.createNode("basic/const");
+// let node_const_A = Nodes.createNode("main/constant");
 // node_const_A.pos = [200, 200];
 // engine.add(node_const_A);
 // node_const_A.setValue(5);
 //
-// let node_const_B =  Nodes.createNode("basic/const");
+// let node_const_B =  Nodes.createNode("main/constant");
 // node_const_B.pos = [200, 300];
 // engine.add(node_const_B);
 // node_const_B.setValue(10);

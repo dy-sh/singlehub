@@ -17,26 +17,6 @@
     // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
     const nodes_engine_1 = require("../nodes-engine");
-    //Show value inside the debug console
-    class Console extends nodes_1.Node {
-        constructor() {
-            super();
-            this.onExecute = function () {
-                let val = this.getInputData(0);
-                if (val != this.oldVal) {
-                    console.log("CONSOLE NODE: " + val);
-                    this.isActive = true;
-                    this.oldVal = val;
-                }
-            };
-            this.title = "Console";
-            this.desc = "Show value inside the console";
-            this.size = [60, 20];
-            this.addInput("data");
-        }
-    }
-    exports.Console = Console;
-    nodes_1.Nodes.registerNodeType("debug/console", Console);
     //Constant
     class Constant extends nodes_1.Node {
         constructor() {
@@ -65,45 +45,7 @@
         }
     }
     exports.Constant = Constant;
-    nodes_1.Nodes.registerNodeType("basic/const", Constant);
-    //Watch a value in the editor
-    class Watch extends nodes_1.Node {
-        constructor() {
-            super();
-            this.onGetMessageFromBackSide = function (data) {
-                this.properties.value = data.value;
-                this.showValueOnInput(data.value);
-            };
-            this.title = "Watch";
-            this.desc = "Show value of input";
-            this.size = [60, 20];
-            this.addInput("value", null, { label: "" });
-            this.addOutput("value", null, { label: "" });
-        }
-        onExecute() {
-            let val = this.getInputData(0);
-            this.setOutputData(0, val);
-            this.sendMessageToFrontSide({ value: val });
-        }
-        showValueOnInput(value) {
-            //show the current value
-            if (value) {
-                if (typeof (value) == "number")
-                    this.inputs[0].label = value.toFixed(3);
-                else {
-                    let str = value;
-                    if (str && str.length)
-                        str = Array.prototype.slice.call(str).join(",");
-                    this.inputs[0].label = str;
-                }
-            }
-            else
-                this.inputs[0].label = "";
-            this.setDirtyCanvas(true, false);
-        }
-    }
-    exports.Watch = Watch;
-    nodes_1.Nodes.registerNodeType("debug/watch", Watch);
+    nodes_1.Nodes.registerNodeType("main/constant", Constant);
     //Container: a node that contains a engine
     class Container extends nodes_1.Node {
         constructor() {

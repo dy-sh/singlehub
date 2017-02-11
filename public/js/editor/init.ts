@@ -6,6 +6,7 @@ import {Nodes, Node} from "../../nodes/nodes"
 import {engine, NodesEngine} from "../../nodes/nodes-engine"
 
 import "../../nodes/nodes/main";
+import "../../nodes/nodes/debug";
 import "../../nodes/nodes/math";
 
 import {editor} from "./node-editor";
@@ -34,12 +35,12 @@ socket.getEngineState();
 
 //
 //
-// let node_const_A = Nodes.createNode("basic/const");
+// let node_const_A = Nodes.createNode("main/constant");
 // node_const_A.pos = [200, 200];
 // engine.add(node_const_A);
 // node_const_A.setValue(5);
 //
-// let node_const_B =  Nodes.createNode("basic/const");
+// let node_const_B =  Nodes.createNode("main/constant");
 // node_const_B.pos = [200, 300];
 // engine.add(node_const_B);
 // node_const_B.setValue(10);

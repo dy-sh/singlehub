@@ -10,12 +10,12 @@ module.exports.test = function () {
 
 	//engine.start(1);
 
-	let node_const_A = nodes.createNode("basic/const");
+	let node_const_A = nodes.createNode("main/constant");
 	node_const_A.pos = [10, 10];
 	engine.add(node_const_A);
 	node_const_A.setValue(5);
 
-	let node_const_B = nodes.createNode("basic/const");
+	let node_const_B = nodes.createNode("main/constant");
 	node_const_B.pos = [10, 100];
 	engine.add(node_const_B);
 	node_const_B.setValue(10);
