@@ -78,25 +78,24 @@
         /**
          * Register a node class so it can be listed when the user wants to create a new one
          * @param type name of the node and path
-         * @param base_class class containing the structure of a node
+         * @param node_class class containing the structure of a node
          */
-        static registerNodeType(type, base_class) {
-            if (!base_class.prototype)
+        static registerNodeType(type, node_class) {
+            if (!node_class.prototype)
                 throw ("Cannot register a simple object, it must be a class with a prototype");
-            base_class.type = type;
-            utils_1.default.debug("Node registered: " + type, this.MODULE_NAME);
+            node_class.type = type;
             let categories = type.split("/");
-            let pos = type.lastIndexOf("/");
-            base_class.category = type.substr(0, pos);
-            //info.name = name.substr(pos+1,name.length - pos);
+            node_class.category = type.substr(0, type.lastIndexOf("/"));
+            node_class.node_name = categories[categories.length - 1];
             //extend class
-            if (base_class.prototype)
+            if (node_class.prototype)
                 for (let i in Node.prototype)
-                    if (!base_class.prototype[i])
-                        base_class.prototype[i] = Node.prototype[i];
-            this.registered_node_types[type] = base_class;
-            if (base_class.constructor.name)
-                this.Nodes[base_class.constructor.name] = base_class;
+                    if (!node_class.prototype[i])
+                        node_class.prototype[i] = Node.prototype[i];
+            this.registered_node_types[type] = node_class;
+            if (node_class.constructor.name)
+                this.Nodes[node_class.constructor.name] = node_class;
+            utils_1.default.debug("Node registered: " + type, this.MODULE_NAME);
         }
         ;
         /**

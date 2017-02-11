@@ -2489,7 +2489,7 @@ export class Renderer {
             let node_types = Nodes.getNodeTypesInCategory(category);
             let values = [];
             for (let i in node_types)
-                values.push({content: node_types[i].name, value: node_types[i].type});
+                values.push({content: node_types[i].node_name, value: node_types[i].type});
 
             canvas.createContextualMenu(values, {event: e, callback: inner_create, from: menu}, window);
             return false;
