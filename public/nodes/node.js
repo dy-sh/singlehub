@@ -22,10 +22,9 @@
     }
     exports.Link = Link;
     class Node {
-        constructor(title = "Unnamed") {
+        constructor() {
             this.pos = [10, 10];
-            this.title = title;
-            this.id = -1; //not know till not added
+            this.id = -1;
         }
         /**
          * Configure a node from an object containing the serialized info

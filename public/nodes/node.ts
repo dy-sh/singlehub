@@ -64,7 +64,7 @@ export class Node {
     pos: [number, number] = [10, 10];
     size: [number, number];
     engine: NodesEngine;
-    id: number;
+    id: number=-1;
     type: string;
     inputs: Array<NodeInput>;
     outputs: Array<NodeOutput>;
@@ -146,9 +146,7 @@ export class Node {
     isActive: boolean;
 
 
-    constructor(title: string = "Unnamed") {
-        this.title = title;
-        this.id = -1; //not know till not added
+    constructor() {
     }
 
 
