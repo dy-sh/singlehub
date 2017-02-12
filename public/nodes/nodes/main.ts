@@ -219,11 +219,9 @@ export class ContainerInputNode extends Node {
         this.title = "Input";
         this.desc = "Input of the container";
 
-        let input_name = "input_" + (Math.random() * 1000).toFixed();
+        this.addOutput("input", null);
 
-        this.addOutput(input_name, null);
-
-        this.properties = {name: input_name, type: null};
+        this.properties = {name: "input", type: null};
 
         let that = this;
 
@@ -261,6 +259,13 @@ export class ContainerInputNode extends Node {
 
     }
 
+    onAdded = function () {
+        if (this.isBackside()) {
+            let name = this.getNewContainerInputName();
+            this.properties.name = name;
+            this.outputs[0].name = this.properties.name;
+        }
+    }
 
     onCreated = function () {
         //add output on container node
@@ -279,6 +284,22 @@ export class ContainerInputNode extends Node {
         this.setOutputData(0, val);
     }
 
+    getNewContainerInputName(): string {
+        let maxInput = 0;
+        let cont_node = this.container.container_node;
+        if (cont_node.inputs) {
+            for (let input of cont_node.inputs) {
+                if (input.name.startsWith("input ")) {
+                    let substr = input.name.substring(7, input.name.length - 1);
+                    let num = parseInt(substr);
+                    if (num > maxInput)
+                        maxInput = num;
+                }
+            }
+        }
+
+        return "input " + ++maxInput;
+    }
 
 }
 Nodes.registerNodeType("main/input", ContainerInputNode);
@@ -291,11 +312,9 @@ export class ContainerOutputNode extends Node {
         this.title = "Ouput";
         this.desc = "Output of the container";
 
-        let output_name = "output_" + (Math.random() * 1000).toFixed();
+        this.addInput("output", null);
 
-        this.addInput(output_name, null);
-
-        this.properties = {name: output_name, type: null};
+        this.properties = {name: "output", type: null};
 
         let that = this;
 
@@ -331,6 +350,14 @@ export class ContainerOutputNode extends Node {
         // });
     }
 
+    onAdded = function () {
+        if (this.isBackside()) {
+            let name = this.getNewContainerOutputName();
+            this.properties.name = name;
+            this.inputs[0].name = this.properties.name;
+        }
+    }
+
     onCreated = function () {
         //add output on container node
         let cont_node = this.container.container_node;
@@ -349,6 +376,21 @@ export class ContainerOutputNode extends Node {
         cont_node.outputs[this.properties.slot].data = val;
     }
 
+    getNewContainerOutputName(): string {
+        let maxOutput = 0;
+        let cont_node = this.container.container_node;
+        if (cont_node.outputs) {
+            for (let output of cont_node.outputs) {
+                if (output.name.startsWith("output ")) {
+                    let substr = output.name.substring(8, output.name.length - 1);
+                    let num = parseInt(substr);
+                    if (num > maxOutput)
+                        maxOutput = num;
+                }
+            }
+        }
 
+        return "output " + ++maxOutput;
+    }
 }
 Nodes.registerNodeType("main/output", ContainerOutputNode);
