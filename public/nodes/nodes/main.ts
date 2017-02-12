@@ -52,8 +52,8 @@ Nodes.registerNodeType("main/constant", ConstantNode);
 //Container: a node that contains a container of other nodes
 export class ContainerNode extends Node {
     sub_container: Container;
-    global_inputs = {};
-    global_outputs = {};
+    container_inputs = {};
+    container_outputs = {};
 
 
     constructor() {
@@ -134,13 +134,13 @@ export class ContainerNode extends Node {
 
     //Tell this container has a global input of this type
     addContainerInput(name, type, value) {
-        this.global_inputs[name] = {name: name, type: type, value: value};
+        this.container_inputs[name] = {name: name, type: type, value: value};
         this.addInput(name, type);
     }
 
     //assign a data to the global input
     setContainerInputData(name, data) {
-        let input = this.global_inputs[name];
+        let input = this.container_inputs[name];
         if (!input)
             return;
         input.value = data;
@@ -148,7 +148,7 @@ export class ContainerNode extends Node {
 
     //assign a data to the global input
     getContainerInputData(name) {
-        let input = this.global_inputs[name];
+        let input = this.container_inputs[name];
         if (!input)
             return null;
         return input.value;
@@ -159,16 +159,16 @@ export class ContainerNode extends Node {
         if (name == old_name)
             return;
 
-        if (!this.global_inputs[old_name])
+        if (!this.container_inputs[old_name])
             return false;
 
-        if (this.global_inputs[name]) {
+        if (this.container_inputs[name]) {
             console.error("there is already one input with that name");
             return false;
         }
 
-        this.global_inputs[name] = this.global_inputs[old_name];
-        delete this.global_inputs[old_name];
+        this.container_inputs[name] = this.container_inputs[old_name];
+        delete this.container_inputs[old_name];
 
         let slot = this.findInputSlot(old_name);
         if (slot == -1)
@@ -178,13 +178,13 @@ export class ContainerNode extends Node {
     }
 
     changeConainerInputType(name, type) {
-        if (!this.global_inputs[name])
+        if (!this.container_inputs[name])
             return false;
 
-        if (this.global_inputs[name].type.toLowerCase() == type.toLowerCase())
+        if (this.container_inputs[name].type.toLowerCase() == type.toLowerCase())
             return;
 
-        this.global_inputs[name].type = type;
+        this.container_inputs[name].type = type;
 
         let slot = this.findInputSlot(name);
         if (slot == -1)
@@ -194,10 +194,10 @@ export class ContainerNode extends Node {
     }
 
     removeContainerInput(name) {
-        if (!this.global_inputs[name])
+        if (!this.container_inputs[name])
             return false;
 
-        delete this.global_inputs[name];
+        delete this.container_inputs[name];
 
 
         return true;
@@ -205,13 +205,13 @@ export class ContainerNode extends Node {
 
 
     addContainerOutput(name, type, value) {
-        this.global_outputs[name] = {name: name, type: type, value: value};
+        this.container_outputs[name] = {name: name, type: type, value: value};
         this.addOutput(name, type);
     }
 
 //assign a data to the global output
     setContainerOutputData(name, value) {
-        let output = this.global_outputs[name];
+        let output = this.container_outputs[name];
         if (!output)
             return;
         output.value = value;
@@ -219,7 +219,7 @@ export class ContainerNode extends Node {
 
 //assign a data to the global input
     getContainerOutputData(name) {
-        let output = this.global_outputs[name];
+        let output = this.container_outputs[name];
         if (!output)
             return null;
         return output.value;
@@ -227,16 +227,16 @@ export class ContainerNode extends Node {
 
 //rename the global output
     renameContainerOutput(old_name, name) {
-        if (!this.global_outputs[old_name])
+        if (!this.container_outputs[old_name])
             return false;
 
-        if (this.global_outputs[name]) {
+        if (this.container_outputs[name]) {
             console.error("there is already one output with that name");
             return false;
         }
 
-        this.global_outputs[name] = this.global_outputs[old_name];
-        delete this.global_outputs[old_name];
+        this.container_outputs[name] = this.container_outputs[old_name];
+        delete this.container_outputs[old_name];
 
         let slot = this.findOutputSlot(old_name);
         if (slot == -1)
@@ -246,13 +246,13 @@ export class ContainerNode extends Node {
     }
 
     changeContainerOutputType(name, type) {
-        if (!this.global_outputs[name])
+        if (!this.container_outputs[name])
             return false;
 
-        if (this.global_outputs[name].type.toLowerCase() == type.toLowerCase())
+        if (this.container_outputs[name].type.toLowerCase() == type.toLowerCase())
             return;
 
-        this.global_outputs[name].type = type;
+        this.container_outputs[name].type = type;
 
         let slot = this.findOutputSlot(name);
         if (slot == -1)
@@ -262,9 +262,9 @@ export class ContainerNode extends Node {
     }
 
     removeContainerOutput(name) {
-        if (!this.global_outputs[name])
+        if (!this.container_outputs[name])
             return false;
-        delete this.global_outputs[name];
+        delete this.container_outputs[name];
 
         return true;
     }
@@ -333,7 +333,7 @@ export class ContainerInputNode extends Node {
         let name = this.properties.name;
 
         //read from global input
-        let data = this.container.container_node.global_inputs[name];
+        let data = this.container.container_node.container_inputs[name];
         if (!data) return;
 
         //put through output

@@ -53,8 +53,8 @@
     class ContainerNode extends node_1.Node {
         constructor() {
             super();
-            this.global_inputs = {};
-            this.global_outputs = {};
+            this.container_inputs = {};
+            this.container_outputs = {};
             this.onAdded = function () {
                 this.sub_container.parent_container_id = this.container.id;
             };
@@ -113,19 +113,19 @@
         }
         //Tell this container has a global input of this type
         addContainerInput(name, type, value) {
-            this.global_inputs[name] = { name: name, type: type, value: value };
+            this.container_inputs[name] = { name: name, type: type, value: value };
             this.addInput(name, type);
         }
         //assign a data to the global input
         setContainerInputData(name, data) {
-            let input = this.global_inputs[name];
+            let input = this.container_inputs[name];
             if (!input)
                 return;
             input.value = data;
         }
         //assign a data to the global input
         getContainerInputData(name) {
-            let input = this.global_inputs[name];
+            let input = this.container_inputs[name];
             if (!input)
                 return null;
             return input.value;
@@ -134,14 +134,14 @@
         renameContainerInput(old_name, name) {
             if (name == old_name)
                 return;
-            if (!this.global_inputs[old_name])
+            if (!this.container_inputs[old_name])
                 return false;
-            if (this.global_inputs[name]) {
+            if (this.container_inputs[name]) {
                 console.error("there is already one input with that name");
                 return false;
             }
-            this.global_inputs[name] = this.global_inputs[old_name];
-            delete this.global_inputs[old_name];
+            this.container_inputs[name] = this.container_inputs[old_name];
+            delete this.container_inputs[old_name];
             let slot = this.findInputSlot(old_name);
             if (slot == -1)
                 return;
@@ -149,11 +149,11 @@
             info.name = name;
         }
         changeConainerInputType(name, type) {
-            if (!this.global_inputs[name])
+            if (!this.container_inputs[name])
                 return false;
-            if (this.global_inputs[name].type.toLowerCase() == type.toLowerCase())
+            if (this.container_inputs[name].type.toLowerCase() == type.toLowerCase())
                 return;
-            this.global_inputs[name].type = type;
+            this.container_inputs[name].type = type;
             let slot = this.findInputSlot(name);
             if (slot == -1)
                 return;
@@ -161,39 +161,39 @@
             info.type = type;
         }
         removeContainerInput(name) {
-            if (!this.global_inputs[name])
+            if (!this.container_inputs[name])
                 return false;
-            delete this.global_inputs[name];
+            delete this.container_inputs[name];
             return true;
         }
         addContainerOutput(name, type, value) {
-            this.global_outputs[name] = { name: name, type: type, value: value };
+            this.container_outputs[name] = { name: name, type: type, value: value };
             this.addOutput(name, type);
         }
         //assign a data to the global output
         setContainerOutputData(name, value) {
-            let output = this.global_outputs[name];
+            let output = this.container_outputs[name];
             if (!output)
                 return;
             output.value = value;
         }
         //assign a data to the global input
         getContainerOutputData(name) {
-            let output = this.global_outputs[name];
+            let output = this.container_outputs[name];
             if (!output)
                 return null;
             return output.value;
         }
         //rename the global output
         renameContainerOutput(old_name, name) {
-            if (!this.global_outputs[old_name])
+            if (!this.container_outputs[old_name])
                 return false;
-            if (this.global_outputs[name]) {
+            if (this.container_outputs[name]) {
                 console.error("there is already one output with that name");
                 return false;
             }
-            this.global_outputs[name] = this.global_outputs[old_name];
-            delete this.global_outputs[old_name];
+            this.container_outputs[name] = this.container_outputs[old_name];
+            delete this.container_outputs[old_name];
             let slot = this.findOutputSlot(old_name);
             if (slot == -1)
                 return;
@@ -201,11 +201,11 @@
             info.name = name;
         }
         changeContainerOutputType(name, type) {
-            if (!this.global_outputs[name])
+            if (!this.container_outputs[name])
                 return false;
-            if (this.global_outputs[name].type.toLowerCase() == type.toLowerCase())
+            if (this.container_outputs[name].type.toLowerCase() == type.toLowerCase())
                 return;
-            this.global_outputs[name].type = type;
+            this.container_outputs[name].type = type;
             let slot = this.findOutputSlot(name);
             if (slot == -1)
                 return;
@@ -213,9 +213,9 @@
             info.type = type;
         }
         removeContainerOutput(name) {
-            if (!this.global_outputs[name])
+            if (!this.container_outputs[name])
                 return false;
-            delete this.global_outputs[name];
+            delete this.container_outputs[name];
             return true;
         }
     }
@@ -233,7 +233,7 @@
             this.onExecute = function () {
                 let name = this.properties.name;
                 //read from global input
-                let data = this.container.container_node.global_inputs[name];
+                let data = this.container.container_node.container_inputs[name];
                 if (!data)
                     return;
                 //put through output
