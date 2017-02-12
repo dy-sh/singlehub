@@ -6,12 +6,12 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./renderer", "./editor-socket", "./node-editor-themes"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-socket", "./node-editor-themes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
-    const nodes_engine_1 = require("../../nodes/nodes-engine");
+    const container_1 = require("../../nodes/container");
     const renderer_1 = require("./renderer");
     const editor_socket_1 = require("./editor-socket");
     const node_editor_themes_1 = require("./node-editor-themes");
@@ -30,15 +30,15 @@
             //nodes options theme
             if (window.theme)
                 nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
-            //create engine
-            this.engine = nodes_engine_1.engine;
+            //create container
+            this.container = container_1.rootContainer;
             //create socket
             this.socket = editor_socket_1.socket;
-            this.engine.socket = editor_socket_1.socket.socket;
+            this.container.socket = editor_socket_1.socket.socket;
             //create canvas
-            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.socket, this, this.engine);
+            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.container);
             // renderer.background_image = "/images/node-editor/grid.png";
-            this.engine.onAfterExecute = function () {
+            this.container.onAfterExecute = function () {
                 renderer.draw(true);
             };
             //add stuff
@@ -63,7 +63,7 @@
             miniwindow.className = "miniwindow";
             miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
             let canvas = miniwindow.querySelector("canvas");
-            let renderer = new renderer_1.Renderer(canvas, this.socket, this, this.engine);
+            let renderer = new renderer_1.Renderer(canvas, this.container);
             //  renderer.background_image = "images/node-editor/grid.png";
             //derwish edit
             renderer.scale = 0.1;
@@ -79,7 +79,7 @@
             close_button.innerHTML = "X";
             close_button.addEventListener("click", function (e) {
                 minimap_opened = false;
-                renderer.setEngine(null);
+                renderer.setContainer(null);
                 miniwindow.parentNode.removeChild(miniwindow);
             });
             miniwindow.appendChild(close_button);
@@ -163,7 +163,7 @@
                             json: filebody,
                             x: position[0],
                             y: position[1],
-                            ownerContainerId: nodes_engine_1.engine.container_id
+                            ownerContainerId: container_1.rootContainer.id
                         },
                         success: function (result) {
                             if (result) {
@@ -209,7 +209,7 @@
                         json: $('#modal-panel-text').val(),
                         x: position[0],
                         y: position[1],
-                        ownerContainerId: nodes_engine_1.engine.container_id
+                        ownerContainerId: container_1.rootContainer.id
                     },
                     success: function (result) {
                         if (result) {
@@ -272,7 +272,7 @@
                             json: script,
                             x: position[0],
                             y: position[1],
-                            ownerContainerId: nodes_engine_1.engine.container_id
+                            ownerContainerId: container_1.rootContainer.id
                         },
                         success: function (result) {
                             if (result) {
@@ -360,41 +360,49 @@
             var that = this;
             $("#play-button").click(function () {
                 if (that.isRunning)
-                    editor_socket_1.socket.sendStopEngine();
+                    editor_socket_1.socket.sendStopContainer();
                 else
-                    editor_socket_1.socket.sendRunEngine();
+                    editor_socket_1.socket.sendRunContainer();
             });
         }
         addStepButton() {
             $("#step-button").click(function () {
-                editor_socket_1.socket.sendStepEngine();
-                // engine.runStep();
+                editor_socket_1.socket.sendStepContainer();
+                // container.runStep();
             });
         }
-        onEngineRun() {
+        onContainerRun() {
             this.isRunning = true;
             $("#step-button").fadeTo(200, 0.3);
             $("#play-icon").addClass("stop");
             $("#play-icon").removeClass("play");
         }
-        onEngineRunStep() {
+        onContainerRunStep() {
+            if (this.showSlotsValues)
+                editor_socket_1.socket.sendGetSlotsValues();
         }
-        onEngineStop() {
+        onContainerStop() {
             this.isRunning = false;
             $("#step-button").fadeTo(200, 1);
             $("#play-icon").removeClass("stop");
             $("#play-icon").addClass("play");
         }
         addSlotsValuesButton() {
+            let that = this;
             $("#slots-values-button").click(function () {
-                this.showSlotsValues = !this.showSlotsValues;
-                if (this.showSlotsValues) {
+                that.showSlotsValues = !that.showSlotsValues;
+                if (that.showSlotsValues) {
                     $("#slots-values-icon").addClass("hide");
                     $("#slots-values-icon").removeClass("unhide");
+                    editor_socket_1.socket.sendGetSlotsValues();
                 }
                 else {
                     $("#slots-values-icon").removeClass("hide");
                     $("#slots-values-icon").addClass("unhide");
+                    for (let node of container_1.rootContainer._nodes) {
+                        node.updateInputsLabels();
+                        node.updateOutputsLabels();
+                    }
                 }
             });
         }

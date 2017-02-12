@@ -1,5 +1,6 @@
 import {Nodes} from "../nodes";
 import {Node} from "../node";
+import Utils from "../utils";
 
 /**
  * Created by derwish on 11.02.17.
@@ -7,7 +8,7 @@ import {Node} from "../node";
 
 
 //Watch a value in the editor
-export class Watch extends Node {
+export class WatchNode extends Node {
     constructor() {
         super();
         this.title = "Watch";
@@ -28,26 +29,17 @@ export class Watch extends Node {
 
     showValueOnInput(value: any) {
         //show the current value
-        if (value) {
-            if (typeof (value) == "number")
-                this.inputs[0].label = value.toFixed(3);
-            else {
-                let str = value;
-                if (str && str.length) //convert typed to array
-                    str = Array.prototype.slice.call(str).join(",");
-                this.inputs[0].label = str;
 
-            }
-        }
-        else this.inputs[0].label = "";
+        let val = Utils.formatAndTrimValue(value);
+        this.inputs[0].label = val;
 
         this.setDirtyCanvas(true, false);
     }
 }
-Nodes.registerNodeType("debug/watch", Watch);
+Nodes.registerNodeType("debug/watch", WatchNode);
 
 //Show value inside the debug console
-export class Console extends Node {
+export class ConsoleNode extends Node {
     constructor() {
         super();
         this.title = "Console";
@@ -59,13 +51,13 @@ export class Console extends Node {
 
     onInputUpdated = function () {
         let val = this.getInputData(0);
-        console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + val);
+        console.log("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
         this.sendMessageToFrontSide({value: val});
     };
 
     onGetMessageFromBackSide = function (data) {
-        console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + data.value);
+        console.log("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
     };
 }
-Nodes.registerNodeType("debug/console", Console);
+Nodes.registerNodeType("debug/console", ConsoleNode);
 

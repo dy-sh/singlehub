@@ -201,7 +201,7 @@
          * @param target
          * @param origin
          */
-        extendClass(target, origin) {
+        static extendClass(target, origin) {
             for (let i in origin) {
                 if (target.hasOwnProperty(i))
                     continue;
@@ -222,6 +222,22 @@
                     if (origin.prototype.__lookupSetter__(i))
                         target.prototype.__defineSetter__(i, origin.prototype.__lookupSetter__(i));
                 }
+        }
+        static formatAndTrimValue(val) {
+            if (!val)
+                return "";
+            if (typeof (val) == "number") {
+                return "" + parseFloat(val.toFixed(3));
+            }
+            else if (typeof (val) == "string") {
+                if (val.length > 10)
+                    val = val.substr(0, 10) + "...";
+                return val;
+            }
+            // let str = val;
+            // if (str && str.length) //convert typed to array
+            //     str = Array.prototype.slice.call(str).join(",");
+            return "" + val;
         }
     }
     Object.defineProperty(exports, "__esModule", { value: true });

@@ -12,17 +12,7 @@
     "use strict";
     const nodes_1 = require("./nodes");
     const utils_1 = require("./utils");
-    //todo
-    // if (!(<any>window)) {
-    //     let debug = require('debug')('nodes-engine:     ');
-    //     let debugLog = require('debug')('nodes-engine:log  ');
-    //     let debugMes = require('debug')('modes-engine:mes  ');
-    //     let debugErr = require('debug')('nodes-engine:error');
-    //     const nodeDebug = require('debug')('nodes:     ');
-    //     const nodeDebugErr = require('debug')('nodes:error');
-    //     let config = require('./../../config');
-    // }
-    class NodesEngine {
+    class Container {
         constructor() {
             this.supported_types = ["number", "string", "boolean"];
             this._nodes = [];
@@ -31,17 +21,17 @@
             this.global_inputs = {};
             this.global_outputs = {};
             this.list_of_renderers = null;
-            this.container_id = NodesEngine.last_container_id++;
-            NodesEngine.containers[this.container_id] = this;
+            this.id = Container.last_container_id++;
+            Container.containers[this.id] = this;
             this.clear();
-            utils_1.default.debug("Engine created (id: " + this.container_id + ")", "NODES-ENGINE");
+            utils_1.default.debug("Container created (id: " + this.id + ")", "CONTAINER");
         }
-        //used to know which types of connections support this engine (some containers do not allow certain types)
+        //used to know which types of connections support this container (some containers do not allow certain types)
         getSupportedTypes() {
             return this.supported_types;
         }
         /**
-         * Removes all nodes from this engine
+         * Removes all nodes from this container
          */
         clear() {
             this.stop();
@@ -66,12 +56,12 @@
             //globals
             this.global_inputs = {};
             this.global_outputs = {};
-            //this.engine = {};
+            //this.container = {};
             this.change();
             this.sendActionToRenderer("clear");
         }
         /**
-         * Stops the execution loop of the engine
+         * Stops the execution loop of the container
          */
         stop() {
             if (!this.isRunning)
@@ -83,24 +73,24 @@
                 clearInterval(this.execution_timer_id);
             this.execution_timer_id = null;
             for (let node of this._nodes) {
-                if (node.onStopEngine)
-                    node.onStopEngine();
+                if (node.onStopContainer)
+                    node.onStopContainer();
             }
         }
         /**
-         * Attach Renderer to this engine
+         * Attach Renderer to this container
          * @param renderer
          */
         attachRenderer(renderer) {
-            if (renderer.engine && renderer.engine != this)
-                renderer.engine.detachRenderer(renderer);
-            renderer.engine = this;
+            if (renderer.container && renderer.container != this)
+                renderer.container.detachRenderer(renderer);
+            renderer.container = this;
             if (!this.list_of_renderers)
                 this.list_of_renderers = [];
             this.list_of_renderers.push(renderer);
         }
         /**
-         * Detach Renderer from this engine
+         * Detach Renderer from this container
          * @param renderer
          */
         detachRenderer(renderer) {
@@ -109,11 +99,11 @@
             let pos = this.list_of_renderers.indexOf(renderer);
             if (pos == -1)
                 return;
-            renderer.engine = null;
+            renderer.container = null;
             this.list_of_renderers.splice(pos, 1);
         }
         /**
-         * Starts running this engine every interval milliseconds.
+         * Starts running this container every interval milliseconds.
          * @param interval amount of milliseconds between executions
          */
         run(interval = 1) {
@@ -123,8 +113,8 @@
             if (this.onPlayEvent)
                 this.onPlayEvent();
             for (let node of this._nodes) {
-                if (node.onRunEngine)
-                    node.onRunEngine();
+                if (node.onRunContainer)
+                    node.onRunContainer();
             }
             //launch
             this.starttime = nodes_1.Nodes.getTime();
@@ -135,7 +125,7 @@
             }, interval);
         }
         /**
-         * Run N steps (cycles) of the engine
+         * Run N steps (cycles) of the container
          * @param num number of steps to run, default is 1
          */
         runStep(num = 1) {
@@ -195,9 +185,9 @@
             }
         }
         /**
-         * Returns the amount of time the engine has been running in milliseconds
+         * Returns the amount of time the container has been running in milliseconds
          * @method getTime
-         * @returns number of milliseconds the engine has been running
+         * @returns number of milliseconds the container has been running
          */
         getTime() {
             return this.globaltime;
@@ -205,7 +195,7 @@
         /**
          * Returns the amount of time accumulated using the fixedtime_lapse var. This is used in context where the time increments should be constant
          * @method getFixedTime
-         * @returns number of milliseconds the engine has been running
+         * @returns number of milliseconds the container has been running
          */
         getFixedTime() {
             return this.fixedtime;
@@ -234,19 +224,18 @@
             }
         }
         /**
-         * Adds a new node instasnce to this engine
+         * Adds a new node instasnce to this container
          * @param node the instance of the node
          */
         add(node) {
             if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
                 return; //already added
             if (this._nodes.length >= nodes_1.Nodes.options.MAX_NUMBER_OF_NODES)
-                throw ("Nodes: max number of nodes in a engine reached");
+                throw ("Nodes: max number of nodes in a container reached");
             //give him an id
             if (node.id == null || node.id == -1)
                 node.id = this.last_node_id++;
-            node.engine = this;
-            node.container_id = this.container_id;
+            node.container = this;
             this._nodes.push(node);
             this._nodes_by_id[node.id] = node;
             /*
@@ -265,7 +254,7 @@
             return node; //to chain actions
         }
         /**
-         * Removes a node from the engine
+         * Removes a node from the container
          * @param node the instance of the node
          */
         remove(node) {
@@ -291,7 +280,7 @@
             //callback
             if (node.onRemoved)
                 node.onRemoved();
-            node.engine = null;
+            node.container = null;
             //remove from renderer
             if (this.list_of_renderers) {
                 for (let i = 0; i < this.list_of_renderers.length; ++i) {
@@ -362,7 +351,7 @@
          * Returns the top-most node in this position of the renderer
          * @param x the x coordinate in renderer space
          * @param y the y coordinate in renderer space
-         * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
+         * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the container
          * @returns a list with all the nodes that intersect this coordinate
          */
         getNodeOnPos(x, y, nodes_list) {
@@ -376,7 +365,7 @@
         }
         //
         // // ********** GLOBALS *****************
-        //Tell this engine has a global input of this type
+        //Tell this container has a global input of this type
         addGlobalInput(name, type, value) {
             this.global_inputs[name] = { name: name, type: type, value: value };
             if (this.onContainerInputAdded)
@@ -492,7 +481,7 @@
         //
         //     /**
         //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
-        //      * can be easily accesed from the outside of the engine
+        //      * can be easily accesed from the outside of the container
         //      * @method setInputData
         //      * @param name the name of the node
         //      * @param {*} value value to assign to this node
@@ -504,7 +493,7 @@
         //     }
         //
         //     /**
-        //      * Returns the value of the first node with this name. This is used to access global variables of the engine from the outside
+        //      * Returns the value of the first node with this name. This is used to access global variables of the container from the outside
         //      * @method setInputData
         //      * @param name the name of the node
         //      * @returns {*} value of the node
@@ -535,7 +524,7 @@
             this.sendActionToRenderer("onConnectionChange");
         }
         /**
-         * returns if the engine is in live mode
+         * returns if the container is in live mode
          * @method isLive
          */
         isLive() {
@@ -565,7 +554,7 @@
             this.sendActionToRenderer("setDirty", [foreground, backgroud]);
         }
         /**
-         * Creates a Object containing all the info about this engine, it can be serialized
+         * Creates a Object containing all the info about this container, it can be serialized
          * @returns value of the node
          */
         serialize() {
@@ -576,12 +565,12 @@
             // for (let i in this.links) //links is an OBJECT
             //     this.links[i].data = null;
             let data = {
-                //		engine: this.engine,
+                //		container: this.container,
                 iteration: this.iteration,
                 frame: this.frame,
                 last_node_id: this.last_node_id,
                 last_link_id: this.last_link_id,
-                last_container_id: NodesEngine.last_container_id,
+                last_container_id: Container.last_container_id,
                 links: utils_1.default.cloneObject(this.links),
                 config: this.config,
                 nodes: nodes_info
@@ -589,7 +578,7 @@
             return data;
         }
         /**
-         * Add nodes to engine from a JSON string
+         * Add nodes to container from a JSON string
          * @param data JSON string
          * @param keep_old
          */
@@ -619,9 +608,9 @@
             return error;
         }
     }
-    NodesEngine.last_container_id = 0;
-    NodesEngine.containers = {};
-    exports.NodesEngine = NodesEngine;
-    exports.engine = new NodesEngine();
+    Container.containers = {};
+    Container.last_container_id = 0;
+    exports.Container = Container;
+    exports.rootContainer = new Container();
 });
-//# sourceMappingURL=nodes-engine.js.map
+//# sourceMappingURL=container.js.map

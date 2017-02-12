@@ -321,115 +321,82 @@ module.exports.streamKey = streamKey;
 
 
 module.exports.getDefaultDataType = function (sensor_type) {
+
+
+
 	switch (sensor_type) {
 		case sensorType.S_DOOR:
 			return sensorDataType.V_TRIPPED;
-			break;
 		case sensorType.S_MOTION:
 			return sensorDataType.V_TRIPPED;
-			break;
 		case sensorType.S_SMOKE:
 			return sensorDataType.V_TRIPPED;
-			break;
-		case sensorType.S_BINARY:
-			return sensorDataType.V_STATUS;
-			break;
+		// case sensorType.S_BINARY:
+		// 	return sensorDataType.V_STATUS;
 		case sensorType.S_DIMMER:
 			return sensorDataType.V_DIMMER;
-			break;
-		case sensorType.S_COVER:
-			return sensorDataType.V_PERCENTAGE;
-			break;
+		// case sensorType.S_COVER:
+		// 	return sensorDataType.V_PERCENTAGE;
 		case sensorType.S_TEMP:
 			return sensorDataType.V_TEMP;
-			break;
 		case sensorType.S_HUM:
 			return sensorDataType.V_HUM;
-			break;
 		case sensorType.S_BARO:
 			return sensorDataType.V_PRESSURE;
-			break;
 		case sensorType.S_WIND:
 			return sensorDataType.V_WIND;
-			break;
 		case sensorType.S_RAIN:
 			return sensorDataType.V_RAIN;
-			break;
 		case sensorType.S_UV:
 			return sensorDataType.V_UV;
-			break;
 		case sensorType.S_WEIGHT:
 			return sensorDataType.V_WEIGHT;
-			break;
 		case sensorType.S_POWER:
 			return sensorDataType.V_WATT;
-			break;
 		case sensorType.S_HEATER:
 			return sensorDataType.V_TEMP;
-			break;
 		case sensorType.S_DISTANCE:
 			return sensorDataType.V_DISTANCE;
-			break;
 		case sensorType.S_LIGHT_LEVEL:
 			return sensorDataType.V_LIGHT_LEVEL;
-			break;
 		case sensorType.S_ARDUINO_NODE:
 			return null;
-			break;
 		case sensorType.S_ARDUINO_REPEATER_NODE:
 			return null;
-			break;
 		case sensorType.S_LOCK:
 			return sensorDataType.V_LOCK_STATUS;
-			break;
 		case sensorType.S_IR:
 			return sensorDataType.V_IR_SEND;
-			break;
 		case sensorType.S_WATER:
 			return sensorDataType.V_VOLUME;
-			break;
 		case sensorType.S_AIR_QUALITY:
 			return sensorDataType.V_LEVEL;
-			break;
 		case sensorType.S_CUSTOM:
 			return null;
-			break;
 		case sensorType.S_DUST:
 			return sensorDataType.V_LEVEL;
-			break;
 		case sensorType.S_SCENE_CONTROLLER:
 			return sensorDataType.V_SCENE_ON;
-			break;
 		case sensorType.S_RGB_LIGHT:
 			return sensorDataType.V_RGB;
-			break;
 		case sensorType.S_RGBW_LIGHT:
 			return sensorDataType.V_RGBW;
-			break;
 		case sensorType.S_COLOR_SENSOR:
 			return sensorDataType.V_RGB;
-			break;
 		case sensorType.S_HVAC:
 			return sensorDataType.V_HVAC_SETPOINT_HEAT;
-			break;
 		case sensorType.S_MULTIMETER:
 			return sensorDataType.V_VOLTAGE;
-			break;
-		case sensorType.S_SPRINKLER:
-			return sensorDataType.V_STATUS;
-			break;
+		// case sensorType.S_SPRINKLER:
+		// 	return sensorDataType.V_STATUS;
 		case sensorType.S_WATER_LEAK:
 			return sensorDataType.V_TRIPPED;
-			break;
 		case sensorType.S_SOUND:
 			return sensorDataType.V_LEVEL;
-			break;
 		case sensorType.S_VIBRATION:
 			return sensorDataType.V_LEVEL;
-			break;
-		case sensorType.S_MOISTURE:
-			return sensorDataType.V_LEVEL;
-			break;
+		// case sensorType.S_MOISTURE:
+		// 	return sensorDataType.V_LEVEL;
 	}
 };
 

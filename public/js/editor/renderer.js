@@ -4,7 +4,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/nodes-engine", "./node-editor", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./node-editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,19 +12,17 @@
      * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
      */
     const nodes_1 = require("../../nodes/nodes");
-    const nodes_engine_1 = require("../../nodes/nodes-engine");
+    const container_1 = require("../../nodes/container");
     const node_editor_1 = require("./node-editor");
     const utils_1 = require("../../nodes/utils");
     class Renderer {
-        constructor(canvas, socket, editor, engine, skip_render) {
-            this.socket = socket;
-            this.editor = editor;
+        constructor(canvas, container, skip_render) {
             //derwish edit
             this.max_zoom = 2;
             this.min_zoom = 0.1;
-            //link renderer and engine
-            if (engine)
-                engine.attachRenderer(this);
+            //link renderer and container
+            if (container)
+                container.attachRenderer(this);
             this.setCanvas(canvas);
             this.clear();
             if (!skip_render)
@@ -77,27 +75,27 @@
                 this.onClear();
         }
         /**
-         * Assigns a engine, you can reasign engines to the same renderer
-         * @param engine
+         * Assigns a container, you can reasign containers to the same renderer
+         * @param container
          * @param skip_clear
          */
-        setEngine(engine, skip_clear = false) {
-            if (this.engine == engine)
+        setContainer(container, skip_clear = false) {
+            if (this.container == container)
                 return;
             if (!skip_clear)
                 this.clear();
-            if (!engine && this.engine) {
-                this.engine.detachRenderer(this);
+            if (!container && this.container) {
+                this.container.detachRenderer(this);
                 return;
             }
             /*
-             if(this.engine)
-             this.engine.renderer = null; //remove old engine link to the renderer
-             this.engine = engine;
-             if(this.engine)
-             this.engine.renderer = this;
+             if(this.container)
+             this.container.renderer = null; //remove old container link to the renderer
+             this.container = container;
+             if(this.container)
+             this.container.renderer = this;
              */
-            engine.attachRenderer(this);
+            container.attachRenderer(this);
             this.setDirty(true, true);
         }
         /**
@@ -105,28 +103,27 @@
          * @param container node
          */
         openContainer(container) {
-            let engine = container.container_engine;
-            if (!engine)
-                throw ("engine cannot be null");
-            if (this.engine == engine)
-                throw ("engine cannot be the same");
+            if (!container)
+                throw ("container cannot be null");
+            if (this.container == container)
+                throw ("container cannot be the same");
             this.clear();
-            if (this.engine) {
-                if (!this._engine_stack)
-                    this._engine_stack = [];
-                this._engine_stack.push(this.engine);
+            if (this.container) {
+                if (!this._containers_stack)
+                    this._containers_stack = [];
+                this._containers_stack.push(this.container);
             }
-            engine.attachRenderer(this);
+            container.attachRenderer(this);
             this.setDirty(true, true);
         }
         /**
          * Close container
          */
         closeContainer() {
-            if (!this._engine_stack || this._engine_stack.length == 0)
+            if (!this._containers_stack || this._containers_stack.length == 0)
                 return;
-            let engine = this._engine_stack.pop();
-            engine.attachRenderer(this);
+            let container = this._containers_stack.pop();
+            container.attachRenderer(this);
             this.setDirty(true, true);
         }
         /**
@@ -380,7 +377,7 @@
          * @returns {boolean}
          */
         processMouseDown(e) {
-            if (!this.engine)
+            if (!this.container)
                 return;
             this.adjustMouseEvent(e);
             let ref_window = this.getCanvasWindow();
@@ -389,7 +386,7 @@
             this.canvas.removeEventListener("mousemove", this._mousemove_callback);
             ref_window.document.addEventListener("mousemove", this._mousemove_callback, true); //catch for the entire window
             ref_window.document.addEventListener("mouseup", this._mouseup_callback, true);
-            let n = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+            let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
             let skip_dragging = false;
             //derwish added
             this.closeAllContextualMenus();
@@ -437,7 +434,7 @@
                                 let link_pos = n.getConnectionPos(true, i);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     if (input.link !== null) {
-                                        this.socket.sendRemoveLink(nodes_engine_1.engine.links[input.link]);
+                                        node_editor_1.editor.socket.sendRemoveLink(container_1.rootContainer.links[input.link]);
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         skip_action = true;
@@ -507,7 +504,7 @@
              if( (this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
              this.draw();
              */
-            this.engine.change();
+            this.container.change();
             //this is to ensure to defocus(blur) if a text input element is on focus
             if (!ref_window.document.activeElement || (ref_window.document.activeElement.nodeName.toLowerCase() != "input" && ref_window.document.activeElement.nodeName.toLowerCase() != "textarea"))
                 e.preventDefault();
@@ -520,7 +517,7 @@
          * @returns {boolean}
          */
         processMouseMove(e) {
-            if (!this.engine)
+            if (!this.container)
                 return;
             this.adjustMouseEvent(e);
             let mouse = [e.localX, e.localY];
@@ -537,12 +534,12 @@
                 if (this.connecting_node)
                     this.dirty_canvas = true;
                 //get node over
-                let n = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                 //remove mouseover flag
-                for (let i in this.engine._nodes) {
-                    if (this.engine._nodes[i].mouseOver && n != this.engine._nodes[i]) {
+                for (let i in this.container._nodes) {
+                    if (this.container._nodes[i].mouseOver && n != this.container._nodes[i]) {
                         //mouse leave
-                        this.engine._nodes[i].mouseOver = false;
+                        this.container._nodes[i].mouseOver = false;
                         if (this.node_over && this.node_over.onMouseLeave)
                             this.node_over.onMouseLeave(e);
                         this.node_over = null;
@@ -626,7 +623,7 @@
             //e.stopPropagation();
             return false;
             //this is not really optimal
-            //this.engine.change();
+            //this.container.change();
         }
         /**
          * Process mouse up
@@ -634,7 +631,7 @@
          * @returns {boolean}
          */
         processMouseUp(e) {
-            if (!this.engine)
+            if (!this.container)
                 return;
             let window = this.getCanvasWindow();
             let document = window.document;
@@ -648,7 +645,7 @@
                 if (this.connecting_node) {
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
-                    let node = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                    let node = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                     //node below mouse
                     if (node) {
                         if (this.connecting_output.type == 'node') {
@@ -657,7 +654,7 @@
                         else {
                             //slot below mouse? connect
                             let slot = this.isOverNodeInput(node, e.canvasX, e.canvasY);
-                            this.socket.sendCreateLink(this.connecting_node.id, this.connecting_slot, node.id, slot);
+                            node_editor_1.editor.socket.sendCreateLink(this.connecting_node.id, this.connecting_slot, node.id, slot);
                         }
                     }
                     this.connecting_output = null;
@@ -669,7 +666,7 @@
                 else if (this.resizing_node) {
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
-                    this.socket.sendUpdateNodeSize(this.resizing_node);
+                    node_editor_1.editor.socket.sendUpdateNodeSize(this.resizing_node);
                     this.resizing_node = null;
                 }
                 else if (this.node_dragged) {
@@ -677,12 +674,12 @@
                     this.dirty_bgcanvas = true;
                     this.node_dragged.pos[0] = Math.round(this.node_dragged.pos[0]);
                     this.node_dragged.pos[1] = Math.round(this.node_dragged.pos[1]);
-                    if (this.engine.config.align_to_grid)
+                    if (this.container.config.align_to_grid)
                         this.node_dragged.alignToGrid();
                     for (let i in this.selected_nodes) {
                         this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                         this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                        this.socket.sendUpdateNodePosition(this.selected_nodes[i]);
+                        node_editor_1.editor.socket.sendUpdateNodePosition(this.selected_nodes[i]);
                     }
                     this.node_dragged = null;
                 }
@@ -709,7 +706,7 @@
              if((this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
              this.draw();
              */
-            this.engine.change();
+            this.container.change();
             e.stopPropagation();
             e.preventDefault();
             return false;
@@ -720,7 +717,7 @@
          * @returns {boolean}
          */
         processMouseWheel(e) {
-            if (!this.engine || !this.allow_dragcanvas)
+            if (!this.container || !this.allow_dragcanvas)
                 return;
             let delta = (e.wheelDeltaY != null ? e.wheelDeltaY : e.detail * -60);
             this.adjustMouseEvent(e);
@@ -734,7 +731,7 @@
              if(this.rendering_timer_id == null)
              this.draw();
              */
-            this.engine.change();
+            this.container.change();
             e.preventDefault();
             return false; // prevent default
         }
@@ -768,7 +765,7 @@
          * @returns {boolean}
          */
         processKey(e) {
-            if (!this.engine)
+            if (!this.container)
                 return;
             let block_default = false;
             if (e.type == "keydown") {
@@ -796,7 +793,7 @@
                         if (this.selected_nodes[i].onKeyUp)
                             this.selected_nodes[i].onKeyUp(e);
             }
-            this.engine.change();
+            this.container.change();
             if (block_default) {
                 e.preventDefault();
                 return false;
@@ -811,7 +808,7 @@
             e.preventDefault();
             this.adjustMouseEvent(e);
             let pos = [e.canvasX, e.canvasY];
-            let node = this.engine.getNodeOnPos(pos[0], pos[1]);
+            let node = this.container.getNodeOnPos(pos[0], pos[1]);
             if (!node) {
                 if (this.onDropItem)
                     this.onDropItem(event);
@@ -915,12 +912,12 @@
          * Select all nodes
          */
         selectAllNodes() {
-            for (let i in this.engine._nodes) {
-                let n = this.engine._nodes[i];
+            for (let i in this.container._nodes) {
+                let n = this.container._nodes[i];
                 if (!n.selected && n.onSelected)
                     n.onSelected();
                 n.selected = true;
-                this.selected_nodes[this.engine._nodes[i].id] = n;
+                this.selected_nodes[this.container._nodes[i].id] = n;
             }
             this.setDirty(true);
         }
@@ -944,7 +941,7 @@
             for (let i in this.selected_nodes) {
                 let m = this.selected_nodes[i];
                 //if(m == this.node_in_container) this.showNodePanel(null);
-                this.engine.remove(m);
+                this.container.remove(m);
             }
             this.selected_nodes = {};
             this.setDirty(true);
@@ -1021,22 +1018,22 @@
          * @param n
          */
         bringToFront(n) {
-            let i = this.engine._nodes.indexOf(n);
+            let i = this.container._nodes.indexOf(n);
             if (i == -1)
                 return;
-            this.engine._nodes.splice(i, 1);
-            this.engine._nodes.push(n);
+            this.container._nodes.splice(i, 1);
+            this.container._nodes.push(n);
         }
         /**
          *
          * @param n
          */
         sendToBack(n) {
-            let i = this.engine._nodes.indexOf(n);
+            let i = this.container._nodes.indexOf(n);
             if (i == -1)
                 return;
-            this.engine._nodes.splice(i, 1);
-            this.engine._nodes.unshift(n);
+            this.container._nodes.splice(i, 1);
+            this.container._nodes.unshift(n);
         }
         /**
          * Compute visible ndes
@@ -1044,8 +1041,8 @@
          */
         computeVisibleNodes() {
             let visible_nodes = [];
-            for (let i in this.engine._nodes) {
-                let n = this.engine._nodes[i];
+            for (let i in this.container._nodes) {
+                let n = this.container._nodes[i];
                 //skip rendering nodes in live mode
                 if (this.live_mode && !n.onDrawBackground && !n.onDrawForeground)
                     continue;
@@ -1065,7 +1062,7 @@
             let now = nodes_1.Nodes.getTime();
             this.render_time = (now - this.last__time) * 0.001;
             this.last_draw_time = now;
-            if (this.engine) {
+            if (this.container) {
                 let start = [-this.offset[0], -this.offset[1]];
                 let end = [start[0] + this.canvas.width / this.scale, start[1] + this.canvas.height / this.scale];
                 this.visible_area = [start[0], start[1], end[0], end[1]];
@@ -1114,7 +1111,7 @@
             //info widget
             if (this.show_info)
                 this.renderInfo(ctx);
-            if (this.engine) {
+            if (this.container) {
                 //apply transformations
                 ctx.save();
                 ctx.scale(this.scale, this.scale);
@@ -1135,7 +1132,7 @@
                     ctx.restore();
                 }
                 //connections ontop?
-                if (this.engine.config.links_ontop)
+                if (this.container.config.links_ontop)
                     if (!this.live_mode)
                         this.drawConnections(ctx);
                 //current connection
@@ -1180,14 +1177,14 @@
             ctx.translate(x, y);
             ctx.font = "10px Arial";
             ctx.fillStyle = "#888";
-            if (this.engine) {
-                ctx.fillText("T: " + this.engine.globaltime.toFixed(2) + "s", 5, 13 * 1);
-                ctx.fillText("I: " + this.engine.iteration, 5, 13 * 2);
+            if (this.container) {
+                ctx.fillText("T: " + this.container.globaltime.toFixed(2) + "s", 5, 13 * 1);
+                ctx.fillText("I: " + this.container.iteration, 5, 13 * 2);
                 ctx.fillText("F: " + this.frame, 5, 13 * 3);
                 ctx.fillText("FPS:" + this.fps.toFixed(2), 5, 13 * 4);
             }
             else
-                ctx.fillText("No engine selected", 5, 13 * 1);
+                ctx.fillText("No container selected", 5, 13 * 1);
             ctx.restore();
         }
         /**
@@ -1206,7 +1203,7 @@
             //reset in case of error
             ctx.restore();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            if (this.engine) {
+            if (this.container) {
                 //apply transformations
                 ctx.save();
                 ctx.scale(this.scale, this.scale);
@@ -1282,7 +1279,7 @@
                 color = nodes_1.Nodes.options.IO_NODE_COLOR;
             //if (this.selected) color = "#88F";
             let render_title = true;
-            if (node.flags.skip_title_render || node.engine.isLive())
+            if (node.flags.skip_title_render || node.container.isLive())
                 render_title = false;
             if (node.mouseOver)
                 render_title = true;
@@ -1583,8 +1580,8 @@
             ctx.strokeStyle = "#AAA";
             ctx.globalAlpha = this.editor_alpha;
             //for every node
-            for (let n in this.engine._nodes) {
-                let node = this.engine._nodes[n];
+            for (let n in this.container._nodes) {
+                let node = this.container._nodes[n];
                 //for every input (we render just inputs because it is easier as every slot can only have one input)
                 if (node.inputs && node.inputs.length)
                     for (let i in node.inputs) {
@@ -1592,10 +1589,10 @@
                         if (!input || input.link == null)
                             continue;
                         let link_id = input.link;
-                        let link = this.engine.links[link_id];
+                        let link = this.container.links[link_id];
                         if (!link)
                             continue;
-                        let start_node = this.engine.getNodeById(link.origin_id);
+                        let start_node = this.container.getNodeById(link.origin_id);
                         if (start_node == null)
                             continue;
                         let start_node_slot = link.origin_slot;
@@ -1808,25 +1805,25 @@
                 options.push({
                     content: "Reset View",
                     callback: () => {
-                        this.editor.renderer.offset = [0, 0];
-                        this.editor.renderer.scale = 1;
-                        this.editor.renderer.setZoom(1, [1, 1]);
+                        node_editor_1.editor.renderer.offset = [0, 0];
+                        node_editor_1.editor.renderer.scale = 1;
+                        node_editor_1.editor.renderer.setZoom(1, [1, 1]);
                     }
                 });
                 options.push({
                     content: "Show Map",
                     callback: () => {
-                        this.editor.addMiniWindow(200, 200);
+                        node_editor_1.editor.addMiniWindow(200, 200);
                     }
                 });
-                // if (engine.parent_container_id) {
+                // if (container.parent_container_id) {
                 //
                 //     options.push(null);
                 //
                 //     let back_url = "/editor/";
                 //
-                //     if (engine.parent_container_id != 0)
-                //         back_url += "container/" + engine.parent_container_id;
+                //     if (container.parent_container_id != 0)
+                //         back_url += "container/" + container.parent_container_id;
                 //
                 //     options.push({
                 //         content: "Close Container",
@@ -1836,7 +1833,7 @@
                 //     });
                 //
                 // }
-                if (this._engine_stack && this._engine_stack.length > 0)
+                if (this._containers_stack && this._containers_stack.length > 0)
                     options.push({ content: "Close Container", callback: this.closeContainer.bind(this) });
             }
             if (this.getExtraMenuOptions) {
@@ -1976,11 +1973,11 @@
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                canvas.editor.socket.sendCreateNode(type, pos);
+                node_editor_1.editor.socket.sendCreateNode(type, pos);
                 // let node = Nodes.createNode(v.value);
                 // if (node) {
                 //     node.pos = pos;
-                //     this.renderer.engine.add(node);
+                //     this.renderer.container.add(node);
                 // }
             }
             return false;
@@ -2006,19 +2003,19 @@
                     let pos = canvas.convertEventToCanvas(first_event);
                     pos[0] = Math.round(pos[0]);
                     pos[1] = Math.round(pos[1]);
-                    canvas.editor.importContainerFromFile(pos);
+                    node_editor_1.editor.importContainerFromFile(pos);
                 }
                 if (v.value == "Container from script") {
                     let pos = canvas.convertEventToCanvas(first_event);
                     pos[0] = Math.round(pos[0]);
                     pos[1] = Math.round(pos[1]);
-                    canvas.editor.importContainerFromScript(pos);
+                    node_editor_1.editor.importContainerFromScript(pos);
                 }
                 if (v.value == "Container from URL") {
                     let pos = canvas.convertEventToCanvas(first_event);
                     pos[0] = Math.round(pos[0]);
                     pos[1] = Math.round(pos[1]);
-                    canvas.editor.importContainerFromURL(pos);
+                    node_editor_1.editor.importContainerFromURL(pos);
                 }
                 canvas.closeAllContextualMenus();
                 return false;
@@ -2186,7 +2183,7 @@
             else
                 node_editor_1.editor.socket.sendRemoveNode(node);
             //derwish remove
-            //node.engine.remove(uiNode);
+            //node.container.remove(uiNode);
             //node.setDirtyCanvas(true, true);
         }
         /**
@@ -2200,10 +2197,10 @@
             //let newnode = node.clone();
             //if(!newnode) return;
             //newnode.pos = [node.pos[0]+10,node.pos[1]+10];
-            //node.engine.add(newnode);
+            //node.container.add(newnode);
             //node.setDirtyCanvas(true, true);
             //derwish added
-            this.socket.sendCloneNode(node);
+            node_editor_1.editor.socket.sendCloneNode(node);
         }
         /**
          * Create contextual menu
@@ -2215,7 +2212,7 @@
         createContextualMenu(values, options, ref_window) {
             options = options || {};
             this.options = options;
-            //allows to create engine renderer in separate window
+            //allows to create container renderer in separate window
             ref_window = ref_window || window;
             if (!options.from)
                 this.closeAllContextualMenus();

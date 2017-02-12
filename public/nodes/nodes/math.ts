@@ -15,7 +15,7 @@ import {Node} from "../node";
 
 
 //Math Plus
-class MathPlus extends Node {
+class MathPlusNode extends Node {
     constructor() {
         super();
 
@@ -34,7 +34,7 @@ class MathPlus extends Node {
         this.setOutputData(0, result);
     }
 }
-Nodes.registerNodeType("math/plus", MathPlus);
+Nodes.registerNodeType("math/plus", MathPlusNode);
 
 
 
@@ -591,7 +591,7 @@ Nodes.registerNodeType("math/plus", MathPlus);
 //                     y = this.properties["y"];
 //
 //                 let f = this.properties["formula"];
-//                 let value = math.eval(f, {x: x, y: y, T: this.engine.globaltime});
+//                 let value = math.eval(f, {x: x, y: y, T: this.container.globaltime});
 //                 this.setOutputData(0, value);
 //             }
 //

@@ -3,7 +3,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/nodes-engine'], factory);
+        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container'], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -27,11 +27,9 @@
     // // }
     //
     //
-    // //nodes engine
-    // // if (config.nodesEngine.enable) {
-    const nodes_engine_1 = require('./public/nodes/nodes-engine');
-    // let engine=require('./public/nodes/nodes-engine');
-    nodes_engine_1.engine.socket = server_1.server.socket.io;
+    const container_1 = require('./public/nodes/container');
+    // let rootContainer=require('./public/nodes/rootContainer');
+    container_1.rootContainer.socket = server_1.server.socket.io;
     require('./public/nodes/nodes');
     require('./public/nodes/nodes/main');
     require('./public/nodes/nodes/debug');

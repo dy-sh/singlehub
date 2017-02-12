@@ -8,32 +8,29 @@ import {Node, Link} from "./node";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
-import {Container} from "./nodes/main"
+import {ContainerNode} from "./nodes/main"
 
 
-//todo
-// if (!(<any>window)) {
-//     let debug = require('debug')('nodes-engine:     ');
-//     let debugLog = require('debug')('nodes-engine:log  ');
-//     let debugMes = require('debug')('modes-engine:mes  ');
-//     let debugErr = require('debug')('nodes-engine:error');
-//     const nodeDebug = require('debug')('nodes:     ');
-//     const nodeDebugErr = require('debug')('nodes:error');
-//     let config = require('./../../config');
-// }
 
 
-export class NodesEngine {
+export class Container {
+    static containers: {[id: number]: Container} = {};
+
+    static last_container_id: number = 0;
+
+    parent_container_id?: number;
+
+    _container_node: ContainerNode;
+
+
+
+    id: number;
+
     socket: SocketIOClient.Socket|SocketIO.Server;
-
     supported_types = ["number", "string", "boolean"];
-
-
     list_of_renderers: Array<Renderer>;
     isRunning: boolean;
     last_node_id: number;
-    static last_container_id: number = 0;
-    static containers: {[id: number]: NodesEngine} = {};
     _nodes: Array<Node> = [];
     _nodes_by_id = {};
     last_link_id: number;
@@ -63,12 +60,8 @@ export class NodesEngine {
     onNodeRemoved: Function;
     onPlayEvent: Function;
     frame: number;
-    container_id: number;
-    parent_container_id?: number;
 
 
-    _container_node: Container;
-    _is_container: boolean;
     onContainerInputAdded: Function;
     onContainerInputRenamed: Function;
     onContainerInputTypeChanged: Function;
@@ -82,22 +75,22 @@ export class NodesEngine {
 
     constructor() {
         this.list_of_renderers = null;
-        this.container_id = NodesEngine.last_container_id++;
-        NodesEngine.containers[this.container_id] = this;
+        this.id = Container.last_container_id++;
+        Container.containers[this.id] = this;
         this.clear();
 
-        Utils.debug("Engine created (id: " + this.container_id + ")", "NODES-ENGINE");
+        Utils.debug("Container created (id: " + this.id + ")", "CONTAINER");
     }
 
 
-//used to know which types of connections support this engine (some containers do not allow certain types)
+//used to know which types of connections support this container (some containers do not allow certain types)
     getSupportedTypes(): Array<string> {
         return this.supported_types;
     }
 
 
     /**
-     * Removes all nodes from this engine
+     * Removes all nodes from this container
      */
     clear(): void {
         this.stop();
@@ -129,7 +122,7 @@ export class NodesEngine {
         this.global_inputs = {};
         this.global_outputs = {};
 
-        //this.engine = {};
+        //this.container = {};
 
         this.change();
 
@@ -137,7 +130,7 @@ export class NodesEngine {
     }
 
     /**
-     * Stops the execution loop of the engine
+     * Stops the execution loop of the container
      */
     stop(): void {
         if (!this.isRunning)
@@ -154,28 +147,28 @@ export class NodesEngine {
 
 
         for (let node of this._nodes) {
-            if (node.onStopEngine)
-                node.onStopEngine();
+            if (node.onStopContainer)
+                node.onStopContainer();
         }
     }
 
 
     /**
-     * Attach Renderer to this engine
+     * Attach Renderer to this container
      * @param renderer
      */
     attachRenderer(renderer: Renderer): void {
-        if (renderer.engine && renderer.engine != this)
-            renderer.engine.detachRenderer(renderer);
+        if (renderer.container && renderer.container != this)
+            renderer.container.detachRenderer(renderer);
 
-        renderer.engine = this;
+        renderer.container = this;
         if (!this.list_of_renderers)
             this.list_of_renderers = [];
         this.list_of_renderers.push(renderer);
     }
 
     /**
-     * Detach Renderer from this engine
+     * Detach Renderer from this container
      * @param renderer
      */
     detachRenderer(renderer: Renderer): void {
@@ -185,12 +178,12 @@ export class NodesEngine {
         let pos = this.list_of_renderers.indexOf(renderer);
         if (pos == -1)
             return;
-        renderer.engine = null;
+        renderer.container = null;
         this.list_of_renderers.splice(pos, 1);
     }
 
     /**
-     * Starts running this engine every interval milliseconds.
+     * Starts running this container every interval milliseconds.
      * @param interval amount of milliseconds between executions
      */
     run(interval: number = 1): void {
@@ -203,8 +196,8 @@ export class NodesEngine {
             this.onPlayEvent();
 
         for (let node of this._nodes) {
-            if (node.onRunEngine)
-                node.onRunEngine();
+            if (node.onRunContainer)
+                node.onRunContainer();
         }
 
         //launch
@@ -219,7 +212,7 @@ export class NodesEngine {
 
 
     /**
-     * Run N steps (cycles) of the engine
+     * Run N steps (cycles) of the container
      * @param num number of steps to run, default is 1
      */
     runStep(num: number = 1): void {
@@ -292,9 +285,9 @@ export class NodesEngine {
 
 
     /**
-     * Returns the amount of time the engine has been running in milliseconds
+     * Returns the amount of time the container has been running in milliseconds
      * @method getTime
-     * @returns number of milliseconds the engine has been running
+     * @returns number of milliseconds the container has been running
      */
     getTime(): number {
         return this.globaltime;
@@ -303,7 +296,7 @@ export class NodesEngine {
     /**
      * Returns the amount of time accumulated using the fixedtime_lapse var. This is used in context where the time increments should be constant
      * @method getFixedTime
-     * @returns number of milliseconds the engine has been running
+     * @returns number of milliseconds the container has been running
      */
     getFixedTime(): number {
         return this.fixedtime;
@@ -338,7 +331,7 @@ export class NodesEngine {
 
 
     /**
-     * Adds a new node instasnce to this engine
+     * Adds a new node instasnce to this container
      * @param node the instance of the node
      */
     add(node: Node): Node {
@@ -346,14 +339,13 @@ export class NodesEngine {
             return; //already added
 
         if (this._nodes.length >= Nodes.options.MAX_NUMBER_OF_NODES)
-            throw("Nodes: max number of nodes in a engine reached");
+            throw("Nodes: max number of nodes in a container reached");
 
         //give him an id
         if (node.id == null || node.id == -1)
             node.id = this.last_node_id++;
 
-        node.engine = this;
-        node.container_id = this.container_id;
+        node.container = this;
 
         this._nodes.push(node);
         this._nodes_by_id[node.id] = node;
@@ -383,7 +375,7 @@ export class NodesEngine {
 
 
     /**
-     * Removes a node from the engine
+     * Removes a node from the container
      * @param node the instance of the node
      */
     remove(node: Node): void {
@@ -415,7 +407,7 @@ export class NodesEngine {
         if (node.onRemoved)
             node.onRemoved();
 
-        node.engine = null;
+        node.container = null;
 
         //remove from renderer
         if (this.list_of_renderers) {
@@ -498,7 +490,7 @@ export class NodesEngine {
      * Returns the top-most node in this position of the renderer
      * @param x the x coordinate in renderer space
      * @param y the y coordinate in renderer space
-     * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the engine
+     * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the container
      * @returns a list with all the nodes that intersect this coordinate
      */
     getNodeOnPos(x: number, y: number, nodes_list?: Array<Node>): Node {
@@ -514,7 +506,7 @@ export class NodesEngine {
 //
 // // ********** GLOBALS *****************
 
-    //Tell this engine has a global input of this type
+    //Tell this container has a global input of this type
     addGlobalInput(name, type, value) {
         this.global_inputs[name] = {name: name, type: type, value: value};
 
@@ -664,7 +656,7 @@ export class NodesEngine {
 //
 //     /**
 //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
-//      * can be easily accesed from the outside of the engine
+//      * can be easily accesed from the outside of the container
 //      * @method setInputData
 //      * @param name the name of the node
 //      * @param {*} value value to assign to this node
@@ -676,7 +668,7 @@ export class NodesEngine {
 //     }
 //
 //     /**
-//      * Returns the value of the first node with this name. This is used to access global variables of the engine from the outside
+//      * Returns the value of the first node with this name. This is used to access global variables of the container from the outside
 //      * @method setInputData
 //      * @param name the name of the node
 //      * @returns {*} value of the node
@@ -709,7 +701,7 @@ export class NodesEngine {
 
 
     /**
-     * returns if the engine is in live mode
+     * returns if the container is in live mode
      * @method isLive
      */
     isLive(): boolean {
@@ -746,7 +738,7 @@ export class NodesEngine {
 
 
     /**
-     * Creates a Object containing all the info about this engine, it can be serialized
+     * Creates a Object containing all the info about this container, it can be serialized
      * @returns value of the node
      */
     serialize(): any {
@@ -760,13 +752,13 @@ export class NodesEngine {
 
 
         let data = {
-            //		engine: this.engine,
+            //		container: this.container,
 
             iteration: this.iteration,
             frame: this.frame,
             last_node_id: this.last_node_id,
             last_link_id: this.last_link_id,
-            last_container_id: NodesEngine.last_container_id,
+            last_container_id: Container.last_container_id,
             links: Utils.cloneObject(this.links),
 
             config: this.config,
@@ -778,7 +770,7 @@ export class NodesEngine {
 
 
     /**
-     * Add nodes to engine from a JSON string
+     * Add nodes to container from a JSON string
      * @param data JSON string
      * @param keep_old
      */
@@ -818,5 +810,5 @@ export class NodesEngine {
 }
 
 
-export let engine = new NodesEngine();
+export let rootContainer = new Container();
 

@@ -6,39 +6,39 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../public/nodes/nodes", "../public/nodes/nodes-engine"], factory);
+        define(["require", "exports", "../public/nodes/nodes", "../public/nodes/container"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../public/nodes/nodes");
-    const nodes_engine_1 = require("../public/nodes/nodes-engine");
+    const container_1 = require("../public/nodes/container");
     module.exports.test = function () {
-        //engine.start(1);
+        //rootContainer.start(1);
         let node_const_A = nodes_1.Nodes.createNode("main/constant");
         node_const_A.pos = [10, 10];
-        nodes_engine_1.engine.add(node_const_A);
-        node_const_A.setValue(5);
+        container_1.rootContainer.add(node_const_A);
+        node_const_A.setValue(5.4);
         let node_const_B = nodes_1.Nodes.createNode("main/constant");
         node_const_B.pos = [10, 100];
-        nodes_engine_1.engine.add(node_const_B);
+        container_1.rootContainer.add(node_const_B);
         node_const_B.setValue(10);
         let node_math = nodes_1.Nodes.createNode("math/plus");
         node_math.pos = [200, 50];
-        nodes_engine_1.engine.add(node_math);
+        container_1.rootContainer.add(node_math);
         let node_watch = nodes_1.Nodes.createNode("debug/console");
         node_watch.pos = [400, 50];
-        nodes_engine_1.engine.add(node_watch);
+        container_1.rootContainer.add(node_watch);
         // let node_watch2 = nodes.createNode("basic/console");
         // node_watch2.pos = [700, 300];
-        // engine.add(node_watch2);
+        // rootContainer.add(node_watch2);
         node_const_A.connect(0, node_math, 0);
         node_const_B.connect(0, node_math, 1);
         node_math.connect(0, node_watch, 0);
         // node_math.connect(0, node_watch2, 0);
-        // engine.runStep(1);
+        // rootContainer.runStep(1);
         //
         // setInterval(function () {
-        // 	engine.runStep(1);
+        // 	rootContainer.runStep(1);
         // }, 1000);
     };
 });

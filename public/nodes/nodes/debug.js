@@ -3,17 +3,18 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes", "../node"], factory);
+        define(["require", "exports", "../nodes", "../node", "../utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../nodes");
     const node_1 = require("../node");
+    const utils_1 = require("../utils");
     /**
      * Created by derwish on 11.02.17.
      */
     //Watch a value in the editor
-    class Watch extends node_1.Node {
+    class WatchNode extends node_1.Node {
         constructor() {
             super();
             this.onInputUpdated = function () {
@@ -31,34 +32,24 @@
         }
         showValueOnInput(value) {
             //show the current value
-            if (value) {
-                if (typeof (value) == "number")
-                    this.inputs[0].label = value.toFixed(3);
-                else {
-                    let str = value;
-                    if (str && str.length)
-                        str = Array.prototype.slice.call(str).join(",");
-                    this.inputs[0].label = str;
-                }
-            }
-            else
-                this.inputs[0].label = "";
+            let val = utils_1.default.formatAndTrimValue(value);
+            this.inputs[0].label = val;
             this.setDirtyCanvas(true, false);
         }
     }
-    exports.Watch = Watch;
-    nodes_1.Nodes.registerNodeType("debug/watch", Watch);
+    exports.WatchNode = WatchNode;
+    nodes_1.Nodes.registerNodeType("debug/watch", WatchNode);
     //Show value inside the debug console
-    class Console extends node_1.Node {
+    class ConsoleNode extends node_1.Node {
         constructor() {
             super();
             this.onInputUpdated = function () {
                 let val = this.getInputData(0);
-                console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + val);
+                console.log("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
                 this.sendMessageToFrontSide({ value: val });
             };
             this.onGetMessageFromBackSide = function (data) {
-                console.log("CONSOLE NODE [" + this.container_id + "/" + this.id + "]: " + data.value);
+                console.log("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
             };
             this.title = "Console";
             this.desc = "Show value inside the console";
@@ -66,7 +57,7 @@
             this.addInput("data");
         }
     }
-    exports.Console = Console;
-    nodes_1.Nodes.registerNodeType("debug/console", Console);
+    exports.ConsoleNode = ConsoleNode;
+    nodes_1.Nodes.registerNodeType("debug/console", ConsoleNode);
 });
 //# sourceMappingURL=debug.js.map

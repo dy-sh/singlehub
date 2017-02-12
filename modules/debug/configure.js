@@ -3,7 +3,7 @@
  */
 //set DEBUG environment variable if nod defined
 if (!process.env.DEBUG)
-    process.env.DEBUG = "server:*,gateway:*,-gateway:mys:log*,nodes:*,nodes-engine:*";
+    process.env.DEBUG = "server:*,gateway:*,-gateway:mys:log*,nodes:*,container:*";
 process.env.DEBUG_DIFF = 0;
 //set debug format (added time stamp)
 var deb = require('debug');

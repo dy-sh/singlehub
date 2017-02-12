@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes", "../node", "../nodes-engine"], factory);
+        define(["require", "exports", "../nodes", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -17,9 +17,10 @@
     // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
     const node_1 = require("../node");
-    const nodes_engine_1 = require("../nodes-engine");
+    const container_1 = require("../container");
+    const utils_1 = require("../utils");
     //Constant
-    class Constant extends node_1.Node {
+    class ConstantNode extends node_1.Node {
         constructor() {
             super();
             this.setValue = function (v) {
@@ -32,70 +33,69 @@
             };
             this.onDrawBackground = function (ctx) {
                 //show the current value
-                this.outputs[0].label = this.properties["value"].toFixed(3);
+                let val = utils_1.default.formatAndTrimValue(this.properties["value"]);
+                this.outputs[0].label = val;
             };
             this.onWidget = function (e, widget) {
                 if (widget.name == "value")
                     this.setValue(widget.value);
             };
-            this.title = "Const";
+            this.title = "Constant";
             this.desc = "Constant value";
             this.addOutput("value", "number");
             this.properties = { value: 1.0 };
             this.editable = { property: "value", type: "number" };
         }
     }
-    exports.Constant = Constant;
-    nodes_1.Nodes.registerNodeType("main/constant", Constant);
-    //Container: a node that contains a engine
-    class Container extends node_1.Node {
+    exports.ConstantNode = ConstantNode;
+    nodes_1.Nodes.registerNodeType("main/constant", ConstantNode);
+    //Container: a node that contains a container of other nodes
+    class ContainerNode extends node_1.Node {
         constructor() {
             super();
             this.onAdded = function () {
-                this.container_engine.parent_container_id = this.container_id;
+                this.sub_container.parent_container_id = this.container.id;
             };
             this.onRemoved = function () {
-                delete nodes_engine_1.NodesEngine.containers[this.container_engine.container_id];
+                delete container_1.Container.containers[this.sub_container.id];
             };
             this.getExtraMenuOptions = function (renderer) {
                 let that = this;
                 return [{
                         content: "Open", callback: function () {
-                            renderer.openContainer(that);
+                            renderer.openContainer(that.sub_container);
                         }
                     }];
             };
             this.onExecute = function () {
-                //send inputs to container_engine global inputs
+                //send inputs to sub_container global inputs
                 if (this.inputs)
                     for (let i = 0; i < this.inputs.length; i++) {
                         let input = this.inputs[i];
                         let value = this.getInputData(i);
-                        this.container_engine.setGlobalInputData(input.name, value);
+                        this.sub_container.setGlobalInputData(input.name, value);
                     }
                 //execute
-                this.container_engine.runStep();
-                //send container_engine global outputs to outputs
+                this.sub_container.runStep();
+                //send sub_container global outputs to outputs
                 if (this.outputs)
                     for (let i = 0; i < this.outputs.length; i++) {
                         let output = this.outputs[i];
-                        let value = this.container_engine.getGlobalOutputData(output.name);
+                        let value = this.sub_container.getGlobalOutputData(output.name);
                         this.setOutputData(i, value);
                     }
             };
             this.title = "Container";
             this.desc = "Contain other nodes";
             this.size = [120, 20];
-            //create inner engine
-            this.container_engine = new nodes_engine_1.NodesEngine();
-            this.container_engine._container_node = this;
-            this.container_engine._is_container = true;
-            this.container_engine.onContainerInputAdded = this.onContainerInputAdded.bind(this);
-            this.container_engine.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
-            this.container_engine.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
-            this.container_engine.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
-            this.container_engine.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
-            this.container_engine.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
+            this.sub_container = new container_1.Container();
+            this.sub_container._container_node = this;
+            this.sub_container.onContainerInputAdded = this.onContainerInputAdded.bind(this);
+            this.sub_container.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
+            this.sub_container.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
+            this.sub_container.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
+            this.sub_container.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
+            this.sub_container.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
         }
         onContainerInputAdded(name, type) {
             //add input to the node
@@ -135,11 +135,11 @@
         }
         configure(o) {
             node_1.Node.prototype.configure.call(this, o);
-            //this.container_engine.configure(o.engine);
+            //this.sub_container.configure(o.container);
         }
         serialize() {
             let data = node_1.Node.prototype.serialize.call(this);
-            data.container_engine = this.container_engine.serialize();
+            data.sub_container = this.sub_container.serialize();
             return data;
         }
         clone() {
@@ -152,20 +152,21 @@
             return node;
         }
     }
-    exports.Container = Container;
-    nodes_1.Nodes.registerNodeType("main/container", Container);
+    exports.ContainerNode = ContainerNode;
+    nodes_1.Nodes.registerNodeType("main/container", ContainerNode);
     //Input for a container
-    class ContainerInput extends node_1.Node {
+    class ContainerInputNode extends node_1.Node {
         constructor() {
             super();
-            //When added to engine tell the engine this is a new global input
+            //When added to container tell the container this is a new global input
             this.onAdded = function () {
-                this.engine.addGlobalInput(this.properties.name, this.properties.type);
+                if (this.isBackside())
+                    this.container.addGlobalInput(this.properties.name, this.properties.type);
             };
             this.onExecute = function () {
                 let name = this.properties.name;
                 //read from global input
-                let data = this.engine.global_inputs[name];
+                let data = this.container.global_inputs[name];
                 if (!data)
                     return;
                 //put through output
@@ -189,8 +190,8 @@
                     if (info.name == v)
                         return;
                     info.name = v;
-                    if (that.engine)
-                        that.engine.renameGlobalInput(input_name, v);
+                    if (that.container)
+                        that.container.renameGlobalInput(input_name, v);
                     input_name = v;
                 },
                 enumerable: true
@@ -201,24 +202,25 @@
                 },
                 set: function (v) {
                     that.outputs[0].type = v;
-                    if (that.engine)
-                        that.engine.changeGlobalInputType(input_name, that.outputs[0].type);
+                    if (that.container)
+                        that.container.changeGlobalInputType(input_name, that.outputs[0].type);
                 },
                 enumerable: true
             });
         }
     }
-    exports.ContainerInput = ContainerInput;
-    nodes_1.Nodes.registerNodeType("main/input", ContainerInput);
+    exports.ContainerInputNode = ContainerInputNode;
+    nodes_1.Nodes.registerNodeType("main/input", ContainerInputNode);
     //Output for a container
-    class ContainerOutput extends node_1.Node {
+    class ContainerOutputNode extends node_1.Node {
         constructor() {
             super();
             this.onAdded = function () {
-                let name = this.engine.addGlobalOutput(this.properties.name, this.properties.type);
+                if (this.isBackside())
+                    this.container.addGlobalOutput(this.properties.name, this.properties.type);
             };
             this.onExecute = function () {
-                this.engine.setGlobalOutputData(this.properties.name, this.getInputData(0));
+                this.container.setGlobalOutputData(this.properties.name, this.getInputData(0));
             };
             this.title = "Ouput";
             this.desc = "Output of the container";
@@ -238,8 +240,8 @@
                     if (info.name == v)
                         return;
                     info.name = v;
-                    if (that.engine)
-                        that.engine.renameGlobalOutput(output_name, v);
+                    if (that.container)
+                        that.container.renameGlobalOutput(output_name, v);
                     output_name = v;
                 },
                 enumerable: true
@@ -250,14 +252,14 @@
                 },
                 set: function (v) {
                     that.inputs[0].type = v;
-                    if (that.engine)
-                        that.engine.changeGlobalInputType(output_name, that.inputs[0].type);
+                    if (that.container)
+                        that.container.changeGlobalInputType(output_name, that.inputs[0].type);
                 },
                 enumerable: true
             });
         }
     }
-    exports.ContainerOutput = ContainerOutput;
-    nodes_1.Nodes.registerNodeType("main/output", ContainerOutput);
+    exports.ContainerOutputNode = ContainerOutputNode;
+    nodes_1.Nodes.registerNodeType("main/output", ContainerOutputNode);
 });
 //# sourceMappingURL=main.js.map

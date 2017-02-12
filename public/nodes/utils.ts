@@ -215,7 +215,7 @@ export default class Utils {
      * @param target
      * @param origin
      */
-    extendClass(target: any, origin: any): void {
+    static extendClass(target: any, origin: any): void {
         for (let i in origin) //copy class properties
         {
             if (target.hasOwnProperty(i))
@@ -242,9 +242,27 @@ export default class Utils {
                 if (origin.prototype.__lookupSetter__(i))
                     target.prototype.__defineSetter__(i, origin.prototype.__lookupSetter__(i));
             }
-
     }
 
+
+    static formatAndTrimValue(val: any): string {
+        if (!val)
+            return "";
+
+        if (typeof (val) == "number") {
+            return "" + parseFloat(val.toFixed(3));
+        }
+        else if (typeof (val) == "string") {
+            if (val.length > 10)
+                val = val.substr(0, 10)+"...";
+            return val;
+        }
+
+        // let str = val;
+        // if (str && str.length) //convert typed to array
+        //     str = Array.prototype.slice.call(str).join(",");
+        return "" + val;
+    }
 
 }
 

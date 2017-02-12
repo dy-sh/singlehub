@@ -3,7 +3,7 @@
  */
 
 
-import {NodesEngine, engine} from "./nodes-engine";
+import {Container, rootContainer} from "./container";
 import Utils from "./utils";
 import {Nodes} from "./nodes";
 
@@ -58,13 +58,13 @@ export class Link {
 
 export class Node {
 
-    container_id: number;
+
     title: string;
     desc: string;
     pos: [number, number] = [10, 10];
     size: [number, number];
-    engine: NodesEngine;
-    id: number=-1;
+    container: Container;
+    id: number = -1;
     type: string;
     inputs: Array<NodeInput>;
     outputs: Array<NodeOutput>;
@@ -138,8 +138,8 @@ export class Node {
     onGetMessageFromFrontSide: Function;
     onGetMessageFromBackSide: Function;
 
-    onRunEngine: Function;
-    onStopEngine: Function;
+    onRunContainer: Function;
+    onStopContainer: Function;
     onExecute: Function;
     onInputUpdated: Function;
 
@@ -187,7 +187,7 @@ export class Node {
             if (typeof(link) != "object")
                 continue;
             input.link = link[0];
-            this.engine.links[link[0]] = {
+            this.container.links[link[0]] = {
                 id: link[0],
                 origin_id: link[1],
                 origin_slot: link[2],
@@ -364,7 +364,7 @@ export class Node {
     //         let output = this.outputs[slot];
     //         let r = [];
     //         for (let i = 0; i < output.length; i++)
-    //             r.push(this.engine.getNodeById(output.links[i].target_id));
+    //             r.push(this.container.getNodeById(output.links[i].target_id));
     //         return r;
     //     }
     //     return null;
@@ -587,7 +587,7 @@ export class Node {
     isPointInsideNode(x: number, y: number, margin: number): boolean {
         margin = margin || 0;
 
-        let margin_top = this.engine && this.engine.isLive() ? 0 : 20;
+        let margin_top = this.container && this.container.isLive() ? 0 : 20;
         if (this.flags.collapsed) {
             //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
             if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT - margin, Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))
@@ -677,7 +677,7 @@ export class Node {
         }
 
         if (target_node && target_node.constructor === Number)
-            target_node = this.engine.getNodeById(target_node.id);
+            target_node = this.container.getNodeById(target_node.id);
         if (!target_node)
             throw("Node not found");
 
@@ -705,8 +705,8 @@ export class Node {
         //why here??
         this.setDirtyCanvas(false, true);
 
-        if (this.engine)
-            this.engine.connectionChange(this);
+        if (this.container)
+            this.container.connectionChange(this);
 
         //special case: -1 means target_node-connection, used for triggers
         let output = this.outputs[slot];
@@ -726,16 +726,16 @@ export class Node {
             output.type.toLowerCase() == target_node.inputs[target_slot].type.toLowerCase()) //same type
         {
             //info: link structure => [ 0:link_id, 1:start_node_id, 2:start_slot, 3:end_node_id, 4:end_slot ]
-            //let link = [ this.engine.last_link_id++, this.id, slot, target_node.id, target_slot ];
+            //let link = [ this.container.last_link_id++, this.id, slot, target_node.id, target_slot ];
             let link = {
-                id: this.engine.last_link_id++,
+                id: this.container.last_link_id++,
                 origin_id: this.id,
                 origin_slot: slot,
                 target_id: target_node.id,
                 target_slot: target_slot
             };
 
-            this.engine.links[link.id] = link;
+            this.container.links[link.id] = link;
 
             //connect
             if (output.links == null) output.links = [];
@@ -745,8 +745,8 @@ export class Node {
         }
 
         this.setDirtyCanvas(false, true);
-        if (this.engine)
-            this.engine.connectionChange(this);
+        if (this.container)
+            this.container.connectionChange(this);
 
         return true;
     }
@@ -779,19 +779,19 @@ export class Node {
         //one of the links
         if (target_node) {
             if (target_node.constructor === Number)
-                target_node = this.engine.getNodeById(target_node.id);
+                target_node = this.container.getNodeById(target_node.id);
             if (!target_node)
                 throw("Target Node not found");
 
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.engine.links[link_id];
+                let link_info = this.container.links[link_id];
 
                 //is the link we are searching for...
                 if (link_info.target_id == target_node.id) {
                     output.links.splice(i, 1); //remove here
                     target_node.inputs[link_info.target_slot].link = null; //remove there
-                    delete this.engine.links[link_id]; //remove the link from the links pool
+                    delete this.container.links[link_id]; //remove the link from the links pool
                     break;
                 }
             }
@@ -800,19 +800,19 @@ export class Node {
         {
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.engine.links[link_id];
+                let link_info = this.container.links[link_id];
 
-                let target_node = this.engine.getNodeById(link_info.target_id);
+                let target_node = this.container.getNodeById(link_info.target_id);
                 if (target_node)
                     target_node.inputs[link_info.target_slot].link = null; //remove other side link
-                delete this.engine.links[link_id]; //remove the link from the links pool
+                delete this.container.links[link_id]; //remove the link from the links pool
             }
             output.links = null;
         }
 
         this.setDirtyCanvas(false, true);
-        if (this.engine)
-            this.engine.connectionChange(this);
+        if (this.container)
+            this.container.connectionChange(this);
         return true;
     }
 
@@ -843,9 +843,9 @@ export class Node {
 
 
         //remove other side
-        let link_info = this.engine.links[link_id];
+        let link_info = this.container.links[link_id];
         if (link_info) {
-            let node = this.engine.getNodeById(link_info.origin_id);
+            let node = this.container.getNodeById(link_info.origin_id);
             if (!node)
                 return false;
 
@@ -856,7 +856,7 @@ export class Node {
             //check outputs
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.engine.links[link_id];
+                let link_info = this.container.links[link_id];
                 if (link_info.target_id == this.id) {
                     output.links.splice(i, 1);
                     break;
@@ -866,9 +866,9 @@ export class Node {
 
         this.setDirtyCanvas(false, true);
 
-        delete this.engine.links[link_id];
+        delete this.container.links[link_id];
 
-        this.engine.connectionChange(this);
+        this.container.connectionChange(this);
 
         return true;
     }
@@ -936,9 +936,9 @@ export class Node {
 //
     /* Forces to redraw or the main renderer (Node) or the bg renderer (links) */
     setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean): void {
-        if (!this.engine)
+        if (!this.container)
             return;
-        this.engine.sendActionToRenderer("setDirty", [dirty_foreground, dirty_background]);
+        this.container.sendActionToRenderer("setDirty", [dirty_foreground, dirty_background]);
     }
 
     loadImage(url: string): HTMLImageElement {
@@ -998,10 +998,10 @@ export class Node {
      * @param v
      */
     captureInput(v: any): void {
-        if (!this.engine || !this.engine.list_of_renderers)
+        if (!this.container || !this.container.list_of_renderers)
             return;
 
-        let list = this.engine.list_of_renderers;
+        let list = this.container.list_of_renderers;
 
         for (let i = 0; i < list.length; ++i) {
             let c = list[i];
@@ -1069,15 +1069,33 @@ export class Node {
 
     sendMessageToFrontSide(mess: any) {
         if (this.isBackside() && this.id != -1) {
-            this.engine.socket.emit('node-message-to-front-side',
-                {id: this.id, cid: this.container_id, value: mess});
+            this.container.socket.emit('node-message-to-front-side',
+                {id: this.id, cid: this.container.id, value: mess});
         }
     }
 
     sendMessageToBackSide(mess: any) {
         if (!this.isBackside() && this.id != -1) {
-            this.engine.socket.emit('node-message-to-back-side',
-                {id: this.id, cid: this.container_id, value: mess});
+            this.container.socket.emit('node-message-to-back-side',
+                {id: this.id, cid: this.container.id, value: mess});
+        }
+    }
+
+    updateInputsLabels() {
+        if (this.inputs) {
+            for (let input of this.inputs) {
+                input.label = input.name;
+            }
+            this.setDirtyCanvas(true, true);
+        }
+    }
+
+    updateOutputsLabels() {
+        if (this.outputs) {
+            for (let output of this.outputs) {
+                output.label = output.name;
+            }
+            this.setDirtyCanvas(true, true);
         }
     }
 }

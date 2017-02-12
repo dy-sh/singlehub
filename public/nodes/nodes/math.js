@@ -18,7 +18,7 @@
     const nodes_1 = require("../nodes");
     const node_1 = require("../node");
     //Math Plus
-    class MathPlus extends node_1.Node {
+    class MathPlusNode extends node_1.Node {
         constructor() {
             super();
             this.onInputUpdated = function () {
@@ -34,7 +34,7 @@
             this.addOutput("A+B", "number");
         }
     }
-    nodes_1.Nodes.registerNodeType("math/plus", MathPlus);
+    nodes_1.Nodes.registerNodeType("math/plus", MathPlusNode);
 });
 //
 // //Converter
@@ -587,7 +587,7 @@
 //                     y = this.properties["y"];
 //
 //                 let f = this.properties["formula"];
-//                 let value = math.eval(f, {x: x, y: y, T: this.engine.globaltime});
+//                 let value = math.eval(f, {x: x, y: y, T: this.container.globaltime});
 //                 this.setOutputData(0, value);
 //             }
 //

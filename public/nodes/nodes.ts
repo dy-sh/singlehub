@@ -113,7 +113,7 @@ export class Nodes {
     };
 
     /**
-     * Create a node of a given type with a name. The node is not attached to any engine yet.
+     * Create a node of a given type with a name. The node is not attached to any container yet.
      * @param type full name of the node class. p.e. "math/sin"
      * @param name a name to distinguish from other nodes
      * @param options to set options

@@ -1,0 +1,229 @@
+
+
+/*----------- MAIN ---------------*/
+
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #1B1C1D;
+	/*color: #EEE;*/
+	font: 14px Tahoma;
+}
+
+
+/*----------- HEADER ---------------*/
+
+.header {
+	padding-bottom: 7px;
+	/*position: fixed;*/
+	left: 0px;
+	bottom: 0px;
+	height: 45px;
+	width: 100%;
+	background: #1B1C1D;
+	padding-top: 5px;
+}
+
+.header .logo{
+	display: inline-block;
+}
+
+.header .rightmenu {
+	float: right;
+	padding-top: 6px;
+}
+
+
+
+/*----------- FOOTER ---------------*/
+
+.footer {
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	height: 40px;
+	width: 100%;
+	background: #1B1C1D;
+	z-index: 1;
+	padding-top: 5px;
+}
+
+.navigation {
+	/*padding-top: 5px;*/
+	/*padding-left: 10px;*/
+	color: white;
+	display: inline-block;
+	/*transition:.2s linear-in-out;*/
+}
+
+/*#step-button{*/
+	/*transition:.2s linear-in-out;*/
+
+/*}*/
+
+#slots-values-button{
+	margin-right: 15px;
+}
+
+a {
+	color: white;
+}
+
+a:link {
+	color: white;
+}
+
+/* visited link */
+a:visited {
+	color: white;
+}
+
+/* mouse over link */
+a:hover {
+	color: white;
+}
+
+/* selected link */
+a:active {
+	color: white;
+}
+/*----------- SCROLLBARS ---------------*/
+
+
+/*::-webkit-scrollbar {*/
+    /*height: 12px;*/
+	/*width: 6px;*/
+	/*background: #222;*/
+/*}*/
+/*::-webkit-scrollbar-thumb {*/
+    /*background: rgba(200,200,200,0.4);*/
+/*}*/
+/*::-webkit-scrollbar-corner {*/
+    /*background: #766;*/
+/*}*/
+
+
+
+
+/*----------- EDITOR ---------------*/
+
+.editorcanvas {
+	cursor: crosshair;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+.node-editor {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+
+	background-color: #1B1C1D;
+	color: #EEE;
+
+	position: relative;
+}
+
+.node-editor * {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+.node-editor .content {
+	position: relative;
+	width: 100%;
+	height:  100%;
+	background-color: #292929;
+}
+
+/*----------- EDITOR MINIMAP ---------------*/
+
+
+.node-editor .miniwindow {
+	background-color: #333;
+	border: 1px solid #111;
+}
+
+.node-editor .miniwindow .corner-button {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	font-family: "Tahoma";
+	font-size: 14px;
+	color: #AAA;
+	cursor: pointer;
+}
+
+.node-editor .miniwindow .corner-button2 {
+	position: absolute;
+	top: 2px;
+	right: 15px;
+	font-family: "Tahoma";
+	font-size: 14px;
+	color: #AAA;
+	cursor: pointer;
+}
+
+
+
+/*----------- EDITOR MENUS ---------------*/
+
+
+.contextualmenu {
+	padding: 4px;
+	min-width: 100px;
+}
+
+.contextualmenu-title {
+	color: #DDE;
+	background-color: #222;
+	margin: 0;
+	padding: 2px;
+	cursor: default;
+}
+
+.menu-entry {
+	box-sizing: border-box;
+	margin: 2px;
+	padding-left: 20px;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	transition: all linear 0.5s;
+}
+
+.menu-entry.disabled {
+	opacity: 0.3;
+}
+
+.menu-entry.submenu {
+	border-right: 2px solid #EEE;
+}
+
+
+.menu-entry:hover {
+	background-color: #555;
+}
+
+.menu-entry.separator {
+	background-color: #111;
+	border-bottom: 1px solid #666;
+	height: 1px;
+	width: calc( 100% - 20px );
+	-moz-width: calc( 100% - 20px );
+	-webkit-width: calc( 100% - 20px );
+}
+
+
+/*----------- MODAL WINDOWS ---------------*/
+
+.ui.modal>.header{
+	background: #ddd;
+}

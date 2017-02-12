@@ -6,11 +6,11 @@
 
 import {Nodes} from "../../nodes/nodes"
 import {Node, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/node"
-import {NodesEngine, engine} from "../../nodes/nodes-engine"
+import {Container, rootContainer} from "../../nodes/container"
 import {NodeEditor, editor} from "./node-editor";
 import {EditorSocket} from "./editor-socket";
 import Utils from "../../nodes/utils";
-import {Container} from "../../nodes/nodes/main";
+
 
 interface IgetMenuOptions {
     (): Array<any>;
@@ -26,8 +26,6 @@ interface IgetExtraMenuOptions {
 
 
 export class Renderer {
-    editor: NodeEditor;
-    socket: EditorSocket;
     max_zoom: number;
     min_zoom: number;
     frame: number;
@@ -67,8 +65,8 @@ export class Renderer {
     connections_width: number;
     connections_shadow: number;
     onClear: Function;
-    engine: NodesEngine;
-    _engine_stack: Array<NodesEngine>;
+    container: Container;
+    _containers_stack: Array<Container>;
     canvas: HTMLCanvasElement;
     bgcanvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D |null;
@@ -112,17 +110,16 @@ export class Renderer {
     root: HTMLDivElement;
 
 
-    constructor(canvas: HTMLCanvasElement, socket: EditorSocket, editor: NodeEditor, engine?: NodesEngine, skip_render?) {
-        this.socket = socket;
-        this.editor = editor;
+    constructor(canvas: HTMLCanvasElement, container?: Container, skip_render?) {
+
 
         //derwish edit
         this.max_zoom = 2;
         this.min_zoom = 0.1;
 
-        //link renderer and engine
-        if (engine)
-            engine.attachRenderer(this);
+        //link renderer and container
+        if (container)
+            container.attachRenderer(this);
 
         this.setCanvas(canvas);
         this.clear();
@@ -191,30 +188,30 @@ export class Renderer {
     }
 
     /**
-     * Assigns a engine, you can reasign engines to the same renderer
-     * @param engine
+     * Assigns a container, you can reasign containers to the same renderer
+     * @param container
      * @param skip_clear
      */
-    setEngine(engine?: NodesEngine, skip_clear = false): void {
-        if (this.engine == engine)
+    setContainer(container?: Container, skip_clear = false): void {
+        if (this.container == container)
             return;
 
         if (!skip_clear)
             this.clear();
 
-        if (!engine && this.engine) {
-            this.engine.detachRenderer(this);
+        if (!container && this.container) {
+            this.container.detachRenderer(this);
             return;
         }
 
         /*
-         if(this.engine)
-         this.engine.renderer = null; //remove old engine link to the renderer
-         this.engine = engine;
-         if(this.engine)
-         this.engine.renderer = this;
+         if(this.container)
+         this.container.renderer = null; //remove old container link to the renderer
+         this.container = container;
+         if(this.container)
+         this.container.renderer = this;
          */
-        engine.attachRenderer(this);
+        container.attachRenderer(this);
         this.setDirty(true, true);
     }
 
@@ -223,22 +220,21 @@ export class Renderer {
      * @param container node
      */
     openContainer(container: Container): void {
-        let engine = container.container_engine;
-        if (!engine)
-            throw ("engine cannot be null");
+        if (!container)
+            throw ("container cannot be null");
 
-        if (this.engine == engine)
-            throw ("engine cannot be the same");
+        if (this.container == container)
+            throw ("container cannot be the same");
 
         this.clear();
 
-        if (this.engine) {
-            if (!this._engine_stack)
-                this._engine_stack = [];
-            this._engine_stack.push(this.engine);
+        if (this.container) {
+            if (!this._containers_stack)
+                this._containers_stack = [];
+            this._containers_stack.push(this.container);
         }
 
-        engine.attachRenderer(this);
+        container.attachRenderer(this);
         this.setDirty(true, true);
     }
 
@@ -246,10 +242,10 @@ export class Renderer {
      * Close container
      */
     closeContainer(): void {
-        if (!this._engine_stack || this._engine_stack.length == 0)
+        if (!this._containers_stack || this._containers_stack.length == 0)
             return;
-        let engine = this._engine_stack.pop();
-        engine.attachRenderer(this);
+        let container = this._containers_stack.pop();
+        container.attachRenderer(this);
         this.setDirty(true, true);
     }
 
@@ -546,7 +542,7 @@ export class Renderer {
      * @returns {boolean}
      */
     processMouseDown(e): boolean {
-        if (!this.engine)
+        if (!this.container)
             return;
 
         this.adjustMouseEvent(e);
@@ -559,7 +555,7 @@ export class Renderer {
         ref_window.document.addEventListener("mousemove", this._mousemove_callback, true); //catch for the entire window
         ref_window.document.addEventListener("mouseup", this._mouseup_callback, true);
 
-        let n = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+        let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
         let skip_dragging = false;
 
         //derwish added
@@ -616,7 +612,7 @@ export class Renderer {
                             let link_pos = n.getConnectionPos(true, i);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                 if (input.link !== null) {
-                                    this.socket.sendRemoveLink(engine.links[input.link]);
+                                    editor.socket.sendRemoveLink(rootContainer.links[input.link]);
 
                                     //n.disconnectInput(i);
                                     //this.dirty_bgcanvas = true;
@@ -705,7 +701,7 @@ export class Renderer {
          this.draw();
          */
 
-        this.engine.change();
+        this.container.change();
 
         //this is to ensure to defocus(blur) if a text input element is on focus
         if (!ref_window.document.activeElement || (ref_window.document.activeElement.nodeName.toLowerCase() != "input" && ref_window.document.activeElement.nodeName.toLowerCase() != "textarea"))
@@ -721,7 +717,7 @@ export class Renderer {
      * @returns {boolean}
      */
     processMouseMove(e): boolean {
-        if (!this.engine) return;
+        if (!this.container) return;
 
         this.adjustMouseEvent(e);
         let mouse: [number, number] = [e.localX, e.localY];
@@ -740,13 +736,13 @@ export class Renderer {
                 this.dirty_canvas = true;
 
             //get node over
-            let n = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+            let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
 
             //remove mouseover flag
-            for (let i in this.engine._nodes) {
-                if (this.engine._nodes[i].mouseOver && n != this.engine._nodes[i]) {
+            for (let i in this.container._nodes) {
+                if (this.container._nodes[i].mouseOver && n != this.container._nodes[i]) {
                     //mouse leave
-                    this.engine._nodes[i].mouseOver = false;
+                    this.container._nodes[i].mouseOver = false;
                     if (this.node_over && this.node_over.onMouseLeave)
                         this.node_over.onMouseLeave(e);
                     this.node_over = null;
@@ -845,7 +841,7 @@ export class Renderer {
         //e.stopPropagation();
         return false;
         //this is not really optimal
-        //this.engine.change();
+        //this.container.change();
     }
 
     /**
@@ -854,7 +850,7 @@ export class Renderer {
      * @returns {boolean}
      */
     processMouseUp(e): boolean {
-        if (!this.engine)
+        if (!this.container)
             return;
 
         let window = this.getCanvasWindow();
@@ -874,7 +870,7 @@ export class Renderer {
                 this.dirty_canvas = true;
                 this.dirty_bgcanvas = true;
 
-                let node = this.engine.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                let node = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
 
                 //node below mouse
                 if (node) {
@@ -886,7 +882,7 @@ export class Renderer {
                         //slot below mouse? connect
                         let slot = this.isOverNodeInput(node, e.canvasX, e.canvasY);
 
-                        this.socket.sendCreateLink(
+                        editor.socket.sendCreateLink(
                             this.connecting_node.id, this.connecting_slot,
                             node.id, slot
                         );
@@ -908,7 +904,7 @@ export class Renderer {
                 this.dirty_canvas = true;
                 this.dirty_bgcanvas = true;
 
-                this.socket.sendUpdateNodeSize(this.resizing_node);
+                editor.socket.sendUpdateNodeSize(this.resizing_node);
 
                 this.resizing_node = null;
             }
@@ -918,13 +914,13 @@ export class Renderer {
                 this.dirty_bgcanvas = true;
                 this.node_dragged.pos[0] = Math.round(this.node_dragged.pos[0]);
                 this.node_dragged.pos[1] = Math.round(this.node_dragged.pos[1]);
-                if (this.engine.config.align_to_grid)
+                if (this.container.config.align_to_grid)
                     this.node_dragged.alignToGrid();
 
                 for (let i in this.selected_nodes) {
                     this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                     this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                    this.socket.sendUpdateNodePosition(this.selected_nodes[i]);
+                    editor.socket.sendUpdateNodePosition(this.selected_nodes[i]);
                 }
 
                 this.node_dragged = null;
@@ -958,7 +954,7 @@ export class Renderer {
          this.draw();
          */
 
-        this.engine.change();
+        this.container.change();
 
         e.stopPropagation();
         e.preventDefault();
@@ -972,7 +968,7 @@ export class Renderer {
      * @returns {boolean}
      */
     processMouseWheel(e): boolean {
-        if (!this.engine || !this.allow_dragcanvas)
+        if (!this.container || !this.allow_dragcanvas)
             return;
 
 
@@ -995,7 +991,7 @@ export class Renderer {
          this.draw();
          */
 
-        this.engine.change();
+        this.container.change();
 
         e.preventDefault();
         return false; // prevent default
@@ -1032,7 +1028,7 @@ export class Renderer {
      * @returns {boolean}
      */
     processKey(e): boolean {
-        if (!this.engine)
+        if (!this.container)
             return;
 
         let block_default = false;
@@ -1066,7 +1062,7 @@ export class Renderer {
                         this.selected_nodes[i].onKeyUp(e);
         }
 
-        this.engine.change();
+        this.container.change();
 
         if (block_default) {
             e.preventDefault();
@@ -1085,7 +1081,7 @@ export class Renderer {
 
 
         let pos = [e.canvasX, e.canvasY];
-        let node = this.engine.getNodeOnPos(pos[0], pos[1]);
+        let node = this.container.getNodeOnPos(pos[0], pos[1]);
 
         if (!node) {
             if (this.onDropItem)
@@ -1213,12 +1209,12 @@ export class Renderer {
      * Select all nodes
      */
     selectAllNodes(): void {
-        for (let i in this.engine._nodes) {
-            let n = this.engine._nodes[i];
+        for (let i in this.container._nodes) {
+            let n = this.container._nodes[i];
             if (!n.selected && n.onSelected)
                 n.onSelected();
             n.selected = true;
-            this.selected_nodes[this.engine._nodes[i].id] = n;
+            this.selected_nodes[this.container._nodes[i].id] = n;
         }
 
         this.setDirty(true);
@@ -1245,7 +1241,7 @@ export class Renderer {
         for (let i in this.selected_nodes) {
             let m = this.selected_nodes[i];
             //if(m == this.node_in_container) this.showNodePanel(null);
-            this.engine.remove(m);
+            this.container.remove(m);
         }
         this.selected_nodes = {};
         this.setDirty(true);
@@ -1336,11 +1332,11 @@ export class Renderer {
      * @param n
      */
     bringToFront(n: Node): void {
-        let i = this.engine._nodes.indexOf(n);
+        let i = this.container._nodes.indexOf(n);
         if (i == -1) return;
 
-        this.engine._nodes.splice(i, 1);
-        this.engine._nodes.push(n);
+        this.container._nodes.splice(i, 1);
+        this.container._nodes.push(n);
     }
 
     /**
@@ -1348,11 +1344,11 @@ export class Renderer {
      * @param n
      */
     sendToBack(n: Node): void {
-        let i = this.engine._nodes.indexOf(n);
+        let i = this.container._nodes.indexOf(n);
         if (i == -1) return;
 
-        this.engine._nodes.splice(i, 1);
-        this.engine._nodes.unshift(n);
+        this.container._nodes.splice(i, 1);
+        this.container._nodes.unshift(n);
     }
 
 
@@ -1362,8 +1358,8 @@ export class Renderer {
      */
     computeVisibleNodes(): Array<Node> {
         let visible_nodes = [];
-        for (let i in this.engine._nodes) {
-            let n = this.engine._nodes[i];
+        for (let i in this.container._nodes) {
+            let n = this.container._nodes[i];
 
             //skip rendering nodes in live mode
             if (this.live_mode && !n.onDrawBackground && !n.onDrawForeground)
@@ -1388,7 +1384,7 @@ export class Renderer {
         this.render_time = (now - this.last__time) * 0.001;
         this.last_draw_time = now;
 
-        if (this.engine) {
+        if (this.container) {
             let start = [-this.offset[0], -this.offset[1]];
             let end = [start[0] + this.canvas.width / this.scale, start[1] + this.canvas.height / this.scale];
             this.visible_area = [start[0], start[1], end[0], end[1]];
@@ -1450,7 +1446,7 @@ export class Renderer {
         if (this.show_info)
             this.renderInfo(ctx);
 
-        if (this.engine) {
+        if (this.container) {
             //apply transformations
             ctx.save();
             ctx.scale(this.scale, this.scale);
@@ -1477,7 +1473,7 @@ export class Renderer {
             }
 
             //connections ontop?
-            if (this.engine.config.links_ontop)
+            if (this.container.config.links_ontop)
                 if (!this.live_mode)
                     this.drawConnections(ctx);
 
@@ -1532,14 +1528,14 @@ export class Renderer {
 
         ctx.font = "10px Arial";
         ctx.fillStyle = "#888";
-        if (this.engine) {
-            ctx.fillText("T: " + this.engine.globaltime.toFixed(2) + "s", 5, 13 * 1);
-            ctx.fillText("I: " + this.engine.iteration, 5, 13 * 2);
+        if (this.container) {
+            ctx.fillText("T: " + this.container.globaltime.toFixed(2) + "s", 5, 13 * 1);
+            ctx.fillText("I: " + this.container.iteration, 5, 13 * 2);
             ctx.fillText("F: " + this.frame, 5, 13 * 3);
             ctx.fillText("FPS:" + this.fps.toFixed(2), 5, 13 * 4);
         }
         else
-            ctx.fillText("No engine selected", 5, 13 * 1);
+            ctx.fillText("No container selected", 5, 13 * 1);
         ctx.restore();
     }
 
@@ -1562,7 +1558,7 @@ export class Renderer {
         ctx.restore();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-        if (this.engine) {
+        if (this.container) {
             //apply transformations
             ctx.save();
             ctx.scale(this.scale, this.scale);
@@ -1657,7 +1653,7 @@ export class Renderer {
         //if (this.selected) color = "#88F";
 
         let render_title = true;
-        if (node.flags.skip_title_render || node.engine.isLive())
+        if (node.flags.skip_title_render || node.container.isLive())
             render_title = false;
         if (node.mouseOver)
             render_title = true;
@@ -2025,8 +2021,8 @@ export class Renderer {
         ctx.strokeStyle = "#AAA";
         ctx.globalAlpha = this.editor_alpha;
         //for every node
-        for (let n in this.engine._nodes) {
-            let node = this.engine._nodes[n];
+        for (let n in this.container._nodes) {
+            let node = this.container._nodes[n];
             //for every input (we render just inputs because it is easier as every slot can only have one input)
             if (node.inputs && node.inputs.length)
                 for (let i in node.inputs) {
@@ -2034,10 +2030,10 @@ export class Renderer {
                     if (!input || input.link == null)
                         continue;
                     let link_id = input.link;
-                    let link = this.engine.links[link_id];
+                    let link = this.container.links[link_id];
                     if (!link) continue;
 
-                    let start_node = this.engine.getNodeById(link.origin_id);
+                    let start_node = this.container.getNodeById(link.origin_id);
                     if (start_node == null) continue;
                     let start_node_slot = link.origin_slot;
                     let start_node_slotpos = null;
@@ -2292,27 +2288,27 @@ export class Renderer {
             options.push({
                 content: "Reset View",
                 callback: () => {
-                    this.editor.renderer.offset = [0, 0];
-                    this.editor.renderer.scale = 1;
-                    this.editor.renderer.setZoom(1, [1, 1]);
+                    editor.renderer.offset = [0, 0];
+                    editor.renderer.scale = 1;
+                    editor.renderer.setZoom(1, [1, 1]);
                 }
             });
 
             options.push({
                 content: "Show Map",
                 callback: () => {
-                    this.editor.addMiniWindow(200, 200);
+                    editor.addMiniWindow(200, 200);
                 }
             });
 
-            // if (engine.parent_container_id) {
+            // if (container.parent_container_id) {
             //
             //     options.push(null);
             //
             //     let back_url = "/editor/";
             //
-            //     if (engine.parent_container_id != 0)
-            //         back_url += "container/" + engine.parent_container_id;
+            //     if (container.parent_container_id != 0)
+            //         back_url += "container/" + container.parent_container_id;
             //
             //     options.push({
             //         content: "Close Container",
@@ -2324,7 +2320,7 @@ export class Renderer {
             // }
 
 
-            if (this._engine_stack && this._engine_stack.length > 0)
+            if (this._containers_stack && this._containers_stack.length > 0)
                 options.push({content: "Close Container", callback: this.closeContainer.bind(this)});
 
         }
@@ -2502,12 +2498,12 @@ export class Renderer {
             pos[0] = Math.round(pos[0]);
             pos[1] = Math.round(pos[1]);
 
-            canvas.editor.socket.sendCreateNode(type, pos);
+            editor.socket.sendCreateNode(type, pos);
 
             // let node = Nodes.createNode(v.value);
             // if (node) {
             //     node.pos = pos;
-            //     this.renderer.engine.add(node);
+            //     this.renderer.container.add(node);
             // }
         }
 
@@ -2539,21 +2535,21 @@ export class Renderer {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                canvas.editor.importContainerFromFile(pos);
+                editor.importContainerFromFile(pos);
             }
 
             if (v.value == "Container from script") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                canvas.editor.importContainerFromScript(pos);
+                editor.importContainerFromScript(pos);
             }
 
             if (v.value == "Container from URL") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                canvas.editor.importContainerFromURL(pos);
+                editor.importContainerFromURL(pos);
             }
 
             canvas.closeAllContextualMenus();
@@ -2745,7 +2741,7 @@ export class Renderer {
             editor.socket.sendRemoveNode(node);
 
         //derwish remove
-        //node.engine.remove(uiNode);
+        //node.container.remove(uiNode);
         //node.setDirtyCanvas(true, true);
     }
 
@@ -2759,11 +2755,11 @@ export class Renderer {
         //let newnode = node.clone();
         //if(!newnode) return;
         //newnode.pos = [node.pos[0]+10,node.pos[1]+10];
-        //node.engine.add(newnode);
+        //node.container.add(newnode);
         //node.setDirtyCanvas(true, true);
 
         //derwish added
-        this.socket.sendCloneNode(node);
+        editor.socket.sendCloneNode(node);
     }
 
     /**
@@ -2777,7 +2773,7 @@ export class Renderer {
         options = options || {};
         this.options = options;
 
-        //allows to create engine renderer in separate window
+        //allows to create container renderer in separate window
         ref_window = ref_window || window;
 
         if (!options.from)

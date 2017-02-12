@@ -4,15 +4,16 @@
 
 import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
-import {NodesEngine, engine} from "../../nodes/nodes-engine"
+import {Container, rootContainer} from "../../nodes/container"
 import {Renderer} from "./renderer"
 import {EditorSocket, socket} from "./editor-socket";
 import {themes} from "./node-editor-themes"
 
 
 export class NodeEditor {
+
     private root: HTMLDivElement;
-    engine: NodesEngine;
+    container: Container;
     renderer: Renderer;
     socket: EditorSocket;
     //nodes: Nodes;
@@ -37,22 +38,20 @@ export class NodeEditor {
             Nodes.options = themes[(<any>window).theme];
 
 
-        //create engine
-        this.engine = engine;
+        //create container
+        this.container = rootContainer;
 
         //create socket
         this.socket = socket;
-        this.engine.socket = socket.socket;
+        this.container.socket = socket.socket;
 
 
         //create canvas
         let renderer = this.renderer = new Renderer(
             <HTMLCanvasElement>canvas,
-            this.socket,
-            this,
-            this.engine);
+            this.container);
         // renderer.background_image = "/images/node-editor/grid.png";
-        this.engine.onAfterExecute = function () {
+        this.container.onAfterExecute = function () {
             renderer.draw(true)
         };
 
@@ -74,6 +73,8 @@ export class NodeEditor {
         this.addPlayButton();
         this.addStepButton();
         this.addSlotsValuesButton();
+
+
     }
 
     addMiniWindow(w: number, h: number): void {
@@ -88,7 +89,7 @@ export class NodeEditor {
         miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
         let canvas = miniwindow.querySelector("canvas");
 
-        let renderer = new Renderer(canvas, this.socket, this, this.engine);
+        let renderer = new Renderer(canvas, this.container);
         //  renderer.background_image = "images/node-editor/grid.png";
         //derwish edit
         renderer.scale = 0.1;
@@ -107,7 +108,7 @@ export class NodeEditor {
         close_button.innerHTML = "X";
         close_button.addEventListener("click", function (e) {
             minimap_opened = false;
-            renderer.setEngine(null);
+            renderer.setContainer(null);
             miniwindow.parentNode.removeChild(miniwindow);
         });
         miniwindow.appendChild(close_button);
@@ -209,7 +210,7 @@ export class NodeEditor {
                         json: filebody,
                         x: position[0],
                         y: position[1],
-                        ownerContainerId: engine.container_id
+                        ownerContainerId: rootContainer.id
                     },
                     success: function (result) {
                         if (result) {
@@ -263,7 +264,7 @@ export class NodeEditor {
                     json: $('#modal-panel-text').val(),
                     x: position[0],
                     y: position[1],
-                    ownerContainerId: engine.container_id
+                    ownerContainerId: rootContainer.id
                 },
                 success: function (result) {
                     if (result) {
@@ -335,7 +336,7 @@ export class NodeEditor {
                         json: script,
                         x: position[0],
                         y: position[1],
-                        ownerContainerId: engine.container_id
+                        ownerContainerId: rootContainer.id
                     },
                     success: function (result) {
                         if (result) {
@@ -445,47 +446,57 @@ export class NodeEditor {
         var that = this;
         $("#play-button").click(function () {
             if (that.isRunning)
-                socket.sendStopEngine();
+                socket.sendStopContainer();
             else
-                socket.sendRunEngine();
+                socket.sendRunContainer();
 
         });
     }
 
     private addStepButton() {
         $("#step-button").click(function () {
-            socket.sendStepEngine();
-            // engine.runStep();
+            socket.sendStepContainer();
+            // container.runStep();
         });
     }
 
-    onEngineRun() {
+    onContainerRun() {
         this.isRunning = true;
-        $("#step-button").fadeTo(200,0.3);
-        $("#play-icon").addClass( "stop" );
-        $("#play-icon").removeClass( "play" );
+        $("#step-button").fadeTo(200, 0.3);
+        $("#play-icon").addClass("stop");
+        $("#play-icon").removeClass("play");
     }
 
-    onEngineRunStep() {
-
+    onContainerRunStep() {
+        if (this.showSlotsValues)
+            socket.sendGetSlotsValues();
     }
 
-    onEngineStop() {
+    onContainerStop() {
         this.isRunning = false;
-        $("#step-button").fadeTo(200,1);
-        $("#play-icon").removeClass( "stop" );
-        $("#play-icon").addClass( "play" );
+        $("#step-button").fadeTo(200, 1);
+        $("#play-icon").removeClass("stop");
+        $("#play-icon").addClass("play");
     }
 
     private addSlotsValuesButton() {
+        let that = this;
         $("#slots-values-button").click(function () {
-            this.showSlotsValues=!this.showSlotsValues;
-            if (this.showSlotsValues){
-                $("#slots-values-icon").addClass( "hide" );
-                $("#slots-values-icon").removeClass( "unhide" );
-            } else{
-                $("#slots-values-icon").removeClass( "hide" );
-                $("#slots-values-icon").addClass( "unhide" );
+            that.showSlotsValues = !that.showSlotsValues;
+            if (that.showSlotsValues) {
+                $("#slots-values-icon").addClass("hide");
+                $("#slots-values-icon").removeClass("unhide");
+
+                socket.sendGetSlotsValues();
+
+            } else {
+                $("#slots-values-icon").removeClass("hide");
+                $("#slots-values-icon").addClass("unhide");
+
+                for (let node of rootContainer._nodes) {
+                    node.updateInputsLabels();
+                    node.updateOutputsLabels();
+                }
             }
         });
     }

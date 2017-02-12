@@ -23,11 +23,9 @@ Utils.debug("Server started at port " + server.server.address().port,"SERVER")
 // // }
 //
 //
-// //nodes engine
-// // if (config.nodesEngine.enable) {
-import {engine} from './public/nodes/nodes-engine'
-// let engine=require('./public/nodes/nodes-engine');
-engine.socket=server.socket.io;
+import {rootContainer} from './public/nodes/container'
+// let rootContainer=require('./public/nodes/rootContainer');
+rootContainer.socket=server.socket.io;
 require('./public/nodes/nodes');
 require('./public/nodes/nodes/main');
 require('./public/nodes/nodes/debug');
