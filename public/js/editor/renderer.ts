@@ -2485,8 +2485,16 @@ export class Renderer {
             let category = v.value;
             let node_types = Nodes.getNodeTypesInCategory(category);
             let values = [];
-            for (let i in node_types)
+            for (let i in node_types) {
+                //do ton show container input/output in root container
+                if (editor.renderer.container.id == 0) {
+                    if (node_types[i].type == "main/input"
+                        || node_types[i].type == "main/output")
+                        continue;
+                }
+
                 values.push({content: node_types[i].node_name, value: node_types[i].type});
+            }
 
             canvas.createContextualMenu(values, {event: e, callback: inner_create, from: menu}, window);
             return false;

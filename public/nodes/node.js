@@ -2,11 +2,10 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./utils", "./nodes"], factory);
     }
 })(function (require, exports) {
@@ -816,6 +815,7 @@
         }
         sendMessageToFrontSide(mess) {
             if (this.isBackside() && this.id != -1) {
+                console.log(this.container.socket);
                 this.container.socket.emit('node-message-to-front-side', { id: this.id, cid: this.container.id, value: mess });
             }
         }
