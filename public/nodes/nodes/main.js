@@ -174,7 +174,7 @@
     class ContainerOutputNode extends node_1.Node {
         constructor() {
             super();
-            this.onAdded = function () {
+            this.onBackAndFrontAdded = function () {
                 if (this.isBackside()) {
                     let cont_node = this.container.container_node;
                     cont_node.addOutput(this.properties.name, this.properties.type);

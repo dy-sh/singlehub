@@ -337,11 +337,12 @@ export class ContainerOutputNode extends Node {
         // });
     }
 
-    onAdded = function () {
+    onBackAndFrontAdded = function () {
         if (this.isBackside()) {
             let cont_node = this.container.container_node;
             cont_node.addOutput(this.properties.name, this.properties.type);
             this.properties.slot = cont_node.outputs.length - 1;
+
             this.sendMessageToFrontSide({
                 message: "add-output",
                 output: {name: this.properties.name, type: this.properties.type}

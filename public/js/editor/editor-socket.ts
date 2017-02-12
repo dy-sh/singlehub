@@ -112,6 +112,7 @@ export class EditorSocket {
         });
 
         socket.on('node-message-to-front-side', function (n) {
+
             let container = Container.containers[n.cid];
             let node = container.getNodeById(n.id);
             if (node.onGetMessageFromBackSide)

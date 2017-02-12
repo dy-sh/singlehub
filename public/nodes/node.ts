@@ -108,6 +108,7 @@ export class Node {
 //events
     onAdded: Function;
     onRemoved: Function;
+    onBackAndFrontAdded: Function;
 
     onDrawBackground: Function;
     onDrawForeground: Function;
