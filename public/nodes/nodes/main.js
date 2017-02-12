@@ -116,13 +116,14 @@
     class ContainerInputNode extends node_1.Node {
         constructor() {
             super();
-            //When added to container tell the container this is a new global input
-            this.onAdded = function () {
-                if (this.isBackside()) {
-                    let cont_node = this.container.container_node;
-                    cont_node.addInput(this.properties.name, this.properties.type);
-                    this.properties.slot = cont_node.inputs.length - 1;
-                }
+            this.onCreated = function () {
+                //add output on container node
+                let cont_node = this.container.container_node;
+                cont_node.addInput(this.properties.name, this.properties.type);
+                cont_node.setDirtyCanvas(true, true);
+                this.properties.slot = cont_node.inputs.length - 1;
+                //update output name
+                this.outputs[0].name = this.properties.name;
             };
             this.onExecute = function () {
                 let cont_node = this.container.container_node;
@@ -131,7 +132,6 @@
             };
             this.title = "Input";
             this.desc = "Input of the container";
-            //random name to avoid problems with other outputs when added
             let input_name = "input_" + (Math.random() * 1000).toFixed();
             this.addOutput(input_name, null);
             this.properties = { name: input_name, type: null };
@@ -175,7 +175,6 @@
         constructor() {
             super();
             this.onCreated = function () {
-                console.log(this.properties);
                 //add output on container node
                 let cont_node = this.container.container_node;
                 cont_node.addOutput(this.properties.name, this.properties.type);
@@ -191,7 +190,6 @@
             };
             this.title = "Ouput";
             this.desc = "Output of the container";
-            //random name to avoid problems with other outputs when added
             let output_name = "output_" + (Math.random() * 1000).toFixed();
             this.addInput(output_name, null);
             this.properties = { name: output_name, type: null };

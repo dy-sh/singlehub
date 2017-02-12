@@ -219,7 +219,6 @@ export class ContainerInputNode extends Node {
         this.title = "Input";
         this.desc = "Input of the container";
 
-        //random name to avoid problems with other outputs when added
         let input_name = "input_" + (Math.random() * 1000).toFixed();
 
         this.addOutput(input_name, null);
@@ -262,13 +261,16 @@ export class ContainerInputNode extends Node {
 
     }
 
-//When added to container tell the container this is a new global input
-    onAdded = function () {
-        if (this.isBackside()) {
-            let cont_node = this.container.container_node;
-            cont_node.addInput(this.properties.name, this.properties.type);
-            this.properties.slot = cont_node.inputs.length - 1;
-        }
+
+    onCreated = function () {
+        //add output on container node
+        let cont_node = this.container.container_node;
+        cont_node.addInput(this.properties.name, this.properties.type);
+        cont_node.setDirtyCanvas(true, true);
+        this.properties.slot = cont_node.inputs.length - 1;
+
+        //update output name
+        this.outputs[0].name = this.properties.name;
     }
 
     onExecute = function () {
@@ -288,7 +290,6 @@ export class ContainerOutputNode extends Node {
         super();
         this.title = "Ouput";
         this.desc = "Output of the container";
-        //random name to avoid problems with other outputs when added
 
         let output_name = "output_" + (Math.random() * 1000).toFixed();
 
@@ -331,8 +332,6 @@ export class ContainerOutputNode extends Node {
     }
 
     onCreated = function () {
-        console.log(this.properties);
-
         //add output on container node
         let cont_node = this.container.container_node;
         cont_node.addOutput(this.properties.name, this.properties.type);
