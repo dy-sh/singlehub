@@ -102,7 +102,7 @@ router.delete('/c/:cid/n/:id', function (req, res) {
         cid: req.params.cid,
     });
 
-    res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.container.id}/${node.id}]`);
+    res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${container.id}/${node.id}]`);
 });
 
 
@@ -114,9 +114,9 @@ router.delete('/c/:cid/n/', function (req, res) {
     if (!container) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
 
     for (let id of req.body) {
-        let node = rootContainer.getNodeById(id);
+        let node = container.getNodeById(id);
         if (!node) return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
-        rootContainer.remove(node);
+        container.remove(node);
     }
 
     server.socket.io.emit('nodes-delete', {

@@ -174,24 +174,7 @@ export class ContainerNode extends Node {
     // }
 
 
-    addContainerOutput(out_node: ContainerOutputNode) {
-        // this.container_outputs[out_node.properties.name] = out_node;
-        // this.addOutput(out_node.properties.name, out_node.properties.type);
-        // this.sendMessageToFrontSide({
-        //     message: "add-output",
-        //     output: {name: out_node.properties.name, type: out_node.properties.type}
-        // })
-    }
 
-    onGetMessageFromBackSide = function (mes) {
-        if (mes.message == "add-output") {
-            this.container_outputs[mes.output.name] = {
-                name: mes.output.name, type: mes.output.type
-            };
-            this.addOutput(mes.output.name, mes.output.type);
-
-        }
-    };
 
 
 // rename the global output
@@ -359,8 +342,21 @@ export class ContainerOutputNode extends Node {
             let cont_node = this.container.container_node;
             cont_node.addOutput(this.properties.name, this.properties.type);
             this.properties.slot = cont_node.outputs.length - 1;
+            this.sendMessageToFrontSide({
+                message: "add-output",
+                output: {name: this.properties.name, type: this.properties.type}
+            })
         }
     }
+
+
+    onGetMessageFromBackSide = function (mes) {
+        if (mes.message == "add-output") {
+            let cont_node = this.container.container_node;
+            cont_node.addOutput(mes.output.name, mes.output.type);
+            this.properties.slot = cont_node.outputs.length - 1;
+        }
+    };
 
     onExecute = function () {
         let cont_node = this.container.container_node;

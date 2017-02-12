@@ -81,7 +81,7 @@
             id: req.params.id,
             cid: req.params.cid,
         });
-        res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${node.container.id}/${node.id}]`);
+        res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${container.id}/${node.id}]`);
     });
     /**
      * Delete nodes
@@ -91,10 +91,10 @@
         if (!container)
             return res.status(404).send(`${MODULE_NAME}: Cant delete node. Container id [${req.params.cid}] not found.`);
         for (let id of req.body) {
-            let node = container_1.rootContainer.getNodeById(id);
+            let node = container.getNodeById(id);
             if (!node)
                 return res.status(404).send(`${MODULE_NAME}: Cant delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
-            container_1.rootContainer.remove(node);
+            container.remove(node);
         }
         server_1.server.socket.io.emit('nodes-delete', {
             nodes: req.body,

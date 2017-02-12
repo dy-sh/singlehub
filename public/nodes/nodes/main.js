@@ -85,14 +85,6 @@
                 //         this.setOutputData(i, value);
                 //     }
             };
-            this.onGetMessageFromBackSide = function (mes) {
-                if (mes.message == "add-output") {
-                    this.container_outputs[mes.output.name] = {
-                        name: mes.output.name, type: mes.output.type
-                    };
-                    this.addOutput(mes.output.name, mes.output.type);
-                }
-            };
             this.title = "Container";
             this.desc = "Contain other nodes";
             this.size = [120, 20];
@@ -116,51 +108,6 @@
             delete data["outputs"];
             node.configure(data);
             return node;
-        }
-        //rename the global input
-        // renameContainerInput(old_name, name) {
-        //     if (name == old_name)
-        //         return;
-        //
-        //     if (!this.container_inputs[old_name])
-        //         return false;
-        //
-        //     if (this.container_inputs[name]) {
-        //         console.error("there is already one input with that name");
-        //         return false;
-        //     }
-        //
-        //     this.container_inputs[name] = this.container_inputs[old_name];
-        //     delete this.container_inputs[old_name];
-        //
-        //     let slot = this.findInputSlot(old_name);
-        //     if (slot == -1)
-        //         return;
-        //     let info = this.getInputInfo(slot);
-        //     info.name = name;
-        // }
-        // changeConainerInputType(name, type) {
-        //     if (!this.container_inputs[name])
-        //         return false;
-        //
-        //     if (this.container_inputs[name].type.toLowerCase() == type.toLowerCase())
-        //         return;
-        //
-        //     this.container_inputs[name].type = type;
-        //
-        //     let slot = this.findInputSlot(name);
-        //     if (slot == -1)
-        //         return;
-        //     let info = this.getInputInfo(slot);
-        //     info.type = type;
-        // }
-        addContainerOutput(out_node) {
-            // this.container_outputs[out_node.properties.name] = out_node;
-            // this.addOutput(out_node.properties.name, out_node.properties.type);
-            // this.sendMessageToFrontSide({
-            //     message: "add-output",
-            //     output: {name: out_node.properties.name, type: out_node.properties.type}
-            // })
         }
     }
     exports.ContainerNode = ContainerNode;
@@ -231,6 +178,17 @@
                 if (this.isBackside()) {
                     let cont_node = this.container.container_node;
                     cont_node.addOutput(this.properties.name, this.properties.type);
+                    this.properties.slot = cont_node.outputs.length - 1;
+                    this.sendMessageToFrontSide({
+                        message: "add-output",
+                        output: { name: this.properties.name, type: this.properties.type }
+                    });
+                }
+            };
+            this.onGetMessageFromBackSide = function (mes) {
+                if (mes.message == "add-output") {
+                    let cont_node = this.container.container_node;
+                    cont_node.addOutput(mes.output.name, mes.output.type);
                     this.properties.slot = cont_node.outputs.length - 1;
                 }
             };
