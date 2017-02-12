@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./node-editor"], factory);
     }
 })(function (require, exports) {
@@ -54,6 +53,7 @@
                 let container = container_1.Container.containers[n.cid];
                 let newNode = nodes_1.Nodes.createNode(n.type);
                 newNode.pos = n.pos;
+                newNode.properties = n.properties;
                 //newNode.configure(n);
                 container.add(newNode);
                 container.setDirtyCanvas(true, true);

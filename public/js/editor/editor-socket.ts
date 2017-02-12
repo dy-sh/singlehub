@@ -63,6 +63,7 @@ export class EditorSocket {
             let container = Container.containers[n.cid];
             let newNode = Nodes.createNode(n.type);
             newNode.pos = n.pos;
+            newNode.properties = n.properties;
             //newNode.configure(n);
             container.add(newNode);
             container.setDirtyCanvas(true, true);
@@ -368,7 +369,6 @@ export class EditorSocket {
             type: 'POST'
         })
     };
-
 
 
     //---------------------------------------------------

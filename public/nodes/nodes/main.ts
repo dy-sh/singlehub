@@ -52,9 +52,6 @@ Nodes.registerNodeType("main/constant", ConstantNode);
 //Container: a node that contains a container of other nodes
 export class ContainerNode extends Node {
     sub_container: Container;
-    container_inputs = {};
-    container_outputs = {};
-
 
     constructor() {
         super();
@@ -90,24 +87,24 @@ export class ContainerNode extends Node {
 
     onExecute = function () {
 
-        //send inputs to sub_container global inputs
-        if (this.inputs)
-            for (let i = 0; i < this.inputs.length; i++) {
-                let input = this.inputs[i];
-                let value = this.getInputData(i);
-                this.sub_container.container_node.setContainerInputData(input.name, value);
-            }
+        // //send inputs to sub_container global inputs
+        // if (this.inputs)
+        //     for (let i = 0; i < this.inputs.length; i++) {
+        //         let input = this.inputs[i];
+        //         let value = this.getInputData(i);
+        //         this.sub_container.container_node.setContainerInputData(input.name, value);
+        //     }
 
         //execute
         this.sub_container.runStep();
 
-        //send sub_container global outputs to outputs
-        if (this.outputs)
-            for (let i = 0; i < this.outputs.length; i++) {
-                let output = this.outputs[i];
-                let value = this.sub_container.container_node.getContainerOutputData(output.name);
-                this.setOutputData(i, value);
-            }
+        // //send sub_container global outputs to outputs
+        // if (this.outputs)
+        //     for (let i = 0; i < this.outputs.length; i++) {
+        //         let output = this.outputs[i];
+        //         let value = this.sub_container.container_node.getContainerOutputData(output.name);
+        //         this.setOutputData(i, value);
+        //     }
     }
 
     configure(o) {
@@ -132,142 +129,108 @@ export class ContainerNode extends Node {
         return node;
     }
 
-    //Tell this container has a global input of this type
-    addContainerInput(name, type, value) {
-        this.container_inputs[name] = {name: name, type: type, value: value};
-        this.addInput(name, type);
-    }
 
-    //assign a data to the global input
-    setContainerInputData(name, data) {
-        let input = this.container_inputs[name];
-        if (!input)
-            return;
-        input.value = data;
-    }
 
-    //assign a data to the global input
-    getContainerInputData(name) {
-        let input = this.container_inputs[name];
-        if (!input)
-            return null;
-        return input.value;
-    }
+
+
 
     //rename the global input
-    renameContainerInput(old_name, name) {
-        if (name == old_name)
-            return;
+    // renameContainerInput(old_name, name) {
+    //     if (name == old_name)
+    //         return;
+    //
+    //     if (!this.container_inputs[old_name])
+    //         return false;
+    //
+    //     if (this.container_inputs[name]) {
+    //         console.error("there is already one input with that name");
+    //         return false;
+    //     }
+    //
+    //     this.container_inputs[name] = this.container_inputs[old_name];
+    //     delete this.container_inputs[old_name];
+    //
+    //     let slot = this.findInputSlot(old_name);
+    //     if (slot == -1)
+    //         return;
+    //     let info = this.getInputInfo(slot);
+    //     info.name = name;
+    // }
 
-        if (!this.container_inputs[old_name])
-            return false;
+    // changeConainerInputType(name, type) {
+    //     if (!this.container_inputs[name])
+    //         return false;
+    //
+    //     if (this.container_inputs[name].type.toLowerCase() == type.toLowerCase())
+    //         return;
+    //
+    //     this.container_inputs[name].type = type;
+    //
+    //     let slot = this.findInputSlot(name);
+    //     if (slot == -1)
+    //         return;
+    //     let info = this.getInputInfo(slot);
+    //     info.type = type;
+    // }
 
-        if (this.container_inputs[name]) {
-            console.error("there is already one input with that name");
-            return false;
+
+    addContainerOutput(out_node: ContainerOutputNode) {
+        // this.container_outputs[out_node.properties.name] = out_node;
+        // this.addOutput(out_node.properties.name, out_node.properties.type);
+        // this.sendMessageToFrontSide({
+        //     message: "add-output",
+        //     output: {name: out_node.properties.name, type: out_node.properties.type}
+        // })
+    }
+
+    onGetMessageFromBackSide = function (mes) {
+        if (mes.message == "add-output") {
+            this.container_outputs[mes.output.name] = {
+                name: mes.output.name, type: mes.output.type
+            };
+            this.addOutput(mes.output.name, mes.output.type);
+
         }
-
-        this.container_inputs[name] = this.container_inputs[old_name];
-        delete this.container_inputs[old_name];
-
-        let slot = this.findInputSlot(old_name);
-        if (slot == -1)
-            return;
-        let info = this.getInputInfo(slot);
-        info.name = name;
-    }
-
-    changeConainerInputType(name, type) {
-        if (!this.container_inputs[name])
-            return false;
-
-        if (this.container_inputs[name].type.toLowerCase() == type.toLowerCase())
-            return;
-
-        this.container_inputs[name].type = type;
-
-        let slot = this.findInputSlot(name);
-        if (slot == -1)
-            return;
-        let info = this.getInputInfo(slot);
-        info.type = type;
-    }
-
-    removeContainerInput(name) {
-        if (!this.container_inputs[name])
-            return false;
-
-        delete this.container_inputs[name];
+    };
 
 
-        return true;
-    }
+// rename the global output
+//     renameContainerOutput(old_name, name) {
+//         if (!this.container_outputs[old_name])
+//             return false;
+//
+//         if (this.container_outputs[name]) {
+//             console.error("there is already one output with that name");
+//             return false;
+//         }
+//
+//         this.container_outputs[name] = this.container_outputs[old_name];
+//         delete this.container_outputs[old_name];
+//
+//         let slot = this.findOutputSlot(old_name);
+//         if (slot == -1)
+//             return;
+//         let info = this.getOutputInfo(slot);
+//         info.name = name;
+//     }
+
+    // changeContainerOutputType(name, type) {
+    //     if (!this.container_outputs[name])
+    //         return false;
+    //
+    //     if (this.container_outputs[name].type.toLowerCase() == type.toLowerCase())
+    //         return;
+    //
+    //     this.container_outputs[name].type = type;
+    //
+    //     let slot = this.findOutputSlot(name);
+    //     if (slot == -1)
+    //         return;
+    //     let info = this.getOutputInfo(slot);
+    //     info.type = type;
+    // }
 
 
-    addContainerOutput(name, type, value) {
-        this.container_outputs[name] = {name: name, type: type, value: value};
-        this.addOutput(name, type);
-    }
-
-//assign a data to the global output
-    setContainerOutputData(name, value) {
-        let output = this.container_outputs[name];
-        if (!output)
-            return;
-        output.value = value;
-    }
-
-//assign a data to the global input
-    getContainerOutputData(name) {
-        let output = this.container_outputs[name];
-        if (!output)
-            return null;
-        return output.value;
-    }
-
-//rename the global output
-    renameContainerOutput(old_name, name) {
-        if (!this.container_outputs[old_name])
-            return false;
-
-        if (this.container_outputs[name]) {
-            console.error("there is already one output with that name");
-            return false;
-        }
-
-        this.container_outputs[name] = this.container_outputs[old_name];
-        delete this.container_outputs[old_name];
-
-        let slot = this.findOutputSlot(old_name);
-        if (slot == -1)
-            return;
-        let info = this.getOutputInfo(slot);
-        info.name = name;
-    }
-
-    changeContainerOutputType(name, type) {
-        if (!this.container_outputs[name])
-            return false;
-
-        if (this.container_outputs[name].type.toLowerCase() == type.toLowerCase())
-            return;
-
-        this.container_outputs[name].type = type;
-
-        let slot = this.findOutputSlot(name);
-        if (slot == -1)
-            return;
-        let info = this.getOutputInfo(slot);
-        info.type = type;
-    }
-
-    removeContainerOutput(name) {
-        if (!this.container_outputs[name])
-            return false;
-        delete this.container_outputs[name];
-
-        return true;
-    }
 }
 Nodes.registerNodeType("main/container", ContainerNode);
 
@@ -325,19 +288,17 @@ export class ContainerInputNode extends Node {
 
 //When added to container tell the container this is a new global input
     onAdded = function () {
-        if (this.isBackside())
-            this.container.container_node.addContainerInput(this.properties.name, this.properties.type);
+        if (this.isBackside()) {
+            let cont_node = this.container.container_node;
+            cont_node.addInput(this.properties.name, this.properties.type);
+            this.properties.slot = cont_node.inputs.length - 1;
+        }
     }
 
     onExecute = function () {
-        let name = this.properties.name;
-
-        //read from global input
-        let data = this.container.container_node.container_inputs[name];
-        if (!data) return;
-
-        //put through output
-        this.setOutputData(0, data.value);
+        let cont_node = this.container.container_node;
+        let val = cont_node.inputs[this.properties.slot].data;
+        this.setOutputData(0,val);
     }
 
 
@@ -352,6 +313,7 @@ export class ContainerOutputNode extends Node {
         this.title = "Ouput";
         this.desc = "Output of the container";
         //random name to avoid problems with other outputs when added
+
         let output_name = "output_" + (Math.random() * 1000).toFixed();
 
         this.addInput(output_name, null);
@@ -393,12 +355,17 @@ export class ContainerOutputNode extends Node {
     }
 
     onAdded = function () {
-        if (this.isBackside())
-            this.container.container_node.addContainerOutput(this.properties.name, this.properties.type);
+        if (this.isBackside()) {
+            let cont_node = this.container.container_node;
+            cont_node.addOutput(this.properties.name, this.properties.type);
+            this.properties.slot = cont_node.outputs.length - 1;
+        }
     }
 
     onExecute = function () {
-        this.container.container_node.setContainerOutputData(this.properties.name, this.getInputData(0));
+        let cont_node = this.container.container_node;
+        let val = this.getInputData(0);
+        cont_node.outputs[this.properties.slot].data = val;
     }
 
 

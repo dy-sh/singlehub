@@ -77,7 +77,8 @@ router.post('/c/:cid/n/', function (req, res) {
         id: node.id,
         cid: req.params.cid,
         type: node.type,
-        pos: node.pos
+        pos: node.pos,
+        properties:node.properties
     });
 
     res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
