@@ -56,6 +56,8 @@
                 newNode.properties = n.properties;
                 //newNode.configure(n);
                 container.add(newNode);
+                if (newNode.onCreated)
+                    newNode.onCreated();
                 container.setDirtyCanvas(true, true);
             });
             socket.on('node-delete', function (n) {

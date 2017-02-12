@@ -130,10 +130,6 @@ export class ContainerNode extends Node {
     }
 
 
-
-
-
-
     //rename the global input
     // renameContainerInput(old_name, name) {
     //     if (name == old_name)
@@ -172,9 +168,6 @@ export class ContainerNode extends Node {
     //     let info = this.getInputInfo(slot);
     //     info.type = type;
     // }
-
-
-
 
 
 // rename the global output
@@ -281,7 +274,7 @@ export class ContainerInputNode extends Node {
     onExecute = function () {
         let cont_node = this.container.container_node;
         let val = cont_node.inputs[this.properties.slot].data;
-        this.setOutputData(0,val);
+        this.setOutputData(0, val);
     }
 
 
@@ -337,27 +330,19 @@ export class ContainerOutputNode extends Node {
         // });
     }
 
-    onBackAndFrontAdded = function () {
-        if (this.isBackside()) {
-            let cont_node = this.container.container_node;
-            cont_node.addOutput(this.properties.name, this.properties.type);
-            this.properties.slot = cont_node.outputs.length - 1;
+    onCreated = function () {
+        console.log(this.properties);
 
-            this.sendMessageToFrontSide({
-                message: "add-output",
-                output: {name: this.properties.name, type: this.properties.type}
-            })
-        }
+        //add output on container node
+        let cont_node = this.container.container_node;
+        cont_node.addOutput(this.properties.name, this.properties.type);
+        cont_node.setDirtyCanvas(true, true);
+        this.properties.slot = cont_node.outputs.length - 1;
+
+        //update input name
+        this.inputs[0].name = this.properties.name;
     }
 
-
-    onGetMessageFromBackSide = function (mes) {
-        if (mes.message == "add-output") {
-            let cont_node = this.container.container_node;
-            cont_node.addOutput(mes.output.name, mes.output.type);
-            this.properties.slot = cont_node.outputs.length - 1;
-        }
-    };
 
     onExecute = function () {
         let cont_node = this.container.container_node;

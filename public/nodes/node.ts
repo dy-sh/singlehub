@@ -106,9 +106,20 @@ export class Node {
     order: string;
 
 //events
+    /**
+     * Invoked every time when node added to container
+     */
     onAdded: Function;
+
+    /**
+     * Invoked one time when node removed from container
+     */
     onRemoved: Function;
-    onBackAndFrontAdded: Function;
+
+    /**
+     * Invoked one time when node created and added to container (after onAdded)
+     */
+    onCreated: Function;
 
     onDrawBackground: Function;
     onDrawForeground: Function;

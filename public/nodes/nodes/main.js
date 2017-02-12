@@ -174,23 +174,15 @@
     class ContainerOutputNode extends node_1.Node {
         constructor() {
             super();
-            this.onBackAndFrontAdded = function () {
-                if (this.isBackside()) {
-                    let cont_node = this.container.container_node;
-                    cont_node.addOutput(this.properties.name, this.properties.type);
-                    this.properties.slot = cont_node.outputs.length - 1;
-                    this.sendMessageToFrontSide({
-                        message: "add-output",
-                        output: { name: this.properties.name, type: this.properties.type }
-                    });
-                }
-            };
-            this.onGetMessageFromBackSide = function (mes) {
-                if (mes.message == "add-output") {
-                    let cont_node = this.container.container_node;
-                    cont_node.addOutput(mes.output.name, mes.output.type);
-                    this.properties.slot = cont_node.outputs.length - 1;
-                }
+            this.onCreated = function () {
+                console.log(this.properties);
+                //add output on container node
+                let cont_node = this.container.container_node;
+                cont_node.addOutput(this.properties.name, this.properties.type);
+                cont_node.setDirtyCanvas(true, true);
+                this.properties.slot = cont_node.outputs.length - 1;
+                //update input name
+                this.inputs[0].name = this.properties.name;
             };
             this.onExecute = function () {
                 let cont_node = this.container.container_node;

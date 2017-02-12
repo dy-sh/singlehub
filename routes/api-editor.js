@@ -64,8 +64,8 @@
             pos: node.pos,
             properties: node.properties
         });
-        if (node.onBackAndFrontAdded)
-            node.onBackAndFrontAdded();
+        if (node.onCreated)
+            node.onCreated();
         res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     /**

@@ -66,6 +66,10 @@ export class EditorSocket {
             newNode.properties = n.properties;
             //newNode.configure(n);
             container.add(newNode);
+
+            if (newNode.onCreated)
+                newNode.onCreated();
+
             container.setDirtyCanvas(true, true);
         });
 
