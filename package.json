@@ -17,6 +17,7 @@
     "serialport": "*",
     "serve-favicon": "*",
     "socket.io": "*",
+    "source-map-support": "^0.4.11",
     "split": "*",
     "stylus": "*"
   },

@@ -234,15 +234,15 @@
          * @param extra_info this can be used to have special properties of an output (label, special color, position, etc)
          */
         addOutput(name, type, extra_info) {
-            let o = { name: name, type: type, links: null };
+            let output = { name: name, type: type, links: null };
             if (extra_info)
                 for (let i in extra_info)
-                    o[i] = extra_info[i];
+                    output[i] = extra_info[i];
             if (!this.outputs)
                 this.outputs = [];
-            this.outputs.push(o);
+            this.outputs.push(output);
             if (this.onOutputAdded)
-                this.onOutputAdded(o);
+                this.onOutputAdded(output);
             this.size = this.computeSize();
         }
         /**
@@ -282,16 +282,16 @@
          * @param extra_info this can be used to have special properties of an input (label, color, position, etc)
          */
         addInput(name, type, extra_info) {
-            let o = { name: name, type: type, link: null };
+            let input = { name: name, type: type, link: null };
             if (extra_info)
                 for (let i in extra_info)
-                    o[i] = extra_info[i];
+                    input[i] = extra_info[i];
             if (!this.inputs)
                 this.inputs = [];
-            this.inputs.push(o);
+            this.inputs.push(input);
             this.size = this.computeSize();
             if (this.onInputAdded)
-                this.onInputAdded(o);
+                this.onInputAdded(input);
         }
         /**
          * add several new input slots in this node

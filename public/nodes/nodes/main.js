@@ -53,6 +53,8 @@
     class ContainerNode extends node_1.Node {
         constructor() {
             super();
+            this.global_inputs = {};
+            this.global_outputs = {};
             this.onAdded = function () {
                 this.sub_container.parent_container_id = this.container.id;
             };
@@ -73,7 +75,7 @@
                     for (let i = 0; i < this.inputs.length; i++) {
                         let input = this.inputs[i];
                         let value = this.getInputData(i);
-                        this.sub_container.setGlobalInputData(input.name, value);
+                        this.sub_container.container_node.setContainerInputData(input.name, value);
                     }
                 //execute
                 this.sub_container.runStep();
@@ -81,7 +83,7 @@
                 if (this.outputs)
                     for (let i = 0; i < this.outputs.length; i++) {
                         let output = this.outputs[i];
-                        let value = this.sub_container.getGlobalOutputData(output.name);
+                        let value = this.sub_container.container_node.getContainerOutputData(output.name);
                         this.setOutputData(i, value);
                     }
             };
@@ -89,49 +91,7 @@
             this.desc = "Contain other nodes";
             this.size = [120, 20];
             this.sub_container = new container_1.Container();
-            this.sub_container._container_node = this;
-            this.sub_container.onContainerInputAdded = this.onContainerInputAdded.bind(this);
-            this.sub_container.onContainerInputRenamed = this.onContainerInputRenamed.bind(this);
-            this.sub_container.onContainerInputTypeChanged = this.onContainerInputTypeChanged.bind(this);
-            this.sub_container.onContainerOutputAdded = this.onContainerOutputAdded.bind(this);
-            this.sub_container.onContainerOutputRenamed = this.onContainerOutputRenamed.bind(this);
-            this.sub_container.onContainerOutputTypeChanged = this.onContainerOutputTypeChanged.bind(this);
-        }
-        onContainerInputAdded(name, type) {
-            //add input to the node
-            this.addInput(name, type);
-        }
-        onContainerInputRenamed(oldname, name) {
-            let slot = this.findInputSlot(oldname);
-            if (slot == -1)
-                return;
-            let info = this.getInputInfo(slot);
-            info.name = name;
-        }
-        onContainerInputTypeChanged(name, type) {
-            let slot = this.findInputSlot(name);
-            if (slot == -1)
-                return;
-            let info = this.getInputInfo(slot);
-            info.type = type;
-        }
-        onContainerOutputAdded(name, type) {
-            //add output to the node
-            this.addOutput(name, type);
-        }
-        onContainerOutputRenamed(oldname, name) {
-            let slot = this.findOutputSlot(oldname);
-            if (slot == -1)
-                return;
-            let info = this.getOutputInfo(slot);
-            info.name = name;
-        }
-        onContainerOutputTypeChanged(name, type) {
-            let slot = this.findOutputSlot(name);
-            if (slot == -1)
-                return;
-            let info = this.getOutputInfo(slot);
-            info.type = type;
+            this.sub_container.container_node = this;
         }
         configure(o) {
             node_1.Node.prototype.configure.call(this, o);
@@ -151,6 +111,113 @@
             node.configure(data);
             return node;
         }
+        //Tell this container has a global input of this type
+        addContainerInput(name, type, value) {
+            this.global_inputs[name] = { name: name, type: type, value: value };
+            this.addInput(name, type);
+        }
+        //assign a data to the global input
+        setContainerInputData(name, data) {
+            let input = this.global_inputs[name];
+            if (!input)
+                return;
+            input.value = data;
+        }
+        //assign a data to the global input
+        getContainerInputData(name) {
+            let input = this.global_inputs[name];
+            if (!input)
+                return null;
+            return input.value;
+        }
+        //rename the global input
+        renameContainerInput(old_name, name) {
+            if (name == old_name)
+                return;
+            if (!this.global_inputs[old_name])
+                return false;
+            if (this.global_inputs[name]) {
+                console.error("there is already one input with that name");
+                return false;
+            }
+            this.global_inputs[name] = this.global_inputs[old_name];
+            delete this.global_inputs[old_name];
+            let slot = this.findInputSlot(old_name);
+            if (slot == -1)
+                return;
+            let info = this.getInputInfo(slot);
+            info.name = name;
+        }
+        changeConainerInputType(name, type) {
+            if (!this.global_inputs[name])
+                return false;
+            if (this.global_inputs[name].type.toLowerCase() == type.toLowerCase())
+                return;
+            this.global_inputs[name].type = type;
+            let slot = this.findInputSlot(name);
+            if (slot == -1)
+                return;
+            let info = this.getInputInfo(slot);
+            info.type = type;
+        }
+        removeContainerInput(name) {
+            if (!this.global_inputs[name])
+                return false;
+            delete this.global_inputs[name];
+            return true;
+        }
+        addContainerOutput(name, type, value) {
+            this.global_outputs[name] = { name: name, type: type, value: value };
+            this.addOutput(name, type);
+        }
+        //assign a data to the global output
+        setContainerOutputData(name, value) {
+            let output = this.global_outputs[name];
+            if (!output)
+                return;
+            output.value = value;
+        }
+        //assign a data to the global input
+        getContainerOutputData(name) {
+            let output = this.global_outputs[name];
+            if (!output)
+                return null;
+            return output.value;
+        }
+        //rename the global output
+        renameContainerOutput(old_name, name) {
+            if (!this.global_outputs[old_name])
+                return false;
+            if (this.global_outputs[name]) {
+                console.error("there is already one output with that name");
+                return false;
+            }
+            this.global_outputs[name] = this.global_outputs[old_name];
+            delete this.global_outputs[old_name];
+            let slot = this.findOutputSlot(old_name);
+            if (slot == -1)
+                return;
+            let info = this.getOutputInfo(slot);
+            info.name = name;
+        }
+        changeContainerOutputType(name, type) {
+            if (!this.global_outputs[name])
+                return false;
+            if (this.global_outputs[name].type.toLowerCase() == type.toLowerCase())
+                return;
+            this.global_outputs[name].type = type;
+            let slot = this.findOutputSlot(name);
+            if (slot == -1)
+                return;
+            let info = this.getOutputInfo(slot);
+            info.type = type;
+        }
+        removeContainerOutput(name) {
+            if (!this.global_outputs[name])
+                return false;
+            delete this.global_outputs[name];
+            return true;
+        }
     }
     exports.ContainerNode = ContainerNode;
     nodes_1.Nodes.registerNodeType("main/container", ContainerNode);
@@ -161,12 +228,12 @@
             //When added to container tell the container this is a new global input
             this.onAdded = function () {
                 if (this.isBackside())
-                    this.container.addGlobalInput(this.properties.name, this.properties.type);
+                    this.container.container_node.addContainerInput(this.properties.name, this.properties.type);
             };
             this.onExecute = function () {
                 let name = this.properties.name;
                 //read from global input
-                let data = this.container.global_inputs[name];
+                let data = this.container.container_node.global_inputs[name];
                 if (!data)
                     return;
                 //put through output
@@ -179,34 +246,36 @@
             this.addOutput(input_name, null);
             this.properties = { name: input_name, type: null };
             let that = this;
-            Object.defineProperty(this.properties, "name", {
-                get: function () {
-                    return input_name;
-                },
-                set: function (v) {
-                    if (v == "")
-                        return;
-                    let info = that.getOutputInfo(0);
-                    if (info.name == v)
-                        return;
-                    info.name = v;
-                    if (that.container)
-                        that.container.renameGlobalInput(input_name, v);
-                    input_name = v;
-                },
-                enumerable: true
-            });
-            Object.defineProperty(this.properties, "type", {
-                get: function () {
-                    return that.outputs[0].type;
-                },
-                set: function (v) {
-                    that.outputs[0].type = v;
-                    if (that.container)
-                        that.container.changeGlobalInputType(input_name, that.outputs[0].type);
-                },
-                enumerable: true
-            });
+            // Object.defineProperty(this.properties, "name", {
+            //     get: function () {
+            //         return input_name;
+            //     },
+            //     set: function (v) {
+            //         if (v == "")
+            //             return;
+            //
+            //         let info = that.getOutputInfo(0);
+            //         if (info.name == v)
+            //             return;
+            //         info.name = v;
+            //         if (that.container)
+            //             that.container.renameContainerInput(input_name, v);
+            //         input_name = v;
+            //     },
+            //     enumerable: true
+            // });
+            //
+            // Object.defineProperty(this.properties, "type", {
+            //     get: function () {
+            //         return that.outputs[0].type;
+            //     },
+            //     set: function (v) {
+            //         that.outputs[0].type = v;
+            //         if (that.container)
+            //             that.container.changeConainerInputType(input_name, that.outputs[0].type);
+            //     },
+            //     enumerable: true
+            // });
         }
     }
     exports.ContainerInputNode = ContainerInputNode;
@@ -217,10 +286,10 @@
             super();
             this.onAdded = function () {
                 if (this.isBackside())
-                    this.container.addGlobalOutput(this.properties.name, this.properties.type);
+                    this.container.container_node.addContainerOutput(this.properties.name, this.properties.type);
             };
             this.onExecute = function () {
-                this.container.setGlobalOutputData(this.properties.name, this.getInputData(0));
+                this.container.container_node.setContainerOutputData(this.properties.name, this.getInputData(0));
             };
             this.title = "Ouput";
             this.desc = "Output of the container";
@@ -229,34 +298,36 @@
             this.addInput(output_name, null);
             this.properties = { name: output_name, type: null };
             let that = this;
-            Object.defineProperty(this.properties, "name", {
-                get: function () {
-                    return output_name;
-                },
-                set: function (v) {
-                    if (v == "")
-                        return;
-                    let info = that.getInputInfo(0);
-                    if (info.name == v)
-                        return;
-                    info.name = v;
-                    if (that.container)
-                        that.container.renameGlobalOutput(output_name, v);
-                    output_name = v;
-                },
-                enumerable: true
-            });
-            Object.defineProperty(this.properties, "type", {
-                get: function () {
-                    return that.inputs[0].type;
-                },
-                set: function (v) {
-                    that.inputs[0].type = v;
-                    if (that.container)
-                        that.container.changeGlobalInputType(output_name, that.inputs[0].type);
-                },
-                enumerable: true
-            });
+            // Object.defineProperty(this.properties, "name", {
+            //     get: function () {
+            //         return output_name;
+            //     },
+            //     set: function (v) {
+            //         if (v == "")
+            //             return;
+            //
+            //         let info = that.getInputInfo(0);
+            //         if (info.name == v)
+            //             return;
+            //         info.name = v;
+            //         if (that.container)
+            //             that.container.renameContainerOutput(output_name, v);
+            //         output_name = v;
+            //     },
+            //     enumerable: true
+            // });
+            //
+            // Object.defineProperty(this.properties, "type", {
+            //     get: function () {
+            //         return that.inputs[0].type;
+            //     },
+            //     set: function (v) {
+            //         that.inputs[0].type = v;
+            //         if (that.container)
+            //             that.container.changeConainerInputType(output_name, that.inputs[0].type);
+            //     },
+            //     enumerable: true
+            // });
         }
     }
     exports.ContainerOutputNode = ContainerOutputNode;

@@ -386,15 +386,15 @@ export class Node {
      */
 
     addOutput(name: string, type?: string, extra_info?: any): void {
-        let o: NodeOutput = {name: name, type: type, links: null};
+        let output: NodeOutput = {name: name, type: type, links: null};
         if (extra_info)
             for (let i in extra_info)
-                o[i] = extra_info[i];
+                output[i] = extra_info[i];
 
         if (!this.outputs) this.outputs = [];
-        this.outputs.push(o);
+        this.outputs.push(output);
         if (this.onOutputAdded)
-            this.onOutputAdded(o);
+            this.onOutputAdded(output);
         this.size = this.computeSize();
     }
 
@@ -442,17 +442,17 @@ export class Node {
      */
     addInput(name: string, type?: string, extra_info?: any): void {
 
-        let o: NodeInput = {name: name, type: type, link: null};
+        let input: NodeInput = {name: name, type: type, link: null};
         if (extra_info)
             for (let i in extra_info)
-                o[i] = extra_info[i];
+                input[i] = extra_info[i];
 
         if (!this.inputs)
             this.inputs = [];
-        this.inputs.push(o);
+        this.inputs.push(input);
         this.size = this.computeSize();
         if (this.onInputAdded)
-            this.onInputAdded(o);
+            this.onInputAdded(input);
     }
 
     /**

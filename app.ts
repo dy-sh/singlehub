@@ -1,3 +1,4 @@
+require('source-map-support').install();
 import Utils from "./public/nodes/utils";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.

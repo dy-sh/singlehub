@@ -7,6 +7,7 @@
     }
 })(function (require, exports) {
     "use strict";
+    require('source-map-support').install();
     const utils_1 = require("./public/nodes/utils");
     /**
      * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
