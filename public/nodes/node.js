@@ -815,7 +815,6 @@
         }
         sendMessageToFrontSide(mess) {
             if (this.isBackside() && this.id != -1) {
-                console.log(this.container.socket);
                 this.container.socket.emit('node-message-to-front-side', { id: this.id, cid: this.container.id, value: mess });
             }
         }

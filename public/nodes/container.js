@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./nodes", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -24,6 +23,8 @@
             Container.containers[this.id] = this;
             this.clear();
             utils_1.default.debug("Container created (id: " + this.id + ")", "CONTAINER");
+            if (this.id != 0)
+                this.socket = exports.rootContainer.socket;
         }
         //used to know which types of connections support this container (some containers do not allow certain types)
         getSupportedTypes() {

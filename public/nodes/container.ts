@@ -11,8 +11,6 @@ import Utils from  "./utils"
 import {ContainerNode} from "./nodes/main"
 
 
-
-
 export class Container {
     static containers: {[id: number]: Container} = {};
 
@@ -21,7 +19,6 @@ export class Container {
     parent_container_id?: number;
 
     container_node: ContainerNode;
-
 
 
     id: number;
@@ -60,9 +57,6 @@ export class Container {
     frame: number;
 
 
-
-
-
     constructor() {
         this.list_of_renderers = null;
         this.id = Container.last_container_id++;
@@ -70,6 +64,9 @@ export class Container {
         this.clear();
 
         Utils.debug("Container created (id: " + this.id + ")", "CONTAINER");
+
+        if (this.id != 0)
+            this.socket = rootContainer.socket;
     }
 
 
@@ -205,23 +202,23 @@ export class Container {
         this.globaltime = 0.001 * (start - this.starttime);
 
         // try {
-            for (let i = 0; i < num; i++) {
+        for (let i = 0; i < num; i++) {
 
-                this.updateNodesInputData();
+            this.updateNodesInputData();
 
-                for (let node of this._nodes) {
-                    if (node.onExecute)
-                        node.onExecute();
-                }
-
-                this.fixedtime += this.fixedtime_lapse;
-                if (this.onExecuteStep)
-                    this.onExecuteStep();
+            for (let node of this._nodes) {
+                if (node.onExecute)
+                    node.onExecute();
             }
 
-            if (this.onAfterExecute)
-                this.onAfterExecute();
-            this.errors_in_execution = false;
+            this.fixedtime += this.fixedtime_lapse;
+            if (this.onExecuteStep)
+                this.onExecuteStep();
+        }
+
+        if (this.onAfterExecute)
+            this.onAfterExecute();
+        this.errors_in_execution = false;
         // }
         // catch (err) {
         //     this.errors_in_execution = true;
@@ -487,8 +484,6 @@ export class Container {
         }
         return null;
     }
-
-
 
 
 //
