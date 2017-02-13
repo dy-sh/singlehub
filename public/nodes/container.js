@@ -310,7 +310,7 @@
          * @param classObject the class itself (not an string)
          * @returns a list with all the nodes of this type
          */
-        findNodesByClass(classObject) {
+        getNodesByClass(classObject) {
             let r = [];
             for (let i = 0, l = this._nodes.length; i < l; ++i)
                 if (this._nodes[i].constructor === classObject)
@@ -322,7 +322,7 @@
          * @param type the name of the node type
          * @returns a list with all the nodes of this type
          */
-        findNodesByType(type) {
+        getNodesByType(type) {
             type = type.toLowerCase();
             let r = [];
             for (let i = 0, l = this._nodes.length; i < l; ++i)
@@ -335,7 +335,7 @@
          * @param name the name of the node to search
          * @returns a list with all the nodes with this name
          */
-        findNodesByTitle(title) {
+        getNodesByTitle(title) {
             let result = [];
             for (let i = 0, l = this._nodes.length; i < l; ++i)
                 if (this._nodes[i].title == title)
@@ -358,72 +358,10 @@
             }
             return null;
         }
-        //
-        //     /**
-        //      * Assigns a value to all the nodes that matches this name. This is used to create global variables of the node that
-        //      * can be easily accesed from the outside of the container
-        //      * @method setInputData
-        //      * @param name the name of the node
-        //      * @param {*} value value to assign to this node
-        //      */
-        //     setInputData(name, value) {
-        //         let nodes = this.findNodesByName(name);
-        //         for (let i = 0, l = nodes.length; i < l; ++i)
-        //             nodes[i].setValue(value);
-        //     }
-        //
-        //     /**
-        //      * Returns the value of the first node with this name. This is used to access global variables of the container from the outside
-        //      * @method setInputData
-        //      * @param name the name of the node
-        //      * @returns {*} value of the node
-        //      */
-        //     getOutputData(name) {
-        //         let n = this.findNodesByName(name);
-        //         if (n.length)
-        //             return m[0].getValue();
-        //         return null;
-        //     }
-        //
-        // //This feature is not finished yet, is to create containers where nodes are not executed unless a trigger message is received
-        //     triggerInput(name, value) {
-        //         let nodes = this.findNodesByName(name);
-        //         for (let i = 0; i < nodes.length; ++i)
-        //             nodes[i].onTrigger(value);
-        //     }
-        //
-        //     setCallback(name, func) {
-        //         let nodes = this.findNodesByName(name);
-        //         for (let i = 0; i < nodes.length; ++i)
-        //             nodes[i].setTrigger(func);
-        //     }
-        //
         connectionChange(node) {
             if (this.onConnectionChange)
                 this.onConnectionChange(node);
             this.sendActionToRenderer("onConnectionChange");
-        }
-        /**
-         * returns if the container is in live mode
-         * @method isLive
-         */
-        isLive() {
-            if (!this.list_of_renderers)
-                return false;
-            for (let i = 0; i < this.list_of_renderers.length; ++i) {
-                let c = this.list_of_renderers[i];
-                if (c.live_mode)
-                    return true;
-            }
-            return false;
-        }
-        /**
-         * Called when something visually changed
-         */
-        change() {
-            this.sendActionToRenderer("setDirty", [true, true]);
-            if (this.on_change)
-                this.on_change(this);
         }
         /**
          * Set canvas to dirty for update

@@ -68,22 +68,7 @@
                     }];
             };
             this.onExecute = function () {
-                // //send inputs to sub_container global inputs
-                // if (this.inputs)
-                //     for (let i = 0; i < this.inputs.length; i++) {
-                //         let input = this.inputs[i];
-                //         let value = this.getInputData(i);
-                //         this.sub_container.container_node.setContainerInputData(input.name, value);
-                //     }
-                //execute
                 this.sub_container.runStep();
-                // //send sub_container global outputs to outputs
-                // if (this.outputs)
-                //     for (let i = 0; i < this.outputs.length; i++) {
-                //         let output = this.outputs[i];
-                //         let value = this.sub_container.container_node.getContainerOutputData(output.name);
-                //         this.setOutputData(i, value);
-                //     }
             };
             this.title = "Container";
             this.desc = "Contain other nodes";
