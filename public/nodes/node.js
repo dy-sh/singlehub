@@ -84,7 +84,7 @@
          * Serialize node
          */
         serialize() {
-            let o = {
+            let n = {
                 id: this.id,
                 title: this.title,
                 type: this.type,
@@ -92,27 +92,51 @@
                 size: this.size,
                 data: this.data,
                 lags: utils_1.default.cloneObject(this.flags),
-                inputs: this.inputs,
-                outputs: this.outputs,
                 properties: null,
                 color: null,
                 bgcolor: null,
                 boxcolor: null,
-                shape: null
+                shape: null,
+                inputs: [],
+                outputs: []
             };
+            //remove data from liks
+            if (this.inputs)
+                for (let i of this.inputs)
+                    n.inputs.push({
+                        name: i.name,
+                        type: i.type,
+                        link: i.link,
+                        label: i.label,
+                        locked: i.locked,
+                        pos: i.pos,
+                        round: i.round,
+                        isOptional: i.isOptional
+                    });
+            if (this.outputs)
+                for (let o of this.outputs)
+                    n.outputs.push({
+                        name: o.name,
+                        type: o.type,
+                        links: o.links,
+                        label: o.label,
+                        locked: o.locked,
+                        pos: o.pos,
+                        round: o.round
+                    });
             if (this.properties)
-                o.properties = utils_1.default.cloneObject(this.properties);
+                n.properties = utils_1.default.cloneObject(this.properties);
             if (this.color)
-                o.color = this.color;
+                n.color = this.color;
             if (this.bgcolor)
-                o.bgcolor = this.bgcolor;
+                n.bgcolor = this.bgcolor;
             if (this.boxcolor)
-                o.boxcolor = this.boxcolor;
+                n.boxcolor = this.boxcolor;
             if (this.shape)
-                o.shape = this.shape;
+                n.shape = this.shape;
             if (this.onSerialize)
-                this.onSerialize(o);
-            return o;
+                this.onSerialize(n);
+            return n;
         }
         /**
          * Creates a clone of this node

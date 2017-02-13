@@ -560,6 +560,7 @@ export class Container {
         if (!keep_old)
             this.clear();
 
+        console.log(data);
         //copy all fields to this container
         for (let i in data) {
             if (i == "serialized_nodes")
