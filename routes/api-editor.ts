@@ -17,8 +17,10 @@ let MODULE_NAME = "SOCKET";
 setInterval(updateActiveNodes, 100);
 
 function updateActiveNodes() {
+    let container=rootContainer;
     let activeNodesIds = [];
-    for (let node of rootContainer._nodes) {
+    for (let id in container._nodes_by_id) {
+        let node = container._nodes_by_id[id];
         if (node.isActive) {
             node.isActive = false;
             activeNodesIds.push(node.id);

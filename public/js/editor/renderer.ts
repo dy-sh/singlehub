@@ -583,8 +583,7 @@ export class Renderer {
             //when clicked on top of a node
             //and it is not interactive
             if (n) {
-                if (!this.live_mode && !n.flags.pinned)
-                    this.bringToFront(n); //if it wasnt selected?
+
                 let skip_action = false;
 
                 //not dragging mouse to connect two slots
@@ -740,10 +739,12 @@ export class Renderer {
             let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
 
             //remove mouseover flag
-            for (let i in this.container._nodes) {
-                if (this.container._nodes[i].mouseOver && n != this.container._nodes[i]) {
+            for (let id in this.container._nodes_by_id) {
+                let node = this.container._nodes_by_id[id];
+
+                if (node.mouseOver && n != node) {
                     //mouse leave
-                    this.container._nodes[i].mouseOver = false;
+                    node.mouseOver = false;
                     if (this.node_over && this.node_over.onMouseLeave)
                         this.node_over.onMouseLeave(e);
                     this.node_over = null;
@@ -1213,12 +1214,12 @@ export class Renderer {
      * Select all nodes
      */
     selectAllNodes(): void {
-        for (let i in this.container._nodes) {
-            let n = this.container._nodes[i];
-            if (!n.selected && n.onSelected)
-                n.onSelected();
-            n.selected = true;
-            this.selected_nodes[this.container._nodes[i].id] = n;
+        for (let id in this.container._nodes_by_id) {
+            let node = this.container._nodes_by_id[id];
+            if (!node.selected && node.onSelected)
+                node.onSelected();
+            node.selected = true;
+            this.selected_nodes[node.id] = node;
         }
 
         this.setDirty(true);
@@ -1331,29 +1332,8 @@ export class Renderer {
         return this.convertOffsetToCanvas([e.pageX - rect.left, e.pageY - rect.top]);
     }
 
-    /**
-     *
-     * @param n
-     */
-    bringToFront(n: Node): void {
-        let i = this.container._nodes.indexOf(n);
-        if (i == -1) return;
 
-        this.container._nodes.splice(i, 1);
-        this.container._nodes.push(n);
-    }
 
-    /**
-     *
-     * @param n
-     */
-    sendToBack(n: Node): void {
-        let i = this.container._nodes.indexOf(n);
-        if (i == -1) return;
-
-        this.container._nodes.splice(i, 1);
-        this.container._nodes.unshift(n);
-    }
 
 
     /**
@@ -1362,17 +1342,17 @@ export class Renderer {
      */
     computeVisibleNodes(): Array<Node> {
         let visible_nodes = [];
-        for (let i in this.container._nodes) {
-            let n = this.container._nodes[i];
+        for (let id in this.container._nodes_by_id) {
+            let node = this.container._nodes_by_id[id];
 
             //skip rendering nodes in live mode
-            if (this.live_mode && !n.onDrawBackground && !n.onDrawForeground)
+            if (this.live_mode && !node.onDrawBackground && !node.onDrawForeground)
                 continue;
 
-            if (!Utils.overlapBounding(this.visible_area, n.getBounding()))
+            if (!Utils.overlapBounding(this.visible_area, node.getBounding()))
                 continue; //out of the visible area
 
-            visible_nodes.push(n);
+            visible_nodes.push(node);
         }
         return visible_nodes;
     }
@@ -2025,8 +2005,8 @@ export class Renderer {
         ctx.strokeStyle = "#AAA";
         ctx.globalAlpha = this.editor_alpha;
         //for every node
-        for (let n in this.container._nodes) {
-            let node = this.container._nodes[n];
+        for (let id in this.container._nodes_by_id) {
+            let node = this.container._nodes_by_id[id];
             //for every input (we render just inputs because it is easier as every slot can only have one input)
             if (node.inputs && node.inputs.length)
                 for (let i in node.inputs) {

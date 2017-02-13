@@ -39,7 +39,8 @@ export class NodesServerSocket {
 
                 let inputs_values = [];
                 let outputs_values = [];
-                for (let node of container._nodes) {
+                for (let id in container._nodes_by_id) {
+                    let node = container._nodes_by_id[id];
                     if (node.inputs) {
                         for (let i = 0; i < node.inputs.length; i++) {
                             let data = node.inputs[i].data;

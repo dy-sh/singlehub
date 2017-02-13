@@ -15,7 +15,7 @@
     class Container {
         constructor() {
             this.supported_types = ["number", "string", "boolean"];
-            this._nodes = [];
+            // _nodes: Array<Node> = [];
             this._nodes_by_id = {};
             this.links = {};
             this.list_of_renderers = null;
@@ -38,7 +38,6 @@
             this.isRunning = false;
             this.last_node_id = 0;
             //nodes
-            this._nodes = [];
             this._nodes_by_id = {};
             //links
             this.last_link_id = 0;
@@ -68,7 +67,8 @@
             if (this.execution_timer_id != null)
                 clearInterval(this.execution_timer_id);
             this.execution_timer_id = null;
-            for (let node of this._nodes) {
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
                 if (node.onStopContainer)
                     node.onStopContainer();
             }
@@ -108,7 +108,8 @@
             this.isRunning = true;
             if (this.onPlayEvent)
                 this.onPlayEvent();
-            for (let node of this._nodes) {
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
                 if (node.onRunContainer)
                     node.onRunContainer();
             }
@@ -130,7 +131,8 @@
             // try {
             for (let i = 0; i < num; i++) {
                 this.updateNodesInputData();
-                for (let node of this._nodes) {
+                for (let id in this._nodes_by_id) {
+                    let node = this._nodes_by_id[id];
                     if (node.onExecute)
                         node.onExecute();
                 }
@@ -157,7 +159,8 @@
         }
         updateNodesInputData() {
             let updated_nodes = [];
-            for (let node of this._nodes) {
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
                 if (!node.outputs)
                     continue;
                 for (let output of node.outputs) {
@@ -165,7 +168,10 @@
                         continue;
                     for (let linkId of output.links) {
                         let link = this.links[linkId];
-                        let target_node = this._nodes[link.target_id];
+                        let target_node = this._nodes_by_id[link.target_id];
+                        if (!target_node) {
+                            console.log("ddd");
+                        }
                         let target_input = target_node.inputs[link.target_slot];
                         if (target_input.data != output.data) {
                             target_input.data = output.data;
@@ -220,19 +226,25 @@
             }
         }
         /**
+         * Get nodes count
+         * @returns {number}
+         */
+        getNodesCount() {
+            return Object.keys(this._nodes_by_id).length;
+        }
+        /**
          * Adds a new node instasnce to this container
          * @param node the instance of the node
          */
         add(node) {
             if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
                 return; //already added
-            if (this._nodes.length >= nodes_1.Nodes.options.MAX_NUMBER_OF_NODES)
+            if (this.getNodesCount() >= nodes_1.Nodes.options.MAX_NUMBER_OF_NODES)
                 throw ("Nodes: max number of nodes in a container reached");
             //give him an id
             if (node.id == null || node.id == -1)
                 node.id = this.last_node_id++;
             node.container = this;
-            this._nodes.push(node);
             this._nodes_by_id[node.id] = node;
             /*
              // rendering stuf...
@@ -286,9 +298,6 @@
                 }
             }
             //remove from container
-            let pos = this._nodes.indexOf(node);
-            if (pos != -1)
-                this._nodes.splice(pos, 1);
             delete this._nodes_by_id[node.id];
             if (this.onNodeRemoved)
                 this.onNodeRemoved(node);
@@ -310,9 +319,11 @@
          */
         getNodesByClass(classObject) {
             let r = [];
-            for (let i = 0, l = this._nodes.length; i < l; ++i)
-                if (this._nodes[i].constructor === classObject)
-                    r.push(this._nodes[i]);
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
+                if (node.constructor === classObject)
+                    r.push(node);
+            }
             return r;
         }
         /**
@@ -323,9 +334,11 @@
         getNodesByType(type) {
             type = type.toLowerCase();
             let r = [];
-            for (let i = 0, l = this._nodes.length; i < l; ++i)
-                if (this._nodes[i].type.toLowerCase() == type)
-                    r.push(this._nodes[i]);
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
+                if (node.type.toLowerCase() == type)
+                    r.push(node);
+            }
             return r;
         }
         /**
@@ -334,11 +347,13 @@
          * @returns a list with all the nodes with this name
          */
         getNodesByTitle(title) {
-            let result = [];
-            for (let i = 0, l = this._nodes.length; i < l; ++i)
-                if (this._nodes[i].title == title)
-                    result.push(this._nodes[i]);
-            return result;
+            let r = [];
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
+                if (node.title == title)
+                    r.push(node);
+            }
+            return r;
         }
         /**
          * Returns the top-most node in this position of the renderer
@@ -348,11 +363,19 @@
          * @returns a list with all the nodes that intersect this coordinate
          */
         getNodeOnPos(x, y, nodes_list) {
-            nodes_list = nodes_list || this._nodes;
-            for (let i = nodes_list.length - 1; i >= 0; i--) {
-                let n = nodes_list[i];
-                if (n.isPointInsideNode(x, y, 2))
-                    return n;
+            if (nodes_list) {
+                for (let i = nodes_list.length - 1; i >= 0; i--) {
+                    let n = nodes_list[i];
+                    if (n.isPointInsideNode(x, y, 2))
+                        return n;
+                }
+            }
+            else {
+                for (let id in this._nodes_by_id) {
+                    let node = this._nodes_by_id[id];
+                    if (node.isPointInsideNode(x, y, 2))
+                        return node;
+                }
             }
             return null;
         }
@@ -375,8 +398,10 @@
          */
         serialize() {
             let nodes_info = [];
-            for (let i = 0, l = this._nodes.length; i < l; ++i)
-                nodes_info.push(this._nodes[i].serialize());
+            for (let id in this._nodes_by_id) {
+                let node = this._nodes_by_id[id];
+                nodes_info.push(node.serialize());
+            }
             //remove data from links, we dont want to store it
             // for (let i in this.links) //links is an OBJECT
             //     this.links[i].data = null;
@@ -407,7 +432,6 @@
                 this[i] = data[i];
             let error = false;
             //create nodes
-            this._nodes = [];
             for (let i = 0, l = nodes.length; i < l; ++i) {
                 let n_info = nodes[i]; //stored info
                 let node = nodes_1.Nodes.createNode(n_info.type, n_info.title);
