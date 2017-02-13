@@ -411,38 +411,33 @@
         }
         updateContainersNavigation() {
             let that = this;
-            $("#containers-navigation")
-                .html('<div id="container0" class="ui black tiny compact button">Main</div>');
-            $("#container0").click(function () {
-                for (let i = 0; i < 1000; i++) {
-                    that.renderer.closeContainer();
-                    if (that.renderer.container.id == 0)
-                        break;
-                }
-            });
-            //if is sub-container
+            $("#containers-navigation").html("");
+            addendButton(0, "Main");
+            //if this is a sub-container
             if (this.renderer._containers_stack
                 && this.renderer._containers_stack.length > 0) {
+                //add containers
                 let cont_count = this.renderer._containers_stack.length;
                 for (let cont = 1; cont < cont_count; cont++) {
-                    let cont_name = this.renderer._containers_stack[cont].id;
+                    let cont_name = this.renderer._containers_stack[cont].container_node.title;
                     let cont_id = this.renderer._containers_stack[cont].id;
-                    $("#containers-navigation")
-                        .append(`<div id="container${cont_id}" class="ui black tiny compact button">${cont_name}</div>`);
-                    $("#container" + cont_id).click(function () {
-                        for (let i = 0; i < 1000; i++) {
-                            that.renderer.closeContainer();
-                            if (that.renderer.container.id == cont_id)
-                                break;
-                        }
-                    });
+                    addendButton(cont_id, cont_name);
                 }
-                //add this
-                let cont_name = this.renderer.container.id;
+                //add this container
+                let cont_name = this.renderer.container.container_node.title;
                 let cont_id = this.renderer.container.id;
-                let el = $("#containers-navigation")
+                addendButton(cont_id, cont_name);
+            }
+            function addendButton(cont_id, cont_name) {
+                $("#containers-navigation")
                     .append(`<div id="container${cont_id}" class="ui black tiny compact button">${cont_name}</div>`);
-                console.log(el);
+                $("#container" + cont_id).click(function () {
+                    for (let i = 0; i < 1000; i++) {
+                        if (that.renderer.container.id == cont_id)
+                            break;
+                        that.renderer.closeContainer();
+                    }
+                });
             }
         }
     }

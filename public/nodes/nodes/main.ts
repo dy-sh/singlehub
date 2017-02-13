@@ -63,6 +63,7 @@ export class ContainerNode extends Node {
 
 
         this.sub_container = new Container();
+        this.title="Container "+ this.sub_container.id;
         this.sub_container.container_node = this;
     }
 
