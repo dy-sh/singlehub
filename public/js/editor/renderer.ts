@@ -701,7 +701,8 @@ export class Renderer {
          this.draw();
          */
 
-        this.container.change();
+        this.container.setDirtyCanvas(true, true);
+
 
         //this is to ensure to defocus(blur) if a text input element is on focus
         if (!ref_window.document.activeElement || (ref_window.document.activeElement.nodeName.toLowerCase() != "input" && ref_window.document.activeElement.nodeName.toLowerCase() != "textarea"))
@@ -954,7 +955,8 @@ export class Renderer {
          this.draw();
          */
 
-        this.container.change();
+        this.container.setDirtyCanvas(true, true);
+
 
         e.stopPropagation();
         e.preventDefault();
@@ -991,7 +993,8 @@ export class Renderer {
          this.draw();
          */
 
-        this.container.change();
+        this.container.setDirtyCanvas(true, true);
+
 
         e.preventDefault();
         return false; // prevent default
@@ -1062,7 +1065,8 @@ export class Renderer {
                         this.selected_nodes[i].onKeyUp(e);
         }
 
-        this.container.change();
+        this.container.setDirtyCanvas(true, true);
+
 
         if (block_default) {
             e.preventDefault();
@@ -1653,7 +1657,7 @@ export class Renderer {
         //if (this.selected) color = "#88F";
 
         let render_title = true;
-        if (node.flags.skip_title_render || node.container.isLive())
+        if (node.flags.skip_title_render)
             render_title = false;
         if (node.mouseOver)
             render_title = true;

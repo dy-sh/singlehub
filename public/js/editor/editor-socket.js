@@ -107,7 +107,7 @@
                 // node.disconnectOutput(l.origin_slot, targetNode);
                 // targetNode.disconnectInput(l.target_slot);
                 node.connect(l.link.origin_slot, targetNode, l.link.target_slot);
-                container.change();
+                container.setDirtyCanvas(true, true);
             });
             socket.on('link-delete', function (l) {
                 let container = container_1.Container.containers[l.cid];

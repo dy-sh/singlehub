@@ -599,7 +599,7 @@ export class Node {
     isPointInsideNode(x: number, y: number, margin: number): boolean {
         margin = margin || 0;
 
-        let margin_top = this.container && this.container.isLive() ? 0 : 20;
+        let margin_top = this.container ? 0 : 20;
         if (this.flags.collapsed) {
             //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
             if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT - margin, Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))

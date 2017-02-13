@@ -406,7 +406,7 @@
          */
         isPointInsideNode(x, y, margin) {
             margin = margin || 0;
-            let margin_top = this.container && this.container.isLive() ? 0 : 20;
+            let margin_top = this.container ? 0 : 20;
             if (this.flags.collapsed) {
                 //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
                 if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - nodes_1.Nodes.options.NODE_TITLE_HEIGHT - margin, nodes_1.Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, nodes_1.Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))

@@ -504,7 +504,7 @@
              if( (this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
              this.draw();
              */
-            this.container.change();
+            this.container.setDirtyCanvas(true, true);
             //this is to ensure to defocus(blur) if a text input element is on focus
             if (!ref_window.document.activeElement || (ref_window.document.activeElement.nodeName.toLowerCase() != "input" && ref_window.document.activeElement.nodeName.toLowerCase() != "textarea"))
                 e.preventDefault();
@@ -706,7 +706,7 @@
              if((this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
              this.draw();
              */
-            this.container.change();
+            this.container.setDirtyCanvas(true, true);
             e.stopPropagation();
             e.preventDefault();
             return false;
@@ -731,7 +731,7 @@
              if(this.rendering_timer_id == null)
              this.draw();
              */
-            this.container.change();
+            this.container.setDirtyCanvas(true, true);
             e.preventDefault();
             return false; // prevent default
         }
@@ -793,7 +793,7 @@
                         if (this.selected_nodes[i].onKeyUp)
                             this.selected_nodes[i].onKeyUp(e);
             }
-            this.container.change();
+            this.container.setDirtyCanvas(true, true);
             if (block_default) {
                 e.preventDefault();
                 return false;
@@ -1279,7 +1279,7 @@
                 color = nodes_1.Nodes.options.IO_NODE_COLOR;
             //if (this.selected) color = "#88F";
             let render_title = true;
-            if (node.flags.skip_title_render || node.container.isLive())
+            if (node.flags.skip_title_render)
                 render_title = false;
             if (node.mouseOver)
                 render_title = true;

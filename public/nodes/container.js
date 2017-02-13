@@ -53,7 +53,7 @@
             this.fixedtime_lapse = 0.01;
             this.elapsed_time = 0.01;
             this.starttime = 0;
-            this.change();
+            // this.setDirtyCanvas(true, true);
             this.sendActionToRenderer("clear");
         }
         /**
@@ -245,8 +245,7 @@
                 node.alignToGrid();
             if (this.onNodeAdded)
                 this.onNodeAdded(node);
-            this.setDirtyCanvas(true);
-            this.change();
+            this.setDirtyCanvas(true, true);
             return node; //to chain actions
         }
         /**
@@ -294,7 +293,6 @@
             if (this.onNodeRemoved)
                 this.onNodeRemoved(node);
             this.setDirtyCanvas(true, true);
-            this.change();
         }
         /**
          * Returns a node by its id.

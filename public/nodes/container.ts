@@ -106,7 +106,7 @@ export class Container {
         this.starttime = 0;
 
 
-        this.change();
+        // this.setDirtyCanvas(true, true);
 
         this.sendActionToRenderer("clear");
     }
@@ -348,9 +348,8 @@ export class Container {
             this.onNodeAdded(node);
 
 
-        this.setDirtyCanvas(true);
+        this.setDirtyCanvas(true, true);
 
-        this.change();
 
         return node; //to chain actions
     }
@@ -411,7 +410,7 @@ export class Container {
 
         this.setDirtyCanvas(true, true);
 
-        this.change();
+
     }
 
     /**
@@ -486,8 +485,6 @@ export class Container {
             this.onConnectionChange(node);
         this.sendActionToRenderer("onConnectionChange");
     }
-
-
 
 
     /**

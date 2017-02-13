@@ -134,7 +134,7 @@ export class EditorSocket {
 
             node.connect(l.link.origin_slot, targetNode, l.link.target_slot);
 
-            container.change();
+            container.setDirtyCanvas(true, true);
         });
 
         socket.on('link-delete', function (l) {
