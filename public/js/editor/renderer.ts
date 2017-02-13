@@ -611,7 +611,7 @@ export class Renderer {
                             let link_pos = n.getConnectionPos(true, i);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                 if (input.link !== null) {
-                                    editor.socket.sendRemoveLink(rootContainer.links[input.link]);
+                                    editor.socket.sendRemoveLink(rootContainer._links[input.link]);
 
                                     //n.disconnectInput(i);
                                     //this.dirty_bgcanvas = true;
@@ -739,8 +739,8 @@ export class Renderer {
             let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
 
             //remove mouseover flag
-            for (let id in this.container._nodes_by_id) {
-                let node = this.container._nodes_by_id[id];
+            for (let id in this.container._nodes) {
+                let node = this.container._nodes[id];
 
                 if (node.mouseOver && n != node) {
                     //mouse leave
@@ -1214,8 +1214,8 @@ export class Renderer {
      * Select all nodes
      */
     selectAllNodes(): void {
-        for (let id in this.container._nodes_by_id) {
-            let node = this.container._nodes_by_id[id];
+        for (let id in this.container._nodes) {
+            let node = this.container._nodes[id];
             if (!node.selected && node.onSelected)
                 node.onSelected();
             node.selected = true;
@@ -1342,8 +1342,8 @@ export class Renderer {
      */
     computeVisibleNodes(): Array<Node> {
         let visible_nodes = [];
-        for (let id in this.container._nodes_by_id) {
-            let node = this.container._nodes_by_id[id];
+        for (let id in this.container._nodes) {
+            let node = this.container._nodes[id];
 
             //skip rendering nodes in live mode
             if (this.live_mode && !node.onDrawBackground && !node.onDrawForeground)
@@ -2005,8 +2005,8 @@ export class Renderer {
         ctx.strokeStyle = "#AAA";
         ctx.globalAlpha = this.editor_alpha;
         //for every node
-        for (let id in this.container._nodes_by_id) {
-            let node = this.container._nodes_by_id[id];
+        for (let id in this.container._nodes) {
+            let node = this.container._nodes[id];
             //for every input (we render just inputs because it is easier as every slot can only have one input)
             if (node.inputs && node.inputs.length)
                 for (let i in node.inputs) {
@@ -2014,7 +2014,7 @@ export class Renderer {
                     if (!input || input.link == null)
                         continue;
                     let link_id = input.link;
-                    let link = this.container.links[link_id];
+                    let link = this.container._links[link_id];
                     if (!link) continue;
 
                     let start_node = this.container.getNodeById(link.origin_id);

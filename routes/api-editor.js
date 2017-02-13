@@ -2,15 +2,16 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container", "../modules/web-server/server", "../public/nodes/nodes"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "express", "../public/nodes/container", "../modules/web-server/server", "../public/nodes/nodes"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require('express');
+    const express = require("express");
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const server_1 = require("../modules/web-server/server");
@@ -20,8 +21,8 @@
     function updateActiveNodes() {
         let container = container_1.rootContainer;
         let activeNodesIds = [];
-        for (let id in container._nodes_by_id) {
-            let node = container._nodes_by_id[id];
+        for (let id in container._nodes) {
+            let node = container._nodes[id];
             if (node.isActive) {
                 node.isActive = false;
                 activeNodesIds.push(node.id);
@@ -192,7 +193,7 @@
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
             return res.status(404).send(`${MODULE_NAME}: Cant create link. Container id [${req.params.cid}] not found.`);
-        let link = container.links[req.params.id];
+        let link = container._links[req.params.id];
         let node = container.getNodeById(link.origin_id);
         let targetNode = container.getNodeById(link.target_id);
         if (!node)

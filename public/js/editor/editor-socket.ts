@@ -139,7 +139,7 @@ export class EditorSocket {
 
         socket.on('link-delete', function (l) {
             let container = Container.containers[l.cid];
-            let link = container.links[l.id];
+            let link = container._links[l.id];
 
             let node = container.getNodeById(link.origin_id);
             let targetNode = container.getNodeById(link.target_id);

@@ -19,8 +19,8 @@ setInterval(updateActiveNodes, 100);
 function updateActiveNodes() {
     let container=rootContainer;
     let activeNodesIds = [];
-    for (let id in container._nodes_by_id) {
-        let node = container._nodes_by_id[id];
+    for (let id in container._nodes) {
+        let node = container._nodes[id];
         if (node.isActive) {
             node.isActive = false;
             activeNodesIds.push(node.id);
@@ -241,7 +241,7 @@ router.delete('/c/:cid/l/:id', function (req, res) {
     let container = Container.containers[req.params.cid];
     if (!container) return res.status(404).send(`${MODULE_NAME}: Cant create link. Container id [${req.params.cid}] not found.`);
 
-    let link = container.links[req.params.id];
+    let link = container._links[req.params.id];
 
     let node = container.getNodeById(link.origin_id);
     let targetNode = container.getNodeById(link.target_id);

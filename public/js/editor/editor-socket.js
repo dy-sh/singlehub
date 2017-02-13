@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./node-editor"], factory);
     }
 })(function (require, exports) {
@@ -111,7 +112,7 @@
             });
             socket.on('link-delete', function (l) {
                 let container = container_1.Container.containers[l.cid];
-                let link = container.links[l.id];
+                let link = container._links[l.id];
                 let node = container.getNodeById(link.origin_id);
                 let targetNode = container.getNodeById(link.target_id);
                 node.disconnectOutput(link.origin_slot, targetNode);

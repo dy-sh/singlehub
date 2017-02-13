@@ -1,9 +1,10 @@
 ///<reference path='../../../types/my_types.d.ts'/>
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./node-editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
@@ -432,7 +433,7 @@
                                 let link_pos = n.getConnectionPos(true, i);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     if (input.link !== null) {
-                                        node_editor_1.editor.socket.sendRemoveLink(container_1.rootContainer.links[input.link]);
+                                        node_editor_1.editor.socket.sendRemoveLink(container_1.rootContainer._links[input.link]);
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         skip_action = true;
@@ -534,8 +535,8 @@
                 //get node over
                 let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                 //remove mouseover flag
-                for (let id in this.container._nodes_by_id) {
-                    let node = this.container._nodes_by_id[id];
+                for (let id in this.container._nodes) {
+                    let node = this.container._nodes[id];
                     if (node.mouseOver && n != node) {
                         //mouse leave
                         node.mouseOver = false;
@@ -911,8 +912,8 @@
          * Select all nodes
          */
         selectAllNodes() {
-            for (let id in this.container._nodes_by_id) {
-                let node = this.container._nodes_by_id[id];
+            for (let id in this.container._nodes) {
+                let node = this.container._nodes[id];
                 if (!node.selected && node.onSelected)
                     node.onSelected();
                 node.selected = true;
@@ -1018,8 +1019,8 @@
          */
         computeVisibleNodes() {
             let visible_nodes = [];
-            for (let id in this.container._nodes_by_id) {
-                let node = this.container._nodes_by_id[id];
+            for (let id in this.container._nodes) {
+                let node = this.container._nodes[id];
                 //skip rendering nodes in live mode
                 if (this.live_mode && !node.onDrawBackground && !node.onDrawForeground)
                     continue;
@@ -1557,8 +1558,8 @@
             ctx.strokeStyle = "#AAA";
             ctx.globalAlpha = this.editor_alpha;
             //for every node
-            for (let id in this.container._nodes_by_id) {
-                let node = this.container._nodes_by_id[id];
+            for (let id in this.container._nodes) {
+                let node = this.container._nodes[id];
                 //for every input (we render just inputs because it is easier as every slot can only have one input)
                 if (node.inputs && node.inputs.length)
                     for (let i in node.inputs) {
@@ -1566,7 +1567,7 @@
                         if (!input || input.link == null)
                             continue;
                         let link_id = input.link;
-                        let link = this.container.links[link_id];
+                        let link = this.container._links[link_id];
                         if (!link)
                             continue;
                         let start_node = this.container.getNodeById(link.origin_id);

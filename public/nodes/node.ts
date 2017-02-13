@@ -199,7 +199,7 @@ export class Node {
             if (typeof(link) != "object")
                 continue;
             input.link = link[0];
-            this.container.links[link[0]] = {
+            this.container._links[link[0]] = {
                 id: link[0],
                 origin_id: link[1],
                 origin_slot: link[2],
@@ -245,9 +245,6 @@ export class Node {
         if (this.properties)
             o.properties = Utils.cloneObject(this.properties);
 
-        //todo ES6
-        // if (!o.type)
-        //     o.type = this.constructor.type;
 
         if (this.color)
             o.color = this.color;
@@ -747,7 +744,7 @@ export class Node {
                 target_slot: target_slot
             };
 
-            this.container.links[link.id] = link;
+            this.container._links[link.id] = link;
 
             //connect
             if (output.links == null) output.links = [];
@@ -797,13 +794,13 @@ export class Node {
 
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.container.links[link_id];
+                let link_info = this.container._links[link_id];
 
                 //is the link we are searching for...
                 if (link_info.target_id == target_node.id) {
                     output.links.splice(i, 1); //remove here
                     target_node.inputs[link_info.target_slot].link = null; //remove there
-                    delete this.container.links[link_id]; //remove the link from the links pool
+                    delete this.container._links[link_id]; //remove the link from the links pool
                     break;
                 }
             }
@@ -812,12 +809,12 @@ export class Node {
         {
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.container.links[link_id];
+                let link_info = this.container._links[link_id];
 
                 let target_node = this.container.getNodeById(link_info.target_id);
                 if (target_node)
                     target_node.inputs[link_info.target_slot].link = null; //remove other side link
-                delete this.container.links[link_id]; //remove the link from the links pool
+                delete this.container._links[link_id]; //remove the link from the links pool
             }
             output.links = null;
         }
@@ -855,7 +852,7 @@ export class Node {
 
 
         //remove other side
-        let link_info = this.container.links[link_id];
+        let link_info = this.container._links[link_id];
         if (link_info) {
             let node = this.container.getNodeById(link_info.origin_id);
             if (!node)
@@ -868,7 +865,7 @@ export class Node {
             //check outputs
             for (let i = 0, l = output.links.length; i < l; i++) {
                 let link_id = output.links[i];
-                let link_info = this.container.links[link_id];
+                let link_info = this.container._links[link_id];
                 if (link_info.target_id == this.id) {
                     output.links.splice(i, 1);
                     break;
@@ -878,7 +875,7 @@ export class Node {
 
         this.setDirtyCanvas(false, true);
 
-        delete this.container.links[link_id];
+        delete this.container._links[link_id];
 
         this.container.connectionChange(this);
 

@@ -400,7 +400,9 @@
                 else {
                     $("#slots-values-icon").removeClass("hide");
                     $("#slots-values-icon").addClass("unhide");
-                    for (let node of container_1.rootContainer._nodes) {
+                    let container = container_1.rootContainer;
+                    for (let id in container._nodes) {
+                        let node = container._nodes[id];
                         node.updateInputsLabels();
                         node.updateOutputsLabels();
                     }

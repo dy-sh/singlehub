@@ -13,25 +13,20 @@ import {ContainerNode} from "./nodes/main"
 
 export class Container {
     static containers: {[id: number]: Container} = {};
-
     static last_container_id: number = 0;
-
     parent_container_id?: number;
-
     container_node: ContainerNode;
 
+    _nodes: {[id: number]: Node} = {};
+    _links: {[id: number]: Link} = {};
 
     id: number;
-
     socket: SocketIOClient.Socket|SocketIO.Server;
     supported_types = ["number", "string", "boolean"];
     list_of_renderers: Array<Renderer>;
     isRunning: boolean;
     last_node_id: number;
-    // _nodes: Array<Node> = [];
-    _nodes_by_id: {[id: number]: Node} = {};
     last_link_id: number;
-    links: {[id: number]: Link} = {};
     iteration: number;
     config: {
         align_to_grid?: boolean;
@@ -85,11 +80,11 @@ export class Container {
         this.last_node_id = 0;
 
         //nodes
-        this._nodes_by_id = {};
+        this._nodes = {};
 
         //links
         this.last_link_id = 0;
-        this.links = {}; //container with all the links
+        this._links = {}; //container with all the links
 
         //iterations
         this.iteration = 0;
@@ -127,8 +122,8 @@ export class Container {
         this.execution_timer_id = null;
 
 
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             if (node.onStopContainer)
                 node.onStopContainer();
         }
@@ -177,8 +172,8 @@ export class Container {
         if (this.onPlayEvent)
             this.onPlayEvent();
 
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             if (node.onRunContainer)
                 node.onRunContainer();
         }
@@ -208,8 +203,8 @@ export class Container {
 
             this.updateNodesInputData();
 
-            for (let id in this._nodes_by_id) {
-                let node = this._nodes_by_id[id];
+            for (let id in this._nodes) {
+                let node = this._nodes[id];
                 if (node.onExecute)
                     node.onExecute();
             }
@@ -240,8 +235,8 @@ export class Container {
 
     updateNodesInputData() {
         let updated_nodes: Array<Node> = [];
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             if (!node.outputs)
                 continue;
 
@@ -251,8 +246,8 @@ export class Container {
 
                 for (let linkId of output.links) {
 
-                    let link = this.links[linkId];
-                    let target_node = this._nodes_by_id[link.target_id];
+                    let link = this._links[linkId];
+                    let target_node = this._nodes[link.target_id];
                     if (!target_node) {
                         console.log("ddd")
                     }
@@ -324,7 +319,7 @@ export class Container {
      * @returns {number}
      */
     getNodesCount(): number {
-        return Object.keys(this._nodes_by_id).length;
+        return Object.keys(this._nodes).length;
     }
 
     /**
@@ -332,7 +327,7 @@ export class Container {
      * @param node the instance of the node
      */
     add(node: Node): Node {
-        if (!node || (node.id != -1 && this._nodes_by_id[node.id] != null))
+        if (!node || (node.id != -1 && this._nodes[node.id] != null))
             return; //already added
 
         if (this.getNodesCount() >= Nodes.options.MAX_NUMBER_OF_NODES)
@@ -344,7 +339,7 @@ export class Container {
 
         node.container = this;
 
-        this._nodes_by_id[node.id] = node;
+        this._nodes[node.id] = node;
 
         /*
          // rendering stuf...
@@ -374,7 +369,7 @@ export class Container {
      * @param node the instance of the node
      */
     remove(node: Node): void {
-        if (this._nodes_by_id[node.id] == null)
+        if (this._nodes[node.id] == null)
             return;
 
         if (node.ignore_remove)
@@ -414,7 +409,7 @@ export class Container {
         }
 
         //remove from container
-        delete this._nodes_by_id[node.id];
+        delete this._nodes[node.id];
 
         if (this.onNodeRemoved)
             this.onNodeRemoved(node);
@@ -430,7 +425,7 @@ export class Container {
      */
     getNodeById(id: string|number): Node {
         if (id == null) return null;
-        return this._nodes_by_id[id];
+        return this._nodes[id];
     }
 
 
@@ -442,8 +437,8 @@ export class Container {
     getNodesByClass(classObject: any): Array<Node> {
         let r = [];
 
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             if (node.constructor === classObject)
                 r.push(node);
         }
@@ -460,8 +455,8 @@ export class Container {
         type = type.toLowerCase();
         let r = [];
 
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             if (node.type.toLowerCase() == type)
                 r.push(node);
         }
@@ -477,8 +472,8 @@ export class Container {
     getNodesByTitle(title: string): Array<Node> {
         let r = [];
 
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             if (node.title == title)
                 r.push(node);
         }
@@ -501,9 +496,9 @@ export class Container {
                     return n;
             }
         }
-        else{
-            for (let id in this._nodes_by_id) {
-                let node = this._nodes_by_id[id];
+        else {
+            for (let id in this._nodes) {
+                let node = this._nodes[id];
                 if (node.isPointInsideNode(x, y, 2))
                     return node;
             }
@@ -535,28 +530,21 @@ export class Container {
     serialize(): any {
         let nodes_info = [];
 
-        for (let id in this._nodes_by_id) {
-            let node = this._nodes_by_id[id];
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
             nodes_info.push(node.serialize())
         }
 
-        //remove data from links, we dont want to store it
-        // for (let i in this.links) //links is an OBJECT
-        //     this.links[i].data = null;
-
-
         let data = {
-            //		container: this.container,
-
             iteration: this.iteration,
             frame: this.frame,
             last_node_id: this.last_node_id,
             last_link_id: this.last_link_id,
             last_container_id: Container.last_container_id,
-            links: Utils.cloneObject(this.links),
+            _links: Utils.cloneObject(this._links),
 
             config: this.config,
-            nodes: nodes_info
+            serialized_nodes: nodes_info
         };
 
         return data;
@@ -564,7 +552,7 @@ export class Container {
 
 
     /**
-     * Add nodes to container from a JSON string
+     * Add nodes_list to container from a JSON string
      * @param data JSON string
      * @param keep_old
      */
@@ -572,17 +560,18 @@ export class Container {
         if (!keep_old)
             this.clear();
 
-        let nodes = data.nodes;
+        //copy all fields to this container
+        for (let i in data) {
+            if (i == "serialized_nodes")
+                continue;
 
-        //copy all stored fields
-        for (let i in data)
             this[i] = data[i];
+        }
 
         let error = false;
 
-        //create nodes
-        for (let i = 0, l = nodes.length; i < l; ++i) {
-            let n_info = nodes[i]; //stored info
+        //create nodes_list
+        for (let n_info of  data.serialized_nodes) {
             let node = Nodes.createNode(n_info.type, n_info.title);
             if (!node) {
                 Utils.debugErr("Node not found: " + n_info.type, this);

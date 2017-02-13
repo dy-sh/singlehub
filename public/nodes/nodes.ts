@@ -113,7 +113,7 @@ export class Nodes {
     };
 
     /**
-     * Create a node of a given type with a name. The node is not attached to any container yet.
+     * Create a node of a given type with a name. The node is not attached to any engine yet.
      * @param type full name of the node class. p.e. "math/sin"
      * @param name a name to distinguish from other nodes
      * @param options to set options
@@ -130,7 +130,7 @@ export class Nodes {
         title = title || base_class.title || type;
 
         let node = new base_class(title);
-        node.nodes = this;
+
 
         node.type = type;
         if (!node.title) node.title = title;
