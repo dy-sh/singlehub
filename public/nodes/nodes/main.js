@@ -132,6 +132,14 @@
                 //update output name
                 this.outputs[0].name = this.properties.name;
             };
+            this.onRemoved = function () {
+                //remove  output on container node
+                let cont_node = this.container.container_node;
+                cont_node.disconnectInput(this.properties.slot);
+                cont_node.removeInput(this.properties.slot);
+                cont_node.setDirtyCanvas(true, true);
+                this.properties.slot = -1;
+            };
             this.onExecute = function () {
                 let cont_node = this.container.container_node;
                 let val = cont_node.inputs[this.properties.slot].data;
@@ -210,6 +218,14 @@
                 this.properties.slot = cont_node.outputs.length - 1;
                 //update input name
                 this.inputs[0].name = this.properties.name;
+            };
+            this.onRemoved = function () {
+                //remove  output on container node
+                let cont_node = this.container.container_node;
+                cont_node.disconnectOutput(this.properties.slot);
+                cont_node.removeOutput(this.properties.slot);
+                cont_node.setDirtyCanvas(true, true);
+                this.properties.slot = -1;
             };
             this.onExecute = function () {
                 let cont_node = this.container.container_node;

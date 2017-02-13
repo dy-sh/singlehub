@@ -362,10 +362,10 @@ export class Container {
      */
     remove(node: Node): void {
         if (this._nodes_by_id[node.id] == null)
-            return; //not found
+            return;
 
         if (node.ignore_remove)
-            return; //cannot be removed
+            return;
 
         //disconnect inputs
         if (node.inputs)
@@ -383,9 +383,7 @@ export class Container {
                     node.disconnectOutput(i);
             }
 
-        //node.id = -1; //why?
-
-        //callback
+        //event
         if (node.onRemoved)
             node.onRemoved();
 
@@ -402,7 +400,7 @@ export class Container {
             }
         }
 
-        //remove from containers
+        //remove from container
         let pos = this._nodes.indexOf(node);
         if (pos != -1)
             this._nodes.splice(pos, 1);

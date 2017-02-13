@@ -278,6 +278,15 @@ export class ContainerInputNode extends Node {
         this.outputs[0].name = this.properties.name;
     }
 
+    onRemoved = function () {
+        //remove  output on container node
+        let cont_node = this.container.container_node;
+        cont_node.disconnectInput(this.properties.slot);
+        cont_node.removeInput(this.properties.slot);
+        cont_node.setDirtyCanvas(true, true);
+        this.properties.slot = -1;
+    }
+
     onExecute = function () {
         let cont_node = this.container.container_node;
         let val = cont_node.inputs[this.properties.slot].data;
@@ -367,6 +376,15 @@ export class ContainerOutputNode extends Node {
 
         //update input name
         this.inputs[0].name = this.properties.name;
+    }
+
+    onRemoved = function () {
+        //remove  output on container node
+        let cont_node = this.container.container_node;
+        cont_node.disconnectOutput(this.properties.slot);
+        cont_node.removeOutput(this.properties.slot);
+        cont_node.setDirtyCanvas(true, true);
+        this.properties.slot = -1;
     }
 
 

@@ -255,9 +255,9 @@
          */
         remove(node) {
             if (this._nodes_by_id[node.id] == null)
-                return; //not found
+                return;
             if (node.ignore_remove)
-                return; //cannot be removed
+                return;
             //disconnect inputs
             if (node.inputs)
                 for (let i = 0; i < node.inputs.length; i++) {
@@ -272,8 +272,7 @@
                     if (slot.links != null && slot.links.length)
                         node.disconnectOutput(i);
                 }
-            //node.id = -1; //why?
-            //callback
+            //event
             if (node.onRemoved)
                 node.onRemoved();
             node.container = null;
@@ -287,7 +286,7 @@
                         renderer.node_dragged = null;
                 }
             }
-            //remove from containers
+            //remove from container
             let pos = this._nodes.indexOf(node);
             if (pos != -1)
                 this._nodes.splice(pos, 1);
