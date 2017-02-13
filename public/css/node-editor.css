@@ -53,18 +53,14 @@ body {
 	padding-top: 5px;
 }
 
-.navigation {
-	/*padding-top: 5px;*/
-	/*padding-left: 10px;*/
+#containers-navigation {
+	padding-left: 5px;
 	color: white;
 	display: inline-block;
-	/*transition:.2s linear-in-out;*/
+	transition:1s linear-in-out;
 }
 
-/*#step-button{*/
-	/*transition:.2s linear-in-out;*/
 
-/*}*/
 
 #slots-values-button{
 	margin-right: 15px;

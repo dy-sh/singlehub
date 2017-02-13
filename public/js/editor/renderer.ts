@@ -213,6 +213,8 @@ export class Renderer {
          */
         container.attachRenderer(this);
         this.setDirty(true, true);
+
+        editor.updateContainersNavigation();
     }
 
     /**
@@ -236,6 +238,8 @@ export class Renderer {
 
         container.attachRenderer(this);
         this.setDirty(true, true);
+
+        editor.updateContainersNavigation();
     }
 
     /**
@@ -247,6 +251,8 @@ export class Renderer {
         let container = this._containers_stack.pop();
         container.attachRenderer(this);
         this.setDirty(true, true);
+
+        editor.updateContainersNavigation();
     }
 
     /**

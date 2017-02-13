@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-socket", "./node-editor-themes"], factory);
     }
 })(function (require, exports) {
@@ -55,6 +54,7 @@
             this.addPlayButton();
             this.addStepButton();
             this.addSlotsValuesButton();
+            this.updateContainersNavigation();
         }
         addMiniWindow(w, h) {
             if (minimap_opened)
@@ -408,6 +408,42 @@
                     }
                 }
             });
+        }
+        updateContainersNavigation() {
+            let that = this;
+            $("#containers-navigation")
+                .html('<div id="container0" class="ui black tiny compact button">Main</div>');
+            $("#container0").click(function () {
+                for (let i = 0; i < 1000; i++) {
+                    that.renderer.closeContainer();
+                    if (that.renderer.container.id == 0)
+                        break;
+                }
+            });
+            //if is sub-container
+            if (this.renderer._containers_stack
+                && this.renderer._containers_stack.length > 0) {
+                let cont_count = this.renderer._containers_stack.length;
+                for (let cont = 1; cont < cont_count; cont++) {
+                    let cont_name = this.renderer._containers_stack[cont].id;
+                    let cont_id = this.renderer._containers_stack[cont].id;
+                    $("#containers-navigation")
+                        .append(`<div id="container${cont_id}" class="ui black tiny compact button">${cont_name}</div>`);
+                    $("#container" + cont_id).click(function () {
+                        for (let i = 0; i < 1000; i++) {
+                            that.renderer.closeContainer();
+                            if (that.renderer.container.id == cont_id)
+                                break;
+                        }
+                    });
+                }
+                //add this
+                let cont_name = this.renderer.container.id;
+                let cont_id = this.renderer.container.id;
+                let el = $("#containers-navigation")
+                    .append(`<div id="container${cont_id}" class="ui black tiny compact button">${cont_name}</div>`);
+                console.log(el);
+            }
         }
     }
     exports.NodeEditor = NodeEditor;
