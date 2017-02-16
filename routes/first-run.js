@@ -31,24 +31,35 @@
     });
     router.get('/first-run/database/delete', function (req, res, next) {
         //todo drop database
-        res.redirect("/first-run/gateway");
+        res.redirect("/first-run/user");
     });
     router.get('/first-run/database/use', function (req, res, next) {
         config.dataBase.enable = true;
         config.dataBase.useInternalDb = false;
-        res.redirect("/first-run/gateway");
+        res.redirect("/first-run/user");
     });
     router.get('/first-run/database/builtin', function (req, res, next) {
         //todo internal db connection
         config.dataBase.enable = true;
         config.dataBase.useInternalDb = true;
         saveConfig();
-        res.redirect("/first-run/gateway");
+        res.redirect("/first-run/user");
     });
     router.get('/first-run/database/none', function (req, res, next) {
         config.dataBase.enable = false;
         saveConfig();
-        res.redirect("/first-run/gateway");
+        res.redirect("/first-run/user");
+    });
+    //---------- User
+    router.get('/first-run/user', function (req, res, next) {
+        if (config.dataBase.enable)
+            res.render('first-run/user/index', { canSkip: false });
+        else
+            res.render('first-run/user/no-database');
+    });
+    router.post('/first-run/user', function (req, res, next) {
+        //todo save user profile to db
+        res.redirect("/first-run/complete");
     });
     //---------- Gateway
     router.get('/first-run/gateway', function (req, res, next) {
@@ -87,22 +98,13 @@
         saveConfig();
         res.redirect("/first-run/user");
     });
-    //---------- User
-    router.get('/first-run/user', function (req, res, next) {
-        if (config.dataBase.enable)
-            res.render('first-run/user/index', { canSkip: false });
-        else
-            res.render('first-run/user/noDatabase');
-    });
-    router.post('/first-run/user', function (req, res, next) {
-        //todo save user profile to db
-        res.redirect("/first-run/complete");
-    });
+    // ------------ complete ----------
     router.get('/first-run/complete', function (req, res, next) {
         config.firstRun = false;
         saveConfig();
         res.redirect("/Dashboard");
     });
+    // ------------ redirect other ----------
     //redirect all routes if first run
     router.use('/', function (req, res, next) {
         if (config.firstRun == true)
