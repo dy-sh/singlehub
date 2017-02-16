@@ -30,7 +30,7 @@ router.get('/first-run/database/external', function (req, res, next) {
 
 router.post('/first-run/database/external', function (req, res, next) {
     //todo mongo db connection
-    res.render('first-run/database/notEmpty');
+    res.render('first-run/database/not-empty');
 });
 
 router.get('/first-run/database/delete', function (req, res, next) {
@@ -47,11 +47,25 @@ router.get('/first-run/database/use', function (req, res, next) {
 
 router.get('/first-run/database/builtin', function (req, res, next) {
 
-    //todo internal db connection
     config.dataBase.enable = true;
     config.dataBase.useInternalDb = true;
     saveConfig();
-    res.redirect("/first-run/user")
+
+    //check db is not empty
+    db.users.count({}, function (err, count) {
+        if (err){
+            console.log(err);
+            res.json(err);
+            return;
+        }
+
+        console.log(count);
+        if (count == 0)
+            res.redirect("/first-run/user");
+        else
+            res.render("first-run/database/not-empty");
+    });
+
 });
 
 router.get('/first-run/database/none', function (req, res, next) {

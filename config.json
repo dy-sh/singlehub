@@ -1,5 +1,5 @@
 {
-	"firstRun": false,
+	"firstRun": true,
 	"gateway": {
 		"mysensors": {
 			"serial": {
