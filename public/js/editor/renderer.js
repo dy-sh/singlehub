@@ -117,6 +117,8 @@
             container.attachRenderer(this);
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
+            //change browser url
+            window.history.pushState('Container ' + container.id, 'MyNodes', '/editor/c/' + container.id);
         }
         /**
          * Close container

@@ -2,23 +2,22 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "path", "morgan", "cookie-parser", "body-parser", "http", "debug", "chalk", "../../routes/editor-io"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', 'chalk', "../../routes/editor-io"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
-    const path = require("path");
-    const logger = require("morgan");
-    const cookieParser = require("cookie-parser");
-    const bodyParser = require("body-parser");
-    const http = require("http");
-    const debug = require("debug");
-    const chalk = require("chalk");
+    const express = require('express');
+    const path = require('path');
+    const logger = require('morgan');
+    const cookieParser = require('cookie-parser');
+    const bodyParser = require('body-parser');
+    const http = require('http');
+    const debug = require('debug');
+    const chalk = require('chalk');
     const log = function (txt) {
         console.log(chalk.green(txt));
     };

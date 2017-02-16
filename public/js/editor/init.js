@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "./node-editor", "./editor-socket"], factory);
     }
 })(function (require, exports) {

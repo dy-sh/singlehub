@@ -240,6 +240,9 @@ export class Renderer {
         this.setDirty(true, true);
 
         editor.updateContainersNavigation();
+
+        //change browser url
+        window.history.pushState('Container '+container.id, 'MyNodes', '/editor/c/'+container.id);
     }
 
     /**

@@ -1,10 +1,9 @@
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./public/nodes/utils", "path", "./modules/web-server/server", "./public/nodes/container"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container'], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -14,9 +13,9 @@
      * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
      */
     console.log("-------- MyNodes ----------");
-    const path = require("path");
+    const path = require('path');
     global.__rootdirname = path.resolve(__dirname);
-    const server_1 = require("./modules/web-server/server");
+    const server_1 = require('./modules/web-server/server');
     utils_1.default.debug("Server started at port " + server_1.server.server.address().port, "SERVER");
     // import 'modules/debug/configure'
     // import {App} from '/modules/web-server/server'
@@ -29,7 +28,7 @@
     // // }
     //
     //
-    const container_1 = require("./public/nodes/container");
+    const container_1 = require('./public/nodes/container');
     // let rootContainer=require('./public/nodes/rootContainer');
     container_1.rootContainer.socket = server_1.server.socket.io;
     require('./public/nodes/nodes');
