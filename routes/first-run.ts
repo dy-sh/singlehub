@@ -72,7 +72,7 @@ router.get('/first-run/user', function (req, res, next) {
 
 router.post('/first-run/user', function (req, res, next) {
 	//todo save user profile to db
-	res.redirect("/first-run/complete")
+	res.redirect("/first-run/hardware")
 });
 
 
