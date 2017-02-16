@@ -52,16 +52,39 @@
     });
     //---------- User
     router.get('/first-run/user', function (req, res, next) {
+        let user = {
+            name: "",
+            email: ""
+        };
         if (config.dataBase.enable)
-            res.render('first-run/user/index', { canSkip: false });
+            res.render('first-run/user/index', { canSkip: false, user: user });
         else
             res.render('first-run/user/no-database');
     });
     router.post('/first-run/user', function (req, res, next) {
-        //todo save user profile to db
-        // console.log()
-        // db.users.insert({})
-        res.redirect("/first-run/hardware");
+        let user = {
+            name: req.body.name,
+            email: req.body.email,
+            password: ""
+        };
+        req.assert('name', 'Login is required').notEmpty();
+        req.assert('password', 'Password is required').notEmpty();
+        // req.assert('email', 'A valid email is required').isEmail();
+        req.assert('c_password', 'Passwords must match').equals(req.body.password);
+        let errors = req.validationErrors();
+        if (!errors) {
+            //save user profile to db
+            // db.users.insert({})
+            user.password = req.body.password;
+            res.redirect("/first-run/hardware");
+        }
+        else {
+            res.render('first-run/user/index', {
+                canSkip: false,
+                user: user,
+                errors: errors
+            });
+        }
     });
     //---------- Gateway
     router.get('/first-run/gateway', function (req, res, next) {

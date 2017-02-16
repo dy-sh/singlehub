@@ -10,21 +10,26 @@ block vars
 block page
 	.ui.basic.segment
 		h2.ui.header Admin profile
-	form.ui.form(method='Post')
+	.errors
+		if (errors)
+			ul.errors
+				- each error in errors
+					li= error.msg
+	form.ui.form(method='post')
 		.ui.basic.segment
 			.field
 				label Login
-				input(type='text', name='name')
+				input(type='text', name='name', id="name" value=user.name)
 			.field
 				label Email
-				input(type='text', name='email')
+				input(type='text', name='email', id="email" value=user.email)
 			.fields
 				.field
 					label Password
-					input(type='password', name='password')
+					input(type='password', name='password', id="password")
 				.field
 					label Confirm Password
-					input(type='password', name='confirm-password')
+					input(type='password', name='c_password', id="c_password")
 		.ui.center.aligned.attached.segment
 			.ui.buttons
 				input.ui.button.primary(type='submit', value='register')

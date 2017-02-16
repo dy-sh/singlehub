@@ -15,6 +15,8 @@
     const logger = require('morgan');
     const cookieParser = require('cookie-parser');
     const bodyParser = require('body-parser');
+    // import * as expressValidator from 'express-validator';
+    let expressValidator = require('express-validator');
     const http = require('http');
     const debug = require('debug');
     const chalk = require('chalk');
@@ -49,6 +51,7 @@
             this.express.use(bodyParser.json());
             this.express.use(bodyParser.urlencoded({ extended: false }));
             this.express.use(cookieParser());
+            this.express.use(expressValidator());
             this.express.use(require('stylus').middleware(path.join(this.__rootdirname, 'public')));
             this.express.use(express.static(path.join(this.__rootdirname, 'public')));
         }

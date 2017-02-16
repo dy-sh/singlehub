@@ -9,6 +9,8 @@ import * as favicon from 'serve-favicon';
 import * as logger from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
+// import * as expressValidator from 'express-validator';
+let expressValidator = require('express-validator');
 
 import * as http from 'http';
 import * as debug from 'debug';
@@ -58,6 +60,7 @@ class Server {
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({extended: false}));
         this.express.use(cookieParser());
+        this.express.use(expressValidator());
         this.express.use(require('stylus').middleware(path.join(this.__rootdirname, 'public')));
         this.express.use(express.static(path.join(this.__rootdirname, 'public')));
     }
