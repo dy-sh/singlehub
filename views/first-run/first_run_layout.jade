@@ -1,9 +1,12 @@
 extends ../simple_layout
 
+block styles
+	link(href='/css/first-run.css',rel='stylesheet')
 
 block content
-	.ui.container
+	.ui.center.aligned.container
 		h2 First Run
+	.ui.center.aligned.container
 		.ui.ordered.steps.mobile.hidden
 			.step(class= {active: activeStep === 1, completed: activeStep > 1})
 				.content
