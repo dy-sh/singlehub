@@ -4,9 +4,10 @@
 
 import * as express from 'express';
 import * as fs from 'fs';
+import {db} from "../modules/database"
 
-var router = express.Router();
-var config = require('./../config');
+let router = express.Router();
+let config = require('./../config');
 
 
 // first run wizard
@@ -45,6 +46,7 @@ router.get('/first-run/database/use', function (req, res, next) {
 
 
 router.get('/first-run/database/builtin', function (req, res, next) {
+
 	//todo internal db connection
 	config.dataBase.enable = true;
 	config.dataBase.useInternalDb = true;
@@ -72,6 +74,8 @@ router.get('/first-run/user', function (req, res, next) {
 
 router.post('/first-run/user', function (req, res, next) {
 	//todo save user profile to db
+	// console.log()
+	// db.users.insert({})
 	res.redirect("/first-run/hardware")
 });
 

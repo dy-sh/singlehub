@@ -12,8 +12,8 @@
     "use strict";
     const express = require('express');
     const fs = require('fs');
-    var router = express.Router();
-    var config = require('./../config');
+    let router = express.Router();
+    let config = require('./../config');
     // first run wizard
     router.get('/first-run', function (req, res, next) {
         res.render('first-run/index');
@@ -59,6 +59,8 @@
     });
     router.post('/first-run/user', function (req, res, next) {
         //todo save user profile to db
+        // console.log()
+        // db.users.insert({})
         res.redirect("/first-run/hardware");
     });
     //---------- Gateway
