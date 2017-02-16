@@ -6,12 +6,13 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'fs'], factory);
+        define(["require", "exports", 'express', 'fs', "../modules/database"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const express = require('express');
     const fs = require('fs');
+    const database_1 = require("../modules/database");
     let router = express.Router();
     let config = require('./../config');
     // first run wizard
@@ -65,7 +66,7 @@
         let user = {
             name: req.body.name,
             email: req.body.email,
-            password: ""
+            password: req.body.password
         };
         req.assert('name', 'Login is required').notEmpty();
         req.assert('password', 'Password is required').notEmpty();
@@ -74,9 +75,37 @@
         let errors = req.validationErrors();
         if (!errors) {
             //save user profile to db
-            // db.users.insert({})
-            user.password = req.body.password;
-            res.redirect("/first-run/hardware");
+            database_1.db.users.findOne({ name: user.name }, function (err, doc) {
+                if (err) {
+                    res.render('first-run/user/index', {
+                        canSkip: false,
+                        user: user,
+                        errors: [{ param: "name", msg: err, value: "" }]
+                    });
+                    console.log(err);
+                    return;
+                }
+                if (doc) {
+                    console.log(doc);
+                    res.render('first-run/user/index', {
+                        canSkip: false,
+                        user: user,
+                        errors: [{ param: "name", msg: "User already exist", value: "" }]
+                    });
+                    return;
+                }
+                database_1.db.users.insert(user, function (err) {
+                    if (err) {
+                        res.render('first-run/user/index', {
+                            canSkip: false,
+                            user: user,
+                            errors: [{ param: "name", msg: err, value: "" }]
+                        });
+                        console.log(err);
+                    }
+                    res.redirect("/first-run/hardware");
+                });
+            });
         }
         else {
             res.render('first-run/user/index', {

@@ -33,3 +33,5 @@ public/libs
 views/*.html
 
 .idea
+
+*.db

@@ -8,9 +8,14 @@ class Database {
     users: NeDBDataStore;
 
     constructor() {
-        let db = {};
         this.users = new NeDBDataStore('users.db');
         this.users.loadDatabase();
+
+        // Using a unique constraint with the index
+        // this.users.ensureIndex({ fieldName: 'name', unique: true }, function (err) {
+        //    if (err)
+        //     console.log(err);
+        // });
     }
 }
 

@@ -80,7 +80,7 @@ router.post('/first-run/user', function (req, res, next) {
     let user = {
         name: req.body.name,
         email: req.body.email,
-        password: ""
+        password: req.body.password
     };
 
     req.assert('name', 'Login is required').notEmpty();
@@ -92,9 +92,41 @@ router.post('/first-run/user', function (req, res, next) {
 
     if (!errors) {
         //save user profile to db
-        // db.users.insert({})
-        user.password = req.body.password;
-        res.redirect("/first-run/hardware")
+        db.users.findOne({name: user.name}, function (err, doc) {
+            if (err) {
+                res.render('first-run/user/index', {
+                    canSkip: false,
+                    user: user,
+                    errors: [{param: "name", msg: err, value: ""}]
+                });
+                console.log(err);
+                return;
+            }
+
+            if (doc) {
+                console.log(doc);
+                res.render('first-run/user/index', {
+                    canSkip: false,
+                    user: user,
+                    errors: [{param: "name", msg: "User already exist", value: ""}]
+                });
+                return;
+            }
+
+            db.users.insert(user, function (err) {
+                if (err) {
+                    res.render('first-run/user/index', {
+                        canSkip: false,
+                        user: user,
+                        errors: [{param: "name", msg: err, value: ""}]
+                    });
+                    console.log(err);
+                }
+                res.redirect("/first-run/hardware");
+            });
+        });
+
+
     } else {
         res.render('first-run/user/index', {
             canSkip: false,
