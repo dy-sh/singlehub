@@ -303,7 +303,7 @@
         }
         debugErr('Can`t register new node. There are no available id.');
     };
-    var mys_gameway = new Gateway;
-    exports.mys_gameway = mys_gameway;
+    var mys_gateway = new Gateway;
+    exports.mys_gateway = mys_gateway;
 });
 //# sourceMappingURL=gateway.js.map

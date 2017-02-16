@@ -11,82 +11,82 @@ var config = require('./../config');
 
 // first run wizard
 
-router.get('/FirstRun', function (req, res, next) {
-	res.render('FirstRun/index');
+router.get('/first-run', function (req, res, next) {
+	res.render('first-run/index');
 });
 
 
 //---------- Database
 
 
-router.get('/FirstRun/Database', function (req, res, next) {
-	res.render('FirstRun/Database/index');
+router.get('/first-run/database', function (req, res, next) {
+	res.render('first-run/database/index');
 });
 
-router.get('/FirstRun/Database/External', function (req, res, next) {
-	res.render('FirstRun/Database/external');
+router.get('/first-run/database/external', function (req, res, next) {
+	res.render('first-run/database/external');
 });
 
-router.post('/FirstRun/Database/External', function (req, res, next) {
+router.post('/first-run/database/external', function (req, res, next) {
 	//todo mongo db connection
-	res.render('FirstRun/Database/notEmpty');
+	res.render('first-run/database/notEmpty');
 });
 
-router.get('/FirstRun/Database/Delete', function (req, res, next) {
+router.get('/first-run/database/delete', function (req, res, next) {
 	//todo drop database
-	res.redirect("/FirstRun/Gateway")
+	res.redirect("/first-run/gateway")
 });
 
-router.get('/FirstRun/Database/Use', function (req, res, next) {
+router.get('/first-run/database/use', function (req, res, next) {
 	config.dataBase.enable = true;
 	config.dataBase.useInternalDb = false;
-	res.redirect("/FirstRun/Gateway")
+	res.redirect("/first-run/gateway")
 });
 
 
-router.get('/FirstRun/Database/Builtin', function (req, res, next) {
+router.get('/first-run/database/builtin', function (req, res, next) {
 	//todo internal db connection
 	config.dataBase.enable = true;
 	config.dataBase.useInternalDb = true;
 	saveConfig();
-	res.redirect("/FirstRun/Gateway")
+	res.redirect("/first-run/gateway")
 });
 
-router.get('/FirstRun/Database/None', function (req, res, next) {
+router.get('/first-run/database/none', function (req, res, next) {
 	config.dataBase.enable = false;
 	saveConfig();
-	res.redirect("/FirstRun/Gateway")
+	res.redirect("/first-run/gateway")
 });
 
 
 //---------- Gateway
 
 
-router.get('/FirstRun/Gateway', function (req, res, next) {
-	res.render('FirstRun/Gateway/index');
+router.get('/first-run/gateway', function (req, res, next) {
+	res.render('first-run/gateway/index');
 });
 
-router.get('/FirstRun/Gateway/Ethernet', function (req, res, next) {
-	res.render('FirstRun/Gateway/ethernet', {
+router.get('/first-run/gateway/ethernet', function (req, res, next) {
+	res.render('first-run/gateway/ethernet', {
 		address: config.gateway.mysensors.ethernet.address,
 		port: config.gateway.mysensors.ethernet.port
 	});
 });
 
-router.post('/FirstRun/Gateway/Ethernet', function (req, res, next) {
+router.post('/first-run/gateway/ethernet', function (req, res, next) {
 	//todo connect to ethernet gateway
 	config.gateway.mysensors.serial.enable = false;
 	config.gateway.mysensors.ethernet.enable = true;
 	config.gateway.mysensors.ethernet.address = req.body.address;
 	config.gateway.mysensors.ethernet.port = req.body.port;
 	saveConfig();
-	res.redirect("/FirstRun/User")
+	res.redirect("/first-run/user")
 });
 
 
-router.get('/FirstRun/Gateway/Serial', function (req, res, next) {
+router.get('/first-run/gateway/serial', function (req, res, next) {
 	//todo get serial ports list
-	res.render('FirstRun/Gateway/serial', {
+	res.render('first-run/gateway/serial', {
 		ports: ["COM1", "COM3"],
 		baudRate: config.gateway.mysensors.serial.baudRate,
 		currentPort: config.gateway.mysensors.serial.port
@@ -94,7 +94,7 @@ router.get('/FirstRun/Gateway/Serial', function (req, res, next) {
 });
 
 
-router.post('/FirstRun/Gateway/Serial', function (req, res, next) {
+router.post('/first-run/gateway/serial', function (req, res, next) {
 	//todo connect to serial gateway
 	console.log(req.body);
 	config.gateway.mysensors.ethernet.enable = false;
@@ -102,27 +102,27 @@ router.post('/FirstRun/Gateway/Serial', function (req, res, next) {
 	config.gateway.mysensors.serial.baudRate = req.body.baudRate;
 	config.gateway.mysensors.serial.port = req.body.port;
 	saveConfig();
-	res.redirect("/FirstRun/User")
+	res.redirect("/first-run/user")
 });
 
 
 //---------- User
 
 
-router.get('/FirstRun/User', function (req, res, next) {
+router.get('/first-run/user', function (req, res, next) {
 	if (config.dataBase.enable)
-		res.render('FirstRun/User/index', {canSkip: false});
+		res.render('first-run/user/index', {canSkip: false});
 	else
-		res.render('FirstRun/User/noDatabase');
+		res.render('first-run/user/noDatabase');
 });
 
-router.post('/FirstRun/User', function (req, res, next) {
+router.post('/first-run/user', function (req, res, next) {
 	//todo save user profile to db
-	res.redirect("/FirstRun/Complete")
+	res.redirect("/first-run/complete")
 });
 
 
-router.get('/FirstRun/Complete', function (req, res, next) {
+router.get('/first-run/complete', function (req, res, next) {
 	config.firstRun = false;
 	saveConfig();
 	res.redirect("/Dashboard")
@@ -132,7 +132,7 @@ router.get('/FirstRun/Complete', function (req, res, next) {
 //redirect all routes if first run
 router.use('/', function (req, res, next) {
 	if (config.firstRun == true)
-		res.redirect('/FirstRun/');
+		res.redirect('/first-run/');
 	else
 		next();
 });

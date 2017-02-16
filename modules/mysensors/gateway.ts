@@ -370,6 +370,6 @@ Gateway.prototype._getNewNodeId = function () {
     debugErr('Can`t register new node. There are no available id.');
 };
 
-var mys_gameway = new Gateway;
+var mys_gateway = new Gateway;
 
-export{mys_gameway};
+export{mys_gateway};
