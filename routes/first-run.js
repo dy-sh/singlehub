@@ -16,6 +16,14 @@
     let router = express.Router();
     let config = require('./../config');
     // first run wizard
+    // prevent access if already configured (for security)
+    router.use('/', function (req, res, next) {
+        if (config.firstRun == false)
+            res.redirect('/dashboard/');
+        else
+            next();
+    });
+    // ------- index -----
     router.get('/first-run', function (req, res, next) {
         res.render('first-run/index');
     });
@@ -140,8 +148,11 @@
     router.get('/first-run/hardware', function (req, res, next) {
         res.render('first-run/hardware/index');
     });
-    router.get('/first-run/hardware', function (req, res, next) {
-        res.render('first-run/hardware/index');
+    router.get('/first-run/hardware/none', function (req, res, next) {
+        config.gateway.mysensors.serial.enable = false;
+        config.gateway.mysensors.ethernet.enable = false;
+        saveConfig();
+        res.redirect("/first-run/complete");
     });
     router.get('/first-run/hardware/ethernet', function (req, res, next) {
         res.render('first-run/hardware/ethernet', {
@@ -156,7 +167,7 @@
         config.gateway.mysensors.ethernet.address = req.body.address;
         config.gateway.mysensors.ethernet.port = req.body.port;
         saveConfig();
-        res.redirect("/first-run/user");
+        res.redirect("/first-run/complete");
     });
     router.get('/first-run/hardware/serial', function (req, res, next) {
         //todo get serial ports list
@@ -174,7 +185,7 @@
         config.gateway.mysensors.serial.baudRate = req.body.baudRate;
         config.gateway.mysensors.serial.port = req.body.port;
         saveConfig();
-        res.redirect("/first-run/user");
+        res.redirect("/first-run/complete");
     });
     // ------------ complete ----------
     router.get('/first-run/complete', function (req, res, next) {
