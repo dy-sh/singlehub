@@ -4,7 +4,7 @@ extends ../simple_layout
 block content
 	.ui.container
 		h2 First Run
-		.ui.ordered.steps
+		.ui.ordered.steps.mobile.hidden
 			.step(class= {active: activeStep === 1, completed: activeStep > 1})
 				.content
 					.title Database

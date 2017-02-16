@@ -6,18 +6,19 @@ html
 		title MyNodes: #{title}
 
 		link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
-		link(href='/css/style.css',rel='stylesheet')
+		link(href='/css/main.css',rel='stylesheet')
 		block styles
 
 	body
-		// Header Menu
-		.ui.fixed.big.borderless.main.menu
-			.ui.container
-				a.ui.item(href='about')
-					h3 MyNodes
+		.header-menu
+			.ui.fixed.big.borderless.main.menu
+				.ui.container
+					a.ui.item(href='about')
+						h3 MyNodes
 		.pusher
 			block vars
-			block content
+			.content
+				block content
 
 			script(src='/libs/jquery/dist/jquery.min.js')
 			script(src='/libs/semantic/dist/semantic.min.js')
