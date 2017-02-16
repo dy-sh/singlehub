@@ -14,7 +14,7 @@ let config = require('./../config');
 
 // prevent access if already configured (for security)
 
-router.use('/', function (req, res, next) {
+router.use('/first-run', function (req, res, next) {
     if (config.firstRun == false)
         res.redirect('/dashboard/');
     else

@@ -11,10 +11,10 @@
 })(function (require, exports) {
     "use strict";
     const express = require('express');
-    var router = express.Router();
+    let router = express.Router();
     //var config = require('./../config');
     router.get('/', function (req, res, next) {
-        res.render('dashboard');
+        res.render('dashboard/index');
     });
     module.exports = router;
 });
