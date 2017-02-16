@@ -34,14 +34,24 @@ router.post('/first-run/database/external', function (req, res, next) {
 });
 
 router.get('/first-run/database/delete', function (req, res, next) {
-    //todo drop database
-    res.redirect("/first-run/user")
+    //drop built-in database
+    if (config.dataBase.useInternalDb) {
+        db.users.remove({}, {multi: true}, function (err, numRemoved) {
+            if (err) {
+                console.log(err);
+                res.json(err);
+                return;
+            }
+            res.redirect("/first-run/user");
+        });
+    }
+    else {
+        res.redirect("/first-run/user");
+    }
 });
 
 router.get('/first-run/database/use', function (req, res, next) {
-    config.dataBase.enable = true;
-    config.dataBase.useInternalDb = false;
-    res.redirect("/first-run/user")
+    res.redirect("/first-run/hardware")
 });
 
 
@@ -153,21 +163,24 @@ router.post('/first-run/user', function (req, res, next) {
 });
 
 
-//---------- Gateway
+//---------- Hardware
 
-
-router.get('/first-run/gateway', function (req, res, next) {
-    res.render('first-run/gateway/index');
+router.get('/first-run/hardware', function (req, res, next) {
+    res.render('first-run/hardware/index');
 });
 
-router.get('/first-run/gateway/ethernet', function (req, res, next) {
-    res.render('first-run/gateway/ethernet', {
+router.get('/first-run/hardware', function (req, res, next) {
+    res.render('first-run/hardware/index');
+});
+
+router.get('/first-run/hardware/ethernet', function (req, res, next) {
+    res.render('first-run/hardware/ethernet', {
         address: config.gateway.mysensors.ethernet.address,
         port: config.gateway.mysensors.ethernet.port
     });
 });
 
-router.post('/first-run/gateway/ethernet', function (req, res, next) {
+router.post('/first-run/hardware/ethernet', function (req, res, next) {
     //todo connect to ethernet gateway
     config.gateway.mysensors.serial.enable = false;
     config.gateway.mysensors.ethernet.enable = true;
@@ -178,9 +191,9 @@ router.post('/first-run/gateway/ethernet', function (req, res, next) {
 });
 
 
-router.get('/first-run/gateway/serial', function (req, res, next) {
+router.get('/first-run/hardware/serial', function (req, res, next) {
     //todo get serial ports list
-    res.render('first-run/gateway/serial', {
+    res.render('first-run/hardware/serial', {
         ports: ["COM1", "COM3"],
         baudRate: config.gateway.mysensors.serial.baudRate,
         currentPort: config.gateway.mysensors.serial.port
@@ -188,7 +201,7 @@ router.get('/first-run/gateway/serial', function (req, res, next) {
 });
 
 
-router.post('/first-run/gateway/serial', function (req, res, next) {
+router.post('/first-run/hardware/serial', function (req, res, next) {
     //todo connect to serial gateway
     console.log(req.body);
     config.gateway.mysensors.ethernet.enable = false;
@@ -205,7 +218,7 @@ router.post('/first-run/gateway/serial', function (req, res, next) {
 router.get('/first-run/complete', function (req, res, next) {
     config.firstRun = false;
     saveConfig();
-    res.redirect("/Dashboard")
+    res.redirect("/dashboard")
 });
 
 // ------------ redirect other ----------
