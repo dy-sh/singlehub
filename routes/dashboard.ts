@@ -8,7 +8,8 @@ let router = express.Router();
 
 
 router.get('/', function (req, res, next) {
-	res.render('dashboard/index');
+	res.redirect("/editor")
+	// res.render('dashboard/index');
 });
 
 module.exports = router;

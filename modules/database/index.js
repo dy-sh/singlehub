@@ -14,7 +14,9 @@
     class Database {
         constructor() {
             this.users = new NeDBDataStore('users.db');
+            this.nodes = new NeDBDataStore('nodes.db');
             this.users.loadDatabase();
+            this.nodes.loadDatabase();
             // Using a unique constraint with the index
             // this.users.ensureIndex({ fieldName: 'name', unique: true }, function (err) {
             //    if (err)
