@@ -33,3 +33,6 @@ require('./public/nodes/nodes/debug');
 require('./public/nodes/nodes/math');
 require('./modules/test').test();
 
+//import nodes form db
+import {db} from "./modules/database/index";
+db.importNodes();

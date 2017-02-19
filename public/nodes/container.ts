@@ -528,11 +528,11 @@ export class Container {
      * @returns value of the node
      */
     serialize(): any {
-        let nodes_info = [];
+        let ser_nodes = [];
 
         for (let id in this._nodes) {
             let node = this._nodes[id];
-            nodes_info.push(node.serialize())
+            ser_nodes.push(node.serialize())
         }
 
         let data = {
@@ -544,7 +544,7 @@ export class Container {
             _links: Utils.cloneObject(this._links),
 
             config: this.config,
-            serialized_nodes: nodes_info
+            serialized_nodes: ser_nodes
         };
 
         return data;
@@ -570,18 +570,9 @@ export class Container {
 
         let error = false;
 
-        //create nodes_list
-        for (let n_info of  data.serialized_nodes) {
-            let node = Nodes.createNode(n_info.type, n_info.title);
-            if (!node) {
-                Utils.debugErr("Node not found: " + n_info.type, this);
-                error = true;
-                continue;
-            }
-
-            node.id = n_info.id; //id it or it will create a new id
-            this.add(node); //add before configure, otherwise configure cannot create links
-            node.configure(n_info);
+        for (let n of  data.serialized_nodes) {
+            let node = this.add_serialized_node(n);
+            if (!node) error = true;
         }
 
         this.setDirtyCanvas(true, true);
@@ -589,6 +580,20 @@ export class Container {
     }
 
 
+    /**
+     * Deserealize node and add
+     * @param serialized_node
+     * @returns {Node} result node (for check success)
+     */
+    add_serialized_node(serialized_node): Node {
+        let node = Nodes.createNode(serialized_node.type, serialized_node.title);
+        if (node) {
+            node.id = serialized_node.id; //id it or it will create a new id
+            this.add(node); //add before configure, otherwise configure cannot create links
+            node.configure(serialized_node);
+            return node;
+        }
+    }
 }
 
 

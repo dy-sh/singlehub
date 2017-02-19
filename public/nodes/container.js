@@ -396,10 +396,10 @@
          * @returns value of the node
          */
         serialize() {
-            let nodes_info = [];
+            let ser_nodes = [];
             for (let id in this._nodes) {
                 let node = this._nodes[id];
-                nodes_info.push(node.serialize());
+                ser_nodes.push(node.serialize());
             }
             let data = {
                 iteration: this.iteration,
@@ -409,7 +409,7 @@
                 last_container_id: Container.last_container_id,
                 _links: utils_1.default.cloneObject(this._links),
                 config: this.config,
-                serialized_nodes: nodes_info
+                serialized_nodes: ser_nodes
             };
             return data;
         }
@@ -428,20 +428,27 @@
                 this[i] = data[i];
             }
             let error = false;
-            //create nodes_list
-            for (let n_info of data.serialized_nodes) {
-                let node = nodes_1.Nodes.createNode(n_info.type, n_info.title);
-                if (!node) {
-                    utils_1.default.debugErr("Node not found: " + n_info.type, this);
+            for (let n of data.serialized_nodes) {
+                let node = this.add_serialized_node(n);
+                if (!node)
                     error = true;
-                    continue;
-                }
-                node.id = n_info.id; //id it or it will create a new id
-                this.add(node); //add before configure, otherwise configure cannot create links
-                node.configure(n_info);
             }
             this.setDirtyCanvas(true, true);
             return error;
+        }
+        /**
+         * Deserealize node and add
+         * @param serialized_node
+         * @returns {Node} result node (for check success)
+         */
+        add_serialized_node(serialized_node) {
+            let node = nodes_1.Nodes.createNode(serialized_node.type, serialized_node.title);
+            if (node) {
+                node.id = serialized_node.id; //id it or it will create a new id
+                this.add(node); //add before configure, otherwise configure cannot create links
+                node.configure(serialized_node);
+                return node;
+            }
         }
     }
     Container.containers = {};

@@ -3,7 +3,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container'], factory);
+        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container', "./modules/database/index"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -36,5 +36,8 @@
     require('./public/nodes/nodes/debug');
     require('./public/nodes/nodes/math');
     require('./modules/test').test();
+    //import nodes form db
+    const index_1 = require("./modules/database/index");
+    index_1.db.importNodes();
 });
 //# sourceMappingURL=app.js.map
