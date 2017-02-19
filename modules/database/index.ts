@@ -20,6 +20,7 @@ class Database {
         //     console.log(err);
         // });
     }
+
 }
 
 export let db = new Database();

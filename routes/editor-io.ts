@@ -27,7 +27,7 @@ export class NodesServerSocket {
             socket.on('node-message-to-back-side', function (n) {
                 let node = rootContainer.getNodeById(n.id);
                 if (!node) {
-                    Utils.debugErr("Cant get node message from front-side. Node id does not exist", this);
+                    Utils.debugErr("Can't get node message from front-side. Node id does not exist", this);
                     return;
                 }
 

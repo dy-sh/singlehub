@@ -86,22 +86,16 @@
         serialize() {
             let n = {
                 id: this.id,
-                title: this.title,
+                cid: this.container.id,
                 type: this.type,
+                title: this.title,
                 pos: this.pos,
                 size: this.size,
-                data: this.data,
-                lags: utils_1.default.cloneObject(this.flags),
-                properties: null,
-                color: null,
-                bgcolor: null,
-                boxcolor: null,
-                shape: null,
-                inputs: [],
-                outputs: []
+                data: this.data
             };
             //remove data from liks
-            if (this.inputs)
+            if (this.inputs) {
+                n.inputs = [];
                 for (let i of this.inputs)
                     n.inputs.push({
                         name: i.name,
@@ -113,7 +107,9 @@
                         round: i.round,
                         isOptional: i.isOptional
                     });
-            if (this.outputs)
+            }
+            if (this.outputs) {
+                n.outputs = [];
                 for (let o of this.outputs)
                     n.outputs.push({
                         name: o.name,
@@ -124,6 +120,7 @@
                         pos: o.pos,
                         round: o.round
                     });
+            }
             if (this.properties)
                 n.properties = utils_1.default.cloneObject(this.properties);
             if (this.color)
@@ -134,6 +131,8 @@
                 n.boxcolor = this.boxcolor;
             if (this.shape)
                 n.shape = this.shape;
+            if (this.flags)
+                n.flags = utils_1.default.cloneObject(this.flags);
             if (this.onSerialize)
                 this.onSerialize(n);
             return n;
@@ -797,15 +796,6 @@
             else
                 this.flags.collapsed = false;
             this.setDirtyCanvas(true, true);
-        }
-        /**
-         * Forces the node to do not move or realign on Z
-         **/
-        pin(v) {
-            if (v === undefined)
-                this.flags.pinned = !this.flags.pinned;
-            else
-                this.flags.pinned = v;
         }
         localToScreen(x, y, canvas) {
             return [(x + this.pos[0]) * canvas.scale + canvas.offset[0],

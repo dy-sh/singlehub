@@ -26,7 +26,7 @@ export interface IOutputInfo {
 export class NodeOutput {
     name: string;
     type: string;
-    links: Array<number>;
+    links?: Array<number>;
     label?: string;
     locked?: boolean;
     pos?: boolean;
@@ -37,7 +37,7 @@ export class NodeOutput {
 export class NodeInput {
     name: string;
     type: string;
-    link: number;
+    link?: number;
     label?: string;
     locked?: boolean;
     pos?: boolean;
@@ -79,7 +79,6 @@ export class Node {
         skip_title_render?: true,
         unsafe_execution?: false,
         collapsed?: boolean,
-        pinned?: boolean,
         clip_area?: boolean
     };
     editable: {
@@ -228,25 +227,20 @@ export class Node {
     serialize(): any {
         let n = {
             id: this.id,
-            title: this.title,
+            cid: this.container.id,
             type: this.type,
+            title: this.title,
             pos: this.pos,
             size: this.size,
-            data: this.data,
-            lags: Utils.cloneObject(this.flags),
-            properties: null,
-            color: null,
-            bgcolor: null,
-            boxcolor: null,
-            shape: null,
-            inputs: [],
-            outputs: []
+            data: this.data
         };
 
         //remove data from liks
-        if (this.inputs)
+        if (this.inputs) {
+            (<any>n).inputs = [];
+
             for (let i of this.inputs)
-                n.inputs.push({
+                (<any>n).inputs.push({
                     name: i.name,
                     type: i.type,
                     link: i.link,
@@ -256,10 +250,13 @@ export class Node {
                     round: i.round,
                     isOptional: i.isOptional
                 })
+        }
 
-        if (this.outputs)
+        if (this.outputs) {
+            (<any>n).outputs = [];
+
             for (let o of this.outputs)
-                n.outputs.push({
+                (<any>n).outputs.push({
                     name: o.name,
                     type: o.type,
                     links: o.links,
@@ -268,19 +265,22 @@ export class Node {
                     pos: o.pos,
                     round: o.round
                 })
+        }
 
         if (this.properties)
-            n.properties = Utils.cloneObject(this.properties);
+            (<any>n).properties = Utils.cloneObject(this.properties);
 
 
         if (this.color)
-            n.color = this.color;
+            (<any>n).color = this.color;
         if (this.bgcolor)
-            n.bgcolor = this.bgcolor;
+            (<any>n).bgcolor = this.bgcolor;
         if (this.boxcolor)
-            n.boxcolor = this.boxcolor;
+            (<any>n).boxcolor = this.boxcolor;
         if (this.shape)
-            n.shape = this.shape;
+            (<any>n).shape = this.shape;
+        if (this.flags)
+            (<any>n).flags = Utils.cloneObject(this.flags);
 
         if (this.onSerialize)
             this.onSerialize(n);
@@ -1061,15 +1061,6 @@ export class Node {
         this.setDirtyCanvas(true, true);
     }
 
-    /**
-     * Forces the node to do not move or realign on Z
-     **/
-    pin(v?: any): void {
-        if (v === undefined)
-            this.flags.pinned = !this.flags.pinned;
-        else
-            this.flags.pinned = v;
-    }
 
     localToScreen(x, y, canvas): [number, number] {
         return [(x + this.pos[0]) * canvas.scale + canvas.offset[0],

@@ -25,7 +25,7 @@
                 socket.on('node-message-to-back-side', function (n) {
                     let node = container_1.rootContainer.getNodeById(n.id);
                     if (!node) {
-                        utils_1.default.debugErr("Cant get node message from front-side. Node id does not exist", this);
+                        utils_1.default.debugErr("Can't get node message from front-side. Node id does not exist", this);
                         return;
                     }
                     node.onGetMessageFromFrontSide(n.value);
