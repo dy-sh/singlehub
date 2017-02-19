@@ -35,9 +35,45 @@
     require('./public/nodes/nodes/main');
     require('./public/nodes/nodes/debug');
     require('./public/nodes/nodes/math');
-    require('./modules/test').test();
-    //import nodes form db
+    // require('./modules/test').test();
     const index_1 = require("./modules/database/index");
-    index_1.db.importNodes();
+    index_1.db.loadDatabase(function (err) {
+        if (err) {
+            utils_1.default.debugErr(err.message, "DATABASE");
+            return;
+        }
+        utils_1.default.debug("Database loaded", "DATABASE");
+        console.log(container_1.rootContainer._nodes);
+        //add rootContainer if not exist
+        index_1.db.getContainer(0, function (err, cont) {
+            if (!cont) {
+                utils_1.default.debug("Create root container", "DATABASE");
+                index_1.db.addContainer(container_1.rootContainer);
+            }
+        });
+        //import containers
+        //add containers
+        index_1.db.getContainers(function (err, containers) {
+            if (!containers)
+                return;
+            for (let c of containers) {
+                if (c.id == 0) {
+                    container_1.rootContainer.configure(c);
+                }
+                else {
+                }
+            }
+        });
+        //add nodes
+        index_1.db.getNodes(function (err, nodes) {
+            if (!nodes)
+                return;
+            for (let n of nodes) {
+                let cont = container_1.Container.containers[n.cid];
+                cont.add_serialized_node(n);
+            }
+            console.log("load");
+        });
+    });
 });
 //# sourceMappingURL=app.js.map

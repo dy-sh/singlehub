@@ -4,12 +4,22 @@
 
 
 import {Nodes} from "./nodes";
-import {Node, Link} from "./node";
+import {Node, Link, SerializedNode} from "./node";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
 import {ContainerNode} from "./nodes/main"
 
+export interface SerializedContainer {
+    iteration: number;
+    frame: number;
+    last_node_id: number;
+    last_link_id: number;
+    last_container_id: number;
+    config?: any;
+    _links?: {[id: number]: Link};
+    serialized_nodes?: Array<SerializedNode>;
+}
 
 export class Container {
     static containers: {[id: number]: Container} = {};
@@ -527,27 +537,34 @@ export class Container {
      * Creates a Object containing all the info about this container, it can be serialized
      * @returns value of the node
      */
-    serialize(): any {
-        let ser_nodes = [];
+    serialize(include_nodes = true, include_links = true): SerializedContainer {
 
-        for (let id in this._nodes) {
-            let node = this._nodes[id];
-            ser_nodes.push(node.serialize())
-        }
-
-        let data = {
+        let ser_cont: SerializedContainer = {
             iteration: this.iteration,
             frame: this.frame,
             last_node_id: this.last_node_id,
             last_link_id: this.last_link_id,
             last_container_id: Container.last_container_id,
-            _links: Utils.cloneObject(this._links),
-
-            config: this.config,
-            serialized_nodes: ser_nodes
+            config: this.config
         };
 
-        return data;
+        if (include_links) {
+            ser_cont._links = Utils.cloneObject(this._links);
+        }
+        console.log(this._nodes);
+        if (include_nodes) {
+            let ser_nodes: Array<SerializedNode> = [];
+
+            for (let id in this._nodes) {
+                let node = this._nodes[id];
+
+                ser_nodes.push(node.serialize())
+            }
+
+            ser_cont.serialized_nodes = ser_nodes;
+        }
+
+        return ser_cont;
     }
 
 
@@ -570,9 +587,11 @@ export class Container {
 
         let error = false;
 
-        for (let n of  data.serialized_nodes) {
-            let node = this.add_serialized_node(n);
-            if (!node) error = true;
+        if (data.serialized_nodes) {
+            for (let n of data.serialized_nodes) {
+                let node = this.add_serialized_node(n);
+                if (!node) error = true;
+            }
         }
 
         this.setDirtyCanvas(true, true);
@@ -591,6 +610,7 @@ export class Container {
             node.id = serialized_node.id; //id it or it will create a new id
             this.add(node); //add before configure, otherwise configure cannot create links
             node.configure(serialized_node);
+            this.setDirtyCanvas(true, true);
             return node;
         }
     }

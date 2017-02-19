@@ -3,8 +3,9 @@
  */
 
 import * as NeDBDataStore from "nedb";
-import {rootContainer, Container} from "../../public/nodes/container";
+import {rootContainer, Container, SerializedContainer} from "../../public/nodes/container";
 import {Nodes} from "../../public/nodes/nodes";
+import {Node, SerializedNode} from "../../public/nodes/node";
 import Utils from "../../public/nodes/utils";
 
 class Database {
@@ -12,14 +13,8 @@ class Database {
     nodes: NeDBDataStore;
     containers: NeDBDataStore;
 
-    constructor() {
-        this.users = new NeDBDataStore('users.db');
-        this.nodes = new NeDBDataStore('nodes.db');
-        this.containers = new NeDBDataStore('containers.db');
-        this.users.loadDatabase();
-        this.nodes.loadDatabase();
-        this.containers.loadDatabase();
 
+    constructor() {
         // Using a unique constraint with the index
         // this.users.ensureIndex({ fieldName: 'name', unique: true }, function (err) {
         //    if (err)
@@ -27,36 +22,57 @@ class Database {
         // });
     }
 
-    importNodes() {
+    loadDatabase(callback?: (err: Error) => void) {
+        this.users = new NeDBDataStore('users.db');
+        this.nodes = new NeDBDataStore('nodes.db');
+        this.containers = new NeDBDataStore('containers.db');
 
-        // this.containers.find({},function (err, containers) {
-        //     if (!containers)
-        //         return;
-        //
-        //     for(let c of containers){
-        //
-        //     }
-        // });
-
-        this.nodes.find({},function (err, nodes) {
-            if (!nodes)
-                return;
-
-            for(let n of nodes){
-                let cont=Container.containers[n.cid];
-
-                let node = Nodes.createNode(n.type, n.title);
-                if (!node) {
-                    Utils.debugErr("Node not found: " + n.type, this);
-                    continue;
-                }
-
-                node.id = n.id; //id it or it will create a new id
-                cont.add(node); //add before configure, otherwise configure cannot create links
-                node.configure(n);
-            }
+        let that = this;
+        this.users.loadDatabase(function (err) {
+            if (err) callback(err);
+            else that.nodes.loadDatabase(function (err) {
+                if (err) callback(err);
+                else that.containers.loadDatabase(callback);
+            });
         });
+    }
 
+
+    addContainer(c: Container, callback?: (err?: Error, doc?: SerializedContainer) => void) {
+        let c_ser = c.serialize(false, false);
+        (<any>c_ser)._id = "" + c.id;
+
+        this.containers.insert(c_ser, function (err, doc) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err, doc);
+        })
+    }
+
+    addNode(node: Node, callback?: (err?: Error, doc?: SerializedNode) => void) {
+        let ser_node = node.serialize();
+        (<any>ser_node)._id = "c" + ser_node.cid + "n" + ser_node.id;
+
+        this.nodes.insert(ser_node, function (err, doc) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err, doc);
+        })
+    }
+
+    getContainers(callback?: (err?: Error, docs?: Array<SerializedContainer>) => void) {
+        this.containers.find({}, callback);
+    }
+
+    getNodes(callback?: (err?: Error, docs?: Array<SerializedNode>) => void) {
+        this.nodes.find({}, callback);
+    }
+
+    getContainer(id: number, callback?: (err?: Error, doc?: SerializedContainer) => void) {
+        this.containers.findOne({_id: "" + id}, callback);
+    }
+
+    getNode(id: number, cid: number, callback?: (err?: Error, doc?: SerializedNode) => void) {
+        let _id = "c" + id + "n" + cid;
+        this.containers.findOne({_id: _id}, callback);
     }
 }
 

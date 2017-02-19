@@ -70,13 +70,23 @@
         if (node.onCreated)
             node.onCreated();
         //insert to db
-        let ser_node = node.serialize();
-        ser_node._id = "c" + ser_node.cid + "n" + ser_node.id;
-        database_1.db.nodes.insert(ser_node, function (err) {
+        database_1.db.addNode(node, function (err) {
             if (err)
-                res.send(`${MODULE_NAME}: Can't insert to db node type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
-            else
-                res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
+                res.send(`${MODULE_NAME}: Can't insert node to db type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
+            else {
+                //add container
+                if (node.sub_container) {
+                    let s = node.sub_container.serialize();
+                    database_1.db.addContainer(s, function (err) {
+                        if (err)
+                            res.send(`${MODULE_NAME}: Can't insert container to db for node type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
+                        else
+                            res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
+                    });
+                }
+                else
+                    res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
+            }
         });
     });
     /**

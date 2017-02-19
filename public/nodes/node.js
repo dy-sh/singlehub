@@ -27,29 +27,29 @@
             this.id = -1;
         }
         /**
-         * Configure a node from an object containing the serialized info
-         * @param info object with properties for configure
+         * Configure a node from an object containing the serialized ser_node
+         * @param ser_node object with properties for configure
          */
-        configure(info) {
-            for (let j in info) {
+        configure(ser_node) {
+            for (let j in ser_node) {
                 if (j == "console")
                     continue;
                 if (j == "properties") {
                     //i dont want to clone properties, I want to reuse the old container
-                    for (let k in info.properties)
-                        this.properties[k] = info.properties[k];
+                    for (let k in ser_node.properties)
+                        this.properties[k] = ser_node.properties[k];
                     continue;
                 }
-                if (info[j] == null)
+                if (ser_node[j] == null)
                     continue;
-                else if (typeof (info[j]) == 'object') {
+                else if (typeof (ser_node[j]) == 'object') {
                     if (this[j] && this[j].configure)
-                        this[j].configure(info[j]);
+                        this[j].configure(ser_node[j]);
                     else
-                        this[j] = utils_1.default.cloneObject(info[j], this[j]);
+                        this[j] = utils_1.default.cloneObject(ser_node[j], this[j]);
                 }
                 else
-                    this[j] = info[j];
+                    this[j] = ser_node[j];
             }
             //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
             for (let i in this.inputs) {
@@ -129,8 +129,6 @@
                 n.bgcolor = this.bgcolor;
             if (this.boxcolor)
                 n.boxcolor = this.boxcolor;
-            if (this.shape)
-                n.shape = this.shape;
             if (this.flags)
                 n.flags = utils_1.default.cloneObject(this.flags);
             if (this.onSerialize)

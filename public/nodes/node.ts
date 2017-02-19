@@ -56,6 +56,23 @@ export class Link {
     target_slot?: number;
 }
 
+export interface SerializedNode {
+    id: number;
+    cid: number;
+    type: string;
+    title: string;
+    pos: [number, number];
+    size: [number, number];
+    data?: any;
+    inputs?: Array<NodeInput>;
+    outputs?: Array<NodeOutput>;
+    properties?: any;
+    color?: string;
+    bgcolor?: string;
+    boxcolor?: string;
+    flags?: any;
+}
+
 
 export class Node {
 
@@ -163,31 +180,31 @@ export class Node {
 
 
     /**
-     * Configure a node from an object containing the serialized info
-     * @param info object with properties for configure
+     * Configure a node from an object containing the serialized ser_node
+     * @param ser_node object with properties for configure
      */
-    configure(info: any): void {
-        for (let j in info) {
+    configure(ser_node: SerializedNode): void {
+        for (let j in ser_node) {
             if (j == "console") continue;
 
             if (j == "properties") {
                 //i dont want to clone properties, I want to reuse the old container
-                for (let k in info.properties)
-                    this.properties[k] = info.properties[k];
+                for (let k in ser_node.properties)
+                    this.properties[k] = ser_node.properties[k];
                 continue;
             }
 
-            if (info[j] == null)
+            if (ser_node[j] == null)
                 continue;
-            else if (typeof(info[j]) == 'object') //object
+            else if (typeof(ser_node[j]) == 'object') //object
             {
                 if (this[j] && this[j].configure)
-                    this[j].configure(info[j]);
+                    this[j].configure(ser_node[j]);
                 else
-                    this[j] = Utils.cloneObject(info[j], this[j]);
+                    this[j] = Utils.cloneObject(ser_node[j], this[j]);
             }
             else //value
-                this[j] = info[j];
+                this[j] = ser_node[j];
         }
 
         //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
@@ -224,8 +241,8 @@ export class Node {
     /**
      * Serialize node
      */
-    serialize(): any {
-        let n = {
+    serialize(): SerializedNode {
+        let n: SerializedNode = {
             id: this.id,
             cid: this.container.id,
             type: this.type,
@@ -237,10 +254,10 @@ export class Node {
 
         //remove data from liks
         if (this.inputs) {
-            (<any>n).inputs = [];
+            n.inputs = [];
 
             for (let i of this.inputs)
-                (<any>n).inputs.push({
+                n.inputs.push({
                     name: i.name,
                     type: i.type,
                     link: i.link,
@@ -253,10 +270,10 @@ export class Node {
         }
 
         if (this.outputs) {
-            (<any>n).outputs = [];
+            n.outputs = [];
 
             for (let o of this.outputs)
-                (<any>n).outputs.push({
+                n.outputs.push({
                     name: o.name,
                     type: o.type,
                     links: o.links,
@@ -268,19 +285,17 @@ export class Node {
         }
 
         if (this.properties)
-            (<any>n).properties = Utils.cloneObject(this.properties);
+            n.properties = Utils.cloneObject(this.properties);
 
 
         if (this.color)
-            (<any>n).color = this.color;
+            n.color = this.color;
         if (this.bgcolor)
-            (<any>n).bgcolor = this.bgcolor;
+            n.bgcolor = this.bgcolor;
         if (this.boxcolor)
-            (<any>n).boxcolor = this.boxcolor;
-        if (this.shape)
-            (<any>n).shape = this.shape;
+            n.boxcolor = this.boxcolor;
         if (this.flags)
-            (<any>n).flags = Utils.cloneObject(this.flags);
+            n.flags = Utils.cloneObject(this.flags);
 
         if (this.onSerialize)
             this.onSerialize(n);
