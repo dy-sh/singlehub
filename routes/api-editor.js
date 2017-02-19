@@ -75,8 +75,7 @@
         database_1.db.updateContainer(container.id, { last_node_id: container.last_node_id });
         //add container new to db
         if (node.sub_container) {
-            let s = node.sub_container.serialize();
-            database_1.db.addContainer(s);
+            database_1.db.addContainer(node.sub_container);
         }
         res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });

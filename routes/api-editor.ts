@@ -95,8 +95,7 @@ router.post('/c/:cid/n/', function (req, res) {
 
     //add container new to db
     if ((<any>node).sub_container) {
-        let s = (<any>node).sub_container.serialize();
-        db.addContainer(s);
+        db.addContainer((<any>node).sub_container);
     }
 
     res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
