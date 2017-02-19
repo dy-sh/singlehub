@@ -4,7 +4,7 @@ import Utils from "./public/nodes/utils";
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-console.log("-------- MyNodes ----------")
+Utils.debug("-------- MyNodes ----------");
 
 import * as path from 'path';
 (<any>global).__rootdirname = path.resolve(__dirname);
@@ -43,7 +43,6 @@ db.loadDatabase(function (err) {
     }
 
     Utils.debug("Database loaded", "DATABASE");
-    console.log(rootContainer._nodes);
 
     //add rootContainer if not exist
     db.getContainer(0, function (err, cont) {
@@ -68,18 +67,23 @@ db.loadDatabase(function (err) {
                 //add container
             }
         }
+
+        Utils.debug("Loaded "+containers.length+" containers", "DATABASE");
+
+        //add nodes
+        db.getNodes(function (err, nodes) {
+            if (!nodes)
+                return;
+
+            for (let n of nodes) {
+                let cont = Container.containers[n.cid];
+                cont.add_serialized_node(n);
+            }
+
+            Utils.debug("Loaded "+nodes.length+" nodes", "DATABASE");
+        });
     });
 
-    //add nodes
-    db.getNodes(function (err, nodes) {
-        if (!nodes)
-            return;
 
-        for (let n of nodes) {
-            let cont = Container.containers[n.cid];
-            cont.add_serialized_node(n);
-        }
-        console.log("load");
-    });
 });
 

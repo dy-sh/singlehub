@@ -11,6 +11,7 @@ import Utils from  "./utils"
 import {ContainerNode} from "./nodes/main"
 
 export interface SerializedContainer {
+    id: number;
     iteration: number;
     frame: number;
     last_node_id: number;
@@ -259,7 +260,7 @@ export class Container {
                     let link = this._links[linkId];
                     let target_node = this._nodes[link.target_id];
                     if (!target_node) {
-                        console.log("ddd")
+
                     }
                     let target_input = target_node.inputs[link.target_slot];
                     if (target_input.data != output.data) {
@@ -540,6 +541,7 @@ export class Container {
     serialize(include_nodes = true, include_links = true): SerializedContainer {
 
         let ser_cont: SerializedContainer = {
+            id: this.id,
             iteration: this.iteration,
             frame: this.frame,
             last_node_id: this.last_node_id,
@@ -551,7 +553,6 @@ export class Container {
         if (include_links) {
             ser_cont._links = Utils.cloneObject(this._links);
         }
-        console.log(this._nodes);
         if (include_nodes) {
             let ser_nodes: Array<SerializedNode> = [];
 

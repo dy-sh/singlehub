@@ -70,24 +70,15 @@
         if (node.onCreated)
             node.onCreated();
         //insert to db
-        database_1.db.addNode(node, function (err) {
-            if (err)
-                res.send(`${MODULE_NAME}: Can't insert node to db type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
-            else {
-                //add container
-                if (node.sub_container) {
-                    let s = node.sub_container.serialize();
-                    database_1.db.addContainer(s, function (err) {
-                        if (err)
-                            res.send(`${MODULE_NAME}: Can't insert container to db for node type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
-                        else
-                            res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
-                    });
-                }
-                else
-                    res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
-            }
-        });
+        database_1.db.addNode(node);
+        //update container in db
+        database_1.db.updateContainer(container.id, { last_node_id: container.last_node_id });
+        //add container new to db
+        if (node.sub_container) {
+            let s = node.sub_container.serialize();
+            database_1.db.addContainer(s);
+        }
+        res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     /**
      * Delete node

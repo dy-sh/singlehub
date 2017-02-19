@@ -169,7 +169,6 @@
                         let link = this._links[linkId];
                         let target_node = this._nodes[link.target_id];
                         if (!target_node) {
-                            console.log("ddd");
                         }
                         let target_input = target_node.inputs[link.target_slot];
                         if (target_input.data != output.data) {
@@ -397,6 +396,7 @@
          */
         serialize(include_nodes = true, include_links = true) {
             let ser_cont = {
+                id: this.id,
                 iteration: this.iteration,
                 frame: this.frame,
                 last_node_id: this.last_node_id,
@@ -407,7 +407,6 @@
             if (include_links) {
                 ser_cont._links = utils_1.default.cloneObject(this._links);
             }
-            console.log(this._nodes);
             if (include_nodes) {
                 let ser_nodes = [];
                 for (let id in this._nodes) {

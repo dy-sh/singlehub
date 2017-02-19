@@ -12,7 +12,7 @@
     /**
      * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
      */
-    console.log("-------- MyNodes ----------");
+    utils_1.default.debug("-------- MyNodes ----------");
     const path = require('path');
     global.__rootdirname = path.resolve(__dirname);
     const server_1 = require('./modules/web-server/server');
@@ -43,7 +43,6 @@
             return;
         }
         utils_1.default.debug("Database loaded", "DATABASE");
-        console.log(container_1.rootContainer._nodes);
         //add rootContainer if not exist
         index_1.db.getContainer(0, function (err, cont) {
             if (!cont) {
@@ -63,16 +62,17 @@
                 else {
                 }
             }
-        });
-        //add nodes
-        index_1.db.getNodes(function (err, nodes) {
-            if (!nodes)
-                return;
-            for (let n of nodes) {
-                let cont = container_1.Container.containers[n.cid];
-                cont.add_serialized_node(n);
-            }
-            console.log("load");
+            utils_1.default.debug("Loaded " + containers.length + " containers", "DATABASE");
+            //add nodes
+            index_1.db.getNodes(function (err, nodes) {
+                if (!nodes)
+                    return;
+                for (let n of nodes) {
+                    let cont = container_1.Container.containers[n.cid];
+                    cont.add_serialized_node(n);
+                }
+                utils_1.default.debug("Loaded " + nodes.length + " nodes", "DATABASE");
+            });
         });
     });
 });

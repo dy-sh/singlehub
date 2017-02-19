@@ -58,17 +58,54 @@
             });
         }
         getContainers(callback) {
-            this.containers.find({}, callback);
+            this.containers.find({}, function (err, docs) {
+                if (err)
+                    utils_1.default.debugErr(err.message, "DATABASE");
+                if (callback)
+                    callback(err, docs);
+            });
         }
         getNodes(callback) {
-            this.nodes.find({}, callback);
+            this.nodes.find({}, function (err, docs) {
+                if (err)
+                    utils_1.default.debugErr(err.message, "DATABASE");
+                if (callback)
+                    callback(err, docs);
+            });
         }
         getContainer(id, callback) {
-            this.containers.findOne({ _id: "" + id }, callback);
+            this.containers.findOne({ _id: "" + id }, function (err, doc) {
+                if (err)
+                    utils_1.default.debugErr(err.message, "DATABASE");
+                if (callback)
+                    callback(err, doc);
+            });
         }
         getNode(id, cid, callback) {
             let _id = "c" + id + "n" + cid;
-            this.containers.findOne({ _id: _id }, callback);
+            this.nodes.findOne({ _id: _id }, function (err, doc) {
+                if (err)
+                    utils_1.default.debugErr(err.message, "DATABASE");
+                if (callback)
+                    callback(err, doc);
+            });
+        }
+        updateContainer(id, update, callback) {
+            this.containers.update({ _id: "" + id }, { $set: update }, function (err) {
+                if (err)
+                    utils_1.default.debugErr(err.message, "DATABASE");
+                if (callback)
+                    callback(err);
+            });
+        }
+        updateNode(id, cid, update, callback) {
+            let _id = "c" + id + "n" + cid;
+            this.nodes.update({ _id: _id }, { $set: update }, function (err) {
+                if (err)
+                    utils_1.default.debugErr(err.message, "DATABASE");
+                if (callback)
+                    callback(err);
+            });
         }
     }
     exports.db = new Database();

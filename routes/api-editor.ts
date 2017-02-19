@@ -10,6 +10,7 @@ import {server} from "../modules/web-server/server"
 import {Nodes} from "../public/nodes/nodes";
 import {Link} from "../public/nodes/node";
 import {db} from "../modules/database"
+import Utils from "../public/nodes/utils";
 
 let MODULE_NAME = "SOCKET";
 
@@ -87,21 +88,18 @@ router.post('/c/:cid/n/', function (req, res) {
         node.onCreated();
 
     //insert to db
-    db.addNode(node, function (err) {
-        if (err) res.send(`${MODULE_NAME}: Can't insert node to db type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
-        else {
-            //add container
-            if ((<any>node).sub_container) {
-                let s = (<any>node).sub_container.serialize();
-                db.addContainer(s, function (err) {
-                    if (err) res.send(`${MODULE_NAME}: Can't insert container to db for node type [${node.type}] id [${node.container.id}/${node.id}]: ${err}`);
-                    else res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
-                });
-            }
-            else res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
-        }
-    });
+    db.addNode(node);
 
+    //update container in db
+    db.updateContainer(container.id,{last_node_id:container.last_node_id});
+
+    //add container new to db
+    if ((<any>node).sub_container) {
+        let s = (<any>node).sub_container.serialize();
+        db.addContainer(s);
+    }
+
+    res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
 });
 
 

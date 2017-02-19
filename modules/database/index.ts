@@ -59,20 +59,47 @@ class Database {
     }
 
     getContainers(callback?: (err?: Error, docs?: Array<SerializedContainer>) => void) {
-        this.containers.find({}, callback);
+        this.containers.find({}, function (err, docs) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err, docs);
+        })
     }
 
     getNodes(callback?: (err?: Error, docs?: Array<SerializedNode>) => void) {
-        this.nodes.find({}, callback);
+        this.nodes.find({}, function (err, docs) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err, docs);
+        })
     }
 
     getContainer(id: number, callback?: (err?: Error, doc?: SerializedContainer) => void) {
-        this.containers.findOne({_id: "" + id}, callback);
+        this.containers.findOne({_id: "" + id}, function (err, doc: any) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err, doc);
+        })
     }
 
     getNode(id: number, cid: number, callback?: (err?: Error, doc?: SerializedNode) => void) {
         let _id = "c" + id + "n" + cid;
-        this.containers.findOne({_id: _id}, callback);
+        this.nodes.findOne({_id: _id}, function (err, doc: any) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err, doc);
+        })
+    }
+
+    updateContainer(id: number, update: any, callback?: (err?: Error) => void) {
+        this.containers.update({_id: "" + id}, {$set: update}, function (err) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err);
+        })
+    }
+
+    updateNode(id: number, cid: number, update: any, callback?: (err?: Error) => void) {
+        let _id = "c" + id + "n" + cid;
+        this.nodes.update({_id: _id}, {$set: update}, function (err) {
+            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (callback) callback(err);
+        })
     }
 }
 
