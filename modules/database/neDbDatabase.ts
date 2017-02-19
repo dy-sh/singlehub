@@ -7,8 +7,9 @@ import {rootContainer, Container, SerializedContainer} from "../../public/nodes/
 import {Nodes} from "../../public/nodes/nodes";
 import {Node, SerializedNode} from "../../public/nodes/node";
 import Utils from "../../public/nodes/utils";
+import {Database} from "../../public/interfaces/database";
 
-class Database {
+class NeDbDatabase implements Database{
     users: NeDBDataStore;
     nodes: NeDBDataStore;
     containers: NeDBDataStore;
@@ -103,4 +104,4 @@ class Database {
     }
 }
 
-export let db = new Database();
+export let db = new NeDbDatabase();

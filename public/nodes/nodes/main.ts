@@ -11,7 +11,7 @@
 
 import {Nodes} from "../nodes";
 import {Node} from "../node";
-import {Container} from "../container";
+import {Container, rootContainer} from "../container";
 import Utils from "../utils";
 
 
@@ -63,12 +63,16 @@ export class ContainerNode extends Node {
 
 
         this.sub_container = new Container();
-        this.title="Container "+ this.sub_container.id;
+        this.title = "Container " + this.sub_container.id;
         this.sub_container.container_node = this;
     }
 
 
     onAdded = function () {
+        if (this.isBackside()) {
+            rootContainer.db.addContainer(this.sub_container);
+        }
+
         this.sub_container.parent_container_id = this.container.id;
     };
 

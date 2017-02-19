@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container", "../modules/web-server/server", "../public/nodes/nodes", "../modules/database"], factory);
+        define(["require", "exports", 'express', "../public/nodes/container", "../modules/web-server/server", "../public/nodes/nodes", "../modules/database/neDbDatabase"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,7 +15,7 @@
     const container_1 = require("../public/nodes/container");
     const server_1 = require("../modules/web-server/server");
     const nodes_1 = require("../public/nodes/nodes");
-    const database_1 = require("../modules/database");
+    const neDbDatabase_1 = require("../modules/database/neDbDatabase");
     let MODULE_NAME = "SOCKET";
     setInterval(updateActiveNodes, 100);
     function updateActiveNodes() {
@@ -70,13 +70,9 @@
         if (node.onCreated)
             node.onCreated();
         //insert to db
-        database_1.db.addNode(node);
+        neDbDatabase_1.db.addNode(node);
         //update container in db
-        database_1.db.updateContainer(container.id, { last_node_id: container.last_node_id });
-        //add container new to db
-        if (node.sub_container) {
-            database_1.db.addContainer(node.sub_container);
-        }
+        neDbDatabase_1.db.updateContainer(container.id, { last_node_id: container.last_node_id });
         res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     /**

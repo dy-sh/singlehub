@@ -6,13 +6,13 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'fs', "../modules/database"], factory);
+        define(["require", "exports", 'express', 'fs', "../modules/database/neDbDatabase"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const express = require('express');
     const fs = require('fs');
-    const database_1 = require("../modules/database");
+    const neDbDatabase_1 = require("../modules/database/neDbDatabase");
     let router = express.Router();
     let config = require('./../config');
     // first run wizard
@@ -41,7 +41,7 @@
     router.get('/first-run/database/delete', function (req, res, next) {
         //drop built-in database
         if (config.dataBase.useInternalDb) {
-            database_1.db.users.remove({}, { multi: true }, function (err, numRemoved) {
+            neDbDatabase_1.db.users.remove({}, { multi: true }, function (err, numRemoved) {
                 if (err) {
                     console.log(err);
                     res.json(err);
@@ -62,7 +62,7 @@
         config.dataBase.useInternalDb = true;
         saveConfig();
         //check db is not empty
-        database_1.db.users.count({}, function (err, count) {
+        neDbDatabase_1.db.users.count({}, function (err, count) {
             if (err) {
                 console.log(err);
                 res.json(err);
@@ -104,7 +104,7 @@
         let errors = req.validationErrors();
         if (!errors) {
             //save user profile to db
-            database_1.db.users.findOne({ name: user.name }, function (err, doc) {
+            neDbDatabase_1.db.users.findOne({ name: user.name }, function (err, doc) {
                 if (err) {
                     res.render('first-run/user/index', {
                         canSkip: false,
@@ -123,7 +123,7 @@
                     });
                     return;
                 }
-                database_1.db.users.insert(user, function (err) {
+                neDbDatabase_1.db.users.insert(user, function (err) {
                     if (err) {
                         res.render('first-run/user/index', {
                             canSkip: false,

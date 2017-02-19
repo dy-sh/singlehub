@@ -9,6 +9,7 @@ import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
 import Utils from  "./utils"
 import {ContainerNode} from "./nodes/main"
+import {Database} from "../interfaces/database";
 
 export interface SerializedContainer {
     id: number;
@@ -33,6 +34,7 @@ export class Container {
 
     id: number;
     socket: SocketIOClient.Socket|SocketIO.Server;
+    db: Database;
     supported_types = ["number", "string", "boolean"];
     list_of_renderers: Array<Renderer>;
     isRunning: boolean;

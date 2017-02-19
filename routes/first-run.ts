@@ -4,7 +4,7 @@
 
 import * as express from 'express';
 import * as fs from 'fs';
-import {db} from "../modules/database"
+import {db} from "../modules/database/neDbDatabase"
 
 let router = express.Router();
 let config = require('./../config');

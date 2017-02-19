@@ -9,7 +9,7 @@ import {rootContainer, Container} from "../public/nodes/container"
 import {server} from "../modules/web-server/server"
 import {Nodes} from "../public/nodes/nodes";
 import {Link} from "../public/nodes/node";
-import {db} from "../modules/database"
+import {db} from "../modules/database/neDbDatabase"
 import Utils from "../public/nodes/utils";
 
 let MODULE_NAME = "SOCKET";
@@ -91,12 +91,7 @@ router.post('/c/:cid/n/', function (req, res) {
     db.addNode(node);
 
     //update container in db
-    db.updateContainer(container.id,{last_node_id:container.last_node_id});
-
-    //add container new to db
-    if ((<any>node).sub_container) {
-        db.addContainer((<any>node).sub_container);
-    }
+    db.updateContainer(container.id, {last_node_id: container.last_node_id});
 
     res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
 });

@@ -3,7 +3,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container', "./modules/database/index"], factory);
+        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container', "./modules/database/neDbDatabase"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -36,23 +36,24 @@
     require('./public/nodes/nodes/debug');
     require('./public/nodes/nodes/math');
     // require('./modules/test').test();
-    const index_1 = require("./modules/database/index");
-    index_1.db.loadDatabase(function (err) {
+    const neDbDatabase_1 = require("./modules/database/neDbDatabase");
+    container_1.rootContainer.db = neDbDatabase_1.db;
+    neDbDatabase_1.db.loadDatabase(function (err) {
         if (err) {
             utils_1.default.debugErr(err.message, "DATABASE");
             return;
         }
         utils_1.default.debug("Database loaded", "DATABASE");
         //add rootContainer if not exist
-        index_1.db.getContainer(0, function (err, cont) {
+        neDbDatabase_1.db.getContainer(0, function (err, cont) {
             if (!cont) {
                 utils_1.default.debug("Create root container", "DATABASE");
-                index_1.db.addContainer(container_1.rootContainer);
+                neDbDatabase_1.db.addContainer(container_1.rootContainer);
             }
         });
         //import containers
         //add containers
-        index_1.db.getContainers(function (err, containers) {
+        neDbDatabase_1.db.getContainers(function (err, containers) {
             if (!containers)
                 return;
             for (let c of containers) {
@@ -64,7 +65,7 @@
             }
             utils_1.default.debug("Loaded " + containers.length + " containers", "DATABASE");
             //add nodes
-            index_1.db.getNodes(function (err, nodes) {
+            neDbDatabase_1.db.getNodes(function (err, nodes) {
                 if (!nodes)
                     return;
                 for (let n of nodes) {

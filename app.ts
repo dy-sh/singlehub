@@ -34,7 +34,8 @@ require('./public/nodes/nodes/math');
 // require('./modules/test').test();
 
 
-import {db} from "./modules/database/index";
+import {db} from "./modules/database/neDbDatabase";
+rootContainer.db = db;
 
 db.loadDatabase(function (err) {
     if (err) {
@@ -68,7 +69,7 @@ db.loadDatabase(function (err) {
             }
         }
 
-        Utils.debug("Loaded "+containers.length+" containers", "DATABASE");
+        Utils.debug("Loaded " + containers.length + " containers", "DATABASE");
 
         //add nodes
         db.getNodes(function (err, nodes) {
@@ -80,7 +81,7 @@ db.loadDatabase(function (err) {
                 cont.add_serialized_node(n);
             }
 
-            Utils.debug("Loaded "+nodes.length+" nodes", "DATABASE");
+            Utils.debug("Loaded " + nodes.length + " nodes", "DATABASE");
         });
     });
 

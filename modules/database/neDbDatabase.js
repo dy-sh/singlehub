@@ -12,7 +12,7 @@
     "use strict";
     const NeDBDataStore = require("nedb");
     const utils_1 = require("../../public/nodes/utils");
-    class Database {
+    class NeDbDatabase {
         constructor() {
             // Using a unique constraint with the index
             // this.users.ensureIndex({ fieldName: 'name', unique: true }, function (err) {
@@ -108,6 +108,6 @@
             });
         }
     }
-    exports.db = new Database();
+    exports.db = new NeDbDatabase();
 });
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=neDbDatabase.js.map

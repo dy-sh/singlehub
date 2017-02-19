@@ -54,6 +54,9 @@
         constructor() {
             super();
             this.onAdded = function () {
+                if (this.isBackside()) {
+                    container_1.rootContainer.db.addContainer(this.sub_container);
+                }
                 this.sub_container.parent_container_id = this.container.id;
             };
             this.onRemoved = function () {
