@@ -4,7 +4,7 @@
 
 import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
-import {rootContainer, Container} from "../../nodes/container"
+import {Container} from "../../nodes/container"
 
 import "../../nodes/nodes/main";
 import "../../nodes/nodes/debug";
@@ -14,11 +14,7 @@ import {editor} from "./node-editor";
 import {socket} from "./editor-socket"
 
 
-
-
-
-
-(<any>window).rootContainer = rootContainer;
+(<any>window).rootContainer = Container.containers[0];
 (<any>window).editor = editor;
 (<any>window).Nodes = Nodes;
 (<any>window).Container = Container;
@@ -29,7 +25,26 @@ window.addEventListener("resize", function () {
     editor.renderer.resize();
 });
 
-socket.getNodes();
+socket.getNodes(function (nodes) {
+    //open container from url
+    let cont_id = (<any>window).container_id;
+    if (cont_id && cont_id != 0) {
+        //get containers stack
+        let cont = Container.containers[cont_id];
+
+        let parentStack = cont.getParentsStack();
+        while (parentStack.length > 0) {
+            let cid = parentStack.pop();
+            if (cid != 0) {
+                let parent_cont = Container.containers[cid];
+                editor.renderer.openContainer(parent_cont, false);
+            }
+        }
+
+        editor.renderer.openContainer(cont, false);
+    }
+});
+
 socket.getContainerState();
 
 //
@@ -59,10 +74,10 @@ socket.getContainerState();
 // // container.add(node_watch2);
 //
 //
-// node_const_A.connect(0, node_math, 0);
-// node_const_B.connect(0, node_math, 1);
-// node_math.connect(0, node_watch, 0);
-// // node_math.connect(0, node_watch2, 0);
+// node_const_A.connect(0, node_math.id, 0);
+// node_const_B.connect(0, node_math.id, 1);
+// node_math.connect(0, node_watch.id, 0);
+// // node_math.connect(0, node_watch2.id, 0);
 
 
 // container.run(1000);

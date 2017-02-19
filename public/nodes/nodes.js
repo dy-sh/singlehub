@@ -2,16 +2,22 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./utils", "./node"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./node"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const utils_1 = require("./utils");
     const node_1 = require("./node");
+    //console logger back and front
+    let log;
+    if (typeof (window) === 'undefined')
+        log = require('logplease').create('nodes', { color: 5 });
+    else
+        log = Logger.create('nodes', { color: 5 });
     // interface Boundings{
     //     [4]: Float32Array;
     // }
@@ -90,7 +96,7 @@
             node_class.category = type.substr(0, type.lastIndexOf("/"));
             node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
             this.nodes_types[type] = node_class;
-            utils_1.default.debug("Node registered: " + type, this);
+            log.debug("Node registered: " + type);
         }
         ;
         /**
@@ -114,7 +120,7 @@
         static createNode(type, title, options) {
             let base_class = this.nodes_types[type];
             if (!base_class) {
-                utils_1.default.debug("Can`t create node. Node type \"" + type + "\" not registered.", this);
+                log.error("Can`t create node. Node type \"" + type + "\" not registered.");
                 return null;
             }
             let prototype = base_class.prototype || base_class;
@@ -199,7 +205,7 @@
                 if (!src || src.substr(0, folder_wildcard.length) != folder_wildcard)
                     continue;
                 try {
-                    utils_1.default.debug("Reloading: " + src, this);
+                    log.debug("Reloading: " + src);
                     let dynamicScript = document.createElement("script");
                     dynamicScript.type = "text/javascript";
                     dynamicScript.src = src;
@@ -207,19 +213,11 @@
                     docHeadObj.removeChild(script_files[i]);
                 }
                 catch (err) {
-                    utils_1.default.debugErr("Error while reloading " + src, this);
+                    log.error("Error while reloading " + src);
                     throw err;
                 }
             }
-            utils_1.default.debug("Nodes reloaded", this);
-        }
-        ;
-        /**
-         * Get current time
-         * @returns {number}
-         */
-        static getTime() {
-            return (typeof (performance) != "undefined") ? performance.now() : Date.now();
+            log.debug("Nodes reloaded");
         }
         ;
     }

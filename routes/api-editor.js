@@ -6,29 +6,33 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container", "../modules/web-server/server", "../public/nodes/nodes", "../modules/database/neDbDatabase"], factory);
+        define(["require", "exports", 'express', "../public/nodes/container", "../public/nodes/nodes", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
-    const server_1 = require("../modules/web-server/server");
     const nodes_1 = require("../public/nodes/nodes");
-    const neDbDatabase_1 = require("../modules/database/neDbDatabase");
-    let MODULE_NAME = "SOCKET";
-    setInterval(updateActiveNodes, 100);
+    const app_1 = require("../app");
+    setInterval(updateActiveNodes, 300);
     function updateActiveNodes() {
-        let container = container_1.rootContainer;
-        let activeNodesIds = [];
-        for (let id in container._nodes) {
-            let node = container._nodes[id];
-            if (node.isActive) {
-                node.isActive = false;
-                activeNodesIds.push(node.id);
+        if (!app_1.app.rootContainer)
+            return;
+        for (let c in container_1.Container.containers) {
+            let container = container_1.Container.containers[c];
+            let activeNodesIds = [];
+            for (let id in container._nodes) {
+                let node = container._nodes[id];
+                if (node.isRecentlyActive) {
+                    node.isRecentlyActive = false;
+                    activeNodesIds.push(node.id);
+                }
             }
+            let room = "c" + container.id;
+            if (activeNodesIds.length > 0)
+                app_1.app.server.socket.io.sockets.in(room).emit('nodes-active', { ids: activeNodesIds });
         }
-        server_1.server.socket.io.emit('nodes-active', { ids: activeNodesIds, cid: container_1.rootContainer.id });
     }
     //------------------ info ------------------------
     router.get('/info', function (req, res) {
@@ -38,7 +42,7 @@
      * Get container
      */
     router.get('/c/:id', function (req, res) {
-        let s = container_1.rootContainer.serialize();
+        let s = app_1.app.rootContainer.serialize();
         res.json(s);
     });
     router.get('/c/serialize', function (req, res) {
@@ -54,26 +58,20 @@
     router.post('/c/:cid/n/', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't create node. Container id [${req.params.cid}] not found.`);
+            return res.status(404).send(`Can't create node. Container id [${req.params.cid}] not found.`);
         let node = nodes_1.Nodes.createNode(req.body.type);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Can't create node. Node type [${req.body.type}] not found.`);
+            return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
         node.pos = req.body.position;
-        container.add(node);
-        server_1.server.socket.io.emit('node-create', {
+        container.create(node);
+        app_1.app.server.socket.io.emit('node-create', {
             id: node.id,
             cid: req.params.cid,
             type: node.type,
             pos: node.pos,
             properties: node.properties
         });
-        if (node.onCreated)
-            node.onCreated();
-        //insert to db
-        neDbDatabase_1.db.addNode(node);
-        //update container in db
-        neDbDatabase_1.db.updateContainer(container.id, { last_node_id: container.last_node_id });
-        res.send(`${MODULE_NAME}: New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
+        res.send(`New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     /**
      * Delete node
@@ -81,16 +79,16 @@
     router.delete('/c/:cid/n/:id', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't delete node. Container id [${req.params.cid}] not found.`);
+            return res.status(404).send(`Can't delete node. Container id [${req.params.cid}] not found.`);
         let node = container.getNodeById(req.params.id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+            return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
         container.remove(node);
-        server_1.server.socket.io.emit('node-delete', {
+        app_1.app.server.socket.io.emit('node-delete', {
             id: req.params.id,
             cid: req.params.cid,
         });
-        res.send(`${MODULE_NAME}: Node deleted: type [${node.type}] id [${container.id}/${node.id}]`);
+        res.send(`Node deleted: type [${node.type}] id [${container.id}/${node.id}]`);
     });
     /**
      * Delete nodes
@@ -98,18 +96,18 @@
     router.delete('/c/:cid/n/', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't delete node. Container id [${req.params.cid}] not found.`);
+            return res.status(404).send(`Can't delete node. Container id [${req.params.cid}] not found.`);
         for (let id of req.body) {
             let node = container.getNodeById(id);
             if (!node)
-                return res.status(404).send(`${MODULE_NAME}: Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+                return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
             container.remove(node);
         }
-        server_1.server.socket.io.emit('nodes-delete', {
+        app_1.app.server.socket.io.emit('nodes-delete', {
             nodes: req.body,
             cid: req.params.cid
         });
-        res.send(`${MODULE_NAME}: Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
+        res.send(`Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
     });
     /**
      * Update node position
@@ -117,17 +115,19 @@
     router.put('/c/:cid/n/:id/position', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't update node position. Container id [${req.params.cid}] not found.`);
+            return res.status(404).send(`Can't update node position. Container id [${req.params.cid}] not found.`);
         let node = container.getNodeById(req.params.id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Can't update node position. Node id [${req.params.cid}/${req.params.id}] not found.`);
+            return res.status(404).send(`Can't update node position. Node id [${req.params.cid}/${req.params.id}] not found.`);
         node.pos = req.body.position;
-        server_1.server.socket.io.emit('node-update-position', {
+        if (app_1.app.db)
+            app_1.app.db.updateNode(node.id, node.container.id, { pos: node.pos });
+        app_1.app.server.socket.io.emit('node-update-position', {
             id: req.params.id,
             cid: req.params.cid,
             pos: node.pos
         });
-        res.send(`${MODULE_NAME}: Node position updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
+        res.send(`Node position updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     /**
      * Update node size
@@ -135,17 +135,39 @@
     router.put('/c/:cid/n/:id/size', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't update node size. Container id [${req.params.cid}] not found.`);
+            return res.status(404).send(`Can't update node size. Container id [${req.params.cid}] not found.`);
         let node = container.getNodeById(req.params.id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Can't update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
+            return res.status(404).send(`Can't update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
         node.size = req.body.size;
-        server_1.server.socket.io.emit('node-update-size', {
+        if (app_1.app.db)
+            app_1.app.db.updateNode(node.id, node.container.id, { size: node.size });
+        app_1.app.server.socket.io.emit('node-update-size', {
             id: req.params.id,
             cid: req.params.cid,
             size: node.size
         });
-        res.send(`${MODULE_NAME}: Node size updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
+        res.send(`Node size updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
+    });
+    /**
+     * Move nodes to new container
+     */
+    router.put('/c/:cid/n/move/', function (req, res) {
+        let container = container_1.Container.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`Can't move nodes. Container id [${req.params.cid}] not found.`);
+        for (let id of req.body.ids) {
+            let node = container.getNodeById(id);
+            if (!node)
+                return res.status(404).send(`Can't move nodes. Node id [${req.params.cid}/${req.params.id}] not found.`);
+        }
+        container.mooveNodesToNewContainer(req.body.ids, req.body.pos);
+        app_1.app.server.socket.io.emit('nodes-move-to-new-container', {
+            ids: req.body.ids,
+            pos: req.body.pos,
+            cid: req.params.cid
+        });
+        res.send(`Nodes moved: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
     });
     router.post('/nodes/clone/:id', function (req, res) {
     });
@@ -159,58 +181,53 @@
     /**
      * Create link
      */
-    router.post('/c/:cid/l/', function (req, res) {
+    router.post('/c/:cid/l', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't create link. Container id [${req.params.cid}] not found.`);
+            return res.status(404).send(`Can't create link. Container id [${req.params.cid}] not found.`);
         let link = req.body;
         let node = container.getNodeById(link.origin_id);
         let targetNode = container.getNodeById(link.target_id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Can't create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
+            return res.status(404).send(`Can't create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
         if (!targetNode)
-            return res.status(404).send(`${MODULE_NAME}: Can't create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
-        // let input = targetNode.getInputInfo(0);
-        //prevent connection of different types
-        // if (input && !input.link && input.type == this.connecting_output.type) { //toLowerCase missing
+            return res.status(404).send(`Can't create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
         //if user drag to node instead of slot
         if (link.target_slot == -1) {
             //todo find free input
             let input = targetNode.getInputInfo(0);
             if (!input)
-                return res.status(404).send(`${MODULE_NAME}: Can't create link. Node id [${req.params.cid}/${link.target_id}] has no free inputs.`);
+                return res.status(404).send(`Can't create link. Node id [${req.params.cid}/${link.target_id}] has no free inputs.`);
             link.target_slot = 0;
         }
-        // node.disconnectOutput(link.origin_slot, targetNode);
-        // targetNode.disconnectInput(link.target_slot);
-        node.connect(link.origin_slot, targetNode, link.target_slot);
-        server_1.server.socket.io.emit('link-create', {
+        node.connect(link.origin_slot, targetNode.id, link.target_slot);
+        app_1.app.server.socket.io.emit('link-create', {
             cid: req.params.cid,
-            link: req.body
+            link: link
         });
-        res.send(`${MODULE_NAME}: Link created: from [${node.container.id}/${node.id}] to [${targetNode.container.id}/${targetNode.id}]`);
+        res.send(`Link created: from [${node.container.id}/${node.id}] to [${targetNode.container.id}/${targetNode.id}]`);
     });
     /**
      * Delete link
      */
-    router.delete('/c/:cid/l/:id', function (req, res) {
+    router.delete('/c/:cid/l', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`${MODULE_NAME}: Can't create link. Container id [${req.params.cid}] not found.`);
-        let link = container._links[req.params.id];
+            return res.status(404).send(`Can't create link. Container id [${req.params.cid}] not found.`);
+        let link = req.body;
         let node = container.getNodeById(link.origin_id);
         let targetNode = container.getNodeById(link.target_id);
         if (!node)
-            return res.status(404).send(`${MODULE_NAME}: Can't create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
+            return res.status(404).send(`Can't create link. Node id [${req.params.cid}/${link.origin_id}] not found.`);
         if (!targetNode)
-            return res.status(404).send(`${MODULE_NAME}: Can't create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
+            return res.status(404).send(`Can't create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
         // node.disconnectOutput(link.origin_slot, targetNode);
         targetNode.disconnectInput(link.target_slot);
-        server_1.server.socket.io.emit('link-delete', {
+        app_1.app.server.socket.io.emit('link-delete', {
             cid: req.params.cid,
-            id: req.params.id
+            link: link
         });
-        res.send(`${MODULE_NAME}: Link deleted: from [${node.container.id}/${node.id}] to [${targetNode.container.id}/${targetNode.id}]`);
+        res.send(`Link deleted: from [${node.container.id}/${node.id}] to [${targetNode.container.id}/${targetNode.id}]`);
     });
     //------------------ Container ------------------------
     /**
@@ -218,7 +235,7 @@
      */
     router.get('/state', function (req, res) {
         let state = {
-            isRunning: container_1.rootContainer.isRunning
+            isRunning: app_1.app.rootContainer.isRunning
         };
         res.json(state);
     });
@@ -226,25 +243,25 @@
      * Run container
      */
     router.post('/run', function (req, res) {
-        container_1.rootContainer.run();
-        server_1.server.socket.io.emit('container-run');
-        res.send(`${MODULE_NAME}: Run container`);
+        app_1.app.rootContainer.run();
+        app_1.app.server.socket.io.emit('container-run');
+        res.send(`Run container`);
     });
     /**
      * Stop container
      */
     router.post('/stop', function (req, res) {
-        container_1.rootContainer.stop();
-        server_1.server.socket.io.emit('container-stop');
-        res.send(`${MODULE_NAME}: Stop container`);
+        app_1.app.rootContainer.stop();
+        app_1.app.server.socket.io.emit('container-stop');
+        res.send(`Stop container`);
     });
     /**
      * Run step container
      */
     router.post('/step', function (req, res) {
-        container_1.rootContainer.runStep();
-        server_1.server.socket.io.emit('container-run-step');
-        res.send(`${MODULE_NAME}: Run step container`);
+        app_1.app.rootContainer.runStep();
+        app_1.app.server.socket.io.emit('container-run-step');
+        res.send(`Run step container`);
     });
     //------------------ receiver ------------------------
     router.post('/receiver/value', function (req, res) {

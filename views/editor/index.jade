@@ -91,8 +91,7 @@ html
 			</div>
 		script.
 			//this var used in node-editor
-			var this_panel_id = "#{panelId}";
-			var owner_panel_id = "#{ownerPanelId}";
+			var container_id = "#{container_id}";
 			var theme = "#{theme}"
 
 
@@ -116,5 +115,6 @@ script(src='/libs/moment/min/moment.min.js')
 script(src='/libs/handlebars/handlebars.min.js')
 script(src='/libs/semantic/dist/semantic.min.js')
 script(src='/libs/socket.io-client/dist/socket.io.js')
+script(src='/js/libs/logplease.min.js')
 script(src='/libs/requirejs/require.js' data-main="/js/editor/init")
 //script(src='/js/node-editor/node-editor-theme#{theme}.js')

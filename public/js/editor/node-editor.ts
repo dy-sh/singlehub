@@ -4,7 +4,7 @@
 
 import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
-import {Container, rootContainer} from "../../nodes/container"
+import {Container} from "../../nodes/container"
 import {Renderer} from "./renderer"
 import {EditorSocket, socket} from "./editor-socket";
 import {themes} from "./node-editor-themes"
@@ -13,7 +13,7 @@ import {themes} from "./node-editor-themes"
 export class NodeEditor {
 
     private root: HTMLDivElement;
-    container: Container;
+    rootContainer: Container;
     renderer: Renderer;
     socket: EditorSocket;
     //nodes: Nodes;
@@ -38,25 +38,23 @@ export class NodeEditor {
             Nodes.options = themes[(<any>window).theme];
 
 
-        //create container
-        this.container = rootContainer;
+        //create root container
+        this.rootContainer = new Container();
 
         //create socket
         this.socket = socket;
-        this.container.socket = socket.socket;
+        this.rootContainer.socket = socket.socket;
 
 
         //create canvas
         let renderer = this.renderer = new Renderer(
             <HTMLCanvasElement>canvas,
-            this.container);
+            this.rootContainer);
         // renderer.background_image = "/images/node-editor/grid.png";
-        this.container.onAfterExecute = function () {
+        this.rootContainer.onAfterExecute = function () {
             renderer.draw(true)
         };
 
-
-        //add stuff
 
         //todo later
         //  this.addMiniWindow(200, 200);
@@ -89,7 +87,7 @@ export class NodeEditor {
         miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
         let canvas = miniwindow.querySelector("canvas");
 
-        let renderer = new Renderer(canvas, this.container);
+        let renderer = new Renderer(canvas, this.rootContainer);
         //  renderer.background_image = "images/node-editor/grid.png";
         //derwish edit
         renderer.scale = 0.1;
@@ -108,7 +106,7 @@ export class NodeEditor {
         close_button.innerHTML = "X";
         close_button.addEventListener("click", function (e) {
             minimap_opened = false;
-            renderer.setContainer(null);
+            renderer.setContainer(null, false, false);
             miniwindow.parentNode.removeChild(miniwindow);
         });
         miniwindow.appendChild(close_button);
@@ -210,7 +208,7 @@ export class NodeEditor {
                         json: filebody,
                         x: position[0],
                         y: position[1],
-                        ownerContainerId: rootContainer.id
+                        ownerContainerId: 0
                     },
                     success: function (result) {
                         if (result) {
@@ -264,7 +262,7 @@ export class NodeEditor {
                     json: $('#modal-panel-text').val(),
                     x: position[0],
                     y: position[1],
-                    ownerContainerId: rootContainer.id
+                    ownerContainerId: 0
                 },
                 success: function (result) {
                     if (result) {
@@ -336,7 +334,7 @@ export class NodeEditor {
                         json: script,
                         x: position[0],
                         y: position[1],
-                        ownerContainerId: rootContainer.id
+                        ownerContainerId: 0
                     },
                     success: function (result) {
                         if (result) {
@@ -493,7 +491,7 @@ export class NodeEditor {
                 $("#slots-values-icon").removeClass("hide");
                 $("#slots-values-icon").addClass("unhide");
 
-                let container = rootContainer;
+                let container = Container.containers[0];
                 for (let id in container._nodes) {
                     let node = container._nodes[id];
                     node.updateInputsLabels();
@@ -535,10 +533,22 @@ export class NodeEditor {
                 for (let i = 0; i < 1000; i++) {
                     if (that.renderer.container.id == cont_id)
                         break;
-                    that.renderer.closeContainer();
+                    that.renderer.closeContainer(false);
                 }
+                that.socket.sendJoinContainerRoom(that.renderer.container.id);
             });
         }
+    }
+
+    updateBrowserUrl() {
+        //change browser url
+
+        let cid = editor.renderer.container.id;
+        if (cid == 0)
+            window.history.pushState('Container ' + cid, 'MyNodes', '/editor/');
+        else
+            window.history.pushState('Container ' + cid, 'MyNodes', '/editor/c/' + cid);
+
     }
 }
 

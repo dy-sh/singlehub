@@ -22,9 +22,9 @@
         constructor() {
             super();
             this.onInputUpdated = function () {
-                let A = this.getInputData(0);
-                let B = this.getInputData(1);
-                let result = A + B;
+                let a = this.getInputData(0);
+                let b = this.getInputData(1);
+                let result = a + b;
                 this.setOutputData(0, result);
             };
             this.title = "Plus";

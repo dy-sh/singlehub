@@ -6,26 +6,36 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'socket.io', "../public/nodes/container", "../public/nodes/utils"], factory);
+        define(["require", "exports", 'socket.io', "../public/nodes/container", "../public/nodes/utils", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const socket = require('socket.io');
     const container_1 = require("../public/nodes/container");
     const utils_1 = require("../public/nodes/utils");
+    const app_1 = require("../app");
+    const log = require('logplease').create('server', { color: 3 });
     class NodesServerSocket {
         constructor(server) {
             let io = socket(server);
             this.io = io;
             io.on('connection', function (socket) {
-                utils_1.default.debug("New socket conection", "SOCKET");
+                log.debug("New socket conection");
                 // socket.on('test message', function (msg) {
                 //     io.emit('test message', msg + "2");
                 // });
+                //join client to container room
+                socket.on('room', function (room) {
+                    if (socket.room)
+                        socket.leave(socket.room);
+                    socket.room = room;
+                    socket.join(room);
+                    log.debug("Join to room [" + room + "]");
+                });
                 socket.on('node-message-to-back-side', function (n) {
-                    let node = container_1.rootContainer.getNodeById(n.id);
+                    let node = app_1.app.rootContainer.getNodeById(n.id);
                     if (!node) {
-                        utils_1.default.debugErr("Can't get node message from front-side. Node id does not exist", this);
+                        log.error("Can't get node message from front-side. Node id does not exist");
                         return;
                     }
                     node.onGetMessageFromFrontSide(n.value);
@@ -37,7 +47,7 @@
                     for (let id in container._nodes) {
                         let node = container._nodes[id];
                         if (node.inputs) {
-                            for (let i = 0; i < node.inputs.length; i++) {
+                            for (let i in node.inputs) {
                                 let data = node.inputs[i].data;
                                 data = utils_1.default.formatAndTrimValue(data);
                                 //todo convert and trim data
@@ -49,12 +59,12 @@
                             }
                         }
                         if (node.outputs) {
-                            for (let i = 0; i < node.outputs.length; i++) {
-                                let data = node.outputs[i].data;
+                            for (let o in node.outputs) {
+                                let data = node.outputs[o].data;
                                 data = utils_1.default.formatAndTrimValue(data);
                                 outputs_values.push({
                                     nodeId: node.id,
-                                    outputId: i,
+                                    outputId: o,
                                     data: data
                                 });
                             }

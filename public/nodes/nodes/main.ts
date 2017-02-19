@@ -11,7 +11,7 @@
 
 import {Nodes} from "../nodes";
 import {Node} from "../node";
-import {Container, rootContainer} from "../container";
+import {Container} from "../container";
 import Utils from "../utils";
 
 
@@ -60,23 +60,32 @@ export class ContainerNode extends Node {
         this.desc = "Contain other nodes";
 
         this.size = [120, 20];
-
-
-        this.sub_container = new Container();
-        this.title = "Container " + this.sub_container.id;
-        this.sub_container.container_node = this;
     }
 
 
     onAdded = function () {
-        if (this.isBackside()) {
-            rootContainer.db.addContainer(this.sub_container);
-        }
-
+        this.sub_container.container_node = this;
         this.sub_container.parent_container_id = this.container.id;
     };
 
+    onBeforeCreated = function () {
+        this.sub_container = new Container();
+        this.sub_container_id = this.sub_container.id;
+        this.title = "Container " + this.sub_container.id;
+
+
+        let rootContainer = Container.containers[0];
+        if (rootContainer.db)
+            rootContainer.db.updateLastContainerId(this.sub_container_id);
+
+    }
+
     onRemoved = function () {
+        for (let id in this.sub_container._nodes) {
+            let node = this.sub_container._nodes[id];
+            node.container.remove(node);
+        }
+
         delete Container.containers[this.sub_container.id];
     };
 
@@ -85,7 +94,7 @@ export class ContainerNode extends Node {
         let that = this;
         return [{
             content: "Open", callback: function () {
-                renderer.openContainer(that.sub_container);
+                renderer.openContainer(that.sub_container,true);
             }
         }];
     }
@@ -94,14 +103,23 @@ export class ContainerNode extends Node {
         this.sub_container.runStep();
     }
 
-    configure(o) {
-        Node.prototype.configure.call(this, o);
-        //this.sub_container.configure(o.container);
+    configure(data, from_db = false) {
+        super.configure(data);
+
+        this.sub_container = Container.containers[data.sub_container.id];
+        if (!this.sub_container)
+            this.sub_container = new Container(data.sub_container.id);
+
+        if (data.sub_container)
+            this.sub_container.configure(data.sub_container, true);
+
     }
 
-    serialize() {
-        let data = Node.prototype.serialize.call(this);
-        data.sub_container = this.sub_container.serialize();
+    serialize(for_db = false) {
+        let data = super.serialize(for_db);
+
+        (<any>data).sub_container = this.sub_container.serialize(!for_db);
+
         return data;
     }
 
@@ -131,61 +149,30 @@ export class ContainerInputNode extends Node {
 
         this.addOutput("input", null);
 
-        this.properties = {name: "input", type: null};
-
-        let that = this;
-
-        // Object.defineProperty(this.properties, "name", {
-        //     get: function () {
-        //         return input_name;
-        //     },
-        //     set: function (v) {
-        //         if (v == "")
-        //             return;
-        //
-        //         let info = that.getOutputInfo(0);
-        //         if (info.name == v)
-        //             return;
-        //         info.name = v;
-        //         if (that.container)
-        //             that.container.renameContainerInput(input_name, v);
-        //         input_name = v;
-        //     },
-        //     enumerable: true
-        // });
-        //
-        // Object.defineProperty(this.properties, "type", {
-        //     get: function () {
-        //         return that.outputs[0].type;
-        //     },
-        //     set: function (v) {
-        //         that.outputs[0].type = v;
-        //         if (that.container)
-        //             that.container.changeConainerInputType(input_name, that.outputs[0].type);
-        //     },
-        //     enumerable: true
-        // });
-
-
+        this.properties = {type: null};
     }
 
     onAdded = function () {
-        if (this.isBackside()) {
-            let name = this.getNewContainerInputName();
-            this.properties.name = name;
-            this.outputs[0].name = this.properties.name;
-        }
+
     }
 
-    onCreated = function () {
+    onAfterCreated = function () {
+
+
         //add output on container node
         let cont_node = this.container.container_node;
-        cont_node.addInput(this.properties.name, this.properties.type);
+        let id = cont_node.addInput(null, this.properties.type);
         cont_node.setDirtyCanvas(true, true);
-        this.properties.slot = cont_node.inputs.length - 1;
+        this.properties.slot = id;
 
-        //update output name
-        this.outputs[0].name = this.properties.name;
+        //update name
+        // this.outputs[0].name = cont_node.inputs[id].name;
+        this.title = "Input " + (id + 1);
+
+        if (this.container.db) {
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: cont_node.inputs});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+        }
     }
 
     onRemoved = function () {
@@ -195,6 +182,11 @@ export class ContainerInputNode extends Node {
         cont_node.removeInput(this.properties.slot);
         cont_node.setDirtyCanvas(true, true);
         this.properties.slot = -1;
+
+        if (this.container.db) {
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: cont_node.inputs});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+        }
     }
 
     onExecute = function () {
@@ -203,22 +195,6 @@ export class ContainerInputNode extends Node {
         this.setOutputData(0, val);
     }
 
-    getNewContainerInputName(): string {
-        let maxInput = 0;
-        let cont_node = this.container.container_node;
-        if (cont_node.inputs) {
-            for (let input of cont_node.inputs) {
-                if (input.name.startsWith("input ")) {
-                    let substr = input.name.substring(7, input.name.length - 1);
-                    let num = parseInt(substr);
-                    if (num > maxInput)
-                        maxInput = num;
-                }
-            }
-        }
-
-        return "input " + ++maxInput;
-    }
 
 }
 Nodes.registerNodeType("main/input", ContainerInputNode);
@@ -233,59 +209,30 @@ export class ContainerOutputNode extends Node {
 
         this.addInput("output", null);
 
-        this.properties = {name: "output", type: null};
-
-        let that = this;
-
-        // Object.defineProperty(this.properties, "name", {
-        //     get: function () {
-        //         return output_name;
-        //     },
-        //     set: function (v) {
-        //         if (v == "")
-        //             return;
-        //
-        //         let info = that.getInputInfo(0);
-        //         if (info.name == v)
-        //             return;
-        //         info.name = v;
-        //         if (that.container)
-        //             that.container.renameContainerOutput(output_name, v);
-        //         output_name = v;
-        //     },
-        //     enumerable: true
-        // });
-        //
-        // Object.defineProperty(this.properties, "type", {
-        //     get: function () {
-        //         return that.inputs[0].type;
-        //     },
-        //     set: function (v) {
-        //         that.inputs[0].type = v;
-        //         if (that.container)
-        //             that.container.changeConainerInputType(output_name, that.inputs[0].type);
-        //     },
-        //     enumerable: true
-        // });
+        this.properties = {type: null};
     }
 
     onAdded = function () {
-        if (this.isBackside()) {
-            let name = this.getNewContainerOutputName();
-            this.properties.name = name;
-            this.inputs[0].name = this.properties.name;
-        }
+
+
     }
 
-    onCreated = function () {
+    onAfterCreated = function () {
+
         //add output on container node
         let cont_node = this.container.container_node;
-        cont_node.addOutput(this.properties.name, this.properties.type);
+        let id = cont_node.addOutput(null, this.properties.type);
         cont_node.setDirtyCanvas(true, true);
-        this.properties.slot = cont_node.outputs.length - 1;
+        this.properties.slot = id;
 
-        //update input name
-        this.inputs[0].name = this.properties.name;
+        //update name
+        // this.inputs[0].name = cont_node.outputs[id].name;
+        this.title = "Output " + (id + 1);
+
+        if (this.container.db) {
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: cont_node.outputs});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+        }
     }
 
     onRemoved = function () {
@@ -295,6 +242,11 @@ export class ContainerOutputNode extends Node {
         cont_node.removeOutput(this.properties.slot);
         cont_node.setDirtyCanvas(true, true);
         this.properties.slot = -1;
+
+        if (this.container.db) {
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: cont_node.outputs});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+        }
     }
 
 
@@ -304,21 +256,6 @@ export class ContainerOutputNode extends Node {
         cont_node.outputs[this.properties.slot].data = val;
     }
 
-    getNewContainerOutputName(): string {
-        let maxOutput = 0;
-        let cont_node = this.container.container_node;
-        if (cont_node.outputs) {
-            for (let output of cont_node.outputs) {
-                if (output.name.startsWith("output ")) {
-                    let substr = output.name.substring(8, output.name.length - 1);
-                    let num = parseInt(substr);
-                    if (num > maxOutput)
-                        maxOutput = num;
-                }
-            }
-        }
 
-        return "output " + ++maxOutput;
-    }
 }
 Nodes.registerNodeType("main/output", ContainerOutputNode);

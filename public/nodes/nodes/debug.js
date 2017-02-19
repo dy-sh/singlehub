@@ -1,3 +1,6 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 11.02.17.
+ */
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
@@ -10,15 +13,19 @@
     const nodes_1 = require("../nodes");
     const node_1 = require("../node");
     const utils_1 = require("../utils");
-    /**
-     * Created by derwish on 11.02.17.
-     */
+    //console logger back and front
+    let log;
+    if (typeof (window) === 'undefined')
+        log = require('logplease').create('node', { color: 5 });
+    else
+        log = Logger.create('node', { color: 5 });
     //Watch a value in the editor
     class WatchNode extends node_1.Node {
         constructor() {
             super();
             this.onInputUpdated = function () {
                 let val = this.getInputData(0);
+                this.isRecentlyActive = true;
                 this.sendMessageToFrontSide({ value: val });
             };
             this.onGetMessageFromBackSide = function (data) {
@@ -45,11 +52,12 @@
             super();
             this.onInputUpdated = function () {
                 let val = this.getInputData(0);
-                console.log("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
+                this.isRecentlyActive = true;
+                log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
                 this.sendMessageToFrontSide({ value: val });
             };
             this.onGetMessageFromBackSide = function (data) {
-                console.log("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
+                log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
             };
             this.title = "Console";
             this.desc = "Show value inside the console";

@@ -1,80 +1,109 @@
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./public/nodes/utils", 'path', './modules/web-server/server', './public/nodes/container', "./modules/database/neDbDatabase"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./public/nodes/container", "path"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    require('source-map-support').install();
-    const utils_1 = require("./public/nodes/utils");
     /**
      * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
      */
-    utils_1.default.debug("-------- MyNodes ----------");
-    const path = require('path');
+    //source map for node typescript debug
+    require('source-map-support').install();
+    console.log("----------------------------- MyNodes -----------------------------");
+    let config = require('./config.json');
+    const container_1 = require("./public/nodes/container");
+    //add app root dir to global
+    const path = require("path");
     global.__rootdirname = path.resolve(__dirname);
-    const server_1 = require('./modules/web-server/server');
-    utils_1.default.debug("Server started at port " + server_1.server.server.address().port, "SERVER");
-    // import 'modules/debug/configure'
-    // import {App} from '/modules/web-server/server'
-    // import 'modules/mysensors/gateway'
-    // import 'modules/web-server/server'
-    //
-    // //mysensors gateway
-    // // if (config.gateway.mysensors.serial.enable) {
-    // // 	mys_gateway.connectToSerialPort(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
-    // // }
-    //
-    //
-    const container_1 = require('./public/nodes/container');
-    // let rootContainer=require('./public/nodes/rootContainer');
-    container_1.rootContainer.socket = server_1.server.socket.io;
-    require('./public/nodes/nodes');
-    require('./public/nodes/nodes/main');
-    require('./public/nodes/nodes/debug');
-    require('./public/nodes/nodes/math');
-    // require('./modules/test').test();
-    const neDbDatabase_1 = require("./modules/database/neDbDatabase");
-    container_1.rootContainer.db = neDbDatabase_1.db;
-    neDbDatabase_1.db.loadDatabase(function (err) {
-        if (err) {
-            utils_1.default.debugErr(err.message, "DATABASE");
-            return;
+    const log = require('logplease').create('app', { color: 2 });
+    class App {
+        constructor() {
+            this.createServer();
+            if (!config.firstRun)
+                this.start();
         }
-        utils_1.default.debug("Database loaded", "DATABASE");
-        //add rootContainer if not exist
-        neDbDatabase_1.db.getContainer(0, function (err, cont) {
-            if (!cont) {
-                utils_1.default.debug("Create root container", "DATABASE");
-                neDbDatabase_1.db.addContainer(container_1.rootContainer);
+        start() {
+            if (!this.rootContainer) {
+                this.createNodes();
+                this.createRootContainer();
             }
-        });
-        //import containers
-        //add containers
-        neDbDatabase_1.db.getContainers(function (err, containers) {
-            if (!containers)
-                return;
-            for (let c of containers) {
-                if (c.id == 0) {
-                    container_1.rootContainer.configure(c);
-                }
-                else {
-                }
+            if (config.dataBase.enable) {
+                if (!this.db)
+                    this.connectDatabase();
+                if (this.db)
+                    this.loadDatabase(true);
             }
-            utils_1.default.debug("Loaded " + containers.length + " containers", "DATABASE");
-            //add nodes
-            neDbDatabase_1.db.getNodes(function (err, nodes) {
-                if (!nodes)
+            if (this.rootContainer && this.db)
+                this.rootContainer.db = this.db;
+            //add test nodes
+            // require('./modules/test').test();
+            //mysensors gateway
+            // if (config.gateway.mysensors.serial.enable) {
+            // 	mys_gateway.connectToSerialPort(config.gateway.mysensors.serial.port, config.gateway.mysensors.serial.baudRate);
+            // }
+        }
+        createServer() {
+            this.server = require('./modules/web-server/server').server;
+        }
+        createNodes() {
+            require('./public/nodes/nodes');
+            require('./public/nodes/nodes/main');
+            require('./public/nodes/nodes/debug');
+            require('./public/nodes/nodes/math');
+        }
+        createRootContainer() {
+            this.rootContainer = new container_1.Container();
+            this.rootContainer.socket = this.server.socket.io;
+        }
+        connectDatabase() {
+            let db;
+            if (config.dataBase.useInternalDb)
+                db = require("./modules/database/neDbDatabase").db;
+            else
+                throw ("External db not implementer yet");
+            this.db = db;
+        }
+        loadDatabase(importNodes, callback) {
+            let db = this.db;
+            db.loadDatabase(function (err) {
+                if (callback)
+                    callback(err);
+                if (err)
                     return;
-                for (let n of nodes) {
-                    let cont = container_1.Container.containers[n.cid];
-                    cont.add_serialized_node(n);
-                }
-                utils_1.default.debug("Loaded " + nodes.length + " nodes", "DATABASE");
+                if (!importNodes)
+                    return;
+                //get last container id
+                db.getLastContainerId(function (err, id) {
+                    if (id)
+                        container_1.Container.last_container_id = id;
+                });
+                //get last node id for root container
+                db.getLastRootNodeId(function (err, id) {
+                    if (id)
+                        exports.app.rootContainer.last_node_id = id;
+                });
+                //import nodes
+                db.getNodes(function (err, nodes) {
+                    if (!nodes)
+                        return;
+                    for (let n of nodes) {
+                        let conts = container_1.Container.containers;
+                        let root = container_1.Container.containers[0];
+                        let cont = container_1.Container.containers[n.cid];
+                        if (!cont)
+                            cont = new container_1.Container(n.cid);
+                        cont.add_serialized_node(n, true);
+                    }
+                    let contCount = Object.keys(container_1.Container.containers).length;
+                    log.debug("Created " + contCount + " containers, " + nodes.length + " nodes");
+                });
             });
-        });
-    });
+        }
+    }
+    exports.app = new App();
 });
 //# sourceMappingURL=app.js.map

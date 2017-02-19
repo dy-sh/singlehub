@@ -3,16 +3,19 @@
  */
 
 import * as NeDBDataStore from "nedb";
-import {rootContainer, Container, SerializedContainer} from "../../public/nodes/container";
-import {Nodes} from "../../public/nodes/nodes";
+import {Container, SerializedContainer} from "../../public/nodes/container";
 import {Node, SerializedNode} from "../../public/nodes/node";
-import Utils from "../../public/nodes/utils";
 import {Database} from "../../public/interfaces/database";
+import {User} from "../../public/interfaces/user";
 
-class NeDbDatabase implements Database{
+const log = require('logplease').create('database', {color: 4});
+
+
+class NeDbDatabase implements Database {
+
     users: NeDBDataStore;
     nodes: NeDBDataStore;
-    containers: NeDBDataStore;
+    app: NeDBDataStore;
 
 
     constructor() {
@@ -26,79 +29,163 @@ class NeDbDatabase implements Database{
     loadDatabase(callback?: (err: Error) => void) {
         this.users = new NeDBDataStore('users.db');
         this.nodes = new NeDBDataStore('nodes.db');
-        this.containers = new NeDBDataStore('containers.db');
+        this.app = new NeDBDataStore('app.db');
 
         let that = this;
         this.users.loadDatabase(function (err) {
-            if (err) callback(err);
+
+            if (err) {
+                log.error(err);
+                callback(err);
+            }
             else that.nodes.loadDatabase(function (err) {
-                if (err) callback(err);
-                else that.containers.loadDatabase(callback);
+                if (err) {
+                    log.error(err);
+                    callback(err);
+                }
+                else that.app.loadDatabase((function (err) {
+                    if (err)
+                        log.error(err);
+                    else
+                        log.debug("Database loaded");
+
+                    callback(err)
+                }));
             });
         });
     }
 
 
-    addContainer(c: Container, callback?: (err?: Error, doc?: SerializedContainer) => void) {
-        let c_ser = c.serialize(false, false);
-        (<any>c_ser)._id = "" + c.id;
-
-        this.containers.insert(c_ser, function (err, doc) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
-            if (callback) callback(err, doc);
-        })
-    }
-
     addNode(node: Node, callback?: (err?: Error, doc?: SerializedNode) => void) {
-        let ser_node = node.serialize();
+        let ser_node = node.serialize(true);
         (<any>ser_node)._id = "c" + ser_node.cid + "n" + ser_node.id;
 
         this.nodes.insert(ser_node, function (err, doc) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (err) log.error(err);
             if (callback) callback(err, doc);
         })
     }
 
-    getContainers(callback?: (err?: Error, docs?: Array<SerializedContainer>) => void) {
-        this.containers.find({}, function (err, docs) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
-            if (callback) callback(err, docs);
+    addUser(user: User, callback?: (err?: Error, doc?: User) => void) {
+        this.users.insert(user, function (err, doc) {
+            if (err) log.error(err);
+            if (callback) callback(err, doc);
         })
     }
 
     getNodes(callback?: (err?: Error, docs?: Array<SerializedNode>) => void) {
         this.nodes.find({}, function (err, docs) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (err) log.error(err);
             if (callback) callback(err, docs);
         })
     }
 
-    getContainer(id: number, callback?: (err?: Error, doc?: SerializedContainer) => void) {
-        this.containers.findOne({_id: "" + id}, function (err, doc: any) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
-            if (callback) callback(err, doc);
+    getUsers(callback?: (err?: Error, docs?: Array<User>) => void) {
+        this.users.find({}, function (err, docs) {
+            if (err) log.error(err);
+            if (callback) callback(err, docs);
         })
     }
 
     getNode(id: number, cid: number, callback?: (err?: Error, doc?: SerializedNode) => void) {
-        let _id = "c" + id + "n" + cid;
+        let _id = "c" + cid + "n" + id;
         this.nodes.findOne({_id: _id}, function (err, doc: any) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
+            if (err) log.error(err);
             if (callback) callback(err, doc);
         })
     }
 
-    updateContainer(id: number, update: any, callback?: (err?: Error) => void) {
-        this.containers.update({_id: "" + id}, {$set: update}, function (err) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
+    getUser(name: string, callback?: (err?: Error, doc?: User) => void) {
+        this.users.findOne({name: name}, function (err, doc: any) {
+            if (err) log.error(err);
+            if (callback) callback(err, doc);
+        })
+    }
+
+
+    updateNode(id: number, cid: number, update: any, callback?: (err?: Error) => void) {
+        let _id = "c" + cid + "n" + id;
+        this.nodes.update({_id: _id}, {$set: update}, function (err, updated) {
+            if (err) log.error(err);
+            if (updated == 0) log.error(`Cat't update node [${cid}/${id}]. Document not found.`);
             if (callback) callback(err);
         })
     }
 
-    updateNode(id: number, cid: number, update: any, callback?: (err?: Error) => void) {
-        let _id = "c" + id + "n" + cid;
-        this.nodes.update({_id: _id}, {$set: update}, function (err) {
-            if (err) Utils.debugErr(err.message, "DATABASE");
+    getUsersCount(callback?: (err?: Error, num?: number) => void) {
+        this.users.count({}, function (err, num) {
+            if (err) log.error(err);
+            if (callback) callback(err, num);
+        })
+    }
+
+    dropUsers(callback?: (err?: Error) => void) {
+        this.users.remove({}, {multi: true}, function (err) {
+            if (err) log.error(err);
+            if (callback) callback(err);
+        })
+    }
+
+    dropNodes(callback?: (err?: Error) => void) {
+        this.nodes.remove({}, {multi: true}, function (err) {
+            if (err) log.error(err);
+            if (callback) callback(err);
+        })
+    }
+
+    dropApp(callback?: (err?: Error) => void) {
+        this.app.remove({}, {multi: true}, function (err) {
+            if (err) log.error(err);
+            if (callback) callback(err);
+        })
+    }
+
+
+    removeNode(id: number, cid: number, callback?: (err?: Error) => void) {
+        let _id = "c" + cid + "n" + id;
+        this.nodes.remove({_id: _id}, {}, function (err, removed) {
+            if (err) log.error(err);
+            if (removed == 0) log.error("Cat't remove. Document not found.");
+            if (callback) callback(err);
+        })
+    }
+
+    getLastContainerId(callback?: (err?: Error, id?: number) => void) {
+        this.app.findOne({_id: "lastContainerId"}, function (err, doc: any) {
+            if (err) log.error(err);
+            if (callback) {
+                if (doc)
+                    callback(err, doc.last);
+                else
+                    callback(err, null);
+            }
+        })
+    }
+
+    updateLastContainerId(id: number, callback?: (err?: Error) => void) {
+        this.app.update({_id: "lastContainerId"}, {$set: {last: id}}, {upsert: true}, function (err, updated) {
+            if (err) log.error(err);
+            if (updated == 0) log.error("Cat't update. Document not found.");
+            if (callback) callback(err);
+        })
+    }
+
+    getLastRootNodeId(callback?: (err?: Error, id?: number) => void) {
+        this.app.findOne({_id: "lastRootNodeId"}, function (err, doc: any) {
+            if (err) log.error(err);
+            if (callback) {
+                if (doc)
+                    callback(err, doc.last);
+                else
+                    callback(err, null);
+            }
+        })
+    }
+
+    updateLastRootNodeId(id: number, callback?: (err?: Error) => void) {
+        this.app.update({_id: "lastRootNodeId"}, {$set: {last: id}}, {upsert: true}, function (err, updated) {
+            if (err) log.error(err);
+            if (updated == 0) log.error("Cat't update. Document not found.");
             if (callback) callback(err);
         })
     }

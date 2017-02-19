@@ -12,6 +12,12 @@
     "use strict";
     const utils_1 = require("./utils");
     const nodes_1 = require("./nodes");
+    //console logger back and front
+    let log;
+    if (typeof (window) === 'undefined')
+        log = require('logplease').create('node', { color: 5 });
+    else
+        log = Logger.create('node', { color: 5 });
     class NodeOutput {
     }
     exports.NodeOutput = NodeOutput;
@@ -30,7 +36,7 @@
          * Configure a node from an object containing the serialized ser_node
          * @param ser_node object with properties for configure
          */
-        configure(ser_node) {
+        configure(ser_node, from_db = false) {
             for (let j in ser_node) {
                 if (j == "console")
                     continue;
@@ -51,39 +57,11 @@
                 else
                     this[j] = ser_node[j];
             }
-            //FOR LEGACY, PLEASE REMOVE ON NEXT VERSION
-            for (let i in this.inputs) {
-                let input = this.inputs[i];
-                if (!input.link)
-                    continue;
-                let link = input.link;
-                if (typeof (link) != "object")
-                    continue;
-                input.link = link[0];
-                this.container._links[link[0]] = {
-                    id: link[0],
-                    origin_id: link[1],
-                    origin_slot: link[2],
-                    target_id: link[3],
-                    target_slot: link[4]
-                };
-            }
-            for (let i in this.outputs) {
-                let output = this.outputs[i];
-                if (!output.links || output.links.length == 0)
-                    continue;
-                for (let j in output.links) {
-                    let link = output.links[j];
-                    if (typeof (link) != "object")
-                        continue;
-                    output.links[j] = link[0];
-                }
-            }
         }
         /**
          * Serialize node
          */
-        serialize() {
+        serialize(for_db = false) {
             let n = {
                 id: this.id,
                 cid: this.container.id,
@@ -95,9 +73,10 @@
             };
             //remove data from liks
             if (this.inputs) {
-                n.inputs = [];
-                for (let i of this.inputs)
-                    n.inputs.push({
+                n.inputs = {};
+                for (let id in this.inputs) {
+                    let i = this.inputs[id];
+                    n.inputs[id] = {
                         name: i.name,
                         type: i.type,
                         link: i.link,
@@ -106,12 +85,14 @@
                         pos: i.pos,
                         round: i.round,
                         isOptional: i.isOptional
-                    });
+                    };
+                }
             }
             if (this.outputs) {
-                n.outputs = [];
-                for (let o of this.outputs)
-                    n.outputs.push({
+                n.outputs = {};
+                for (let id in this.outputs) {
+                    let o = this.outputs[id];
+                    n.outputs[id] = {
                         name: o.name,
                         type: o.type,
                         links: o.links,
@@ -119,7 +100,8 @@
                         locked: o.locked,
                         pos: o.pos,
                         round: o.round
-                    });
+                    };
+                }
             }
             if (this.properties)
                 n.properties = utils_1.default.cloneObject(this.properties);
@@ -161,22 +143,26 @@
         }
         /**
          * Sets the output data
-         * @param slotId slotId id
+         * @param output_id slotId id
          * @param data slotId data
          */
-        setOutputData(slotId, data) {
-            if (this.outputs && slotId < this.outputs.length && this.outputs[slotId])
-                this.outputs[slotId].data = data;
-            this.isActive = true;
+        setOutputData(output_id, data) {
+            if (!this.outputs[output_id])
+                return;
+            if (this.outputs[output_id].data != data) {
+                this.outputs[output_id].data = data;
+                if (!this.isRecentlyActive)
+                    this.isRecentlyActive = true;
+            }
         }
         /**
          * Retrieves the input data (data traveling through the connection) from one slotId
-         * @param slotId slotId id
+         * @param input_id slotId id
          * @returns data or if it is not connected returns undefined
          */
-        getInputData(slotId) {
-            if (this.inputs && slotId < this.inputs.length && this.inputs[slotId])
-                return this.inputs[slotId].data;
+        getInputData(input_id) {
+            if (this.inputs[input_id])
+                return this.inputs[input_id].data;
         }
         /**
          * If there is a connection in one input slot
@@ -186,7 +172,7 @@
         isInputConnected(slot) {
             if (!this.inputs)
                 return false;
-            return (slot < this.inputs.length && this.inputs[slot].link != null);
+            return (this.inputs[slot].link != null);
         }
         /**
          * Returns info about an input connection (which node, type, etc)
@@ -196,9 +182,7 @@
         getInputInfo(slot) {
             if (!this.inputs)
                 return null;
-            if (slot < this.inputs.length)
-                return this.inputs[slot];
-            return null;
+            return this.inputs[slot];
         }
         /**
          * Returns info about an output connection (which node, type, etc)
@@ -208,9 +192,7 @@
         getOutputInfo(slot) {
             if (!this.outputs)
                 return null;
-            if (slot < this.outputs.length)
-                return this.outputs[slot];
-            return null;
+            return this.outputs[slot];
         }
         /**
          * if there is a connection in one output slot
@@ -220,7 +202,7 @@
         isOutputConnected(slot) {
             if (!this.outputs)
                 return null;
-            return (slot < this.outputs.length && this.outputs[slot].links && this.outputs[slot].links.length > 0);
+            return (this.outputs[slot].links && this.outputs[slot].links.length > 0);
         }
         //todo ES6
         // /**
@@ -252,16 +234,27 @@
          * @param extra_info this can be used to have special properties of an output (label, special color, position, etc)
          */
         addOutput(name, type, extra_info) {
+            let id = this.getFreeOutputId();
+            name = name || "output " + (id + 1);
             let output = { name: name, type: type, links: null };
             if (extra_info)
                 for (let i in extra_info)
                     output[i] = extra_info[i];
             if (!this.outputs)
-                this.outputs = [];
-            this.outputs.push(output);
+                this.outputs = {};
+            this.outputs[id] = output;
             if (this.onOutputAdded)
                 this.onOutputAdded(output);
             this.size = this.computeSize();
+            return id;
+        }
+        getFreeOutputId() {
+            if (!this.outputs)
+                return 0;
+            for (let i = 0; i < 1000; i++) {
+                if (!this.outputs[i])
+                    return i;
+            }
         }
         /**
          * Add a new output slot to use in this node
@@ -270,28 +263,30 @@
         addOutputs(array) {
             for (let i = 0; i < array.length; ++i) {
                 let info = array[i];
-                let o = { name: info[0], type: info[1], links: null };
+                let id = this.getFreeOutputId();
+                let name = info[0] || "output " + (id + 1);
+                let output = { name: name, type: info[1], links: null };
                 if (array[2])
                     for (let j in info[2])
-                        o[j] = info[2][j];
+                        output[j] = info[2][j];
                 if (!this.outputs)
-                    this.outputs = [];
-                this.outputs.push(o);
+                    this.outputs = {};
+                this.outputs[id] = output;
                 if (this.onOutputAdded)
-                    this.onOutputAdded(o);
+                    this.onOutputAdded(output);
             }
             this.size = this.computeSize();
         }
         /**
          * Remove an existing output slot
-         * @param slot slot id
+         * @param id slot id
          */
-        removeOutput(slot) {
-            this.disconnectOutput(slot);
-            this.outputs.splice(slot, 1);
+        removeOutput(id) {
+            this.disconnectOutput(id);
+            delete this.outputs[id];
             this.size = this.computeSize();
             if (this.onOutputRemoved)
-                this.onOutputRemoved(slot);
+                this.onOutputRemoved(id);
         }
         /**
          * Add a new input slot to use in this node
@@ -300,16 +295,27 @@
          * @param extra_info this can be used to have special properties of an input (label, color, position, etc)
          */
         addInput(name, type, extra_info) {
-            let input = { name: name, type: type, link: null };
+            let id = this.getFreeInputId();
+            name = name || "input " + (id + 1);
+            let input = { name: name, type: type };
             if (extra_info)
                 for (let i in extra_info)
                     input[i] = extra_info[i];
             if (!this.inputs)
-                this.inputs = [];
-            this.inputs.push(input);
+                this.inputs = {};
+            this.inputs[id] = input;
             this.size = this.computeSize();
             if (this.onInputAdded)
                 this.onInputAdded(input);
+            return id;
+        }
+        getFreeInputId() {
+            if (!this.inputs)
+                return 0;
+            for (let i = 0; i < 1000; i++) {
+                if (!this.inputs[i])
+                    return i;
+            }
         }
         /**
          * add several new input slots in this node
@@ -318,29 +324,31 @@
         addInputs(array) {
             for (let i = 0; i < array.length; ++i) {
                 let info = array[i];
-                let o = { name: info[0], type: info[1], link: null };
+                let id = this.getFreeInputId();
+                let name = info[0] || "input " + (id + 1);
+                let input = { name: name, type: info[1] };
                 if (array[2])
                     for (let j in info[2])
-                        o[j] = info[2][j];
+                        input[j] = info[2][j];
                 if (!this.inputs)
-                    this.inputs = [];
-                this.inputs.push(o);
+                    this.inputs = {};
+                this.inputs[id] = input;
                 if (this.onInputAdded)
-                    this.onInputAdded(o);
+                    this.onInputAdded(input);
             }
             this.size = this.computeSize();
         }
         /**
          * Remove an existing input slot
          * @method removeInput
-         * @param slot
+         * @param id
          */
-        removeInput(slot) {
-            this.disconnectInput(slot);
-            this.inputs.splice(slot, 1);
+        removeInput(id) {
+            this.disconnectInput(id);
+            delete this.inputs[id];
             this.size = this.computeSize();
             if (this.onInputRemoved)
-                this.onInputRemoved(slot);
+                this.onInputRemoved(id);
         }
         // /**
         //  * add an special connection to this node (used for special kinds of containers)
@@ -353,13 +361,41 @@
         // addConnection(name, type, pos, direction) {
         //     this.connections.push({name: name, type: type, pos: pos, direction: direction, links: null});
         // }
+        getInputsCount() {
+            return this.inputs ? Object.keys(this.inputs).length : 0;
+        }
+        getOutputsCount() {
+            return this.outputs ? Object.keys(this.outputs).length : 0;
+        }
+        getLastInputIndes() {
+            if (!this.inputs)
+                return -1;
+            let last = -1;
+            for (let i in this.inputs)
+                if (+i > last)
+                    last = +i;
+            return last;
+        }
+        getLastOutputIndex() {
+            if (!this.outputs)
+                return -1;
+            let last = -1;
+            for (let i in this.outputs)
+                if (+i > last)
+                    last = +i;
+            return last;
+        }
         /**
          * Computes the size of a node according to its inputs and output slots
          * @param minHeight
          * @returns {[number, number]} the total size
          */
         computeSize(minHeight) {
-            let rows = Math.max(this.inputs ? this.inputs.length : 1, this.outputs ? this.outputs.length : 1);
+            // let i_slots = this.getInputsCount();
+            // let o_slots = this.getOutputsCount();
+            let i_slots = this.getLastInputIndes() + 1;
+            let o_slots = this.getLastOutputIndex() + 1;
+            let rows = Math.max(this.inputs ? i_slots : 1, this.outputs ? o_slots : 1);
             let size = [0, 0];
             rows = Math.max(rows, 1);
             size[1] = rows * 14 + 6;
@@ -368,7 +404,7 @@
             let input_width = 0;
             let output_width = 0;
             if (this.inputs)
-                for (let i = 0, l = this.inputs.length; i < l; ++i) {
+                for (let i in this.inputs) {
                     let input = this.inputs[i];
                     let text = input.label || input.name || "";
                     let text_width = compute_text_size(text);
@@ -376,8 +412,8 @@
                         input_width = text_width;
                 }
             if (this.outputs)
-                for (let i = 0, l = this.outputs.length; i < l; ++i) {
-                    let output = this.outputs[i];
+                for (let o in this.outputs) {
+                    let output = this.outputs[o];
                     let text = output.label || output.name || "";
                     let text_width = compute_text_size(text);
                     if (output_width < text_width)
@@ -424,7 +460,8 @@
          */
         isPointInsideNode(x, y, margin) {
             margin = margin || 0;
-            let margin_top = this.container ? 0 : 20;
+            // let margin_top = this.container ? 0 : 20;
+            let margin_top = 20;
             if (this.flags.collapsed) {
                 //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
                 if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - nodes_1.Nodes.options.NODE_TITLE_HEIGHT - margin, nodes_1.Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, nodes_1.Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))
@@ -444,18 +481,18 @@
         getSlotInPosition(x, y) {
             //search for inputs
             if (this.inputs)
-                for (let i = 0, l = this.inputs.length; i < l; ++i) {
+                for (let i in this.inputs) {
                     let input = this.inputs[i];
-                    let link_pos = this.getConnectionPos(true, i);
+                    let link_pos = this.getConnectionPos(true, +i);
                     if (this.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-                        return { input: input, slot: i, link_pos: link_pos, locked: input.locked };
+                        return { input: input, slot: +i, link_pos: link_pos, locked: input.locked };
                 }
             if (this.outputs)
-                for (let i = 0, l = this.outputs.length; i < l; ++i) {
-                    let output = this.outputs[i];
-                    let link_pos = this.getConnectionPos(false, i);
+                for (let o in this.outputs) {
+                    let output = this.outputs[o];
+                    let link_pos = this.getConnectionPos(false, +o);
                     if (this.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-                        return { output: output, slot: i, link_pos: link_pos, locked: output.locked };
+                        return { output: output, slot: +o, link_pos: link_pos, locked: output.locked };
                 }
             return null;
         }
@@ -467,9 +504,10 @@
         findInputSlot(name) {
             if (!this.inputs)
                 return -1;
-            for (let i = 0, l = this.inputs.length; i < l; ++i)
+            for (let i in this.inputs) {
                 if (name == this.inputs[i].name)
-                    return i;
+                    return +i;
+            }
             return -1;
         }
         /**
@@ -480,197 +518,175 @@
         findOutputSlot(name) {
             if (!this.outputs)
                 return -1;
-            for (let i = 0, l = this.outputs.length; i < l; ++i)
-                if (name == this.outputs[i].name)
-                    return i;
+            for (let o in this.outputs) {
+                if (name == this.outputs[o].name)
+                    return +o;
+            }
             return -1;
         }
         /**
-         * Connect this target_node output to the input of another target_node
-         * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
-         * @param {Node} target_node the target target_node
-         * @param {number|string} target_slot the input slot of the target target_node (could be the number of the slot or the string with the name of the slot)
-         * @returns {boolean} if it was connected succesfully
+         * Connect output to the input of another node
+         * @param {number} output_id output id
+         * @param {number} target_node_id target node id
+         * @param {number} input_id input id of target node
+         * @returns {boolean} true if connected successfully
          */
-        connect(slot, target_node, target_slot) {
-            target_slot = target_slot || 0;
-            //seek for the output slot
-            if (typeof (slot) == "string") {
-                slot = this.findOutputSlot(slot);
-                if (slot == -1) {
-                    this.debugErr("Connect error, no slot of name " + slot);
-                    return false;
-                }
-            }
-            else if (!this.outputs || slot >= this.outputs.length) {
-                this.debugErr("Connect error, slot number not found");
+        connect(output_id, target_node_id, input_id) {
+            //get target node
+            let target_node = this.container.getNodeById(target_node_id);
+            if (!target_node) {
+                this.debugErr("Can't connect, target node not found");
                 return false;
             }
-            if (target_node && target_node.constructor === Number)
-                target_node = this.container.getNodeById(target_node.id);
-            if (!target_node)
-                throw ("Node not found");
-            //avoid loopback
-            if (target_node == this)
-                return false;
-            //if( target_node.constructor != Node ) throw ("Node.connect: target_node is not of type Node");
-            if (typeof (target_slot) == "string") {
-                target_slot = target_node.findInputSlot(target_slot);
-                if (target_slot == -1) {
-                    this.debugErr("Connect: Error, no slot of name " + target_slot);
-                    return false;
-                }
-            }
-            else if (!target_node.inputs || target_slot >= target_node.inputs.length) {
-                this.debugErr("Connect: Error, slot number not found");
+            //prevent self node connection (loop)
+            if (target_node == this) {
+                this.debugErr("Can't connect, prevent loop connection");
                 return false;
             }
-            //if there is something already plugged there, disconnect
-            if (target_slot != -1 && target_node.inputs[target_slot].link != null)
-                target_node.disconnectInput(target_slot);
-            //why here??
-            this.setDirtyCanvas(false, true);
-            if (this.container)
-                this.container.connectionChange(this);
-            //special case: -1 means target_node-connection, used for triggers
-            let output = this.outputs[slot];
-            //allows nodes to block connection even if all test passes
+            //check output exist
+            if (!this.outputs || !this.outputs[output_id]) {
+                this.debugErr("Can't connect, output not found");
+                return false;
+            }
+            //check input exist
+            if (!target_node.inputs || !target_node.inputs[input_id]) {
+                this.debugErr("Can't connect, input not found");
+                return false;
+            }
+            let output = this.outputs[output_id];
+            let input = target_node.inputs[input_id];
+            //check data types compatible
+            if (input.type && output.type && input.type != output.type)
+                return false;
+            //check target node allows connection
             if (target_node.onConnectInput)
-                if (target_node.onConnectInput(target_slot, output.type, output) === false)
+                if (target_node.onConnectInput(input_id, output) == false)
                     return false;
-            if (target_slot == -1) {
-                if (output.links == null)
-                    output.links = [];
-                output.links.push(target_node.id); //todo ES6 push({id: target_node.id, slot: -1})
+            //if target node input already connected
+            if (input.link)
+                target_node.disconnectInput(input_id);
+            if (!output.links)
+                output.links = [];
+            output.links.push({ target_node_id: target_node_id, target_slot: input_id });
+            input.link = { target_node_id: this.id, target_slot: output_id };
+            if (this.container.db) {
+                this.container.db.updateNode(this.id, this.container.id, { outputs: this.outputs });
+                this.container.db.updateNode(target_node.id, target_node.container.id, { inputs: target_node.inputs });
             }
-            else if (!output.type ||
-                !target_node.inputs[target_slot].type ||
-                output.type.toLowerCase() == target_node.inputs[target_slot].type.toLowerCase()) {
-                //info: link structure => [ 0:link_id, 1:start_node_id, 2:start_slot, 3:end_node_id, 4:end_slot ]
-                //let link = [ this.container.last_link_id++, this.id, slot, target_node.id, target_slot ];
-                let link = {
-                    id: this.container.last_link_id++,
-                    origin_id: this.id,
-                    origin_slot: slot,
-                    target_id: target_node.id,
-                    target_slot: target_slot
-                };
-                this.container._links[link.id] = link;
-                //connect
-                if (output.links == null)
-                    output.links = [];
-                output.links.push(link.id);
-                target_node.inputs[target_slot].link = link.id;
+            this.setDirtyCanvas(false, true);
+            if (this.container)
+                this.container.connectionChange(this);
+            this.debug("connected to " + target_node.getReadableId());
+            return true;
+        }
+        /**
+         * Disconnect node output
+         * @param {number} output_id output id
+         * @param target_node_id if defined, one links to this node will be disconnected, otherwise all links will be disconnected
+         * @param input_id if defined, only one link will be disconnected, otherwise all links will be disconnected
+         * @returns {boolean} true if disconnected successfully
+         */
+        disconnectOutput(output_id, target_node_id, input_id) {
+            //get target node
+            let target_node;
+            if (target_node_id) {
+                target_node = this.container.getNodeById(target_node_id);
+                if (!target_node) {
+                    this.debugErr("Can't disconnect, target node not found");
+                    return false;
+                }
             }
+            //check output exist
+            if (!this.outputs || !this.outputs[output_id]) {
+                this.debugErr("Can't disconnect, output not found");
+                return false;
+            }
+            let output = this.outputs[output_id];
+            //check input exist
+            let input;
+            if (target_node && input_id) {
+                if (!target_node.inputs || input_id > target_node.inputs.length - 1) {
+                    this.debugErr("Can't disconnect, input not found");
+                    return false;
+                }
+                input = target_node.inputs[input_id];
+            }
+            //check links
+            if (!output.links)
+                return false;
+            let i = output.links.length;
+            while (i--) {
+                let link = output.links[i];
+                if (target_node_id) {
+                    if (target_node_id != link.target_node_id)
+                        continue;
+                    if (input_id) {
+                        if (input_id != link.target_slot)
+                            continue;
+                    }
+                }
+                //remove link
+                let t_node = this.container.getNodeById(link.target_node_id);
+                delete t_node.inputs[link.target_slot].link;
+                output.links.splice(i, 1);
+                if (this.container.db)
+                    this.container.db.updateNode(t_node.id, t_node.container.id, { inputs: t_node.inputs });
+                this.debug("disconnected from " + t_node.getReadableId());
+            }
+            if (output.links.length == 0)
+                delete output.links;
+            if (this.container.db)
+                this.container.db.updateNode(this.id, this.container.id, { outputs: this.outputs });
             this.setDirtyCanvas(false, true);
             if (this.container)
                 this.container.connectionChange(this);
             return true;
         }
         /**
-         * Disconnect one output to an specific node
-         * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
-         * @param target_node the target node to which this slot is connected [Optional, if not target_node is specified all nodes will be disconnected]
-         * @returns {boolean} if it was disconnected succesfully
+         * Disconnect input
+         * @param {number} input_id input id
+         * @returns {boolean} true if disconnected successfully
          */
-        disconnectOutput(slot, target_node) {
-            if (typeof (slot) == "string") {
-                slot = this.findOutputSlot(slot);
-                if (slot == -1) {
-                    this.debugErr("Disconnect error, no slot of name " + slot);
-                    return false;
-                }
-            }
-            else if (!this.outputs || slot >= this.outputs.length) {
-                this.debugErr("Disconnect error, slot number not found");
+        disconnectInput(input_id) {
+            //check input exist
+            if (!this.inputs || !this.inputs[input_id]) {
+                this.debugErr("Can't disconnect, input not found");
                 return false;
             }
-            //get output slot
-            let output = this.outputs[slot];
-            if (!output.links || output.links.length == 0)
+            let input = this.inputs[input_id];
+            let link = input.link;
+            if (!link)
                 return false;
-            //one of the links
-            if (target_node) {
-                if (target_node.constructor === Number)
-                    target_node = this.container.getNodeById(target_node.id);
-                if (!target_node)
-                    throw ("Target Node not found");
-                for (let i = 0, l = output.links.length; i < l; i++) {
-                    let link_id = output.links[i];
-                    let link_info = this.container._links[link_id];
-                    //is the link we are searching for...
-                    if (link_info.target_id == target_node.id) {
-                        output.links.splice(i, 1); //remove here
-                        target_node.inputs[link_info.target_slot].link = null; //remove there
-                        delete this.container._links[link_id]; //remove the link from the links pool
-                        break;
-                    }
+            //disconnect output
+            let target_node = this.container.getNodeById(link.target_node_id);
+            if (!target_node)
+                return false;
+            let output = target_node.outputs[link.target_slot];
+            if (!output || !output.links)
+                return false;
+            let i = output.links.length;
+            while (i--) {
+                let output_link = output.links[i];
+                if (output_link.target_node_id == this.id
+                    && output_link.target_slot == input_id) {
+                    output.links.splice(i, 1);
+                    break;
                 }
             }
-            else {
-                for (let i = 0, l = output.links.length; i < l; i++) {
-                    let link_id = output.links[i];
-                    let link_info = this.container._links[link_id];
-                    let target_node = this.container.getNodeById(link_info.target_id);
-                    if (target_node)
-                        target_node.inputs[link_info.target_slot].link = null; //remove other side link
-                    delete this.container._links[link_id]; //remove the link from the links pool
-                }
-                output.links = null;
+            if (output.links.length == 0)
+                delete output.links;
+            //disconnect input
+            delete input.link;
+            if (this.container.db) {
+                this.container.db.updateNode(this.id, this.container.id, { inputs: this.inputs });
+                this.container.db.updateNode(target_node.id, target_node.container.id, { outputs: target_node.outputs });
             }
             this.setDirtyCanvas(false, true);
             if (this.container)
                 this.container.connectionChange(this);
+            this.debug("disconnected from " + target_node.getReadableId());
             return true;
         }
-        /**
-         * Disconnect one input
-         * @param {number|string} slot (could be the number of the slot or the string with the name of the slot)
-         * @returns {boolean} if it was disconnected succesfully
-         */
-        disconnectInput(slot) {
-            //find input by name
-            if (typeof (slot) == "string") {
-                slot = this.findInputSlot(slot);
-                if (slot == -1) {
-                    this.debugErr("Connect: Error, no slot of name " + slot);
-                    return false;
-                }
-            }
-            else if (!this.inputs || slot >= this.inputs.length) {
-                this.debugErr("Connect: Error, slot number not found");
-                return false;
-            }
-            let input = this.inputs[slot];
-            if (!input)
-                return false;
-            let link_id = this.inputs[slot].link;
-            this.inputs[slot].link = null;
-            //remove other side
-            let link_info = this.container._links[link_id];
-            if (link_info) {
-                let node = this.container.getNodeById(link_info.origin_id);
-                if (!node)
-                    return false;
-                let output = node.outputs[link_info.origin_slot];
-                if (!output || !output.links || output.links.length == 0)
-                    return false;
-                //check outputs
-                for (let i = 0, l = output.links.length; i < l; i++) {
-                    let link_id = output.links[i];
-                    let link_info = this.container._links[link_id];
-                    if (link_info.target_id == this.id) {
-                        output.links.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-            this.setDirtyCanvas(false, true);
-            delete this.container._links[link_id];
-            this.container.connectionChange(this);
-            return true;
-        }
-        //
         /**
          * Returns the center of a connection point in renderer coords
          * @param is_input true if if a input slot, false if it is an output
@@ -687,9 +703,9 @@
             if (is_input && slot_number == -1) {
                 return [this.pos[0] + 10, this.pos[1] + 10];
             }
-            if (is_input && this.inputs.length > slot_number && this.inputs[slot_number].pos)
+            if (is_input && this.inputs[slot_number] && this.inputs[slot_number].pos)
                 return [this.pos[0] + this.inputs[slot_number].pos[0], this.pos[1] + this.inputs[slot_number].pos[1]];
-            else if (!is_input && this.outputs.length > slot_number && this.outputs[slot_number].pos)
+            else if (!is_input && this.outputs[slot_number] && this.outputs[slot_number].pos)
                 return [this.pos[0] + this.outputs[slot_number].pos[0], this.pos[1] + this.outputs[slot_number].pos[1]];
             if (!is_input)
                 return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * nodes_1.Nodes.options.NODE_SLOT_HEIGHT];
@@ -805,7 +821,7 @@
          * @param module
          */
         debug(message) {
-            utils_1.default.debug(message, "Node: " + this.type + "(id:" + this.id + ")");
+            log.debug(this.getReadableId() + " " + message);
         }
         /**
          * Print error message to console
@@ -813,7 +829,10 @@
          * @param module
          */
         debugErr(message, module) {
-            utils_1.default.debugErr(message, "Node: " + this.type + "(id:" + this.id + ")");
+            log.error(this.getReadableId() + " " + message);
+        }
+        getReadableId() {
+            return `[${this.type}][${this.container.id}/${this.id}]`;
         }
         /**
          * is node running on back-side
@@ -834,7 +853,8 @@
         }
         updateInputsLabels() {
             if (this.inputs) {
-                for (let input of this.inputs) {
+                for (let i in this.inputs) {
+                    let input = this.inputs[i];
                     input.label = input.name;
                 }
                 this.setDirtyCanvas(true, true);
@@ -842,7 +862,8 @@
         }
         updateOutputsLabels() {
             if (this.outputs) {
-                for (let output of this.outputs) {
+                for (let o in this.outputs) {
+                    let output = this.outputs[o];
                     output.label = output.name;
                 }
                 this.setDirtyCanvas(true, true);

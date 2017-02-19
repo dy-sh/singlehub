@@ -22,34 +22,7 @@ export default class Utils {
     };
 
 
-    /**
-     * Print debug message to console
-     * @param message
-     * @param module
-     */
-    static debug(message: string, module?: string|any): void {
-        if (module && typeof module == "string")
-            console.log(module.toUpperCase() + ": " + message);
-        else if (module && module.name)
-            console.log(module.name.toUpperCase() + ": " + message);
-        else
-            console.log(message);
-    }
 
-    /**
-     * Print error message to console
-     * @param message
-     * @param module
-     */
-    static debugErr(message: string, module?: string|any): void {
-
-        if (module && typeof module == "string")
-            console.log(module.toUpperCase() + ": ERROR: " + message);
-        else if (module && module.name)
-            console.log(module.name.toUpperCase() + ": ERROR: " + message);
-        else
-            console.log(message);
-    }
 
     /**
      * Generate GUID string
@@ -264,6 +237,14 @@ export default class Utils {
         return "" + val;
     }
 
+
+    /**
+     * Get current time
+     * @returns {number}
+     */
+    static getTime(): number {
+        return (typeof(performance) != "undefined") ? performance.now() : Date.now();
+    };
 }
 
 

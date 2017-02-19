@@ -4,7 +4,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./node-editor", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "./node-editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,7 +12,6 @@
      * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
      */
     const nodes_1 = require("../../nodes/nodes");
-    const container_1 = require("../../nodes/container");
     const node_editor_1 = require("./node-editor");
     const utils_1 = require("../../nodes/utils");
     class Renderer {
@@ -79,7 +78,7 @@
          * @param container
          * @param skip_clear
          */
-        setContainer(container, skip_clear = false) {
+        setContainer(container, skip_clear = false, joinRoom = true) {
             if (this.container == container)
                 return;
             if (!skip_clear)
@@ -98,12 +97,15 @@
             container.attachRenderer(this);
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
+            node_editor_1.editor.updateBrowserUrl();
+            if (joinRoom)
+                node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
         }
         /**
          * Open container
          * @param container node
          */
-        openContainer(container) {
+        openContainer(container, joinRoom = true) {
             if (!container)
                 throw ("container cannot be null");
             if (this.container == container)
@@ -117,19 +119,23 @@
             container.attachRenderer(this);
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
-            //change browser url
-            window.history.pushState('Container ' + container.id, 'MyNodes', '/editor/c/' + container.id);
+            node_editor_1.editor.updateBrowserUrl();
+            if (joinRoom)
+                node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
         }
         /**
          * Close container
          */
-        closeContainer() {
+        closeContainer(joinRoom = true) {
             if (!this._containers_stack || this._containers_stack.length == 0)
                 return;
             let container = this._containers_stack.pop();
             container.attachRenderer(this);
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
+            node_editor_1.editor.updateBrowserUrl();
+            if (joinRoom)
+                node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
         }
         /**
          * Assigns a canvas
@@ -418,26 +424,26 @@
                     if (!this.connecting_node && !n.flags.collapsed && !this.live_mode) {
                         //search for outputs
                         if (n.outputs)
-                            for (let i = 0, l = n.outputs.length; i < l; ++i) {
-                                let output = n.outputs[i];
-                                let link_pos = n.getConnectionPos(false, i);
+                            for (let o in n.outputs) {
+                                let output = n.outputs[o];
+                                let link_pos = n.getConnectionPos(false, +o);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     this.connecting_node = n;
                                     this.connecting_output = output;
-                                    this.connecting_pos = n.getConnectionPos(false, i);
-                                    this.connecting_slot = i;
+                                    this.connecting_pos = n.getConnectionPos(false, +o);
+                                    this.connecting_slot = +o;
                                     skip_action = true;
                                     break;
                                 }
                             }
                         //search for inputs
                         if (n.inputs)
-                            for (let i = 0, l = n.inputs.length; i < l; ++i) {
+                            for (let i in n.inputs) {
                                 let input = n.inputs[i];
-                                let link_pos = n.getConnectionPos(true, i);
+                                let link_pos = n.getConnectionPos(true, +i);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     if (input.link !== null) {
-                                        node_editor_1.editor.socket.sendRemoveLink(container_1.rootContainer._links[input.link]);
+                                        node_editor_1.editor.socket.sendRemoveLink(input.link.target_node_id, input.link.target_slot, n.id, i);
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         skip_action = true;
@@ -461,7 +467,7 @@
                     if (!skip_action) {
                         let block_drag_node = false;
                         //double clicking
-                        let now = nodes_1.Nodes.getTime();
+                        let now = utils_1.default.getTime();
                         if ((now - this.last_mouseclick) < 300 && this.selected_nodes[n.id]) {
                             //double click node
                             if (n.onDblClick)
@@ -501,7 +507,7 @@
             //	this.onNodeSelectionChange(this.node_selected);
             this.last_mouse[0] = e.localX;
             this.last_mouse[1] = e.localY;
-            this.last_mouseclick = nodes_1.Nodes.getTime();
+            this.last_mouseclick = utils_1.default.getTime();
             this.canvas_mouse = [e.canvasX, e.canvasY];
             /*
              if( (this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
@@ -550,9 +556,13 @@
                         this.dirty_canvas = true;
                     }
                 }
+                this.canvas.style.cursor = "default";
                 //mouse over a node
                 if (n) {
-                    //this.renderer.style.cursor = "move";
+                    let i = this.isOverNodeInput(n, e.canvasX, e.canvasY, [0, 0]);
+                    let o = this.isOverNodeOutput(n, e.canvasX, e.canvasY, [0, 0]);
+                    if (i != -1 || o != -1)
+                        this.canvas.style.cursor = "crosshair";
                     if (!n.mouseOver) {
                         //mouse enter
                         n.mouseOver = true;
@@ -576,15 +586,10 @@
                         else
                             this._highlight_input = null;
                     }
-                    //Search for corner
-                    //derwish edit 5 to 10
+                    //over corner
                     if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10))
                         this.canvas.style.cursor = "se-resize";
-                    else
-                        this.canvas.style.cursor = null;
                 }
-                else
-                    this.canvas.style.cursor = null;
                 if (this.node_capturing_input && this.node_capturing_input != n && this.node_capturing_input.onMouseMove) {
                     this.node_capturing_input.onMouseMove(e);
                 }
@@ -609,7 +614,7 @@
                 if (this.resizing_node && !this.live_mode) {
                     this.resizing_node.size[0] += delta[0] / this.scale;
                     //this.resizing_node.size[1] += delta[1] / this.scale;
-                    let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
+                    // let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
                     //	if(this.resizing_node.size[1] < max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4)
                     //		this.resizing_node.size[1] = max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4;
                     if (this.resizing_node.size[0] < nodes_1.Nodes.options.NODE_MIN_WIDTH)
@@ -653,7 +658,7 @@
                     //node below mouse
                     if (node) {
                         if (this.connecting_output.type == 'node') {
-                            this.connecting_node.connect(this.connecting_slot, node, -1);
+                            this.connecting_node.connect(this.connecting_slot, node.id, -1);
                         }
                         else {
                             //slot below mouse? connect
@@ -749,16 +754,30 @@
          */
         isOverNodeInput(node, canvasx, canvasy, slot_pos) {
             if (node.inputs)
-                for (let i = 0, l = node.inputs.length; i < l; ++i) {
+                for (let i in node.inputs) {
                     let input = node.inputs[i];
-                    let link_pos = node.getConnectionPos(true, i);
+                    let link_pos = node.getConnectionPos(true, +i);
                     if (utils_1.default.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                         if (slot_pos) {
                             slot_pos[0] = link_pos[0];
                             slot_pos[1] = link_pos[1];
                         }
-                        ;
-                        return i;
+                        return +i;
+                    }
+                }
+            return -1;
+        }
+        isOverNodeOutput(node, canvasx, canvasy, slot_pos) {
+            if (node.outputs)
+                for (let o in node.outputs) {
+                    let output = node.outputs[o];
+                    let link_pos = node.getConnectionPos(false, +o);
+                    if (utils_1.default.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
+                        if (slot_pos) {
+                            slot_pos[0] = link_pos[0];
+                            slot_pos[1] = link_pos[1];
+                        }
+                        return +o;
                     }
                 }
             return -1;
@@ -1041,7 +1060,7 @@
          */
         draw(force_foreground, force_background) {
             //fps counting
-            let now = nodes_1.Nodes.getTime();
+            let now = utils_1.default.getTime();
             this.render_time = (now - this.last__time) * 0.001;
             this.last_draw_time = now;
             if (this.container) {
@@ -1337,7 +1356,7 @@
             if (!node.flags.collapsed) {
                 //input connection slots
                 if (node.inputs)
-                    for (let i = 0; i < node.inputs.length; i++) {
+                    for (let i in node.inputs) {
                         let slot = node.inputs[i];
                         ctx.globalAlpha = editor_alpha;
                         //prevent connection of different types
@@ -1348,7 +1367,7 @@
                         if (this.connecting_node == node)
                             ctx.globalAlpha = 0.4 * editor_alpha;
                         ctx.fillStyle = slot.link != null ? "#7F7" : nodes_1.Nodes.options.DATATYPE_COLOR[slot.type];
-                        let pos = node.getConnectionPos(true, i);
+                        let pos = node.getConnectionPos(true, +i);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
                         ctx.beginPath();
@@ -1373,9 +1392,9 @@
                 ctx.textAlign = "right";
                 ctx.strokeStyle = "black";
                 if (node.outputs)
-                    for (let i = 0; i < node.outputs.length; i++) {
-                        let slot = node.outputs[i];
-                        let pos = node.getConnectionPos(false, i);
+                    for (let o in node.outputs) {
+                        let slot = node.outputs[o];
+                        let pos = node.getConnectionPos(false, +o);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
                         ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : nodes_1.Nodes.options.DATATYPE_COLOR[slot.type];
@@ -1565,24 +1584,19 @@
             for (let id in this.container._nodes) {
                 let node = this.container._nodes[id];
                 //for every input (we render just inputs because it is easier as every slot can only have one input)
-                if (node.inputs && node.inputs.length)
+                if (node.inputs)
                     for (let i in node.inputs) {
                         let input = node.inputs[i];
-                        if (!input || input.link == null)
+                        if (!input || !input.link)
                             continue;
-                        let link_id = input.link;
-                        let link = this.container._links[link_id];
-                        if (!link)
+                        let start_node = this.container.getNodeById(input.link.target_node_id);
+                        if (!start_node)
                             continue;
-                        let start_node = this.container.getNodeById(link.origin_id);
-                        if (start_node == null)
-                            continue;
-                        let start_node_slot = link.origin_slot;
                         let start_node_slotpos = null;
-                        if (start_node_slot == -1)
+                        if (input.link.target_slot == -1)
                             start_node_slotpos = [start_node.pos[0] + 10, start_node.pos[1] + 10];
                         else
-                            start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
+                            start_node_slotpos = start_node.getConnectionPos(false, input.link.target_slot);
                         let color = nodes_1.Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
                         if (color == null && typeof (node.id) == "number")
                             color = nodes_1.Nodes.options.LINK_COLORS[node.id % nodes_1.Nodes.options.LINK_COLORS.length];
@@ -1798,25 +1812,13 @@
                         node_editor_1.editor.addMiniWindow(200, 200);
                     }
                 });
-                // if (container.parent_container_id) {
-                //
-                //     options.push(null);
-                //
-                //     let back_url = "/editor/";
-                //
-                //     if (container.parent_container_id != 0)
-                //         back_url += "container/" + container.parent_container_id;
-                //
-                //     options.push({
-                //         content: "Close Container",
-                //         callback: function () {
-                //             (<any>window).location = back_url
-                //         }
-                //     });
-                //
-                // }
+                let that = this;
                 if (this._containers_stack && this._containers_stack.length > 0)
-                    options.push({ content: "Close Container", callback: this.closeContainer.bind(this) });
+                    options.push({
+                        content: "Close Container", callback: function () {
+                            that.closeContainer(true);
+                        }
+                    });
             }
             if (this.getExtraMenuOptions) {
                 let extra = this.getExtraMenuOptions(this);
@@ -1860,6 +1862,10 @@
                 }
             });
             options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
+            // if (Object.keys(this.selected_nodes).length>1) {
+            if (node.removable !== false)
+                options.push({ content: "Move to container", callback: this.onMenuNodeMoveToContainer });
+            // }
             if (node.removable !== false)
                 options.push({ content: "Remove", callback: this.onMenuNodeRemove });
             if (node.onGetInputs) {
@@ -2105,13 +2111,6 @@
             node.setDirtyCanvas(true, true);
         }
         /**
-         * On menu node pin
-         * @param node
-         */
-        onMenuNodePin(node) {
-            node.pin();
-        }
-        /**
          * On menu node colors
          * @param node
          * @param e
@@ -2162,18 +2161,28 @@
          * @param node
          * @param e
          * @param prev_menu
-         * @param canvas
+         * @param renderer
          * @param first_event
          */
-        onMenuNodeRemove(node, e, prev_menu, canvas, first_event) {
-            //if (node.removable == false) return;
-            if (node.id in canvas.selected_nodes)
-                node_editor_1.editor.socket.sendRemoveNodes(canvas.selected_nodes);
+        onMenuNodeRemove(node, e, prev_menu, renderer, first_event) {
+            if (node.id in renderer.selected_nodes) {
+                let ids = [];
+                for (let n in renderer.selected_nodes)
+                    ids.push(n);
+                node_editor_1.editor.socket.sendRemoveNodes(ids);
+            }
             else
-                node_editor_1.editor.socket.sendRemoveNode(node);
-            //derwish remove
-            //node.container.remove(uiNode);
-            //node.setDirtyCanvas(true, true);
+                node_editor_1.editor.socket.sendRemoveNodes([node.id]);
+        }
+        onMenuNodeMoveToContainer(node, e, prev_menu, renderer, first_event) {
+            if (node.id in renderer.selected_nodes) {
+                let ids = [];
+                for (let n in renderer.selected_nodes)
+                    ids.push(n);
+                node_editor_1.editor.socket.sendMoveToNewContainer(ids, node.pos);
+            }
+            else
+                node_editor_1.editor.socket.sendMoveToNewContainer([node.id], node.pos);
         }
         /**
          * On menu node clone

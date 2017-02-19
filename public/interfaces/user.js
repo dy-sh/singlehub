@@ -1,5 +1,5 @@
 /**
- * Created by Derwish (derwish.pro@gmail.com) on 16.02.17.
+ * Created by Derwish (derwish.pro@gmail.com) on 20.02.17.
  */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -12,4 +12,4 @@
 })(function (require, exports) {
     "use strict";
 });
-//# sourceMappingURL=database.js.map
+//# sourceMappingURL=user.js.map

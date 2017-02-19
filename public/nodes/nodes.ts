@@ -2,8 +2,18 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-import Utils from "./utils";
 import {Node} from "./node";
+
+
+//console logger back and front
+let log;
+declare let Logger: any; // tell the ts compiler global variable is defined
+if (typeof (window) === 'undefined') //for backside only
+    log = require('logplease').create('nodes', {color: 5});
+else  //for frontside only
+    log  = Logger.create('nodes', {color: 5});
+
+
 
 // interface Boundings{
 //     [4]: Float32Array;
@@ -97,7 +107,7 @@ export class Nodes {
 
         this.nodes_types[type] = node_class;
 
-        Utils.debug("Node registered: " + type, this);
+        log.debug("Node registered: " + type);
     };
 
     /**
@@ -121,7 +131,7 @@ export class Nodes {
     static createNode(type: string, title?: string, options?: any): Node {
         let base_class = this.nodes_types[type];
         if (!base_class) {
-            Utils.debug("Can`t create node. Node type \"" + type + "\" not registered.", this);
+            log.error("Can`t create node. Node type \"" + type + "\" not registered.");
             return null;
         }
 
@@ -216,7 +226,7 @@ export class Nodes {
                 continue;
 
             try {
-                Utils.debug("Reloading: " + src, this);
+                log.debug("Reloading: " + src);
                 let dynamicScript = document.createElement("script");
                 dynamicScript.type = "text/javascript";
                 dynamicScript.src = src;
@@ -224,20 +234,14 @@ export class Nodes {
                 docHeadObj.removeChild(script_files[i]);
             }
             catch (err) {
-                Utils.debugErr("Error while reloading " + src, this);
+                log.error("Error while reloading " + src);
                 throw err;
             }
         }
 
-        Utils.debug("Nodes reloaded", this);
+        log.debug("Nodes reloaded");
     };
 
 
-    /**
-     * Get current time
-     * @returns {number}
-     */
-    static getTime(): number {
-        return (typeof(performance) != "undefined") ? performance.now() : Date.now();
-    };
+
 }

@@ -3,11 +3,15 @@
  */
 
 import {Nodes} from "../../nodes/nodes"
-import {Node, Link} from "../../nodes/node"
-import {Container, rootContainer} from "../../nodes/container";
+import {Node, Link, LinkInfo} from "../../nodes/node"
+import {Container} from "../../nodes/container";
 import {editor} from "./node-editor";
 import Utils from "../../nodes/utils";
+import {ContainerNode, ContainerInputNode} from "../../nodes/nodes/main";
 
+//console logger
+declare let Logger: any; // tell the ts compiler global variable is defined
+let log = Logger.create('client', {color: 3});
 
 export class EditorSocket {
 
@@ -19,7 +23,7 @@ export class EditorSocket {
     constructor() {
         let SLOTS_VALUES_INTERVAL = 200;
 
-        this.container = rootContainer;
+        this.container = Container.containers[0];
 
         let socket = io();
         this.socket = socket;
@@ -34,11 +38,15 @@ export class EditorSocket {
                 that.sendGetSlotsValues();
         }, SLOTS_VALUES_INTERVAL);
 
-        // socket.emit('chat message', "h1");
+
+        socket.on('connect', function () {
+            log.debug("Connected to socket");
+
+            that.sendJoinContainerRoom(editor.renderer.container.id)
+        });
 
         //
         // socket.on('connect', function () {
-        //     //todo socket.join(editor.renderer.container.id);
         //
         //     if (this.socketConnected == false) {
         //         noty({text: 'Connected to web server.', type: 'alert'});
@@ -61,23 +69,17 @@ export class EditorSocket {
 
         socket.on('node-create', function (n) {
             let container = Container.containers[n.cid];
-            let newNode = Nodes.createNode(n.type);
-            newNode.pos = n.pos;
-            newNode.properties = n.properties;
-            //newNode.configure(n);
-            container.add(newNode);
-
-            if (newNode.onCreated)
-                newNode.onCreated();
-
-            container.setDirtyCanvas(true, true);
+            let node = Nodes.createNode(n.type);
+            node.pos = n.pos;
+            node.properties = n.properties;
+            //node.configure(n);
+            container.create(node);
         });
 
         socket.on('node-delete', function (n) {
             let container = Container.containers[n.cid];
             let node = container.getNodeById(n.id);
             container.remove(node);
-            container.setDirtyCanvas(true, true);
 
             //if current container removed
             // if (n.id == editor.renderer.container.id) {
@@ -92,8 +94,6 @@ export class EditorSocket {
                 let node = container.getNodeById(id);
                 container.remove(node);
             }
-
-            container.setDirtyCanvas(true, true);
         });
 
         socket.on('node-update-position', function (n) {
@@ -115,6 +115,11 @@ export class EditorSocket {
             }
         });
 
+        socket.on('nodes-move-to-new-container', function (data) {
+            let container = Container.containers[data.cid];
+            container.mooveNodesToNewContainer(data.ids, data.pos);
+        });
+
         socket.on('node-message-to-front-side', function (n) {
 
             let container = Container.containers[n.cid];
@@ -124,27 +129,18 @@ export class EditorSocket {
         });
 
 
-        socket.on('link-create', function (l) {
-            let container = Container.containers[l.cid];
-            let node = container.getNodeById(l.link.origin_id);
-            let targetNode = container.getNodeById(l.link.target_id);
+        socket.on('link-create', function (data) {
+            let container = Container.containers[data.cid];
+            let node = container.getNodeById(data.link.origin_id);
 
-            // node.disconnectOutput(l.origin_slot, targetNode);
-            // targetNode.disconnectInput(l.target_slot);
-
-            node.connect(l.link.origin_slot, targetNode, l.link.target_slot);
-
-            container.setDirtyCanvas(true, true);
+            node.connect(data.link.origin_slot, data.link.target_id, data.link.target_slot);
         });
 
-        socket.on('link-delete', function (l) {
-            let container = Container.containers[l.cid];
-            let link = container._links[l.id];
+        socket.on('link-delete', function (data) {
+            let container = Container.containers[data.cid];
+            let targetNode = container.getNodeById(data.link.target_id);
 
-            let node = container.getNodeById(link.origin_id);
-            let targetNode = container.getNodeById(link.target_id);
-            node.disconnectOutput(link.origin_slot, targetNode);
-            //targetNode.disconnectInput(link.target_slot);
+            targetNode.disconnectInput(data.link.target_slot);
         });
 
 
@@ -163,11 +159,12 @@ export class EditorSocket {
 
 
         socket.on('nodes-active', function (data) {
-            let container = Container.containers[data.cid];
+console.log(data);
+            let container = editor.renderer.container;
             for (let id of data.ids) {
                 let node = container.getNodeById(id);
-                if (node == null)
-                    return;
+                if (!node)
+                    continue;
 
                 node.boxcolor = Nodes.options.NODE_ACTIVE_BOXCOLOR;
                 node.setDirtyCanvas(true, true);
@@ -225,7 +222,6 @@ export class EditorSocket {
 
         $("#sendButton").click(
             function () {
-                //console.log(container);
                 let gr = JSON.stringify(this.rootContainer.serialize());
                 $.ajax({
                     url: '/api/editor',
@@ -253,11 +249,14 @@ export class EditorSocket {
     // }
 
 
-    getNodes(): void {
+    getNodes(callback?: Function): void {
         $.ajax({
             url: "/api/editor/c/" + editor.renderer.container.id,
             success: function (nodes) {
-                rootContainer.configure(nodes, false)
+                let rootContainer = Container.containers[0];
+                rootContainer.configure(nodes, false);
+                if (callback)
+                    callback(nodes);
             }
         });
     }
@@ -294,17 +293,21 @@ export class EditorSocket {
     };
 
 
-    sendRemoveNodes(nodes: {[id: number]: Node}): void {
-        let ids = [];
-        for (let n in nodes) {
-            ids.push(n);
-        }
-
+    sendRemoveNodes(ids: Array<number>): void {
         $.ajax({
             url: "/api/editor/c/" + editor.renderer.container.id + "/n/",
             type: 'DELETE',
             contentType: 'application/json',
             data: JSON.stringify(ids)
+        })
+    };
+
+    sendMoveToNewContainer(ids: Array<number>, pos: [number, number]): void {
+        $.ajax({
+            url: "/api/editor/c/" + editor.renderer.container.id + "/n/move/",
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ids: ids, pos: pos})
         })
     };
 
@@ -328,7 +331,7 @@ export class EditorSocket {
 
 
     sendCreateLink(origin_id: number, origin_slot: number, target_id: number, target_slot): void {
-        let data = {
+        let data: LinkInfo = {
             origin_id: origin_id,
             origin_slot: origin_slot,
             target_id: target_id,
@@ -344,10 +347,19 @@ export class EditorSocket {
     };
 
 
-    sendRemoveLink(link: Link): void {
+    sendRemoveLink(origin_id: number, origin_slot: number, target_id: number, target_slot): void {
+        let data: LinkInfo = {
+            origin_id: origin_id,
+            origin_slot: origin_slot,
+            target_id: target_id,
+            target_slot: target_slot,
+        };
+
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/l/" + link.id,
-            type: 'DELETE'
+            url: "/api/editor/c/" + editor.renderer.container.id + "/l/",
+            type: 'DELETE',
+            contentType: 'application/json',
+            data: JSON.stringify(data)
         })
     };
 
@@ -441,7 +453,15 @@ export class EditorSocket {
     //
     // }
     sendGetSlotsValues() {
-        this.socket.emit("get-slots-values", editor.container.id);
+        this.socket.emit("get-slots-values", editor.rootContainer.id);
+    }
+
+    sendJoinContainerRoom(cont_id: number) {
+        let room = "c" + cont_id;
+
+        log.debug("Join to room [" + room + "]");
+
+        this.socket.emit('room', room);
     }
 }
 

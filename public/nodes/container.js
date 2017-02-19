@@ -12,18 +12,28 @@
     "use strict";
     const nodes_1 = require("./nodes");
     const utils_1 = require("./utils");
+    //console logger back and front
+    let log;
+    if (typeof (window) === 'undefined')
+        log = require('logplease').create('container', { color: 5 });
+    else
+        log = Logger.create('container', { color: 5 });
     class Container {
-        constructor() {
+        constructor(id) {
             this._nodes = {};
-            this._links = {};
             this.supported_types = ["number", "string", "boolean"];
             this.list_of_renderers = null;
-            this.id = Container.last_container_id++;
+            this.id = id || ++Container.last_container_id;
             Container.containers[this.id] = this;
             this.clear();
-            utils_1.default.debug("Container created (id: " + this.id + ")", "CONTAINER");
-            if (this.id != 0)
-                this.socket = exports.rootContainer.socket;
+            log.debug("Container created [" + this.id + "]");
+            let rootContainer = Container.containers[0];
+            if (rootContainer) {
+                if (rootContainer.socket)
+                    this.socket = rootContainer.socket;
+                if (rootContainer.db)
+                    this.db = rootContainer.db;
+            }
         }
         //used to know which types of connections support this container (some containers do not allow certain types)
         getSupportedTypes() {
@@ -38,9 +48,6 @@
             this.last_node_id = 0;
             //nodes
             this._nodes = {};
-            //links
-            this.last_link_id = 0;
-            this._links = {}; //container with all the links
             //iterations
             this.iteration = 0;
             this.config = {};
@@ -113,7 +120,7 @@
                     node.onRunContainer();
             }
             //launch
-            this.starttime = nodes_1.Nodes.getTime();
+            this.starttime = utils_1.default.getTime();
             let that = this;
             this.execution_timer_id = setInterval(function () {
                 //execute
@@ -122,18 +129,26 @@
         }
         /**
          * Run N steps (cycles) of the container
-         * @param num number of steps to run, default is 1
+         * @param steps number of steps to run, default is 1
          */
-        runStep(num = 1) {
-            let start = nodes_1.Nodes.getTime();
+        runStep(steps = 1) {
+            let start = utils_1.default.getTime();
             this.globaltime = 0.001 * (start - this.starttime);
             // try {
-            for (let i = 0; i < num; i++) {
-                this.updateNodesInputData();
+            for (let i = 0; i < steps; i++) {
+                this.transferDataBetweenNodes();
                 for (let id in this._nodes) {
                     let node = this._nodes[id];
                     if (node.onExecute)
                         node.onExecute();
+                    if (node.isUpdated) {
+                        if (node.onInputUpdated)
+                            node.onInputUpdated();
+                        node.updated = false;
+                        for (let i in node.inputs)
+                            if (node.inputs[i].isUpdated)
+                                node.inputs[i].updated = false;
+                    }
                 }
                 this.fixedtime += this.fixedtime_lapse;
                 if (this.onExecuteStep)
@@ -141,47 +156,44 @@
             }
             if (this.onAfterExecute)
                 this.onAfterExecute();
-            this.errors_in_execution = false;
+            // this.errors_in_execution = false;
             // }
             // catch (err) {
             //     this.errors_in_execution = true;
-            //     Utils.debugErr("Error during execution: " + err, this);
+            //     log.error("Error during execution: " + err, this);
             //     this.stop();
             //     throw err;
             // }
-            let elapsed = nodes_1.Nodes.getTime() - start;
+            let elapsed = utils_1.default.getTime() - start;
             if (elapsed == 0)
                 elapsed = 1;
             this.elapsed_time = 0.001 * elapsed;
             this.globaltime += 0.001 * elapsed;
             this.iteration += 1;
         }
-        updateNodesInputData() {
-            let updated_nodes = [];
+        transferDataBetweenNodes() {
             for (let id in this._nodes) {
                 let node = this._nodes[id];
                 if (!node.outputs)
                     continue;
-                for (let output of node.outputs) {
+                for (let o in node.outputs) {
+                    let output = node.outputs[o];
                     if (output.links == null)
                         continue;
-                    for (let linkId of output.links) {
-                        let link = this._links[linkId];
-                        let target_node = this._nodes[link.target_id];
+                    for (let link of output.links) {
+                        let target_node = this._nodes[link.target_node_id];
                         if (!target_node) {
+                            log.error("Can't transfer data from node " + node.getReadableId() + ". Target node not found");
+                            continue;
                         }
                         let target_input = target_node.inputs[link.target_slot];
                         if (target_input.data != output.data) {
                             target_input.data = output.data;
-                            if (updated_nodes.indexOf(target_node) == -1)
-                                updated_nodes.push(target_node);
+                            target_node.isUpdated = true;
+                            target_input.updated = true;
                         }
                     }
                 }
-            }
-            for (let node of updated_nodes) {
-                if (node.onInputUpdated)
-                    node.onInputUpdated();
             }
         }
         /**
@@ -230,6 +242,21 @@
         getNodesCount() {
             return Object.keys(this._nodes).length;
         }
+        create(node) {
+            if (node.onBeforeCreated)
+                node.onBeforeCreated();
+            this.add(node);
+            if (node.onAfterCreated)
+                node.onAfterCreated();
+            if (this.db) {
+                this.db.addNode(node);
+                if (this.id == 0)
+                    this.db.updateLastRootNodeId(this.last_node_id);
+                else
+                    this.db.updateNode(this.container_node.id, this.container_node.container.id, { "sub_container.last_node_id": this.container_node.sub_container.last_node_id });
+            }
+            log.debug("New node created: " + node.getReadableId());
+        }
         /**
          * Adds a new node instasnce to this container
          * @param node the instance of the node
@@ -256,7 +283,6 @@
             if (this.onNodeAdded)
                 this.onNodeAdded(node);
             this.setDirtyCanvas(true, true);
-            return node; //to chain actions
         }
         /**
          * Removes a node from the container
@@ -269,22 +295,21 @@
                 return;
             //disconnect inputs
             if (node.inputs)
-                for (let i = 0; i < node.inputs.length; i++) {
-                    let slot = node.inputs[i];
-                    if (slot.link != null)
-                        node.disconnectInput(i);
+                for (let i in node.inputs) {
+                    let input = node.inputs[i];
+                    if (input.link != null)
+                        node.disconnectInput(+i);
                 }
             //disconnect outputs
             if (node.outputs)
-                for (let i = 0; i < node.outputs.length; i++) {
-                    let slot = node.outputs[i];
-                    if (slot.links != null && slot.links.length)
-                        node.disconnectOutput(i);
+                for (let o in node.outputs) {
+                    let output = node.outputs[o];
+                    if (output.links != null && output.links.length > 0)
+                        node.disconnectOutput(+o);
                 }
             //event
             if (node.onRemoved)
                 node.onRemoved();
-            node.container = null;
             //remove from renderer
             if (this.list_of_renderers) {
                 for (let i = 0; i < this.list_of_renderers.length; ++i) {
@@ -297,8 +322,12 @@
             }
             //remove from container
             delete this._nodes[node.id];
+            log.debug("Node deleted: " + node.getReadableId());
+            node.container = null;
             if (this.onNodeRemoved)
                 this.onNodeRemoved(node);
+            if (this.db)
+                this.db.removeNode(node.id, this.id);
             this.setDirtyCanvas(true, true);
         }
         /**
@@ -394,28 +423,23 @@
          * Creates a Object containing all the info about this container, it can be serialized
          * @returns value of the node
          */
-        serialize(include_nodes = true, include_links = true) {
-            let ser_cont = {
+        serialize(include_nodes = true) {
+            let data = {
                 id: this.id,
-                iteration: this.iteration,
-                frame: this.frame,
                 last_node_id: this.last_node_id,
-                last_link_id: this.last_link_id,
-                last_container_id: Container.last_container_id,
                 config: this.config
             };
-            if (include_links) {
-                ser_cont._links = utils_1.default.cloneObject(this._links);
-            }
             if (include_nodes) {
                 let ser_nodes = [];
                 for (let id in this._nodes) {
                     let node = this._nodes[id];
                     ser_nodes.push(node.serialize());
                 }
-                ser_cont.serialized_nodes = ser_nodes;
+                data.serialized_nodes = ser_nodes;
             }
-            return ser_cont;
+            if (this.id == 0)
+                data.last_container_id = Container.last_container_id;
+            return data;
         }
         /**
          * Add nodes_list to container from a JSON string
@@ -439,6 +463,8 @@
                         error = true;
                 }
             }
+            if (data.last_container_id)
+                Container.last_container_id = data.last_container_id;
             this.setDirtyCanvas(true, true);
             return error;
         }
@@ -447,20 +473,158 @@
          * @param serialized_node
          * @returns {Node} result node (for check success)
          */
-        add_serialized_node(serialized_node) {
+        add_serialized_node(serialized_node, from_db = false) {
             let node = nodes_1.Nodes.createNode(serialized_node.type, serialized_node.title);
             if (node) {
-                node.id = serialized_node.id; //id it or it will create a new id
-                this.add(node); //add before configure, otherwise configure cannot create links
-                node.configure(serialized_node);
+                node.id = serialized_node.id;
+                node.configure(serialized_node, from_db);
+                this.add(node);
                 this.setDirtyCanvas(true, true);
                 return node;
             }
         }
+        getParentsStack() {
+            let stack = [];
+            if (this.parent_container_id) {
+                let parentCont = Container.containers[this.parent_container_id];
+                for (let i = 0; i < 1000; i++) {
+                    stack.push(parentCont.id);
+                    if (!parentCont.parent_container_id)
+                        break;
+                    parentCont = Container.containers[parentCont.parent_container_id];
+                }
+            }
+            stack.push(0);
+            return stack;
+        }
+        mooveNodesToNewContainer(ids, pos) {
+            //prevent move input/output nodes
+            let l = ids.length;
+            while (l--) {
+                let node = this.getNodeById(ids[l]);
+                if (node.type == "main/input" || node.type == "main/output")
+                    ids.splice(l, 1);
+            }
+            if (ids.length == 0)
+                return;
+            //create new container
+            let new_cont_node = nodes_1.Nodes.createNode("main/container");
+            new_cont_node.pos = pos;
+            this.create(new_cont_node);
+            let new_cont = new_cont_node.sub_container;
+            new_cont.last_node_id = this.last_node_id;
+            if (this.db)
+                this.db.updateNode(new_cont_node.id, this.id, { "sub_container.last_node_id": new_cont_node.sub_container.last_node_id });
+            // move nodes
+            for (let id of ids) {
+                let node = this.getNodeById(id);
+                node.container = new_cont;
+                delete this._nodes[node.id];
+                new_cont._nodes[node.id] = node;
+                if (this.db) {
+                    this.db.removeNode(node.id, this.id);
+                    this.db.addNode(node);
+                }
+            }
+            //create container inputs
+            for (let id of ids) {
+                let node = new_cont.getNodeById(id);
+                if (node.inputs) {
+                    for (let i in node.inputs) {
+                        let input = node.inputs[i];
+                        if (input.link) {
+                            let old_target = this._nodes[input.link.target_node_id];
+                            if (old_target) {
+                                //create input node
+                                let input_node = nodes_1.Nodes.createNode("main/input");
+                                input_node.pos = utils_1.default.cloneObject(old_target.pos);
+                                input_node.outputs[0].links = [{ target_node_id: node.id, target_slot: +i }];
+                                //find input new pos (for prevent overlapping with the same input)
+                                for (let n in new_cont._nodes) {
+                                    if (new_cont._nodes[n] != input_node) {
+                                        if (input_node.pos[0] == new_cont._nodes[n].pos[0]
+                                            && input_node.pos[1] == new_cont._nodes[n].pos[1])
+                                            input_node.pos[1] += 15;
+                                    }
+                                }
+                                new_cont.create(input_node);
+                                //connect new cont input to old target
+                                new_cont_node.inputs[input_node.properties.slot].link =
+                                    { target_node_id: input.link.target_node_id, target_slot: input.link.target_slot };
+                                //reconnect old target node to cont input
+                                let t_out_links = old_target.outputs[input.link.target_slot].links;
+                                for (let out_link of t_out_links) {
+                                    if (out_link.target_node_id == node.id && out_link.target_slot == +i) {
+                                        out_link.target_node_id = new_cont_node.id;
+                                        out_link.target_slot = input_node.properties.slot;
+                                    }
+                                }
+                                //reconnect node to new input node
+                                input.link.target_node_id = input_node.id;
+                                input.link.target_slot = 0;
+                                if (this.db) {
+                                    this.db.updateNode(old_target.id, this.id, { outputs: old_target.outputs });
+                                    this.db.updateNode(node.id, new_cont.id, { inputs: node.inputs });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //create container outputs
+            for (let id of ids) {
+                let node = new_cont.getNodeById(id);
+                if (node.outputs) {
+                    for (let o in node.outputs) {
+                        let output = node.outputs[o];
+                        if (output.links) {
+                            for (let link of output.links) {
+                                let old_target = this._nodes[link.target_node_id];
+                                if (old_target) {
+                                    //create output node
+                                    let output_node = nodes_1.Nodes.createNode("main/output");
+                                    output_node.pos = utils_1.default.cloneObject(old_target.pos);
+                                    output_node.inputs[0].link = { target_node_id: node.id, target_slot: +o };
+                                    //find input new pos (for prevent overlapping with the same input)
+                                    for (let n in new_cont._nodes) {
+                                        if (new_cont._nodes[n] != output_node) {
+                                            if (output_node.pos[0] == new_cont._nodes[n].pos[0]
+                                                && output_node.pos[1] == new_cont._nodes[n].pos[1])
+                                                output_node.pos[1] += 15;
+                                        }
+                                    }
+                                    new_cont.create(output_node);
+                                    //connect new cont output to old target
+                                    new_cont_node.outputs[output_node.properties.slot].links = [{
+                                            target_node_id: link.target_node_id,
+                                            target_slot: link.target_slot
+                                        }];
+                                    //reconnect old target node to cont output
+                                    let in_link = old_target.inputs[link.target_slot].link;
+                                    in_link.target_node_id = new_cont_node.id;
+                                    in_link.target_slot = output_node.properties.slot;
+                                    //reconnect node to new output node
+                                    link.target_node_id = output_node.id;
+                                    link.target_slot = 0;
+                                    if (this.db) {
+                                        this.db.updateNode(old_target.id, this.id, { inputs: old_target.inputs });
+                                        this.db.updateNode(node.id, new_cont.id, { outputs: node.outputs });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (this.db) {
+                        this.db.updateNode(new_cont_node.id, this.id, { inputs: new_cont_node.inputs });
+                        this.db.updateNode(new_cont_node.id, this.id, { outputs: new_cont_node.outputs });
+                    }
+                }
+            }
+        }
     }
     Container.containers = {};
-    Container.last_container_id = 0;
+    Container.last_container_id = -1;
     exports.Container = Container;
-    exports.rootContainer = new Container();
 });
+// export let rootContainer = new Container();
 //# sourceMappingURL=container.js.map

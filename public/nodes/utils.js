@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 01.02.17.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports"], factory);
     }
 })(function (require, exports) {
@@ -28,32 +29,6 @@
             return target;
         }
         ;
-        /**
-         * Print debug message to console
-         * @param message
-         * @param module
-         */
-        static debug(message, module) {
-            if (module && typeof module == "string")
-                console.log(module.toUpperCase() + ": " + message);
-            else if (module && module.name)
-                console.log(module.name.toUpperCase() + ": " + message);
-            else
-                console.log(message);
-        }
-        /**
-         * Print error message to console
-         * @param message
-         * @param module
-         */
-        static debugErr(message, module) {
-            if (module && typeof module == "string")
-                console.log(module.toUpperCase() + ": ERROR: " + message);
-            else if (module && module.name)
-                console.log(module.name.toUpperCase() + ": ERROR: " + message);
-            else
-                console.log(message);
-        }
         /**
          * Generate GUID string
          * @returns {string}
@@ -239,6 +214,14 @@
             //     str = Array.prototype.slice.call(str).join(",");
             return "" + val;
         }
+        /**
+         * Get current time
+         * @returns {number}
+         */
+        static getTime() {
+            return (typeof (performance) != "undefined") ? performance.now() : Date.now();
+        }
+        ;
     }
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Utils;

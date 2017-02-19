@@ -6,9 +6,8 @@
 
 import {Nodes} from "../../nodes/nodes"
 import {Node, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/node"
-import {Container, rootContainer} from "../../nodes/container"
-import {NodeEditor, editor} from "./node-editor";
-import {EditorSocket} from "./editor-socket";
+import {Container} from "../../nodes/container"
+import {editor} from "./node-editor";
 import Utils from "../../nodes/utils";
 
 
@@ -192,7 +191,7 @@ export class Renderer {
      * @param container
      * @param skip_clear
      */
-    setContainer(container?: Container, skip_clear = false): void {
+    setContainer(container?: Container, skip_clear = false, joinRoom = true): void {
         if (this.container == container)
             return;
 
@@ -215,13 +214,17 @@ export class Renderer {
         this.setDirty(true, true);
 
         editor.updateContainersNavigation();
+        editor.updateBrowserUrl();
+
+        if (joinRoom)
+            editor.socket.sendJoinContainerRoom(container.id);
     }
 
     /**
      * Open container
      * @param container node
      */
-    openContainer(container: Container): void {
+    openContainer(container: Container, joinRoom = true): void {
         if (!container)
             throw ("container cannot be null");
 
@@ -240,15 +243,16 @@ export class Renderer {
         this.setDirty(true, true);
 
         editor.updateContainersNavigation();
+        editor.updateBrowserUrl();
 
-        //change browser url
-        window.history.pushState('Container '+container.id, 'MyNodes', '/editor/c/'+container.id);
+        if (joinRoom)
+            editor.socket.sendJoinContainerRoom(container.id);
     }
 
     /**
      * Close container
      */
-    closeContainer(): void {
+    closeContainer(joinRoom = true): void {
         if (!this._containers_stack || this._containers_stack.length == 0)
             return;
         let container = this._containers_stack.pop();
@@ -256,6 +260,10 @@ export class Renderer {
         this.setDirty(true, true);
 
         editor.updateContainersNavigation();
+        editor.updateBrowserUrl();
+
+        if (joinRoom)
+            editor.socket.sendJoinContainerRoom(container.id);
     }
 
     /**
@@ -599,14 +607,14 @@ export class Renderer {
                 if (!this.connecting_node && !n.flags.collapsed && !this.live_mode) {
                     //search for outputs
                     if (n.outputs)
-                        for (let i = 0, l = n.outputs.length; i < l; ++i) {
-                            let output = n.outputs[i];
-                            let link_pos = n.getConnectionPos(false, i);
+                        for (let o in n.outputs) {
+                            let output = n.outputs[o];
+                            let link_pos = n.getConnectionPos(false, +o);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                 this.connecting_node = n;
                                 this.connecting_output = output;
-                                this.connecting_pos = n.getConnectionPos(false, i);
-                                this.connecting_slot = i;
+                                this.connecting_pos = n.getConnectionPos(false, +o);
+                                this.connecting_slot = +o;
 
                                 skip_action = true;
                                 break;
@@ -615,12 +623,17 @@ export class Renderer {
 
                     //search for inputs
                     if (n.inputs)
-                        for (let i = 0, l = n.inputs.length; i < l; ++i) {
+                        for (let i in n.inputs) {
                             let input = n.inputs[i];
-                            let link_pos = n.getConnectionPos(true, i);
+                            let link_pos = n.getConnectionPos(true, +i);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                 if (input.link !== null) {
-                                    editor.socket.sendRemoveLink(rootContainer._links[input.link]);
+                                    editor.socket.sendRemoveLink(
+                                        input.link.target_node_id,
+                                        input.link.target_slot,
+                                        n.id,
+                                        i
+                                    );
 
                                     //n.disconnectInput(i);
                                     //this.dirty_bgcanvas = true;
@@ -650,7 +663,7 @@ export class Renderer {
                     let block_drag_node = false;
 
                     //double clicking
-                    let now = Nodes.getTime();
+                    let now = Utils.getTime();
                     if ((now - this.last_mouseclick) < 300 && this.selected_nodes[n.id]) {
                         //double click node
                         if (n.onDblClick)
@@ -701,7 +714,7 @@ export class Renderer {
 
         this.last_mouse[0] = e.localX;
         this.last_mouse[1] = e.localY;
-        this.last_mouseclick = Nodes.getTime();
+        this.last_mouseclick = Utils.getTime();
         this.canvas_mouse = [e.canvasX, e.canvasY];
 
         /*
@@ -761,9 +774,16 @@ export class Renderer {
                 }
             }
 
+            this.canvas.style.cursor = "default";
+
             //mouse over a node
             if (n) {
-                //this.renderer.style.cursor = "move";
+
+                let i = this.isOverNodeInput(n, e.canvasX, e.canvasY, [0, 0]);
+                let o = this.isOverNodeOutput(n, e.canvasX, e.canvasY, [0, 0]);
+                if (i != -1 || o != -1)
+                    this.canvas.style.cursor = "crosshair";
+
                 if (!n.mouseOver) {
                     //mouse enter
                     n.mouseOver = true;
@@ -777,6 +797,7 @@ export class Renderer {
 
                 //ontop of input
                 if (this.connecting_node) {
+
                     let pos = this._highlight_input || [0, 0];
                     let slot = this.isOverNodeInput(n, e.canvasX, e.canvasY, pos);
                     if (slot != -1 && n.inputs[slot]) {
@@ -785,20 +806,19 @@ export class Renderer {
                         //let slot_type = n.inputs[slot].type;
                         //if (!this.connecting_output.type || !slot_type || slot_type == this.connecting_output.type)
                         this._highlight_input = pos;
+
+
                     }
                     else
                         this._highlight_input = null;
                 }
 
-                //Search for corner
-                //derwish edit 5 to 10
+                //over corner
                 if (Utils.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10))
                     this.canvas.style.cursor = "se-resize";
-                else
-                    this.canvas.style.cursor = null;
+
+
             }
-            else
-                this.canvas.style.cursor = null;
 
             if (this.node_capturing_input && this.node_capturing_input != n && this.node_capturing_input.onMouseMove) {
                 this.node_capturing_input.onMouseMove(e);
@@ -831,7 +851,7 @@ export class Renderer {
             if (this.resizing_node && !this.live_mode) {
                 this.resizing_node.size[0] += delta[0] / this.scale;
                 //this.resizing_node.size[1] += delta[1] / this.scale;
-                let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
+                // let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
                 //	if(this.resizing_node.size[1] < max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4)
                 //		this.resizing_node.size[1] = max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4;
                 if (this.resizing_node.size[0] < Nodes.options.NODE_MIN_WIDTH)
@@ -841,6 +861,8 @@ export class Renderer {
                 this.dirty_canvas = true;
                 this.dirty_bgcanvas = true;
             }
+
+
         }
 
         /*
@@ -887,7 +909,7 @@ export class Renderer {
                 if (node) {
 
                     if (this.connecting_output.type == 'node') {
-                        this.connecting_node.connect(this.connecting_slot, node, -1);
+                        this.connecting_node.connect(this.connecting_slot, node.id, -1);
                     }
                     else {
                         //slot below mouse? connect
@@ -899,7 +921,7 @@ export class Renderer {
                         );
 
                         // if (slot != -1) {
-                        //     this.connecting_node.connect(this.connecting_slot, node, slot);
+                        //     this.connecting_node.connect(this.connecting_slot, node.id, slot);
                         // }
                     }
                 }
@@ -1020,16 +1042,33 @@ export class Renderer {
      */
     isOverNodeInput(node: Node, canvasx: number, canvasy: number, slot_pos?: [number, number]): number {
         if (node.inputs)
-            for (let i = 0, l = node.inputs.length; i < l; ++i) {
+            for (let i in node.inputs) {
                 let input = node.inputs[i];
-                let link_pos = node.getConnectionPos(true, i);
+                let link_pos = node.getConnectionPos(true, +i);
                 if (Utils.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                     if (slot_pos) {
                         slot_pos[0] = link_pos[0];
                         slot_pos[1] = link_pos[1]
                     }
-                    ;
-                    return i;
+
+                    return +i;
+                }
+            }
+        return -1;
+    }
+
+    isOverNodeOutput(node: Node, canvasx: number, canvasy: number, slot_pos?: [number, number]): number {
+        if (node.outputs)
+            for (let o in node.outputs) {
+                let output = node.outputs[o];
+                let link_pos = node.getConnectionPos(false, +o);
+                if (Utils.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
+                    if (slot_pos) {
+                        slot_pos[0] = link_pos[0];
+                        slot_pos[1] = link_pos[1]
+                    }
+
+                    return +o;
                 }
             }
         return -1;
@@ -1342,9 +1381,6 @@ export class Renderer {
     }
 
 
-
-
-
     /**
      * Compute visible ndes
      * @returns {Array}
@@ -1373,7 +1409,7 @@ export class Renderer {
      */
     draw(force_foreground?: boolean, force_background?: boolean): void {
         //fps counting
-        let now = Nodes.getTime();
+        let now = Utils.getTime();
         this.render_time = (now - this.last__time) * 0.001;
         this.last_draw_time = now;
 
@@ -1735,7 +1771,7 @@ export class Renderer {
         if (!node.flags.collapsed) {
             //input connection slots
             if (node.inputs)
-                for (let i = 0; i < node.inputs.length; i++) {
+                for (let i in node.inputs) {
                     let slot = node.inputs[i];
 
                     ctx.globalAlpha = editor_alpha;
@@ -1751,7 +1787,7 @@ export class Renderer {
 
                     ctx.fillStyle = slot.link != null ? "#7F7" : Nodes.options.DATATYPE_COLOR[slot.type];
 
-                    let pos = node.getConnectionPos(true, i);
+                    let pos = node.getConnectionPos(true, +i);
                     pos[0] -= node.pos[0];
                     pos[1] -= node.pos[1];
 
@@ -1783,10 +1819,10 @@ export class Renderer {
             ctx.textAlign = "right";
             ctx.strokeStyle = "black";
             if (node.outputs)
-                for (let i = 0; i < node.outputs.length; i++) {
-                    let slot = node.outputs[i];
+                for (let o in node.outputs) {
+                    let slot = node.outputs[o];
 
-                    let pos = node.getConnectionPos(false, i);
+                    let pos = node.getConnectionPos(false, +o);
                     pos[0] -= node.pos[0];
                     pos[1] -= node.pos[1];
 
@@ -2017,24 +2053,22 @@ export class Renderer {
         for (let id in this.container._nodes) {
             let node = this.container._nodes[id];
             //for every input (we render just inputs because it is easier as every slot can only have one input)
-            if (node.inputs && node.inputs.length)
+            if (node.inputs)
                 for (let i in node.inputs) {
                     let input = node.inputs[i];
-                    if (!input || input.link == null)
+                    if (!input || !input.link)
                         continue;
-                    let link_id = input.link;
-                    let link = this.container._links[link_id];
-                    if (!link) continue;
 
-                    let start_node = this.container.getNodeById(link.origin_id);
-                    if (start_node == null) continue;
-                    let start_node_slot = link.origin_slot;
+                    let start_node = this.container.getNodeById(input.link.target_node_id);
+                    if (!start_node)
+                        continue;
+
                     let start_node_slotpos = null;
 
-                    if (start_node_slot == -1)
+                    if (input.link.target_slot == -1)
                         start_node_slotpos = [start_node.pos[0] + 10, start_node.pos[1] + 10];
                     else
-                        start_node_slotpos = start_node.getConnectionPos(false, start_node_slot);
+                        start_node_slotpos = start_node.getConnectionPos(false, input.link.target_slot);
 
                     let color = Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
                     if (color == null && typeof (node.id) == "number")//ES6 check this
@@ -2294,27 +2328,15 @@ export class Renderer {
                 }
             });
 
-            // if (container.parent_container_id) {
-            //
-            //     options.push(null);
-            //
-            //     let back_url = "/editor/";
-            //
-            //     if (container.parent_container_id != 0)
-            //         back_url += "container/" + container.parent_container_id;
-            //
-            //     options.push({
-            //         content: "Close Container",
-            //         callback: function () {
-            //             (<any>window).location = back_url
-            //         }
-            //     });
-            //
-            // }
 
+            let that = this;
 
             if (this._containers_stack && this._containers_stack.length > 0)
-                options.push({content: "Close Container", callback: this.closeContainer.bind(this)});
+                options.push({
+                    content: "Close Container", callback: function () {
+                        that.closeContainer(true);
+                    }
+                });
 
         }
 
@@ -2371,8 +2393,14 @@ export class Renderer {
 
         options.push({content: "Collapse", callback: this.onMenuNodeCollapse});
 
+        // if (Object.keys(this.selected_nodes).length>1) {
+        if (node.removable !== false)
+            options.push({content: "Move to container", callback: this.onMenuNodeMoveToContainer});
+        // }
+
         if (node.removable !== false)
             options.push({content: "Remove", callback: this.onMenuNodeRemove});
+
 
         if (node.onGetInputs) {
             let inputs = node.onGetInputs();
@@ -2667,13 +2695,6 @@ export class Renderer {
         node.setDirtyCanvas(true, true);
     }
 
-    /**
-     * On menu node pin
-     * @param node
-     */
-    onMenuNodePin(node: Node): void {
-        node.pin();
-    }
 
     /**
      * On menu node colors
@@ -2730,21 +2751,38 @@ export class Renderer {
      * @param node
      * @param e
      * @param prev_menu
-     * @param canvas
+     * @param renderer
      * @param first_event
      */
-    onMenuNodeRemove(node: Node, e: any, prev_menu: Element, canvas: Renderer, first_event: any): void {
-        //if (node.removable == false) return;
+    onMenuNodeRemove(node: Node, e: any, prev_menu: Element, renderer: Renderer, first_event: any): void {
 
-        if (node.id in canvas.selected_nodes)
-            editor.socket.sendRemoveNodes(canvas.selected_nodes);
+        if (node.id in renderer.selected_nodes) {
+            let ids = [];
+
+            for (let n in renderer.selected_nodes)
+                ids.push(n);
+
+            editor.socket.sendRemoveNodes(ids);
+        }
         else
-            editor.socket.sendRemoveNode(node);
-
-        //derwish remove
-        //node.container.remove(uiNode);
-        //node.setDirtyCanvas(true, true);
+            editor.socket.sendRemoveNodes([node.id]);
     }
+
+
+    onMenuNodeMoveToContainer(node: Node, e: any, prev_menu: Element, renderer: Renderer, first_event: any): void {
+
+        if (node.id in renderer.selected_nodes) {
+            let ids = [];
+
+            for (let n in renderer.selected_nodes)
+                ids.push(n);
+
+            editor.socket.sendMoveToNewContainer(ids, node.pos);
+        }
+        else
+            editor.socket.sendMoveToNewContainer([node.id], node.pos);
+    }
+
 
     /**
      * On menu node clone

@@ -2,17 +2,18 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'fs', "../modules/database/neDbDatabase"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "express", "fs", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require('express');
-    const fs = require('fs');
-    const neDbDatabase_1 = require("../modules/database/neDbDatabase");
+    const express = require("express");
+    const fs = require("fs");
+    const app_1 = require("../app");
     let router = express.Router();
     let config = require('./../config');
     // first run wizard
@@ -41,13 +42,24 @@
     router.get('/first-run/database/delete', function (req, res, next) {
         //drop built-in database
         if (config.dataBase.useInternalDb) {
-            neDbDatabase_1.db.users.remove({}, { multi: true }, function (err, numRemoved) {
+            app_1.app.db.dropUsers(function (err) {
                 if (err) {
-                    console.log(err);
                     res.json(err);
                     return;
                 }
-                res.redirect("/first-run/user");
+                app_1.app.db.dropNodes(function (err) {
+                    if (err) {
+                        res.json(err);
+                        return;
+                    }
+                    app_1.app.db.dropApp(function (err) {
+                        if (err) {
+                            res.json(err);
+                            return;
+                        }
+                        res.redirect("/first-run/user");
+                    });
+                });
             });
         }
         else {
@@ -61,18 +73,23 @@
         config.dataBase.enable = true;
         config.dataBase.useInternalDb = true;
         saveConfig();
-        //check db is not empty
-        neDbDatabase_1.db.users.count({}, function (err, count) {
+        app_1.app.connectDatabase();
+        app_1.app.loadDatabase(false, function (err) {
             if (err) {
-                console.log(err);
-                res.json(err);
+                res.send("Failed to load database");
                 return;
             }
-            console.log(count);
-            if (count == 0)
-                res.redirect("/first-run/user");
-            else
-                res.render("first-run/database/not-empty");
+            //check db is not empty
+            app_1.app.db.getUsersCount(function (err, count) {
+                if (err) {
+                    res.json(err);
+                    return;
+                }
+                if (count == 0)
+                    res.redirect("/first-run/user");
+                else
+                    res.render("first-run/database/not-empty");
+            });
         });
     });
     router.get('/first-run/database/none', function (req, res, next) {
@@ -104,18 +121,16 @@
         let errors = req.validationErrors();
         if (!errors) {
             //save user profile to db
-            neDbDatabase_1.db.users.findOne({ name: user.name }, function (err, doc) {
+            app_1.app.db.getUser(user.name, function (err, doc) {
                 if (err) {
                     res.render('first-run/user/index', {
                         canSkip: false,
                         user: user,
                         errors: [{ param: "name", msg: err, value: "" }]
                     });
-                    console.log(err);
                     return;
                 }
                 if (doc) {
-                    console.log(doc);
                     res.render('first-run/user/index', {
                         canSkip: false,
                         user: user,
@@ -123,14 +138,13 @@
                     });
                     return;
                 }
-                neDbDatabase_1.db.users.insert(user, function (err) {
+                app_1.app.db.addUser(user, function (err) {
                     if (err) {
                         res.render('first-run/user/index', {
                             canSkip: false,
                             user: user,
                             errors: [{ param: "name", msg: err, value: "" }]
                         });
-                        console.log(err);
                     }
                     res.redirect("/first-run/hardware");
                 });
@@ -179,7 +193,6 @@
     });
     router.post('/first-run/hardware/serial', function (req, res, next) {
         //todo connect to serial gateway
-        console.log(req.body);
         config.gateway.mysensors.ethernet.enable = false;
         config.gateway.mysensors.serial.enable = true;
         config.gateway.mysensors.serial.baudRate = req.body.baudRate;
@@ -191,6 +204,7 @@
     router.get('/first-run/complete', function (req, res, next) {
         config.firstRun = false;
         saveConfig();
+        app_1.app.start();
         res.redirect("/dashboard");
     });
     // ------------ redirect other ----------

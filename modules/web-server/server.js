@@ -2,30 +2,24 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'debug', 'chalk', "../../routes/editor-io"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "express", "path", "morgan", "cookie-parser", "body-parser", "http", "../../routes/editor-io"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require('express');
-    const path = require('path');
-    const logger = require('morgan');
-    const cookieParser = require('cookie-parser');
-    const bodyParser = require('body-parser');
+    const express = require("express");
+    const path = require("path");
+    const morgan = require("morgan");
+    const cookieParser = require("cookie-parser");
+    const bodyParser = require("body-parser");
     // import * as expressValidator from 'express-validator';
     let expressValidator = require('express-validator');
-    const http = require('http');
-    const debug = require('debug');
-    const chalk = require('chalk');
-    const log = function (txt) {
-        console.log(chalk.green(txt));
-    };
-    const error = function (txt) {
-        console.log(chalk.red(txt));
-    };
+    const http = require("http");
+    const log = require('logplease').create('server', { color: 3 });
     const editor_io_1 = require("../../routes/editor-io");
     let config = require('./../../config.json');
     class Server {
@@ -47,7 +41,9 @@
             // uncomment after placing your favicon in /public
             //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
             if (config.webServer.debug)
-                this.express.use(logger('dev'));
+                this.express.use(morgan('dev', {
+                    skip: function (req, res) { return res.statusCode < 400; }
+                }));
             this.express.use(bodyParser.json());
             this.express.use(bodyParser.urlencoded({ extended: false }));
             this.express.use(cookieParser());
@@ -60,10 +56,10 @@
             this.express.use('/api/', function (req, res, next) {
                 var send = res.send;
                 res.send = function (body) {
-                    if (res.statusCode == 200)
-                        log(body);
-                    else
-                        error(body);
+                    if (res.statusCode != 200)
+                        log.warn(body);
+                    // else
+                    // log.debug(body);
                     send.call(this, body);
                 };
                 next();
@@ -87,20 +83,19 @@
             // development error handler: will print stacktrace
             if (this.express.get('env') === 'development') {
                 this.express.use((err, req, res, next) => {
-                    console.log(err);
+                    log.warn(err);
                     res.status(err.status || 500);
                     res.render('error', { message: err.message, error: err });
                 });
             }
             // production error handler: no stacktraces leaked to user
             this.express.use((err, req, res, next) => {
-                console.log(err);
+                log.warn(err);
                 res.status(err.status || 500);
                 res.render('error', { message: err.message, error: {} });
             });
         }
         configure() {
-            debug('ts-express:server');
             const port = normalizePort(process.env.PORT || 1312);
             this.express.set('port', port);
             this.server = http.createServer(this.express);
@@ -146,13 +141,14 @@
             function onListening() {
                 let addr = that.server.address();
                 let bind = (typeof (addr) === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-                debug(`Listening on ${bind}`);
+                log.info(`Listening on ${bind}`);
             }
         }
         start_io() {
             this.socket = new editor_io_1.NodesServerSocket(this.server);
         }
     }
+    exports.Server = Server;
     exports.server = new Server();
 });
 //# sourceMappingURL=server.js.map

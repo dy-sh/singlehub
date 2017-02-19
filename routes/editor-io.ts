@@ -5,9 +5,11 @@
 
 import * as socket from 'socket.io';
 import * as http from 'http';
-import {rootContainer, Container} from "../public/nodes/container";
+import {Container} from "../public/nodes/container";
 import Utils from "../public/nodes/utils";
-import {editor} from "../public/js/editor/node-editor";
+import {app} from "../app";
+
+const log = require('logplease').create('server', {color: 3});
 
 
 export class NodesServerSocket {
@@ -19,15 +21,25 @@ export class NodesServerSocket {
         this.io = io;
 
         io.on('connection', function (socket) {
-            Utils.debug("New socket conection", "SOCKET");
+            log.debug("New socket conection");
             // socket.on('test message', function (msg) {
             //     io.emit('test message', msg + "2");
             // });
 
+            //join client to container room
+            socket.on('room', function (room) {
+                if ((<any>socket).room)
+                    socket.leave((<any>socket).room);
+
+                (<any>socket).room = room;
+                socket.join(room);
+                log.debug("Join to room [" + room + "]");
+            });
+
             socket.on('node-message-to-back-side', function (n) {
-                let node = rootContainer.getNodeById(n.id);
+                let node = app.rootContainer.getNodeById(n.id);
                 if (!node) {
-                    Utils.debugErr("Can't get node message from front-side. Node id does not exist", this);
+                    log.error("Can't get node message from front-side. Node id does not exist");
                     return;
                 }
 
@@ -42,7 +54,7 @@ export class NodesServerSocket {
                 for (let id in container._nodes) {
                     let node = container._nodes[id];
                     if (node.inputs) {
-                        for (let i = 0; i < node.inputs.length; i++) {
+                        for (let i in node.inputs) {
                             let data = node.inputs[i].data;
                             data = Utils.formatAndTrimValue(data);
 
@@ -56,13 +68,13 @@ export class NodesServerSocket {
                     }
 
                     if (node.outputs) {
-                        for (let i = 0; i < node.outputs.length; i++) {
-                            let data = node.outputs[i].data;
+                        for (let o in node.outputs) {
+                            let data = node.outputs[o].data;
                             data = Utils.formatAndTrimValue(data);
 
                             outputs_values.push({
                                 nodeId: node.id,
-                                outputId: i,
+                                outputId: o,
                                 data: data
                             })
                         }

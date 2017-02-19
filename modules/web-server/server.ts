@@ -6,34 +6,27 @@
 import * as express from 'express';
 import * as path from 'path';
 import * as favicon from 'serve-favicon';
-import * as logger from 'morgan';
+import * as morgan from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 // import * as expressValidator from 'express-validator';
 let expressValidator = require('express-validator');
-
 import * as http from 'http';
-import * as debug from 'debug';
-import * as chalk from 'chalk';
-const log = function (txt) {
-    console.log(chalk.green(txt))
-};
-const error = function (txt) {
-    console.log(chalk.red(txt))
-};
+
+const log = require('logplease').create('server',{color: 3});
 
 import {NodesServerSocket} from "../../routes/editor-io"
 
-import * as socket from 'socket.io';
+
+
 
 
 let config = require('./../../config.json');
 
-class Server {
+export class Server {
     express: express.Application;
     server: http.Server;
     socket: NodesServerSocket;
-
     private __rootdirname;
 
     constructor() {
@@ -56,7 +49,9 @@ class Server {
         // uncomment after placing your favicon in /public
         //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
         if (config.webServer.debug)
-            this.express.use(logger('dev'));
+            this.express.use(morgan('dev',{
+            skip: function (req, res) { return res.statusCode < 400 }
+        }));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({extended: false}));
         this.express.use(cookieParser());
@@ -70,10 +65,10 @@ class Server {
         this.express.use('/api/', function (req, res, next) {
             var send = res.send;
             (<any>res).send = function (body) {
-                if (res.statusCode == 200)
-                    log(body);
-                else
-                    error(body);
+                if (res.statusCode != 200)
+                    log.warn(body);
+                // else
+                // log.debug(body);
 
                 send.call(this, body);
             };
@@ -100,7 +95,7 @@ class Server {
         // development error handler: will print stacktrace
         if (this.express.get('env') === 'development') {
             this.express.use((err: Error & {status: number}, req: express.Request, res: express.Response, next: express.NextFunction): void => {
-                console.log(err);
+                log.warn(err);
                 res.status(err.status || 500);
                 res.render('error', {message: err.message, error: err});
             });
@@ -108,14 +103,13 @@ class Server {
 
         // production error handler: no stacktraces leaked to user
         this.express.use((err: Error & {status: number}, req: express.Request, res: express.Response, next: express.NextFunction): void => {
-            console.log(err);
+            log.warn(err);
             res.status(err.status || 500);
             res.render('error', {message: err.message, error: {}});
         });
     }
 
     private configure() {
-        debug('ts-express:server');
 
         const port = normalizePort(process.env.PORT || 1312);
         this.express.set('port', port);
@@ -164,7 +158,7 @@ class Server {
         function onListening(): void {
             let addr = that.server.address();
             let bind = (typeof (addr) === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-            debug(`Listening on ${bind}`);
+            log.info(`Listening on ${bind}`);
         }
     }
 

@@ -4,7 +4,8 @@
 
 import * as express from 'express';
 import * as fs from 'fs';
-import {db} from "../modules/database/neDbDatabase"
+import {app} from "../app";
+
 
 let router = express.Router();
 let config = require('./../config');
@@ -22,7 +23,6 @@ router.use('/first-run', function (req, res, next) {
 });
 
 // ------- index -----
-
 
 
 router.get('/first-run', function (req, res, next) {
@@ -49,13 +49,26 @@ router.post('/first-run/database/external', function (req, res, next) {
 router.get('/first-run/database/delete', function (req, res, next) {
     //drop built-in database
     if (config.dataBase.useInternalDb) {
-        db.users.remove({}, {multi: true}, function (err, numRemoved) {
+        app.db.dropUsers(function (err) {
             if (err) {
-                console.log(err);
                 res.json(err);
                 return;
             }
-            res.redirect("/first-run/user");
+
+            app.db.dropNodes(function (err) {
+                if (err) {
+                    res.json(err);
+                    return;
+                }
+
+                app.db.dropApp(function (err) {
+                    if (err) {
+                        res.json(err);
+                        return;
+                    }
+                    res.redirect("/first-run/user");
+                });
+            });
         });
     }
     else {
@@ -74,20 +87,27 @@ router.get('/first-run/database/builtin', function (req, res, next) {
     config.dataBase.useInternalDb = true;
     saveConfig();
 
-    //check db is not empty
-    db.users.count({}, function (err, count) {
-        if (err){
-            console.log(err);
-            res.json(err);
+    app.connectDatabase();
+    app.loadDatabase(false, function (err) {
+        if (err) {
+            res.send("Failed to load database");
             return;
         }
 
-        console.log(count);
-        if (count == 0)
-            res.redirect("/first-run/user");
-        else
-            res.render("first-run/database/not-empty");
+        //check db is not empty
+        app.db.getUsersCount(function (err, count) {
+            if (err) {
+                res.json(err);
+                return;
+            }
+
+            if (count == 0)
+                res.redirect("/first-run/user");
+            else
+                res.render("first-run/database/not-empty");
+        });
     });
+
 
 });
 
@@ -129,19 +149,17 @@ router.post('/first-run/user', function (req, res, next) {
 
     if (!errors) {
         //save user profile to db
-        db.users.findOne({name: user.name}, function (err, doc) {
+        app.db.getUser(user.name, function (err, doc) {
             if (err) {
                 res.render('first-run/user/index', {
                     canSkip: false,
                     user: user,
                     errors: [{param: "name", msg: err, value: ""}]
                 });
-                console.log(err);
                 return;
             }
 
             if (doc) {
-                console.log(doc);
                 res.render('first-run/user/index', {
                     canSkip: false,
                     user: user,
@@ -150,14 +168,13 @@ router.post('/first-run/user', function (req, res, next) {
                 return;
             }
 
-            db.users.insert(user, function (err) {
+            app.db.addUser(user, function (err) {
                 if (err) {
                     res.render('first-run/user/index', {
                         canSkip: false,
                         user: user,
                         errors: [{param: "name", msg: err, value: ""}]
                     });
-                    console.log(err);
                 }
                 res.redirect("/first-run/hardware");
             });
@@ -219,7 +236,6 @@ router.get('/first-run/hardware/serial', function (req, res, next) {
 
 router.post('/first-run/hardware/serial', function (req, res, next) {
     //todo connect to serial gateway
-    console.log(req.body);
     config.gateway.mysensors.ethernet.enable = false;
     config.gateway.mysensors.serial.enable = true;
     config.gateway.mysensors.serial.baudRate = req.body.baudRate;
@@ -234,6 +250,7 @@ router.post('/first-run/hardware/serial', function (req, res, next) {
 router.get('/first-run/complete', function (req, res, next) {
     config.firstRun = false;
     saveConfig();
+    app.start();
     res.redirect("/dashboard")
 });
 
