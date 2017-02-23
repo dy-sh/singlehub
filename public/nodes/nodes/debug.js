@@ -23,19 +23,30 @@
     class WatchNode extends node_1.Node {
         constructor() {
             super();
+            this.dataUpdated = false;
             this.onInputUpdated = function () {
-                let val = this.getInputData(0);
+                this.lastData = this.getInputData(0);
+                this.dataUpdated = true;
                 this.isRecentlyActive = true;
-                this.sendMessageToFrontSide({ value: val });
             };
             this.onGetMessageFromBackSide = function (data) {
-                this.properties.value = data.value;
                 this.showValueOnInput(data.value);
             };
+            this.UPDATE_INTERVAL = 300;
             this.title = "Watch";
             this.desc = "Show value of input";
             this.size = [60, 20];
             this.addInput("value", null, { label: "" });
+            this.startSending();
+        }
+        startSending() {
+            let that = this;
+            setInterval(function () {
+                if (that.dataUpdated) {
+                    that.dataUpdated = false;
+                    that.sendMessageToFrontSide({ value: that.lastData });
+                }
+            }, this.UPDATE_INTERVAL);
         }
         showValueOnInput(value) {
             //show the current value

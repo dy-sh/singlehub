@@ -18,22 +18,40 @@ else  //for frontside only
 
 //Watch a value in the editor
 export class WatchNode extends Node {
+    UPDATE_INTERVAL: number;
+
+    lastData: any;
+    dataUpdated = false;
+
     constructor() {
         super();
+
+        this.UPDATE_INTERVAL = 300;
+
         this.title = "Watch";
         this.desc = "Show value of input";
         this.size = [60, 20];
         this.addInput("value", null, {label: ""});
+        this.startSending();
+    }
+
+    startSending() {
+        let that = this;
+        setInterval(function () {
+            if (that.dataUpdated) {
+                that.dataUpdated = false;
+                that.sendMessageToFrontSide({value: that.lastData});
+            }
+        }, this.UPDATE_INTERVAL);
     }
 
     onInputUpdated = function () {
-        let val = this.getInputData(0);
+        this.lastData = this.getInputData(0);
+        this.dataUpdated = true;
         this.isRecentlyActive = true;
-        this.sendMessageToFrontSide({value: val});
     };
 
     onGetMessageFromBackSide = function (data) {
-        this.properties.value = data.value;
         this.showValueOnInput(data.value);
     };
 
