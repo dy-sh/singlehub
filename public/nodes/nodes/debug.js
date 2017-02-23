@@ -50,19 +50,40 @@
     class ConsoleNode extends node_1.Node {
         constructor() {
             super();
+            this.MAX_MESS_PER_SEC = 10;
+            this.messagesPerSec = 0;
             this.onInputUpdated = function () {
                 let val = this.getInputData(0);
                 this.isRecentlyActive = true;
-                log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
-                this.sendMessageToFrontSide({ value: val });
+                this.messagesPerSec++;
+                if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
+                    log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
+                    this.sendMessageToFrontSide({ value: val });
+                }
             };
             this.onGetMessageFromBackSide = function (data) {
-                log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
+                if (data.value)
+                    log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
+                if (data.dropped)
+                    log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages due to too many");
             };
             this.title = "Console";
             this.desc = "Show value inside the console";
             this.size = [60, 20];
             this.addInput("data");
+            this.messagesPerSec = 0;
+            this.updateMessPerSec();
+        }
+        updateMessPerSec() {
+            let that = this;
+            setInterval(function () {
+                if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
+                    let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
+                    log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages due to too many");
+                    that.sendMessageToFrontSide({ dropped: dropped });
+                }
+                that.messagesPerSec = 0;
+            }, 1000);
         }
     }
     exports.ConsoleNode = ConsoleNode;

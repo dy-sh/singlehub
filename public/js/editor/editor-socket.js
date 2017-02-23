@@ -122,7 +122,6 @@
                 node_editor_1.editor.onContainerStop();
             });
             socket.on('nodes-active', function (data) {
-                console.log(data);
                 let container = node_editor_1.editor.renderer.container;
                 for (let id of data.ids) {
                     let node = container.getNodeById(id);

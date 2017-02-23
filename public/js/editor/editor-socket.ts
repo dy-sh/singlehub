@@ -159,7 +159,6 @@ export class EditorSocket {
 
 
         socket.on('nodes-active', function (data) {
-console.log(data);
             let container = editor.renderer.container;
             for (let id of data.ids) {
                 let node = container.getNodeById(id);
