@@ -216,8 +216,10 @@ export class Renderer {
         editor.updateContainersNavigation();
         editor.updateBrowserUrl();
 
-        if (joinRoom)
+        if (joinRoom) {
             editor.socket.sendJoinContainerRoom(container.id);
+            editor.updateNodesLabels();
+        }
     }
 
     /**
@@ -245,8 +247,10 @@ export class Renderer {
         editor.updateContainersNavigation();
         editor.updateBrowserUrl();
 
-        if (joinRoom)
+        if (joinRoom) {
             editor.socket.sendJoinContainerRoom(container.id);
+            editor.updateNodesLabels();
+        }
     }
 
     /**
@@ -262,8 +266,10 @@ export class Renderer {
         editor.updateContainersNavigation();
         editor.updateBrowserUrl();
 
-        if (joinRoom)
+        if (joinRoom) {
             editor.socket.sendJoinContainerRoom(container.id);
+            editor.updateNodesLabels();
+        }
     }
 
     /**

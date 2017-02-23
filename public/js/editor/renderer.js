@@ -98,8 +98,10 @@
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
             node_editor_1.editor.updateBrowserUrl();
-            if (joinRoom)
+            if (joinRoom) {
                 node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
+                node_editor_1.editor.updateNodesLabels();
+            }
         }
         /**
          * Open container
@@ -120,8 +122,10 @@
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
             node_editor_1.editor.updateBrowserUrl();
-            if (joinRoom)
+            if (joinRoom) {
                 node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
+                node_editor_1.editor.updateNodesLabels();
+            }
         }
         /**
          * Close container
@@ -134,8 +138,10 @@
             this.setDirty(true, true);
             node_editor_1.editor.updateContainersNavigation();
             node_editor_1.editor.updateBrowserUrl();
-            if (joinRoom)
+            if (joinRoom) {
                 node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
+                node_editor_1.editor.updateNodesLabels();
+            }
         }
         /**
          * Assigns a canvas

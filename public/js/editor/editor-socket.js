@@ -31,6 +31,7 @@
             socket.on('connect', function () {
                 log.debug("Connected to socket");
                 that.sendJoinContainerRoom(node_editor_1.editor.renderer.container.id);
+                node_editor_1.editor.updateNodesLabels();
             });
             //
             // socket.on('connect', function () {
@@ -377,7 +378,7 @@
         //
         // }
         sendGetSlotsValues() {
-            this.socket.emit("get-slots-values", node_editor_1.editor.rootContainer.id);
+            this.socket.emit("get-slots-values", node_editor_1.editor.renderer.container.id);
         }
         sendJoinContainerRoom(cont_id) {
             let room = "c" + cont_id;

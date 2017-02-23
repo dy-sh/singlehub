@@ -485,13 +485,13 @@ export class NodeEditor {
                 $("#slots-values-icon").addClass("hide");
                 $("#slots-values-icon").removeClass("unhide");
 
-                socket.sendGetSlotsValues();
+                that.socket.sendGetSlotsValues();
 
             } else {
                 $("#slots-values-icon").removeClass("hide");
                 $("#slots-values-icon").addClass("unhide");
 
-                let container = Container.containers[0];
+                let container = that.renderer.container;
                 for (let id in container._nodes) {
                     let node = container._nodes[id];
                     node.updateInputsLabels();
@@ -499,6 +499,19 @@ export class NodeEditor {
                 }
             }
         });
+    }
+
+    updateNodesLabels() {
+        if (this.showSlotsValues)
+            this.socket.sendGetSlotsValues();
+        else {
+            let container = this.renderer.container;
+            for (let id in container._nodes) {
+                let node = container._nodes[id];
+                node.updateInputsLabels();
+                node.updateOutputsLabels();
+            }
+        }
     }
 
     updateContainersNavigation() {
@@ -536,6 +549,7 @@ export class NodeEditor {
                     that.renderer.closeContainer(false);
                 }
                 that.socket.sendJoinContainerRoom(that.renderer.container.id);
+                editor.updateNodesLabels();
             });
         }
     }

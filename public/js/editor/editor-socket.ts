@@ -43,6 +43,7 @@ export class EditorSocket {
             log.debug("Connected to socket");
 
             that.sendJoinContainerRoom(editor.renderer.container.id)
+            editor.updateNodesLabels();
         });
 
         //
@@ -452,7 +453,7 @@ export class EditorSocket {
     //
     // }
     sendGetSlotsValues() {
-        this.socket.emit("get-slots-values", editor.rootContainer.id);
+        this.socket.emit("get-slots-values", editor.renderer.container.id);
     }
 
     sendJoinContainerRoom(cont_id: number) {

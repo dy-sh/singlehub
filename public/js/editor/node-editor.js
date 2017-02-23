@@ -394,12 +394,12 @@
                 if (that.showSlotsValues) {
                     $("#slots-values-icon").addClass("hide");
                     $("#slots-values-icon").removeClass("unhide");
-                    editor_socket_1.socket.sendGetSlotsValues();
+                    that.socket.sendGetSlotsValues();
                 }
                 else {
                     $("#slots-values-icon").removeClass("hide");
                     $("#slots-values-icon").addClass("unhide");
-                    let container = container_1.Container.containers[0];
+                    let container = that.renderer.container;
                     for (let id in container._nodes) {
                         let node = container._nodes[id];
                         node.updateInputsLabels();
@@ -407,6 +407,18 @@
                     }
                 }
             });
+        }
+        updateNodesLabels() {
+            if (this.showSlotsValues)
+                this.socket.sendGetSlotsValues();
+            else {
+                let container = this.renderer.container;
+                for (let id in container._nodes) {
+                    let node = container._nodes[id];
+                    node.updateInputsLabels();
+                    node.updateOutputsLabels();
+                }
+            }
         }
         updateContainersNavigation() {
             let that = this;
@@ -437,6 +449,7 @@
                         that.renderer.closeContainer(false);
                     }
                     that.socket.sendJoinContainerRoom(that.renderer.container.id);
+                    exports.editor.updateNodesLabels();
                 });
             }
         }
