@@ -31,7 +31,7 @@ export class WatchNode extends Node {
         this.title = "Watch";
         this.desc = "Show value of input";
         this.size = [60, 20];
-        this.addInput("value", null, {label: ""});
+        this.addInput("", null, {label: ""});
         this.startSending();
     }
 
@@ -75,7 +75,7 @@ export class ConsoleNode extends Node {
         this.title = "Console";
         this.desc = "Show value inside the console";
         this.size = [60, 20];
-        this.addInput("data");
+        this.addInput("input");
         this.messagesPerSec = 0;
         this.updateMessPerSec();
     }

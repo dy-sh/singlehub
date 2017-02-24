@@ -101,7 +101,6 @@ export class Node {
     properties: any;
 
 
-    data: any;
     ignore_remove: boolean;
     flags: {
         skip_title_render?: true,
@@ -232,13 +231,12 @@ export class Node {
      */
     serialize(for_db = false): SerializedNode {
         let n: SerializedNode = {
-            id: this.id,
             cid: this.container.id,
+            id: this.id,
             type: this.type,
             title: this.title,
             pos: this.pos,
             size: this.size,
-            data: this.data
         };
 
         //remove data from liks
@@ -845,8 +843,10 @@ export class Node {
         input.link = {target_node_id: this.id, target_slot: output_id};
 
         if (this.container.db) {
-            this.container.db.updateNode(this.id, this.container.id, {outputs: this.outputs});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {inputs: target_node.inputs});
+            let s_node=this.serialize(true);
+            let s_t_node=target_node.serialize(true);
+            this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
+            this.container.db.updateNode(target_node.id, target_node.container.id, {inputs: s_t_node.inputs});
         }
 
         this.setDirtyCanvas(false, true);
@@ -920,8 +920,10 @@ export class Node {
             delete t_node.inputs[link.target_slot].link;
             output.links.splice(i, 1);
 
-            if (this.container.db)
-                this.container.db.updateNode(t_node.id, t_node.container.id, {inputs: t_node.inputs});
+            if (this.container.db) {
+                let s_t_node = t_node.serialize(true);
+                this.container.db.updateNode(t_node.id, t_node.container.id, {inputs: s_t_node.inputs});
+            }
 
             this.debug("disconnected from " + t_node.getReadableId());
 
@@ -930,9 +932,10 @@ export class Node {
         if (output.links.length == 0)
             delete output.links;
 
-        if (this.container.db)
-            this.container.db.updateNode(this.id, this.container.id, {outputs: this.outputs});
-
+        if (this.container.db) {
+            let s_node = this.serialize(true);
+            this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
+        }
 
         this.setDirtyCanvas(false, true);
         if (this.container)
@@ -990,8 +993,10 @@ export class Node {
         delete input.link;
 
         if (this.container.db) {
-            this.container.db.updateNode(this.id, this.container.id, {inputs: this.inputs});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {outputs: target_node.outputs});
+            let s_node = this.serialize(true);
+            let s_target_node = target_node.serialize(true);
+            this.container.db.updateNode(this.id, this.container.id, {inputs: s_node.inputs});
+            this.container.db.updateNode(target_node.id, target_node.container.id, {outputs: s_target_node.outputs});
         }
 
 

@@ -128,7 +128,8 @@
                 // this.outputs[0].name = cont_node.inputs[id].name;
                 this.title = "Input " + (id + 1);
                 if (this.container.db) {
-                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { inputs: cont_node.inputs });
+                    let s_cont_node = cont_node.serialize(true);
+                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { inputs: s_cont_node.inputs });
                     this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
                 }
             };
@@ -140,7 +141,8 @@
                 cont_node.setDirtyCanvas(true, true);
                 this.properties.slot = -1;
                 if (this.container.db) {
-                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { inputs: cont_node.inputs });
+                    let s_cont_node = cont_node.serialize(true);
+                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { inputs: s_cont_node.inputs });
                     this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
                 }
             };
@@ -173,7 +175,8 @@
                 // this.inputs[0].name = cont_node.outputs[id].name;
                 this.title = "Output " + (id + 1);
                 if (this.container.db) {
-                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { outputs: cont_node.outputs });
+                    let s_cont_node = cont_node.serialize(true);
+                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { outputs: s_cont_node.outputs });
                     this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
                 }
             };
@@ -185,7 +188,8 @@
                 cont_node.setDirtyCanvas(true, true);
                 this.properties.slot = -1;
                 if (this.container.db) {
-                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { outputs: cont_node.outputs });
+                    let s_cont_node = cont_node.serialize(true);
+                    this.container.db.updateNode(cont_node.id, cont_node.container.id, { outputs: s_cont_node.outputs });
                     this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
                 }
             };

@@ -170,7 +170,8 @@ export class ContainerInputNode extends Node {
         this.title = "Input " + (id + 1);
 
         if (this.container.db) {
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: cont_node.inputs});
+            let s_cont_node = cont_node.serialize(true);
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: s_cont_node.inputs});
             this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
         }
     }
@@ -184,7 +185,8 @@ export class ContainerInputNode extends Node {
         this.properties.slot = -1;
 
         if (this.container.db) {
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: cont_node.inputs});
+            let s_cont_node = cont_node.serialize(true);
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: s_cont_node.inputs});
             this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
         }
     }
@@ -230,7 +232,8 @@ export class ContainerOutputNode extends Node {
         this.title = "Output " + (id + 1);
 
         if (this.container.db) {
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: cont_node.outputs});
+            let s_cont_node = cont_node.serialize(true);
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: s_cont_node.outputs});
             this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
         }
     }
@@ -244,7 +247,8 @@ export class ContainerOutputNode extends Node {
         this.properties.slot = -1;
 
         if (this.container.db) {
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: cont_node.outputs});
+            let s_cont_node = cont_node.serialize(true);
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: s_cont_node.outputs});
             this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
         }
     }

@@ -233,10 +233,10 @@ export class Container {
                     if (node.onInputUpdated)
                         node.onInputUpdated();
 
-                    node.updated = false;
+                    node.isUpdated = false;
 
                     for (let i in node.inputs)
-                        if (node.inputs[i].isUpdated)
+                        if (node.inputs[i].updated)
                             node.inputs[i].updated = false;
                 }
             }
@@ -765,8 +765,10 @@ export class Container {
                             input.link.target_slot = 0;
 
                             if (this.db) {
-                                this.db.updateNode(old_target.id, this.id, {outputs: old_target.outputs});
-                                this.db.updateNode(node.id, new_cont.id, {inputs: node.inputs});
+                                let s_old_target = old_target.serialize(true);
+                                let s_node = node.serialize(true);
+                                this.db.updateNode(old_target.id, this.id, {outputs: s_old_target.outputs});
+                                this.db.updateNode(node.id, new_cont.id, {inputs: s_node.inputs});
                             }
                         }
                     }
@@ -823,8 +825,10 @@ export class Container {
                                 link.target_slot = 0;
 
                                 if (this.db) {
-                                    this.db.updateNode(old_target.id, this.id, {inputs: old_target.inputs});
-                                    this.db.updateNode(node.id, new_cont.id, {outputs: node.outputs});
+                                    let s_old_target = old_target.serialize(true);
+                                    let s_node = node.serialize(true);
+                                    this.db.updateNode(old_target.id, this.id, {inputs: s_old_target.inputs});
+                                    this.db.updateNode(node.id, new_cont.id, {outputs: s_node.outputs});
                                 }
                             }
                         }
@@ -832,8 +836,9 @@ export class Container {
                 }
 
                 if (this.db) {
-                    this.db.updateNode(new_cont_node.id, this.id, {inputs: new_cont_node.inputs});
-                    this.db.updateNode(new_cont_node.id, this.id, {outputs: new_cont_node.outputs});
+                    let s_new_cont_node = new_cont_node.serialize(true);
+                    this.db.updateNode(new_cont_node.id, this.id, {inputs: s_new_cont_node.inputs});
+                    this.db.updateNode(new_cont_node.id, this.id, {outputs: s_new_cont_node.outputs});
                 }
             }
         }
