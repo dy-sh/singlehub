@@ -22,8 +22,6 @@ export default class Utils {
     };
 
 
-
-
     /**
      * Generate GUID string
      * @returns {string}
@@ -217,24 +215,45 @@ export default class Utils {
             }
     }
 
+    static formatValue(val: any, type: string): any {
+        switch (type) {
+            case "any" || "" || null:
+                return val;
+            case "number":
+                return parseFloat(val) || 0;
+            case "string":
+                return "" + val;
+            case "boolean":
+                return val == true || val == 1 || val == "true";
+        }
+    }
 
     static formatAndTrimValue(val: any): string {
-        if (!val)
+        if (val === null)
             return "";
-
-        if (typeof (val) == "number") {
-            return "" + parseFloat(val.toFixed(3));
+        if (typeof (val) == "undefined") {
+            return "";
         }
-        else if (typeof (val) == "string") {
-            if (val.length > 10)
-                val = val.substr(0, 10)+"...";
+        if (typeof (val) == "boolean") {
+            return val ? "true" : "false";
+        }
+        if (typeof (val) == "number") {
+            val = parseFloat(val.toFixed(3));
+            return "" + val;
+        }
+        if (typeof (val) == "object") {
+            return "[object]";
+        }
+        if (typeof (val) == "string") {
+            if (val.length > 8)
+                val = val.substr(0, 8) + "...";
             return val;
         }
-
-        // let str = val;
-        // if (str && str.length) //convert typed to array
-        //     str = Array.prototype.slice.call(str).join(",");
-        return "" + val;
+        
+        val = "" + val;
+        if (val.length > 8)
+            val = val.substr(0, 8) + "...";
+        return val;
     }
 
 

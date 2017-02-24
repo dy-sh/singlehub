@@ -194,6 +194,7 @@ export class Node {
     onExecute: Function;
     onInputUpdated: Function;
 
+    onSettingsChanged: Function;
 
     constructor() {
     }
@@ -338,7 +339,7 @@ export class Node {
         if (!this.outputs[output_id])
             return;
 
-        if (this.outputs[output_id].data != data) {
+        if (this.outputs[output_id].data !== data) {
             this.outputs[output_id].data = data;
 
             if (!this.isRecentlyActive)

@@ -398,7 +398,6 @@
                                 break;
                         }
                     }
-                    console.log(data);
                     //send settings
                     $.ajax({
                         url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",

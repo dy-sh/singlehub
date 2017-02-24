@@ -21,41 +21,67 @@ export class ConstantNode extends Node {
         super();
         this.title = "Constant";
         this.descriprion = "Constant value";
-        this.addOutput("value", "number");
+
         this.settings["value"] = {description: "Value", value: 1};
         this.settings["output-type"] = {
             description: "Output type",
             type: "dropdown",
             config: {
                 elements: [
-                    {key: "any", text: "any"},
+                    // {key: "any", text: "any"},
                     {key: "string", text: "string"},
                     {key: "number", text: "number"},
                     {key: "boolean", text: "boolean"}
                 ]
             },
-            value:"string"
+            value: "number"
         };
+
+        this.addOutput("1", "number");
     }
 
-    setValue = function (v) {
-        // if (typeof(v) == "string") v = parseFloat(v);
-        this.settings["value"] = v;
-    }
+    // setValue = function (v) {
+    //     // if (typeof(v) == "string") v = parseFloat(v);
+    //     this.settings["value"] = v;
+    // }
 
     onExecute = function () {
-        this.setOutputData(0, this.settings["value"]);
+        let val = this.settings["value"].value;
+        let out_type = this.settings["output-type"].value;
+        this.setOutputData(0, Utils.formatValue(val, out_type));
     }
 
-    onDrawBackground = function (ctx) {
-        //show the current value
-        let val = this.settings["value"].value;
-        this.outputs[0].label = Utils.formatAndTrimValue(val);
-    };
 
-    onWidget = function (e, widget) {
-        if (widget.name == "value")
-            this.setValue(widget.value);
+    // onWidget = function (e, widget) {
+    //     if (widget.name == "value")
+    //         this.setValue(widget.value);
+    // }
+
+    onSettingsChanged = function () {
+        //change output type
+        let out_type = this.settings["output-type"].value;
+        if (out_type == "any")
+            out_type = null;
+        if (out_type != this.outputs[0].type)
+            this.outputs[0].type = out_type;
+
+        //change output name
+        let val = this.settings["value"].value;
+        val = Utils.formatValue(val, out_type);
+        this.outputs[0].name = Utils.formatAndTrimValue(val);
+
+
+        if (this.container.db) {
+            let s_node = this.serialize(true);
+            this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
+        }
+
+        if (!this.isBackside()) {
+            if (!(<any>window).editor.showSlotsValues) {
+                this.outputs[0].label = this.outputs[0].name;
+                this.setDirtyCanvas(true, true);
+            }
+        }
     }
 }
 Nodes.registerNodeType("main/constant", ConstantNode);

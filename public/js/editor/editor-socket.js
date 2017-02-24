@@ -97,6 +97,8 @@
                 let container = container_1.Container.containers[n.cid];
                 let node = container.getNodeById(n.id);
                 node.settings = n.settings;
+                if (node.onSettingsChanged)
+                    node.onSettingsChanged();
                 node.setDirtyCanvas(true, true);
             });
             socket.on('nodes-move-to-new-container', function (data) {

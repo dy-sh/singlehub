@@ -42,6 +42,8 @@
                 });
                 socket.on("get-slots-values", function (cid) {
                     let container = container_1.Container.containers[cid];
+                    if (!container || !container._nodes)
+                        return;
                     let inputs_values = [];
                     let outputs_values = [];
                     for (let id in container._nodes) {

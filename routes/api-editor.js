@@ -181,6 +181,8 @@
         for (let s of req.body) {
             node.settings[s.key].value = s.value;
         }
+        if (node.onSettingsChanged)
+            node.onSettingsChanged();
         if (app_1.app.db)
             app_1.app.db.updateNode(node.id, node.container.id, { settings: node.settings });
         app_1.app.server.socket.io.emit('node-settings', {

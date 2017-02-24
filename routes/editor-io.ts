@@ -48,6 +48,8 @@ export class NodesServerSocket {
 
             socket.on("get-slots-values", function (cid) {
                 let container = Container.containers[cid];
+                if (!container || !container._nodes)
+                    return;
 
                 let inputs_values = [];
                 let outputs_values = [];

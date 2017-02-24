@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 01.02.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports"], factory);
     }
 })(function (require, exports) {
@@ -198,21 +197,43 @@
                         target.prototype.__defineSetter__(i, origin.prototype.__lookupSetter__(i));
                 }
         }
-        static formatAndTrimValue(val) {
-            if (!val)
-                return "";
-            if (typeof (val) == "number") {
-                return "" + parseFloat(val.toFixed(3));
+        static formatValue(val, type) {
+            switch (type) {
+                case "any" || "" || null:
+                    return val;
+                case "number":
+                    return parseFloat(val) || 0;
+                case "string":
+                    return "" + val;
+                case "boolean":
+                    return val == true || val == 1 || val == "true";
             }
-            else if (typeof (val) == "string") {
-                if (val.length > 10)
-                    val = val.substr(0, 10) + "...";
+        }
+        static formatAndTrimValue(val) {
+            if (val === null)
+                return "";
+            if (typeof (val) == "undefined") {
+                return "";
+            }
+            if (typeof (val) == "boolean") {
+                return val ? "true" : "false";
+            }
+            if (typeof (val) == "number") {
+                val = parseFloat(val.toFixed(3));
+                return "" + val;
+            }
+            if (typeof (val) == "object") {
+                return "[object]";
+            }
+            if (typeof (val) == "string") {
+                if (val.length > 8)
+                    val = val.substr(0, 8) + "...";
                 return val;
             }
-            // let str = val;
-            // if (str && str.length) //convert typed to array
-            //     str = Array.prototype.slice.call(str).join(",");
-            return "" + val;
+            val = "" + val;
+            if (val.length > 8)
+                val = val.substr(0, 8) + "...";
+            return val;
         }
         /**
          * Get current time

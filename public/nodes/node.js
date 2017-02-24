@@ -151,7 +151,7 @@
         setOutputData(output_id, data) {
             if (!this.outputs[output_id])
                 return;
-            if (this.outputs[output_id].data != data) {
+            if (this.outputs[output_id].data !== data) {
                 this.outputs[output_id].data = data;
                 if (!this.isRecentlyActive)
                     this.isRecentlyActive = true;

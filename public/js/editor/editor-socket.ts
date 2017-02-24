@@ -120,6 +120,8 @@ export class EditorSocket {
             let container = Container.containers[n.cid];
             let node = container.getNodeById(n.id);
             node.settings = n.settings;
+            if (node.onSettingsChanged)
+                node.onSettingsChanged();
             node.setDirtyCanvas(true, true);
         });
 
