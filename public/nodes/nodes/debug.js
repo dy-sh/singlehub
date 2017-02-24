@@ -30,6 +30,7 @@
                 this.isRecentlyActive = true;
             };
             this.onGetMessageFromBackSide = function (data) {
+                this.lastData = data.value;
                 this.showValueOnInput(data.value);
             };
             this.UPDATE_INTERVAL = 300;
@@ -53,6 +54,9 @@
             let val = utils_1.default.formatAndTrimValue(value);
             this.inputs[0].label = val;
             this.setDirtyCanvas(true, false);
+        }
+        updateInputsLabels() {
+            this.showValueOnInput(this.lastData);
         }
     }
     exports.WatchNode = WatchNode;

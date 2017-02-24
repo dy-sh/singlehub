@@ -52,6 +52,7 @@ export class WatchNode extends Node {
     };
 
     onGetMessageFromBackSide = function (data) {
+        this.lastData = data.value;
         this.showValueOnInput(data.value);
     };
 
@@ -61,6 +62,10 @@ export class WatchNode extends Node {
         this.inputs[0].label = val;
 
         this.setDirtyCanvas(true, false);
+    }
+
+    updateInputsLabels() {
+        this.showValueOnInput(this.lastData);
     }
 }
 Nodes.registerNodeType("debug/watch", WatchNode);
