@@ -116,6 +116,13 @@ export class EditorSocket {
             }
         });
 
+        socket.on('node-settings', function (n) {
+            let container = Container.containers[n.cid];
+            let node = container.getNodeById(n.id);
+            node.settings = n.settings;
+            node.setDirtyCanvas(true, true);
+        });
+
         socket.on('nodes-move-to-new-container', function (data) {
             let container = Container.containers[data.cid];
             container.mooveNodesToNewContainer(data.ids, data.pos);

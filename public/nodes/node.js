@@ -71,6 +71,18 @@
                 pos: this.pos,
                 size: this.size,
             };
+            if (this.settings)
+                n.settings = utils_1.default.cloneObject(this.settings);
+            if (this.properties)
+                n.properties = utils_1.default.cloneObject(this.properties);
+            if (this.color)
+                n.color = this.color;
+            if (this.bgcolor)
+                n.bgcolor = this.bgcolor;
+            if (this.boxcolor)
+                n.boxcolor = this.boxcolor;
+            if (this.flags)
+                n.flags = utils_1.default.cloneObject(this.flags);
             //remove data from liks
             if (this.inputs) {
                 n.inputs = {};
@@ -103,16 +115,6 @@
                     };
                 }
             }
-            if (this.properties)
-                n.properties = utils_1.default.cloneObject(this.properties);
-            if (this.color)
-                n.color = this.color;
-            if (this.bgcolor)
-                n.bgcolor = this.bgcolor;
-            if (this.boxcolor)
-                n.boxcolor = this.boxcolor;
-            if (this.flags)
-                n.flags = utils_1.default.cloneObject(this.flags);
             if (this.onSerialize)
                 this.onSerialize(n);
             return n;

@@ -171,7 +171,24 @@
     });
     router.post('/nodes/clone/:id', function (req, res) {
     });
-    router.post('/nodes/settings/:id', function (req, res) {
+    router.put('/c/:cid/n/:id/settings', function (req, res) {
+        let container = container_1.Container.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`Can't update node size. Container id [${req.params.cid}] not found.`);
+        let node = container.getNodeById(req.params.id);
+        if (!node)
+            return res.status(404).send(`Can't update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
+        for (let s of req.body) {
+            node.settings[s.key].value = s.value;
+        }
+        if (app_1.app.db)
+            app_1.app.db.updateNode(node.id, node.container.id, { settings: node.settings });
+        app_1.app.server.socket.io.emit('node-settings', {
+            id: req.params.id,
+            cid: req.params.cid,
+            settings: node.settings
+        });
+        res.send(`Node settings updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     router.delete('/nodes/all', function (req, res) {
     });

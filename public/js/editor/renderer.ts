@@ -2366,7 +2366,7 @@ export class Renderer {
         let options = [];
 
 
-        if (node.settings && Object.keys(node.settings).length>0) {
+        if (node.settings && Object.keys(node.settings).length > 0) {
             options.push({
                 content: "Settings", callback: function () {
                     editor.showNodeSettings(node);

@@ -93,6 +93,12 @@
                     node.setDirtyCanvas(true, true);
                 }
             });
+            socket.on('node-settings', function (n) {
+                let container = container_1.Container.containers[n.cid];
+                let node = container.getNodeById(n.id);
+                node.settings = n.settings;
+                node.setDirtyCanvas(true, true);
+            });
             socket.on('nodes-move-to-new-container', function (data) {
                 let container = container_1.Container.containers[data.cid];
                 container.mooveNodesToNewContainer(data.ids, data.pos);

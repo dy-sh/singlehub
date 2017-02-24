@@ -442,16 +442,16 @@ export class NodeEditor {
         for (let s in node.settings) {
 
             if (!node.settings[s].type || node.settings[s].type == "string") {
-                body.append(textSettingTemplate({settings:node.settings[s],key:s}));
+                body.append(textSettingTemplate({settings: node.settings[s], key: s}));
                 break;
             }
 
             switch (node.settings[s].type) {
                 case "number":
-                    body.append(numberSettingTemplate({settings:node.settings[s],key:s}));
+                    body.append(numberSettingTemplate({settings: node.settings[s], key: s}));
                     break;
                 case "boolean":
-                    body.append(checkboxSettingTemplate({settings:node.settings[s],key:s}));
+                    body.append(checkboxSettingTemplate({settings: node.settings[s], key: s}));
                     if (node.settings[s].value)
                         $('#node-setting-' + s).prop('checked', true);
                     break;
@@ -482,13 +482,14 @@ export class NodeEditor {
                             break;
                     }
                 }
-                console.log(data);
+
 
                 //send settings
                 $.ajax({
-                    url: "/api/editor/c/n/settings",
-                    type: "POST",
-                    data: {id: node.id, data: data}
+                    url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
+                    type: "PUT",
+                    contentType: 'application/json',
+                    data: JSON.stringify(data)
                 });
             }
         }).modal('setting', 'transition', 'fade up').modal('show');

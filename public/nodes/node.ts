@@ -78,6 +78,7 @@ export interface SerializedNode {
     inputs?: {[id: number]: NodeInput};
     outputs?: {[id: number]: NodeOutput};
     properties?: any;
+    settings?: {[name: string]: NodeSettings};
     color?: string;
     bgcolor?: string;
     boxcolor?: string;
@@ -241,6 +242,21 @@ export class Node {
             size: this.size,
         };
 
+        if (this.settings)
+            n.settings = Utils.cloneObject(this.settings);
+
+        if (this.properties)
+            n.properties = Utils.cloneObject(this.properties);
+
+        if (this.color)
+            n.color = this.color;
+        if (this.bgcolor)
+            n.bgcolor = this.bgcolor;
+        if (this.boxcolor)
+            n.boxcolor = this.boxcolor;
+        if (this.flags)
+            n.flags = Utils.cloneObject(this.flags);
+
         //remove data from liks
         if (this.inputs) {
             n.inputs = {};
@@ -276,19 +292,6 @@ export class Node {
                 }
             }
         }
-
-        if (this.properties)
-            n.properties = Utils.cloneObject(this.properties);
-
-
-        if (this.color)
-            n.color = this.color;
-        if (this.bgcolor)
-            n.bgcolor = this.bgcolor;
-        if (this.boxcolor)
-            n.boxcolor = this.boxcolor;
-        if (this.flags)
-            n.flags = Utils.cloneObject(this.flags);
 
         if (this.onSerialize)
             this.onSerialize(n);

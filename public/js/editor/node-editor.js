@@ -385,12 +385,12 @@
                                 break;
                         }
                     }
-                    console.log(data);
                     //send settings
                     $.ajax({
-                        url: "/api/editor/c/n/settings",
-                        type: "POST",
-                        data: { id: node.id, data: data }
+                        url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
+                        type: "PUT",
+                        contentType: 'application/json',
+                        data: JSON.stringify(data)
                     });
                 }
             }).modal('setting', 'transition', 'fade up').modal('show');
