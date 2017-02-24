@@ -8,6 +8,7 @@ import {Container} from "../../nodes/container"
 import {Renderer} from "./renderer"
 import {EditorSocket, socket} from "./editor-socket";
 import {themes} from "./node-editor-themes"
+import Utils from "../../nodes/utils";
 
 
 export class NodeEditor {
@@ -443,7 +444,7 @@ export class NodeEditor {
 
             if (!node.settings[s].type || node.settings[s].type == "string") {
                 body.append(textSettingTemplate({settings: node.settings[s], key: s}));
-                break;
+                continue;
             }
 
             switch (node.settings[s].type) {
@@ -454,6 +455,15 @@ export class NodeEditor {
                     body.append(checkboxSettingTemplate({settings: node.settings[s], key: s}));
                     if (node.settings[s].value)
                         $('#node-setting-' + s).prop('checked', true);
+                    break;
+                case "dropdown":
+                    let settings = Utils.cloneObject(node.settings[s]);
+                    //set selected element
+                    for (let el of settings.config.elements)
+                        if (el.key == settings.value)
+                            el.selected = true;
+                    body.append(dropdownSettingTemplate({settings: settings, key: s}));
+                    (<any>$('.ui.dropdown')).dropdown();
                     break;
             }
         }
@@ -470,7 +480,7 @@ export class NodeEditor {
 
                     if (!node.settings[s].type || node.settings[s].type == "string") {
                         data.push({key: s, value: $('#node-setting-' + s).val()});
-                        break;
+                        continue;
                     }
 
                     switch (node.settings[s].type) {
@@ -480,10 +490,13 @@ export class NodeEditor {
                         case "boolean":
                             data.push({key: s, value: $('#node-setting-' + s).prop('checked') ? "true" : "false"});
                             break;
+                        case "dropdown":
+                            data.push({key: s, value: $('#node-setting-' + s).val()});
+                            break;
                     }
                 }
 
-
+console.log(data)
                 //send settings
                 $.ajax({
                     url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
@@ -639,6 +652,7 @@ $.noty.defaults.animation = {
 let textSettingTemplate = Handlebars.compile($('#textSettingTemplate').html());
 let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
 let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
+let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
 
 
 export let editor = new NodeEditor();

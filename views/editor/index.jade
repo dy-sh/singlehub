@@ -89,6 +89,19 @@ html
 			<label> {{settings.description}} </label>
 			</div>
 			</div>
+		script#dropdownSettingTemplate(type='text/x-handlebars-template').
+			<div class="field">
+			<label> {{settings.description}} </label>
+			<select class="ui dropdown" id="node-setting-{{key}}">
+			{{#each settings.config.elements}}
+				{{#if selected}}
+					<option selected value="{{key}}">{{text}}</option>
+				{{else}}
+					<option value="{{key}}">{{text}}</option>
+				{{/if}}
+			{{/each}}
+			</select>
+			</div>
 		script.
 			//this var used in node-editor
 			var container_id = "#{container_id}";
@@ -118,3 +131,4 @@ script(src='/libs/socket.io-client/dist/socket.io.js')
 script(src='/js/libs/logplease.min.js')
 script(src='/libs/requirejs/require.js' data-main="/js/editor/init")
 //script(src='/js/node-editor/node-editor-theme#{theme}.js')
+

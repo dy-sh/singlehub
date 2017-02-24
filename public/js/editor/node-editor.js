@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-socket", "./node-editor-themes"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-socket", "./node-editor-themes", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,6 +15,7 @@
     const renderer_1 = require("./renderer");
     const editor_socket_1 = require("./editor-socket");
     const node_editor_themes_1 = require("./node-editor-themes");
+    const utils_1 = require("../../nodes/utils");
     class NodeEditor {
         constructor() {
             //nodes: Nodes;
@@ -352,7 +353,7 @@
             for (let s in node.settings) {
                 if (!node.settings[s].type || node.settings[s].type == "string") {
                     body.append(textSettingTemplate({ settings: node.settings[s], key: s }));
-                    break;
+                    continue;
                 }
                 switch (node.settings[s].type) {
                     case "number":
@@ -362,6 +363,15 @@
                         body.append(checkboxSettingTemplate({ settings: node.settings[s], key: s }));
                         if (node.settings[s].value)
                             $('#node-setting-' + s).prop('checked', true);
+                        break;
+                    case "dropdown":
+                        let settings = utils_1.default.cloneObject(node.settings[s]);
+                        //set selected element
+                        for (let el of settings.config.elements)
+                            if (el.key == settings.value)
+                                el.selected = true;
+                        body.append(dropdownSettingTemplate({ settings: settings, key: s }));
+                        $('.ui.dropdown').dropdown();
                         break;
                 }
             }
@@ -374,7 +384,7 @@
                     for (let s in node.settings) {
                         if (!node.settings[s].type || node.settings[s].type == "string") {
                             data.push({ key: s, value: $('#node-setting-' + s).val() });
-                            break;
+                            continue;
                         }
                         switch (node.settings[s].type) {
                             case "number":
@@ -383,8 +393,12 @@
                             case "boolean":
                                 data.push({ key: s, value: $('#node-setting-' + s).prop('checked') ? "true" : "false" });
                                 break;
+                            case "dropdown":
+                                data.push({ key: s, value: $('#node-setting-' + s).val() });
+                                break;
                         }
                     }
+                    console.log(data);
                     //send settings
                     $.ajax({
                         url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
@@ -517,6 +531,7 @@
     let textSettingTemplate = Handlebars.compile($('#textSettingTemplate').html());
     let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
     let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
+    let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
     exports.editor = new NodeEditor();
 });
 //# sourceMappingURL=node-editor.js.map

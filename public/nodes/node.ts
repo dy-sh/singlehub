@@ -89,8 +89,8 @@ export interface NodeSettings {
     description: string;
     type?: string;
     value?: any;
+    config?: any;
 }
-
 
 
 export class Node {

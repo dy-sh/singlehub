@@ -43,6 +43,19 @@
             this.descriprion = "Constant value";
             this.addOutput("value", "number");
             this.settings["value"] = { description: "Value", value: 1 };
+            this.settings["output-type"] = {
+                description: "Output type",
+                type: "dropdown",
+                config: {
+                    elements: [
+                        { key: "any", text: "any" },
+                        { key: "string", text: "string" },
+                        { key: "number", text: "number" },
+                        { key: "boolean", text: "boolean" }
+                    ]
+                },
+                value: "string"
+            };
         }
     }
     exports.ConstantNode = ConstantNode;
