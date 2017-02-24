@@ -15,7 +15,7 @@ import * as http from 'http';
 
 const log = require('logplease').create('server',{color: 3});
 
-import {NodesServerSocket} from "../../routes/editor-io"
+import {EditorServerSocket} from "../../routes/editor-server-socket"
 
 
 
@@ -26,7 +26,7 @@ let config = require('./../../config.json');
 export class Server {
     express: express.Application;
     server: http.Server;
-    socket: NodesServerSocket;
+    socket: EditorServerSocket;
     private __rootdirname;
 
     constructor() {
@@ -163,7 +163,7 @@ export class Server {
     }
 
     private start_io() {
-        this.socket = new NodesServerSocket(this.server);
+        this.socket = new EditorServerSocket(this.server);
     }
 }
 

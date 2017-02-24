@@ -15,7 +15,7 @@
     const utils_1 = require("../public/nodes/utils");
     const app_1 = require("../app");
     const log = require('logplease').create('server', { color: 3 });
-    class NodesServerSocket {
+    class EditorServerSocket {
         constructor(server) {
             let io = socket(server);
             this.io = io;
@@ -82,6 +82,6 @@
             });
         }
     }
-    exports.NodesServerSocket = NodesServerSocket;
+    exports.EditorServerSocket = EditorServerSocket;
 });
-//# sourceMappingURL=editor-io.js.map
+//# sourceMappingURL=editor-server-socket.js.map

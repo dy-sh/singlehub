@@ -6,7 +6,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', "../../routes/editor-io"], factory);
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', "../../routes/editor-server-socket"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,7 +19,7 @@
     let expressValidator = require('express-validator');
     const http = require('http');
     const log = require('logplease').create('server', { color: 3 });
-    const editor_io_1 = require("../../routes/editor-io");
+    const editor_server_socket_1 = require("../../routes/editor-server-socket");
     let config = require('./../../config.json');
     class Server {
         constructor() {
@@ -144,7 +144,7 @@
             }
         }
         start_io() {
-            this.socket = new editor_io_1.NodesServerSocket(this.server);
+            this.socket = new editor_server_socket_1.EditorServerSocket(this.server);
         }
     }
     exports.Server = Server;

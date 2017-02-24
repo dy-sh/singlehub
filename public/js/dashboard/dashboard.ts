@@ -1,10 +1,17 @@
-/*  MyNodes.NET
+﻿/*  MyNodes.NET 
     Copyright (C) 2016 Derwish <derwish.pro@gmail.com>
-    License: http://www.gnu.org/licenses/gpl-3.0.txt
+    License: http://www.gnu.org/licenses/gpl-3.0.txt  
 */
+
 var MAIN_PANEL_ID = "Main";
+
 var elementsFadeTime = 300;
+
 var panelTemplate = Handlebars.compile($('#panelTemplate').html());
+
+
+
+
 function createNode(node) {
     //create new panel
     if ($('#panel-' + node.PanelId).length == 0) {
@@ -64,13 +71,21 @@ function createNode(node) {
             break;
         default:
     }
+
     updateNode(node);
 }
+
+
+
+
+
 function updateNode(node) {
     //if ShowOnHomePage option changed to true
     if ($('#node-' + node.Id).length == 0)
         createNode(node);
+
     $('#activity-' + node.PanelId).show().fadeOut(150);
+
     switch (node.Type) {
         case "Label":
             updateLabel(node);
@@ -125,49 +140,69 @@ function updateNode(node) {
             break;
         default:
     }
+
     var oldPanelIndex = $('#node-' + node.Id).attr("panelIndex");
     if (oldPanelIndex != node.Settings["PanelIndex"].Value) {
         $('#node-' + node.Id).attr("panelIndex", node.Settings["PanelIndex"].Value);
         sortPanel(node.PanelId);
     }
+
 }
+
+
+
 function removeNode(node) {
     $('#node-' + node.Id).fadeOut(elementsFadeTime, function () {
+
         switch (node.Type) {
             case "Chart":
                 removeChart(node);
                 break;
             default:
         }
+
+
         $(this).remove();
         checkPanelForRemove(node.PanelId);
     });
 }
+
 function checkPanelForRemove(panelId) {
     var panelBody = $('#uiContainer-' + panelId);
     if (panelBody.children().length == 0)
         removePanel(panelId);
 }
+
+
 function createPanel(node) {
     $('#empty-message').hide();
+
     //create new
     $(panelTemplate(node)).hide().appendTo("#panelsContainer").fadeIn(elementsFadeTime);
+
     $('#panelTitle-' + node.PanelId).html(node.PanelName);
 }
+
 function removePanel(panelId) {
     $('#panel-' + panelId).fadeOut(elementsFadeTime, function () {
         $(this).remove();
     });
 }
+
 function updatePanel(node) {
-    var settings = JSON.parse(node.properties["Settings"]);
+    var settings =  JSON.parse(node.properties["Settings"]);
     $('#panelTitle-' + node.id).html(settings.Name.Value);
 }
+
+
 function sortPanel(panelId) {
+
     var elements = $('#uiContainer-' + panelId).children();
     var count = 0;
+
     // sort based on timestamp attribute
     elements.sort(function (a, b) {
+
         // convert to integers from strings
         a = parseInt($(a).attr("panelIndex"), 10);
         b = parseInt($(b).attr("panelIndex"), 10);
@@ -175,18 +210,15 @@ function sortPanel(panelId) {
         // compare
         if (a > b) {
             return 1;
-        }
-        else if (a < b) {
+        } else if (a < b) {
             return -1;
-        }
-        else {
+        } else {
             return 0;
         }
     });
+
     var panel = document.getElementById('uiContainer-' + panelId);
     for (let i = 0; i < elements.length; ++i) {
         panel.appendChild(elements[i]);
     }
-}
-;
-//# sourceMappingURL=dashboard.js.map
+};

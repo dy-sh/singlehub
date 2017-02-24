@@ -6,17 +6,17 @@ import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
 import {Container} from "../../nodes/container"
 import {Renderer} from "./renderer"
-import {EditorSocket, socket} from "./editor-socket";
-import {themes} from "./node-editor-themes"
+import {EditorClientSocket, socket} from "./editor-client-socket";
+import {themes} from "./editor-themes"
 import Utils from "../../nodes/utils";
 
 
-export class NodeEditor {
+export class Editor {
 
     private root: HTMLDivElement;
     rootContainer: Container;
     renderer: Renderer;
-    socket: EditorSocket;
+    socket: EditorClientSocket;
     //nodes: Nodes;
 
     isRunning = false;
@@ -687,4 +687,4 @@ let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').h
 let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
 
 
-export let editor = new NodeEditor();
+export let editor = new Editor();

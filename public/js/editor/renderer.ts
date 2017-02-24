@@ -7,7 +7,7 @@
 import {Nodes} from "../../nodes/nodes"
 import {Node, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/node"
 import {Container} from "../../nodes/container"
-import {editor} from "./node-editor";
+import {editor} from "./editor";
 import Utils from "../../nodes/utils";
 
 

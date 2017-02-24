@@ -4,7 +4,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "./node-editor", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "./editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,7 +12,7 @@
      * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
      */
     const nodes_1 = require("../../nodes/nodes");
-    const node_editor_1 = require("./node-editor");
+    const editor_1 = require("./editor");
     const utils_1 = require("../../nodes/utils");
     class Renderer {
         constructor(canvas, container, skip_render) {
@@ -96,11 +96,11 @@
              */
             container.attachRenderer(this);
             this.setDirty(true, true);
-            node_editor_1.editor.updateContainersNavigation();
-            node_editor_1.editor.updateBrowserUrl();
+            editor_1.editor.updateContainersNavigation();
+            editor_1.editor.updateBrowserUrl();
             if (joinRoom) {
-                node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
-                node_editor_1.editor.updateNodesLabels();
+                editor_1.editor.socket.sendJoinContainerRoom(container.id);
+                editor_1.editor.updateNodesLabels();
             }
         }
         /**
@@ -120,11 +120,11 @@
             }
             container.attachRenderer(this);
             this.setDirty(true, true);
-            node_editor_1.editor.updateContainersNavigation();
-            node_editor_1.editor.updateBrowserUrl();
+            editor_1.editor.updateContainersNavigation();
+            editor_1.editor.updateBrowserUrl();
             if (joinRoom) {
-                node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
-                node_editor_1.editor.updateNodesLabels();
+                editor_1.editor.socket.sendJoinContainerRoom(container.id);
+                editor_1.editor.updateNodesLabels();
             }
         }
         /**
@@ -136,11 +136,11 @@
             let container = this._containers_stack.pop();
             container.attachRenderer(this);
             this.setDirty(true, true);
-            node_editor_1.editor.updateContainersNavigation();
-            node_editor_1.editor.updateBrowserUrl();
+            editor_1.editor.updateContainersNavigation();
+            editor_1.editor.updateBrowserUrl();
             if (joinRoom) {
-                node_editor_1.editor.socket.sendJoinContainerRoom(container.id);
-                node_editor_1.editor.updateNodesLabels();
+                editor_1.editor.socket.sendJoinContainerRoom(container.id);
+                editor_1.editor.updateNodesLabels();
             }
         }
         /**
@@ -449,7 +449,7 @@
                                 let link_pos = n.getConnectionPos(true, +i);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     if (input.link !== null) {
-                                        node_editor_1.editor.socket.sendRemoveLink(input.link.target_node_id, input.link.target_slot, n.id, i);
+                                        editor_1.editor.socket.sendRemoveLink(input.link.target_node_id, input.link.target_slot, n.id, i);
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;
                                         skip_action = true;
@@ -669,7 +669,7 @@
                         else {
                             //slot below mouse? connect
                             let slot = this.isOverNodeInput(node, e.canvasX, e.canvasY);
-                            node_editor_1.editor.socket.sendCreateLink(this.connecting_node.id, this.connecting_slot, node.id, slot);
+                            editor_1.editor.socket.sendCreateLink(this.connecting_node.id, this.connecting_slot, node.id, slot);
                         }
                     }
                     this.connecting_output = null;
@@ -681,7 +681,7 @@
                 else if (this.resizing_node) {
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
-                    node_editor_1.editor.socket.sendUpdateNodeSize(this.resizing_node);
+                    editor_1.editor.socket.sendUpdateNodeSize(this.resizing_node);
                     this.resizing_node = null;
                 }
                 else if (this.node_dragged) {
@@ -694,7 +694,7 @@
                     for (let i in this.selected_nodes) {
                         this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                         this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                        node_editor_1.editor.socket.sendUpdateNodePosition(this.selected_nodes[i]);
+                        editor_1.editor.socket.sendUpdateNodePosition(this.selected_nodes[i]);
                     }
                     this.node_dragged = null;
                 }
@@ -1807,15 +1807,15 @@
                 options.push({
                     content: "Reset View",
                     callback: () => {
-                        node_editor_1.editor.renderer.offset = [0, 0];
-                        node_editor_1.editor.renderer.scale = 1;
-                        node_editor_1.editor.renderer.setZoom(1, [1, 1]);
+                        editor_1.editor.renderer.offset = [0, 0];
+                        editor_1.editor.renderer.scale = 1;
+                        editor_1.editor.renderer.setZoom(1, [1, 1]);
                     }
                 });
                 options.push({
                     content: "Show Map",
                     callback: () => {
-                        node_editor_1.editor.addMiniWindow(200, 200);
+                        editor_1.editor.addMiniWindow(200, 200);
                     }
                 });
                 let that = this;
@@ -1845,7 +1845,7 @@
             if (node.settings && Object.keys(node.settings).length > 0) {
                 options.push({
                     content: "Settings", callback: function () {
-                        node_editor_1.editor.showNodeSettings(node);
+                        editor_1.editor.showNodeSettings(node);
                     }
                 });
                 options.push(null);
@@ -1863,7 +1863,7 @@
                 options.push({ content: "Clone", callback: this.onMenuNodeClone });
             options.push({
                 content: "Description", callback: function () {
-                    node_editor_1.editor.showNodeDescription(node);
+                    editor_1.editor.showNodeDescription(node);
                 }
             });
             options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
@@ -1958,7 +1958,7 @@
                 let values = [];
                 for (let i in node_types) {
                     //do ton show container input/output in root container
-                    if (node_editor_1.editor.renderer.container.id == 0) {
+                    if (editor_1.editor.renderer.container.id == 0) {
                         if (node_types[i].type == "main/input"
                             || node_types[i].type == "main/output")
                             continue;
@@ -1973,7 +1973,7 @@
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                node_editor_1.editor.socket.sendCreateNode(type, pos);
+                editor_1.editor.socket.sendCreateNode(type, pos);
                 // let node = Nodes.createNode(v.value);
                 // if (node) {
                 //     node.pos = pos;
@@ -2003,19 +2003,19 @@
                     let pos = canvas.convertEventToCanvas(first_event);
                     pos[0] = Math.round(pos[0]);
                     pos[1] = Math.round(pos[1]);
-                    node_editor_1.editor.importContainerFromFile(pos);
+                    editor_1.editor.importContainerFromFile(pos);
                 }
                 if (v.value == "Container from script") {
                     let pos = canvas.convertEventToCanvas(first_event);
                     pos[0] = Math.round(pos[0]);
                     pos[1] = Math.round(pos[1]);
-                    node_editor_1.editor.importContainerFromScript(pos);
+                    editor_1.editor.importContainerFromScript(pos);
                 }
                 if (v.value == "Container from URL") {
                     let pos = canvas.convertEventToCanvas(first_event);
                     pos[0] = Math.round(pos[0]);
                     pos[1] = Math.round(pos[1]);
-                    node_editor_1.editor.importContainerFromURL(pos);
+                    editor_1.editor.importContainerFromURL(pos);
                 }
                 canvas.closeAllContextualMenus();
                 return false;
@@ -2174,20 +2174,20 @@
                 let ids = [];
                 for (let n in renderer.selected_nodes)
                     ids.push(n);
-                node_editor_1.editor.socket.sendRemoveNodes(ids);
+                editor_1.editor.socket.sendRemoveNodes(ids);
             }
             else
-                node_editor_1.editor.socket.sendRemoveNodes([node.id]);
+                editor_1.editor.socket.sendRemoveNodes([node.id]);
         }
         onMenuNodeMoveToContainer(node, e, prev_menu, renderer, first_event) {
             if (node.id in renderer.selected_nodes) {
                 let ids = [];
                 for (let n in renderer.selected_nodes)
                     ids.push(n);
-                node_editor_1.editor.socket.sendMoveToNewContainer(ids, node.pos);
+                editor_1.editor.socket.sendMoveToNewContainer(ids, node.pos);
             }
             else
-                node_editor_1.editor.socket.sendMoveToNewContainer([node.id], node.pos);
+                editor_1.editor.socket.sendMoveToNewContainer([node.id], node.pos);
         }
         /**
          * On menu node clone
@@ -2203,7 +2203,7 @@
             //node.container.add(newnode);
             //node.setDirtyCanvas(true, true);
             //derwish added
-            node_editor_1.editor.socket.sendCloneNode(node);
+            editor_1.editor.socket.sendCloneNode(node);
         }
         /**
          * Create contextual menu

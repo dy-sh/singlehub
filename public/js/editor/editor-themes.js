@@ -329,4 +329,4 @@
     theme8.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
     theme8.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
 });
-//# sourceMappingURL=node-editor-themes.js.map
+//# sourceMappingURL=editor-themes.js.map

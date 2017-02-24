@@ -6,17 +6,17 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-socket", "./node-editor-themes", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-client-socket", "./editor-themes", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const container_1 = require("../../nodes/container");
     const renderer_1 = require("./renderer");
-    const editor_socket_1 = require("./editor-socket");
-    const node_editor_themes_1 = require("./node-editor-themes");
+    const editor_client_socket_1 = require("./editor-client-socket");
+    const editor_themes_1 = require("./editor-themes");
     const utils_1 = require("../../nodes/utils");
-    class NodeEditor {
+    class Editor {
         constructor() {
             //nodes: Nodes;
             this.isRunning = false;
@@ -31,12 +31,12 @@
             let canvas = root.querySelector(".canvas");
             //nodes options theme
             if (window.theme)
-                nodes_1.Nodes.options = node_editor_themes_1.themes[window.theme];
+                nodes_1.Nodes.options = editor_themes_1.themes[window.theme];
             //create root container
             this.rootContainer = new container_1.Container();
             //create socket
-            this.socket = editor_socket_1.socket;
-            this.rootContainer.socket = editor_socket_1.socket.socket;
+            this.socket = editor_client_socket_1.socket;
+            this.rootContainer.socket = editor_client_socket_1.socket.socket;
             //create canvas
             let renderer = this.renderer = new renderer_1.Renderer(canvas, this.rootContainer);
             // renderer.background_image = "/images/node-editor/grid.png";
@@ -413,14 +413,14 @@
             var that = this;
             $("#play-button").click(function () {
                 if (that.isRunning)
-                    editor_socket_1.socket.sendStopContainer();
+                    editor_client_socket_1.socket.sendStopContainer();
                 else
-                    editor_socket_1.socket.sendRunContainer();
+                    editor_client_socket_1.socket.sendRunContainer();
             });
         }
         addStepButton() {
             $("#step-button").click(function () {
-                editor_socket_1.socket.sendStepContainer();
+                editor_client_socket_1.socket.sendStepContainer();
                 // container.runStep();
             });
         }
@@ -432,7 +432,7 @@
         }
         onContainerRunStep() {
             if (this.showSlotsValues)
-                editor_socket_1.socket.sendGetSlotsValues();
+                editor_client_socket_1.socket.sendGetSlotsValues();
         }
         onContainerStop() {
             this.isRunning = false;
@@ -536,7 +536,7 @@
             });
         }
     }
-    exports.NodeEditor = NodeEditor;
+    exports.Editor = Editor;
     let minimap_opened = false;
     // noty settings
     $.noty.defaults.layout = 'bottomRight';
@@ -553,6 +553,6 @@
     let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
     let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
     let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
-    exports.editor = new NodeEditor();
+    exports.editor = new Editor();
 });
-//# sourceMappingURL=node-editor.js.map
+//# sourceMappingURL=editor.js.map

@@ -3,16 +3,14 @@
  */
 
 import {Nodes} from "../../nodes/nodes"
-import {Node} from "../../nodes/node"
 import {Container} from "../../nodes/container"
 
 import "../../nodes/nodes/main";
 import "../../nodes/nodes/debug";
 import "../../nodes/nodes/math";
 
-import {socket} from "./editor-socket"
 
-import {editor} from "./node-editor";
+import {editor} from "./editor";
 
 (<any>window).rootContainer = Container.containers[0];
 (<any>window).Nodes = Nodes;

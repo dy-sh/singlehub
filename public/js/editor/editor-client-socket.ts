@@ -5,7 +5,7 @@
 import {Nodes} from "../../nodes/nodes"
 import {Node, Link, LinkInfo} from "../../nodes/node"
 import {Container} from "../../nodes/container";
-import {editor} from "./node-editor";
+import {editor} from "./editor";
 import Utils from "../../nodes/utils";
 import {ContainerNode, ContainerInputNode} from "../../nodes/nodes/main";
 
@@ -13,7 +13,7 @@ import {ContainerNode, ContainerInputNode} from "../../nodes/nodes/main";
 declare let Logger: any; // tell the ts compiler global variable is defined
 let log = Logger.create('client', {color: 3});
 
-export class EditorSocket {
+export class EditorClientSocket {
 
 
     socketConnected: boolean;
@@ -474,4 +474,4 @@ export class EditorSocket {
     }
 }
 
-export let socket = new EditorSocket();
+export let socket = new EditorClientSocket();

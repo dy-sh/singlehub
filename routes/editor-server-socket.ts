@@ -12,7 +12,7 @@ import {app} from "../app";
 const log = require('logplease').create('server', {color: 3});
 
 
-export class NodesServerSocket {
+export class EditorServerSocket {
 
     io: SocketIO.Server;
 
