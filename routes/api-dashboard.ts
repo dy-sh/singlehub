@@ -32,7 +32,7 @@ function updateActiveNodes() {
             }
         }
 
-        let room = "d" + container.id;
+        let room = "dashboard-container-" + container.id;
         if (activeNodesIds.length > 0)
             app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds});
 

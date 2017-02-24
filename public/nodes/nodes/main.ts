@@ -71,7 +71,7 @@ export class ConstantNode extends Node {
             this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
         }
 
-        if (this.side == Side.front) {
+        if (this.side == Side.editor) {
             if (!(<any>window).editor.showSlotsValues) {
                 this.outputs[0].label = this.outputs[0].name;
                 this.setDirtyCanvas(true, true);

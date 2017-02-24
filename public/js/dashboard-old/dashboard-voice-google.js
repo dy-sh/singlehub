@@ -15,4 +15,3 @@ function updateVoiceGoogle(node) {
     var msg = new SpeechSynthesisUtterance(node.Value);
     window.speechSynthesis.speak(msg);
 }
-//# sourceMappingURL=dashboard-voice-google.js.map

@@ -35,7 +35,7 @@
             if (window.theme)
                 nodes_1.Nodes.options = editor_themes_1.themes[window.theme];
             //create root container
-            this.rootContainer = new container_1.Container(container_1.Side.front);
+            this.rootContainer = new container_1.Container(container_1.Side.editor);
             //create socket
             this.socket = editor_client_socket_1.socket;
             this.rootContainer.socket = editor_client_socket_1.socket.socket;

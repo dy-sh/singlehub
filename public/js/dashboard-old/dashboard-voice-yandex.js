@@ -32,4 +32,3 @@ function playNextTrack() {
     //var msg = new SpeechSynthesisUtterance(text);
     //window.speechSynthesis.speak(msg);
 }
-//# sourceMappingURL=dashboard-voice-yandex.js.map

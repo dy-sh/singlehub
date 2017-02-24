@@ -267,4 +267,3 @@ function changeStyle(nodeId) {
         data: { 'nodeId': nodeId, 'values': { Style: chartType[nodeId] } }
     });
 }
-//# sourceMappingURL=dashboard-chart.js.map

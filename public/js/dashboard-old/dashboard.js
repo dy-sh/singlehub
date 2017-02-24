@@ -184,9 +184,8 @@ function sortPanel(panelId) {
         }
     });
     var panel = document.getElementById('uiContainer-' + panelId);
-    for (let i = 0; i < elements.length; ++i) {
+    for (var i = 0; i < elements.length; ++i) {
         panel.appendChild(elements[i]);
     }
 }
 ;
-//# sourceMappingURL=dashboard.js.map

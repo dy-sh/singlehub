@@ -41,7 +41,7 @@ export class WatchNode extends Node {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToFrontSide({value: that.lastData});
+                that.sendMessageToEditorSide({value: that.lastData});
             }
         }, this.UPDATE_INTERVAL);
     }
@@ -52,7 +52,7 @@ export class WatchNode extends Node {
         this.isRecentlyActive = true;
     };
 
-    onGetMessageToFrontSide = function (data) {
+    onGetMessageToEditorSide = function (data) {
         this.lastData = data.value;
         this.showValueOnInput(data.value);
     };
@@ -95,7 +95,7 @@ export class ConsoleNode extends Node {
             if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
                 let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
                 log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages due to too many");
-                that.sendMessageToFrontSide({dropped: dropped});
+                that.sendMessageToEditorSide({dropped: dropped});
             }
 
             that.messagesPerSec = 0;
@@ -109,11 +109,11 @@ export class ConsoleNode extends Node {
         this.messagesPerSec++;
         if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
-            this.sendMessageToFrontSide({value: val});
+            this.sendMessageToEditorSide({value: val});
         }
     };
 
-    onGetMessageToFrontSide = function (data) {
+    onGetMessageToEditorSide = function (data) {
 
         if (data.value)
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);

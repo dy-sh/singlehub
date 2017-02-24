@@ -42,7 +42,7 @@ export class WatchNode extends Node {
 
         this.addInput("input");
 
-        if (this.side==Side.back)
+        if (this.side==Side.server)
             this.startSendingToDashboard();
     }
 

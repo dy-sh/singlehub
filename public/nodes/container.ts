@@ -28,8 +28,8 @@ export interface SerializedContainer {
 }
 
 export enum Side{
-    back,
-    front,
+    server,
+    editor,
     dashboard
 }
 

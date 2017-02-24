@@ -57,7 +57,7 @@
             require('./public/nodes/nodes/math');
         }
         createRootContainer() {
-            this.rootContainer = new container_1.Container(container_1.Side.back);
+            this.rootContainer = new container_1.Container(container_1.Side.server);
             this.rootContainer.socket = this.server.socket.io;
         }
         connectDatabase() {
@@ -96,7 +96,7 @@
                         let root = container_1.Container.containers[0];
                         let cont = container_1.Container.containers[n.cid];
                         if (!cont)
-                            cont = new container_1.Container(container_1.Side.back, n.cid);
+                            cont = new container_1.Container(container_1.Side.server, n.cid);
                         cont.add_serialized_node(n, true);
                     }
                     let contCount = Object.keys(container_1.Container.containers).length;

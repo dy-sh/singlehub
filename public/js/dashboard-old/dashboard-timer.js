@@ -11,4 +11,3 @@ function createTimer(node) {
 function updateTimer(node) {
     $('#timer-name-' + node.Id).html(node.Settings["Name"].Value);
 }
-//# sourceMappingURL=dashboard-timer.js.map

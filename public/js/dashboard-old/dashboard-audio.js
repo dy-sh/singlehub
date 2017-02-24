@@ -22,4 +22,3 @@ function updateAudio(node) {
     if (play)
         audioPlayer.play();
 }
-//# sourceMappingURL=dashboard-audio.js.map

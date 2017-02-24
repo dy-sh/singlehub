@@ -9,7 +9,7 @@
     "moduleResolution": "node"
   },
   "exclude": [
-    "node_modules",
-//    "public/js/dashboard"
+    "node_modules"
+    ,"public/js/dashboard-old"
   ]
 }

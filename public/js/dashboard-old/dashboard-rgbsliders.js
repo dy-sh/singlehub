@@ -180,4 +180,3 @@ function sendRGBWSlidersChange(nodeId, value) {
         data: { 'nodeId': nodeId, 'values': { sliders: value } }
     });
 }
-//# sourceMappingURL=dashboard-rgbsliders.js.map

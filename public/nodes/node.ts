@@ -189,8 +189,8 @@ export class Node {
     onSelected: Function;
     onDeselected: Function;
 
-    onGetMessageToBackSide: Function;
-    onGetMessageToFrontSide: Function;
+    onGetMessageToServerSide: Function;
+    onGetMessageToEditorSide: Function;
     onGetMessageToDashboardSide: Function;
 
     onRunContainer: Function;
@@ -1199,13 +1199,13 @@ export class Node {
         return `[${this.type}][${this.container.id}/${this.id}]`;
     }
 
-    sendMessageToBackSide(mess: any) {
-        this.container.socket.emit('node-message-to-back-side',
+    sendMessageToServerSide(mess: any) {
+        this.container.socket.emit('node-message-to-server-side',
             {id: this.id, cid: this.container.id, value: mess});
     }
 
-    sendMessageToFrontSide(mess: any) {
-        this.container.socket.emit('node-message-to-front-side',
+    sendMessageToEditorSide(mess: any) {
+        this.container.socket.emit('node-message-to-editor-side',
             {id: this.id, cid: this.container.id, value: mess});
     }
 

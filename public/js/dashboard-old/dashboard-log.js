@@ -59,4 +59,3 @@ function addLogData(record, nodeId, maxRecords) {
         records[i].remove();
     }
 }
-//# sourceMappingURL=dashboard-log.js.map

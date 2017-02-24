@@ -56,7 +56,7 @@
             this.createOnDashboard = true;
             this.UPDATE_INTERVAL = 300;
             this.addInput("input");
-            if (this.side == container_1.Side.back)
+            if (this.side == container_1.Side.server)
                 this.startSendingToDashboard();
         }
         startSendingToDashboard() {

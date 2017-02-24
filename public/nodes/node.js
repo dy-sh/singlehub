@@ -845,11 +845,11 @@
         getReadableId() {
             return `[${this.type}][${this.container.id}/${this.id}]`;
         }
-        sendMessageToBackSide(mess) {
-            this.container.socket.emit('node-message-to-back-side', { id: this.id, cid: this.container.id, value: mess });
+        sendMessageToServerSide(mess) {
+            this.container.socket.emit('node-message-to-server-side', { id: this.id, cid: this.container.id, value: mess });
         }
-        sendMessageToFrontSide(mess) {
-            this.container.socket.emit('node-message-to-front-side', { id: this.id, cid: this.container.id, value: mess });
+        sendMessageToEditorSide(mess) {
+            this.container.socket.emit('node-message-to-editor-side', { id: this.id, cid: this.container.id, value: mess });
         }
         sendMessageToDashboardSide(mess) {
             this.container.socket.emit('node-message-to-dashboard-side', { id: this.id, cid: this.container.id, value: mess });

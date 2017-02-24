@@ -64,4 +64,3 @@ function sendSliderChange(nodeId, value) {
         data: { 'nodeId': nodeId, 'values': { slider: value } }
     });
 }
-//# sourceMappingURL=dashboard-slider.js.map

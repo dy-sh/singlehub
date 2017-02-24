@@ -30,7 +30,7 @@
                 this.dataUpdated = true;
                 this.isRecentlyActive = true;
             };
-            this.onGetMessageToFrontSide = function (data) {
+            this.onGetMessageToEditorSide = function (data) {
                 this.lastData = data.value;
                 this.showValueOnInput(data.value);
             };
@@ -46,7 +46,7 @@
             setInterval(function () {
                 if (that.dataUpdated) {
                     that.dataUpdated = false;
-                    that.sendMessageToFrontSide({ value: that.lastData });
+                    that.sendMessageToEditorSide({ value: that.lastData });
                 }
             }, this.UPDATE_INTERVAL);
         }
@@ -74,10 +74,10 @@
                 this.messagesPerSec++;
                 if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
                     log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
-                    this.sendMessageToFrontSide({ value: val });
+                    this.sendMessageToEditorSide({ value: val });
                 }
             };
-            this.onGetMessageToFrontSide = function (data) {
+            this.onGetMessageToEditorSide = function (data) {
                 if (data.value)
                     log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
                 if (data.dropped)
@@ -96,7 +96,7 @@
                 if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
                     let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
                     log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages due to too many");
-                    that.sendMessageToFrontSide({ dropped: dropped });
+                    that.sendMessageToEditorSide({ dropped: dropped });
                 }
                 that.messagesPerSec = 0;
             }, 1000);

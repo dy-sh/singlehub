@@ -130,4 +130,3 @@ function sendSwitchClick(nodeId) {
         data: { 'nodeId': nodeId, 'values': { click: "true" } }
     });
 }
-//# sourceMappingURL=dashboard-main.js.map

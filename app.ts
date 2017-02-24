@@ -72,7 +72,7 @@ class App {
     }
 
     createRootContainer() {
-        this.rootContainer = new Container(Side.back);
+        this.rootContainer = new Container(Side.server);
         this.rootContainer.socket = this.server.socket.io;
     }
 
@@ -126,7 +126,7 @@ class App {
 
                     let cont = Container.containers[n.cid];
                     if (!cont)
-                        cont = new Container(Side.back,n.cid);
+                        cont = new Container(Side.server,n.cid);
 
                     cont.add_serialized_node(n, true);
 

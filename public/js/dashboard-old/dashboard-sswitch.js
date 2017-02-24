@@ -21,4 +21,3 @@ function updateStateSwitch(node) {
     $('#stateSwitch-' + node.Id).html(node.Settings["Name"].Value);
     $('#stateSwitch-' + node.Id).prop('checked', node.Value == "1");
 }
-//# sourceMappingURL=dashboard-sswitch.js.map

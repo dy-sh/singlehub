@@ -127,11 +127,11 @@ export class EditorClientSocket {
             container.mooveNodesToNewContainer(data.ids, data.pos);
         });
 
-        socket.on('node-message-to-front-side', function (n) {
+        socket.on('node-message-to-editor-side', function (n) {
             let container = Container.containers[n.cid];
             let node = container.getNodeById(n.id);
-            if (node.onGetMessageToFrontSide)
-                node.onGetMessageToFrontSide(n.value);
+            if (node.onGetMessageToEditorSide)
+                node.onGetMessageToEditorSide(n.value);
         });
 
 
@@ -462,7 +462,7 @@ export class EditorClientSocket {
     }
 
     sendJoinContainerRoom(cont_id: number) {
-        let room = "f" + cont_id;
+        let room = "editor-container-" + cont_id;
 
         log.debug("Join to room [" + room + "]");
 

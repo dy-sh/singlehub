@@ -31,7 +31,7 @@
                     activeNodesIds.push(node.id);
                 }
             }
-            let room = "f" + container.id;
+            let room = "editor-container-" + container.id;
             if (activeNodesIds.length > 0)
                 app_1.app.server.socket.io.sockets.in(room).emit('nodes-active', { ids: activeNodesIds });
         }

@@ -76,7 +76,7 @@ export class DashboardClientSocket {
 
 
     sendJoinContainerRoom(cont_id: number) {
-        let room = "d" + cont_id;
+        let room = "dashboard-container-" + cont_id;
 
         log.debug("Join to room [" + room + "]");
 

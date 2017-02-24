@@ -48,7 +48,7 @@
                     let s_node = this.serialize(true);
                     this.container.db.updateNode(this.id, this.container.id, { outputs: s_node.outputs });
                 }
-                if (this.side == container_1.Side.front) {
+                if (this.side == container_1.Side.editor) {
                     if (!window.editor.showSlotsValues) {
                         this.outputs[0].label = this.outputs[0].name;
                         this.setDirtyCanvas(true, true);

@@ -44,7 +44,7 @@ export class Editor {
 
 
         //create root container
-        this.rootContainer = new Container(Side.front);
+        this.rootContainer = new Container(Side.editor);
 
         //create socket
         this.socket = socket;

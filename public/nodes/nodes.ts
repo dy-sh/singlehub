@@ -11,8 +11,7 @@ declare let Logger: any; // tell the ts compiler global variable is defined
 if (typeof (window) === 'undefined') //for backside only
     log = require('logplease').create('nodes', {color: 5});
 else  //for frontside only
-    log  = Logger.create('nodes', {color: 5});
-
+    log = Logger.create('nodes', {color: 5});
 
 
 // interface Boundings{
@@ -88,7 +87,6 @@ export class NodesOptions {
 export class Nodes {
     static options = new NodesOptions;
     static nodes_types: {[type: string]: any} = {};
-
 
 
     /**
@@ -242,7 +240,6 @@ export class Nodes {
 
         log.debug("Nodes reloaded");
     };
-
 
 
 }

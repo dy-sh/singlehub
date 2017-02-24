@@ -21,8 +21,8 @@
         log = Logger.create('container', { color: 5 });
     var Side;
     (function (Side) {
-        Side[Side["back"] = 0] = "back";
-        Side[Side["front"] = 1] = "front";
+        Side[Side["server"] = 0] = "server";
+        Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
     })(Side = exports.Side || (exports.Side = {}));
     class Container {

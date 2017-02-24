@@ -34,39 +34,39 @@
                     socket.join(room);
                     log.debug("Join to room [" + room + "]");
                 });
-                socket.on('node-message-to-back-side', function (n) {
+                socket.on('node-message-to-server-side', function (n) {
                     let cont = container_1.Container.containers[n.cid];
                     if (!cont) {
-                        log.error("Can't send node message to back-side. Container id [" + n.cid + "] does not exist");
+                        log.error("Can't send node message to server-side. Container id [" + n.cid + "] does not exist");
                         return;
                     }
                     let node = cont.getNodeById(n.id);
                     if (!node) {
-                        log.error("Can't send node message to back-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                        log.error("Can't send node message to server-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    node.onGetMessageToBackSide(n.value);
+                    node.onGetMessageToServerSide(n.value);
                 });
                 //redirect message
-                socket.on('node-message-to-front-side', function (n) {
+                socket.on('node-message-to-editor-side', function (n) {
                     let cont = container_1.Container.containers[n.cid];
                     if (!cont) {
-                        log.error("Can't send node message to back-side. Container id [" + n.cid + "] does not exist");
+                        log.error("Can't send node message to editor-side. Container id [" + n.cid + "] does not exist");
                         return;
                     }
                     let node = cont.getNodeById(n.id);
                     if (!node) {
-                        log.error("Can't send node message to front-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                        log.error("Can't send node message to editor-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    let room = "f" + n.cid;
-                    app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-front-side', n);
+                    let room = "editor-container-" + n.cid;
+                    app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-editor-side', n);
                 });
                 //redirect message
                 socket.on('node-message-to-dashboard-side', function (n) {
                     let cont = container_1.Container.containers[n.cid];
                     if (!cont) {
-                        log.error("Can't send node message to back-side. Container id [" + n.cid + "] does not exist");
+                        log.error("Can't send node message to dashboard-side. Container id [" + n.cid + "] does not exist");
                         return;
                     }
                     let node = cont.getNodeById(n.id);
@@ -74,7 +74,7 @@
                         log.error("Can't send node message to dashboard-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    let room = "d" + n.cid;
+                    let room = "dashboard-container-" + n.cid;
                     app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-dashboard-side', n);
                 });
                 socket.on("get-slots-values", function (cid) {
