@@ -15,6 +15,21 @@ body {
 	font: 14px Tahoma;
 }
 
+a {
+	color: darkgray;
+}
+
+a:link {
+	color: darkgray;
+}
+
+a:visited {
+	color: darkgray;
+}
+
+a:hover {
+	color: gray;
+}
 
 /*----------- HEADER ---------------*/
 
@@ -66,26 +81,26 @@ body {
 	margin-right: 15px;
 }
 
-a {
+a.footer {
 	color: white;
 }
 
-a:link {
+a.footer:link {
 	color: white;
 }
 
 /* visited link */
-a:visited {
+a.footer:visited {
 	color: white;
 }
 
 /* mouse over link */
-a:hover {
+a.footer:hover {
 	color: white;
 }
 
 /* selected link */
-a:active {
+a.footer:active {
 	color: white;
 }
 /*----------- SCROLLBARS ---------------*/

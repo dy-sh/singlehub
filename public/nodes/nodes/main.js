@@ -41,7 +41,7 @@
                     this.setValue(widget.value);
             };
             this.title = "Constant";
-            this.desc = "Constant value";
+            this.descriprion = "Constant value";
             this.addOutput("value", "number");
             this.properties = { value: 1.0 };
             this.editable = { property: "value", type: "number" };
@@ -84,7 +84,7 @@
                 this.sub_container.runStep();
             };
             this.title = "Container";
-            this.desc = "Contain other nodes";
+            this.descriprion = "Contain other nodes";
             this.size = [120, 20];
         }
         configure(data, from_db = false) {
@@ -152,7 +152,7 @@
                 this.setOutputData(0, val);
             };
             this.title = "Input";
-            this.desc = "Input of the container";
+            this.descriprion = "Input of the container";
             this.addOutput("input", null);
             this.properties = { type: null };
         }
@@ -199,7 +199,7 @@
                 cont_node.outputs[this.properties.slot].data = val;
             };
             this.title = "Ouput";
-            this.desc = "Output of the container";
+            this.descriprion = "Output of the container";
             this.addInput("output", null);
             this.properties = { type: null };
         }

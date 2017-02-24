@@ -2391,9 +2391,10 @@ export class Renderer {
         if (node.clonable !== false)
             options.push({content: "Clone", callback: this.onMenuNodeClone});
 
+
         options.push({
             content: "Description", callback: function () {
-                this.editor.showNodeDescrition(node)
+                editor.showNodeDescrpition(node)
             }
         });
 

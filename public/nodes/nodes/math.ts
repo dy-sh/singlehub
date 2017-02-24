@@ -20,7 +20,7 @@ class MathPlusNode extends Node {
         super();
 
         this.title = "Plus";
-        this.desc = "Math plus operation";
+        this.descriprion = "Math plus operation";
 
         this.addInput("A", "number");
         this.addInput("B", "number");

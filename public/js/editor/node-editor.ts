@@ -410,34 +410,24 @@ export class NodeEditor {
 
     }
 
-    showNodeDescrition(node: Node): void {
+    showNodeDescrpition(node: Node): void {
 
         $('#modal-panel-title').html(node.type);
         $('#modal-panel-form').html(
-            '<div class="field">' +
-            '<div id="modal-panel-text"></div>' +
-            '</div>' +
-            '<div class="field">' +
-            '<a href="/editor/NodesDescription">Show description of all nodes</a>' +
-            '</div>'
+            '<div class="field">' + node.descriprion + '</div>'
         );
 
-        $.ajax({
-            url: "/api/editor/GetNodeDescription/",
-            type: "POST",
-            data: {id: node.id},
-            success: function (result) {
-                $('#modal-panel-text').html(result);
-                $('#modal-panel-text').fadeIn(300);
-                $('#modal-panel-message').hide();
+        $('#modal-panel-buttons').html(
+            '<a href="/editor/nodes-description" class="ui button">Show all nodes</a>' +
+            '<div class="ui cancel button">Cancel</div>'
+        );
 
-                (<any>$('#modal-panel')).modal({
-                    dimmerSettings: {opacity: 0.3},
-                    onHidden: function () {
-                    }
-                }).modal('setting', 'transition', 'fade up').modal('show');
+        (<any>$('#modal-panel')).modal({
+            dimmerSettings: {opacity: 0.3},
+            onHidden: function () {
             }
-        });
+        }).modal('setting', 'transition', 'fade up').modal('show');
+
     }
 
     private addPlayButton() {

@@ -89,7 +89,7 @@ export class Node {
 
 
     title: string;
-    desc: string;
+    descriprion: string;
     pos: [number, number] = [10, 10];
     size: [number, number];
     container: Container;

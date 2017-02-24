@@ -20,7 +20,7 @@ export class ConstantNode extends Node {
     constructor() {
         super();
         this.title = "Constant";
-        this.desc = "Constant value";
+        this.descriprion = "Constant value";
         this.addOutput("value", "number");
         this.properties = {value: 1.0};
         this.editable = {property: "value", type: "number"};
@@ -57,7 +57,7 @@ export class ContainerNode extends Node {
         super();
 
         this.title = "Container";
-        this.desc = "Contain other nodes";
+        this.descriprion = "Contain other nodes";
 
         this.size = [120, 20];
     }
@@ -145,7 +145,7 @@ export class ContainerInputNode extends Node {
         super();
 
         this.title = "Input";
-        this.desc = "Input of the container";
+        this.descriprion = "Input of the container";
 
         this.addOutput("input", null);
 
@@ -207,7 +207,7 @@ export class ContainerOutputNode extends Node {
     constructor() {
         super();
         this.title = "Ouput";
-        this.desc = "Output of the container";
+        this.descriprion = "Output of the container";
 
         this.addInput("output", null);
 

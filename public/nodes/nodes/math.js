@@ -28,7 +28,7 @@
                 this.setOutputData(0, result);
             };
             this.title = "Plus";
-            this.desc = "Math plus operation";
+            this.descriprion = "Math plus operation";
             this.addInput("A", "number");
             this.addInput("B", "number");
             this.addOutput("A+B", "number");

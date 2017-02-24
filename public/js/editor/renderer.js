@@ -1864,7 +1864,7 @@
                 options.push({ content: "Clone", callback: this.onMenuNodeClone });
             options.push({
                 content: "Description", callback: function () {
-                    this.editor.showNodeDescrition(node);
+                    node_editor_1.editor.showNodeDescrpition(node);
                 }
             });
             options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });

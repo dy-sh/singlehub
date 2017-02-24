@@ -28,8 +28,9 @@ export class WatchNode extends Node {
 
         this.UPDATE_INTERVAL = 300;
 
+
         this.title = "Watch";
-        this.desc = "Show value of input";
+        this.descriprion = "Show value of input";
         this.size = [60, 20];
         this.addInput("", null, {label: ""});
         this.startSending();
@@ -78,7 +79,7 @@ export class ConsoleNode extends Node {
     constructor() {
         super();
         this.title = "Console";
-        this.desc = "Show value inside the console";
+        this.descriprion = "Show value inside the console";
         this.size = [60, 20];
         this.addInput("input");
         this.messagesPerSec = 0;
