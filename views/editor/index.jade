@@ -24,18 +24,18 @@ html
 			.logo
 				a.ui.black.button(href='/about') MyNodes
 			.rightmenu
-				if (panelId == "Main")
+				if (container_id == 0)
 					a.ui.black.tiny.compact.right.floated.button(href='/dashboard', target='_top') Dashboard
 						if (split)
 							a.ui.black.tiny.compact.right.floated.button(href='/editor', target='_top') Split
 						else
 							a.ui.black.tiny.compact.right.floated.button(href='/editor/split', target='_top') Split
 				else
-					a.ui.black.tiny.compact.right.floated.button Dashboard
+					a.ui.black.tiny.compact.right.floated.button(href='/dashboard', target='_top') Dashboard
 						if (split)
-							a.ui.black.tiny.compact.right.floated.button(href='/editor/panel?id=#{panelId}', target='_top') Split
+							a.ui.black.tiny.compact.right.floated.button(href='/editor/panel?id=#{panel_id}', target='_top') Split
 						else
-							a.ui.black.tiny.compact.right.floated.button(href='/editor/split?id=#{panelId}', target='_top') Split
+							a.ui.black.tiny.compact.right.floated.button(href='/editor/split?id=#{panel_id}', target='_top') Split
 			//.ui.tiny.buttons
 			//	a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
 				//if panelsStack

@@ -14,8 +14,8 @@
     let router = express.Router();
     //var config = require('./../config');
     router.get('/', function (req, res, next) {
-        res.redirect("/editor");
-        // res.render('dashboard/index');
+        // res.redirect("/editor")
+        res.render('dashboard/index');
     });
     module.exports = router;
 });
