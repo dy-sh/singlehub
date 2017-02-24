@@ -11,9 +11,9 @@
 
     sensorType:
     {
-        S_DOOR: 0,
-        S_MOTION: 1,
-        S_SMOKE: 2,
+		S_DOOR: 0,
+		S_MOTION: 1,
+		S_SMOKE: 2,
         //  S_LIGHT: 3, 
         S_BINARY: 3,
         S_DIMMER: 4,

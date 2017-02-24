@@ -1,41 +1,39 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+// namespace MyNodes {
+// let debug = require('debug')('nodes:            ');
+// let debugLog = require('debug')('nodes:log         ');
+// let debugMes = require('debug')('modes:mes         ');
+// let debugErr = require('debug')('nodes:error       ');
+var nodes_1 = require("../nodes");
+var node_1 = require("../node");
+//Math Plus
+var MathPlusNode = (function (_super) {
+    __extends(MathPlusNode, _super);
+    function MathPlusNode() {
+        _super.call(this);
+        this.onInputUpdated = function () {
+            var a = this.getInputData(0);
+            var b = this.getInputData(1);
+            var result = a + b;
+            this.setOutputData(0, result);
+        };
+        this.title = "Plus";
+        this.descriprion = "Math plus operation";
+        this.addInput("A", "number");
+        this.addInput("B", "number");
+        this.addOutput("A+B", "number");
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes", "../node"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    // namespace MyNodes {
-    // let debug = require('debug')('nodes:            ');
-    // let debugLog = require('debug')('nodes:log         ');
-    // let debugMes = require('debug')('modes:mes         ');
-    // let debugErr = require('debug')('nodes:error       ');
-    const nodes_1 = require("../nodes");
-    const node_1 = require("../node");
-    //Math Plus
-    class MathPlusNode extends node_1.Node {
-        constructor() {
-            super();
-            this.onInputUpdated = function () {
-                let a = this.getInputData(0);
-                let b = this.getInputData(1);
-                let result = a + b;
-                this.setOutputData(0, result);
-            };
-            this.title = "Plus";
-            this.descriprion = "Math plus operation";
-            this.addInput("A", "number");
-            this.addInput("B", "number");
-            this.addOutput("A+B", "number");
-        }
-    }
-    nodes_1.Nodes.registerNodeType("math/plus", MathPlusNode);
-});
+    return MathPlusNode;
+}(node_1.Node));
+nodes_1.Nodes.registerNodeType("math/plus", MathPlusNode);
 //
 // //Converter
 // 	class Converter {
@@ -852,4 +850,3 @@
 // 	} //glMatrix
 //
 // } 
-//# sourceMappingURL=math.js.map

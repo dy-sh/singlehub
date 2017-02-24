@@ -10,7 +10,7 @@ MyNodes v4.0
 
 **Node editor:**
 
-- Step by step nodes execution. (for debugging).
+- Step by step nodes execution (for debugging).
 - Display values ​​for nodes inputs/outputs in real time.
 - Move selected nodes to new container. The editor will create all the necessary inputs/outputs in the container and create links to relocated nodes. 
 - Now you can make loop connections between nodes (A-B-A-B...). It will not cause any problems in the system.
@@ -34,3 +34,10 @@ MyNodes v4.0
   
 - **Main**:
   - **Constant**. Now it has a data type setting.
+  
+  
+**Other changes:**
+- Very comfortable color output debugging information to the console. 
+  You can filter messages by importance: debug/info/warnings/errors.
+  This also applies to the client part (in the debug panel of the browser).
+  
