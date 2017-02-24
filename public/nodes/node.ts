@@ -84,6 +84,13 @@ export interface SerializedNode {
     flags?: any;
 }
 
+export interface NodeSettings {
+    description: string;
+    type?: string;
+    value?: any;
+}
+
+
 
 export class Node {
 
@@ -99,7 +106,7 @@ export class Node {
     outputs: {[id: number]: NodeOutput};
     //   connections: Array<any>;
     properties: any;
-
+    settings: {[name: string]: NodeSettings} = {};
 
     ignore_remove: boolean;
     flags: {
@@ -107,10 +114,6 @@ export class Node {
         unsafe_execution?: false,
         collapsed?: boolean,
         clip_area?: boolean
-    };
-    editable: {
-        property: string;
-        type: string
     };
 
     mouseOver: boolean;
@@ -189,7 +192,6 @@ export class Node {
     onStopContainer: Function;
     onExecute: Function;
     onInputUpdated: Function;
-
 
 
     constructor() {
@@ -843,8 +845,8 @@ export class Node {
         input.link = {target_node_id: this.id, target_slot: output_id};
 
         if (this.container.db) {
-            let s_node=this.serialize(true);
-            let s_t_node=target_node.serialize(true);
+            let s_node = this.serialize(true);
+            let s_t_node = target_node.serialize(true);
             this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
             this.container.db.updateNode(target_node.id, target_node.container.id, {inputs: s_t_node.inputs});
         }

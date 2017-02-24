@@ -31,6 +31,7 @@
         constructor() {
             this.pos = [10, 10];
             this.id = -1;
+            this.settings = {};
         }
         /**
          * Configure a node from an object containing the serialized ser_node

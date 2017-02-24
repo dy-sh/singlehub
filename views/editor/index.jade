@@ -74,19 +74,19 @@ html
 				#modal-panel-submit.ui.button(style='display: none') OK
 		script#textSettingTemplate(type='text/x-handlebars-template').
 			<div class="field">
-			<label> {{Label}} </label>
-			<input type="text" id="node-setting-{{Key}}" value="{{Value}}">
+			<label> {{settings.description}} </label>
+			<input type="text" id="node-setting-{{key}}" value="{{settings.value}}">
 			</div>
 		script#numberSettingTemplate(type='text/x-handlebars-template').
 			<div class="field">
-			<label> {{Label}} </label>
-			<input type="number" id="node-setting-{{Key}}" value="{{Value}}">
+			<label> {{settings.description}} </label>
+			<input type="number" id="node-setting-{{key}}" value="{{settings.value}}">
 			</div>
 		script#checkboxSettingTemplate(type='text/x-handlebars-template').
 			<div class="field">
 			<div class="ui toggle checkbox">
-			<input type="checkbox" name="public" id="node-setting-{{Key}}" value="true">
-			<label> {{Label}} </label>
+			<input type="checkbox" name="public" id="node-setting-{{key}}" value="true">
+			<label> {{settings.description}} </label>
 			</div>
 			</div>
 		script.

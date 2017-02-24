@@ -24,17 +24,16 @@
         constructor() {
             super();
             this.setValue = function (v) {
-                if (typeof (v) == "string")
-                    v = parseFloat(v);
-                this.properties["value"] = v;
+                // if (typeof(v) == "string") v = parseFloat(v);
+                this.settings["value"] = v;
             };
             this.onExecute = function () {
-                this.setOutputData(0, parseFloat(this.properties["value"]));
+                this.setOutputData(0, this.settings["value"]);
             };
             this.onDrawBackground = function (ctx) {
                 //show the current value
-                let val = utils_1.default.formatAndTrimValue(this.properties["value"]);
-                this.outputs[0].label = val;
+                let val = this.settings["value"].value;
+                this.outputs[0].label = utils_1.default.formatAndTrimValue(val);
             };
             this.onWidget = function (e, widget) {
                 if (widget.name == "value")
@@ -43,8 +42,7 @@
             this.title = "Constant";
             this.descriprion = "Constant value";
             this.addOutput("value", "number");
-            this.properties = { value: 1.0 };
-            this.editable = { property: "value", type: "number" };
+            this.settings["value"] = { description: "Value", value: 1 };
         }
     }
     exports.ConstantNode = ConstantNode;

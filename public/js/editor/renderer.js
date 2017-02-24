@@ -1842,11 +1842,10 @@
          */
         getNodeMenuOptions(node) {
             let options = [];
-            //derwish added
-            if (node.properties["Settings"]) {
+            if (node.settings && Object.keys(node.settings).length > 0) {
                 options.push({
                     content: "Settings", callback: function () {
-                        this.nodeSettings(node);
+                        node_editor_1.editor.showNodeSettings(node);
                     }
                 });
                 options.push(null);
@@ -1864,7 +1863,7 @@
                 options.push({ content: "Clone", callback: this.onMenuNodeClone });
             options.push({
                 content: "Description", callback: function () {
-                    node_editor_1.editor.showNodeDescrpition(node);
+                    node_editor_1.editor.showNodeDescription(node);
                 }
             });
             options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
@@ -2282,11 +2281,10 @@
                 this.mouse_inside = true;
             });
             root.addEventListener("mouseout", function (e) {
-                //console.log("OUT!");
                 //check if mouse leave a inner element
                 let aux = e.relatedTarget || e.toElement;
-                while (aux != this && aux != ref_window.document)
-                    aux = aux.parentNode;
+                // while (aux != this && aux != ref_window.document)
+                //     aux = (<any>aux).parentNode;
                 if (aux == this)
                     return;
                 this.mouse_inside = false;

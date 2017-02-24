@@ -332,7 +332,7 @@
                 }
             }).modal('setting', 'transition', 'fade up').modal('show');
         }
-        showNodeDescrpition(node) {
+        showNodeDescription(node) {
             $('#modal-panel-title').html(node.type);
             $('#modal-panel-form').html('<div class="field">' + node.descriprion + '</div>');
             $('#modal-panel-buttons').html('<a href="/editor/nodes-description" class="ui button">Show all nodes</a>' +
@@ -340,6 +340,58 @@
             $('#modal-panel').modal({
                 dimmerSettings: { opacity: 0.3 },
                 onHidden: function () {
+                }
+            }).modal('setting', 'transition', 'fade up').modal('show');
+        }
+        showNodeSettings(node) {
+            $('#node-settings-title').html(node.type);
+            //clear old body
+            let body = $('#node-settings-body');
+            body.empty();
+            //add setting-elements from templates
+            for (let s in node.settings) {
+                if (!node.settings[s].type || node.settings[s].type == "string") {
+                    body.append(textSettingTemplate({ settings: node.settings[s], key: s }));
+                    break;
+                }
+                switch (node.settings[s].type) {
+                    case "number":
+                        body.append(numberSettingTemplate({ settings: node.settings[s], key: s }));
+                        break;
+                    case "boolean":
+                        body.append(checkboxSettingTemplate({ settings: node.settings[s], key: s }));
+                        if (node.settings[s].value)
+                            $('#node-setting-' + s).prop('checked', true);
+                        break;
+                }
+            }
+            //modal panel
+            $('#node-settings-panel').modal({
+                dimmerSettings: { opacity: 0.3 },
+                onApprove: function () {
+                    //get settings from form
+                    let data = [];
+                    for (let s in node.settings) {
+                        if (!node.settings[s].type || node.settings[s].type == "string") {
+                            data.push({ key: s, value: $('#node-setting-' + s).val() });
+                            break;
+                        }
+                        switch (node.settings[s].type) {
+                            case "number":
+                                data.push({ key: s, value: $('#node-setting-' + s).val() });
+                                break;
+                            case "boolean":
+                                data.push({ key: s, value: $('#node-setting-' + s).prop('checked') ? "true" : "false" });
+                                break;
+                        }
+                    }
+                    console.log(data);
+                    //send settings
+                    $.ajax({
+                        url: "/api/editor/c/n/settings",
+                        type: "POST",
+                        data: { id: node.id, data: data }
+                    });
                 }
             }).modal('setting', 'transition', 'fade up').modal('show');
         }
@@ -465,60 +517,6 @@
     let textSettingTemplate = Handlebars.compile($('#textSettingTemplate').html());
     let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
     let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
-    function nodeSettings(node) {
-        $('#node-settings-title').html(node.type);
-        //parse settings from json
-        let settings = JSON.parse(node.properties['Settings']);
-        //clear old body
-        let body = $('#node-settings-body');
-        body.empty();
-        //add setting-elements from templates
-        for (let i = 0; i < Object.keys(settings).length; i++) {
-            let key = Object.keys(settings)[i];
-            settings[key].Key = key;
-            switch (settings[key].Type) {
-                case 0:
-                    body.append(textSettingTemplate(settings[key]));
-                    break;
-                case 1:
-                    body.append(numberSettingTemplate(settings[key]));
-                    break;
-                case 2:
-                    body.append(checkboxSettingTemplate(settings[key]));
-                    if (settings[key].Value == "true")
-                        $('#node-setting-' + key).prop('checked', true);
-                    break;
-            }
-        }
-        //modal panel
-        $('#node-settings-panel').modal({
-            dimmerSettings: { opacity: 0.3 },
-            onApprove: function () {
-                //get settings from form
-                let data = [];
-                for (let i = 0; i < Object.keys(settings).length; i++) {
-                    let key = Object.keys(settings)[i];
-                    switch (settings[key].Type) {
-                        case 0:
-                            data.push({ key: key, value: $('#node-setting-' + key).val() });
-                            break;
-                        case 1:
-                            data.push({ key: key, value: $('#node-setting-' + key).val() });
-                            break;
-                        case 2:
-                            data.push({ key: key, value: $('#node-setting-' + key).prop('checked') ? "true" : "false" });
-                            break;
-                    }
-                }
-                //send settings
-                $.ajax({
-                    url: "/api/editor/SetNodeSettings/",
-                    type: "POST",
-                    data: { id: node.id, data: data }
-                });
-            }
-        }).modal('setting', 'transition', 'fade up').modal('show');
-    }
     exports.editor = new NodeEditor();
 });
 //# sourceMappingURL=node-editor.js.map

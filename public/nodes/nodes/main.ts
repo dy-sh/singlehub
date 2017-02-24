@@ -22,23 +22,22 @@ export class ConstantNode extends Node {
         this.title = "Constant";
         this.descriprion = "Constant value";
         this.addOutput("value", "number");
-        this.properties = {value: 1.0};
-        this.editable = {property: "value", type: "number"};
+        this.settings["value"] = {description: "Value", value: 1};
     }
 
     setValue = function (v) {
-        if (typeof(v) == "string") v = parseFloat(v);
-        this.properties["value"] = v;
+        // if (typeof(v) == "string") v = parseFloat(v);
+        this.settings["value"] = v;
     }
 
     onExecute = function () {
-        this.setOutputData(0, parseFloat(this.properties["value"]));
+        this.setOutputData(0, this.settings["value"]);
     }
 
     onDrawBackground = function (ctx) {
         //show the current value
-        let val = Utils.formatAndTrimValue(this.properties["value"]);
-        this.outputs[0].label = val;
+        let val = this.settings["value"].value;
+        this.outputs[0].label = Utils.formatAndTrimValue(val);
     };
 
     onWidget = function (e, widget) {
@@ -94,7 +93,7 @@ export class ContainerNode extends Node {
         let that = this;
         return [{
             content: "Open", callback: function () {
-                renderer.openContainer(that.sub_container,true);
+                renderer.openContainer(that.sub_container, true);
             }
         }];
     }

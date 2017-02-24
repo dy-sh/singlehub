@@ -2365,11 +2365,11 @@ export class Renderer {
     getNodeMenuOptions(node: Node): Array<any> {
         let options = [];
 
-        //derwish added
-        if (node.properties["Settings"]) {
+
+        if (node.settings && Object.keys(node.settings).length>0) {
             options.push({
                 content: "Settings", callback: function () {
-                    this.nodeSettings(node)
+                    editor.showNodeSettings(node);
                 }
             });
             options.push(null);
@@ -2394,7 +2394,7 @@ export class Renderer {
 
         options.push({
             content: "Description", callback: function () {
-                editor.showNodeDescrpition(node)
+                editor.showNodeDescription(node)
             }
         });
 
@@ -2899,11 +2899,10 @@ export class Renderer {
         });
 
         root.addEventListener("mouseout", function (e) {
-            //console.log("OUT!");
             //check if mouse leave a inner element
             let aux = e.relatedTarget || e.toElement;
-            while (aux != this && aux != ref_window.document)
-                aux = (<any>aux).parentNode;
+            // while (aux != this && aux != ref_window.document)
+            //     aux = (<any>aux).parentNode;
 
             if (aux == this) return;
             (<any>this).mouse_inside = false;
