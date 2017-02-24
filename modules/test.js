@@ -14,15 +14,14 @@
     const app_1 = require("../app");
     let rootContainer = app_1.app.rootContainer;
     module.exports.test = function () {
-        //rootContainer.start(1);
         let node_const_A = nodes_1.Nodes.createNode("main/constant");
         node_const_A.pos = [10, 10];
         rootContainer.add(node_const_A);
-        node_const_A.setValue(5.4);
+        node_const_A.settings["value"].value = 5.4;
         let node_const_B = nodes_1.Nodes.createNode("main/constant");
         node_const_B.pos = [10, 100];
         rootContainer.add(node_const_B);
-        node_const_B.setValue(10);
+        node_const_B.settings["value"].value = 5.4;
         let node_math = nodes_1.Nodes.createNode("math/plus");
         node_math.pos = [200, 50];
         rootContainer.add(node_math);

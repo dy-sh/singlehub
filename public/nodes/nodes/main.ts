@@ -52,10 +52,6 @@ export class ConstantNode extends Node {
     }
 
 
-    // onWidget = function (e, widget) {
-    //     if (widget.name == "value")
-    //         this.setValue(widget.value);
-    // }
 
     onSettingsChanged = function () {
         //change output type

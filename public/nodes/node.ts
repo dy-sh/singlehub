@@ -127,7 +127,6 @@ export class Node {
     boxcolor: string;
     shape: string;
     onSerialize: Function;
-    setValue: Function;
     bgImage: HTMLImageElement;
     bgImageUrl: string;
     clonable: boolean;

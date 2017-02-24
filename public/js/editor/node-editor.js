@@ -21,6 +21,7 @@
             //nodes: Nodes;
             this.isRunning = false;
             this.showSlotsValues = false;
+            window.editor = this;
             //fill container
             let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
             let root = document.createElement("div");
@@ -512,6 +513,27 @@
                 window.history.pushState('Container ' + cid, 'MyNodes', '/editor/');
             else
                 window.history.pushState('Container ' + cid, 'MyNodes', '/editor/c/' + cid);
+        }
+        getNodes() {
+            this.socket.getContainerState();
+            let that = this;
+            this.socket.getNodes(function (nodes) {
+                //open container from url
+                let cont_id = window.container_id;
+                if (cont_id && cont_id != 0) {
+                    //get containers stack
+                    let cont = container_1.Container.containers[cont_id];
+                    let parentStack = cont.getParentsStack();
+                    while (parentStack.length > 0) {
+                        let cid = parentStack.pop();
+                        if (cid != 0) {
+                            let parent_cont = container_1.Container.containers[cid];
+                            that.renderer.openContainer(parent_cont, false);
+                        }
+                    }
+                    that.renderer.openContainer(cont, false);
+                }
+            });
         }
     }
     exports.NodeEditor = NodeEditor;

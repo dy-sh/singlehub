@@ -32,10 +32,6 @@
                 let out_type = this.settings["output-type"].value;
                 this.setOutputData(0, utils_1.default.formatValue(val, out_type));
             };
-            // onWidget = function (e, widget) {
-            //     if (widget.name == "value")
-            //         this.setValue(widget.value);
-            // }
             this.onSettingsChanged = function () {
                 //change output type
                 let out_type = this.settings["output-type"].value;
