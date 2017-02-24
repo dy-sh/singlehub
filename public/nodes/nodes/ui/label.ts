@@ -7,6 +7,19 @@
 import {Nodes} from "../../nodes";
 import {Node} from "../../node";
 import Utils from "../../utils";
+import {Side} from "../../container";
+
+let template =
+    '<script id="labelTemplate" type="text/x-handlebars-template">\
+    <div class="ui attached clearing segment" id="node-{{id}}">\
+    <span id="labelName-{{id}}"></span>\
+    <div class="ui right floated basic disabled button nonbutton">\
+    <span class="ui blue basic label" id="labelValue-{{id}}"></span>\
+    </div>\
+    </div>\
+    </script>';
+
+let labelTemplate = Handlebars.compile(template);
 
 
 //Watch a value in the editor
@@ -19,24 +32,18 @@ export class WatchNode extends Node {
     constructor() {
         super();
 
-        this.UPDATE_INTERVAL = 300;
-
-
         this.title = "Label";
         this.descriprion = "Show value of input";
         this.size = [60, 20];
-        this.addInput("input");
-        this.startSending();
-    }
 
-    startSending() {
-        let that = this;
-        setInterval(function () {
-            if (that.dataUpdated) {
-                that.dataUpdated = false;
-                that.sendMessageToDashboardSide({value: that.lastData});
-            }
-        }, this.UPDATE_INTERVAL);
+        this.createOnDashboard = true;
+
+        this.UPDATE_INTERVAL = 300;
+
+        this.addInput("input");
+
+        if (this.side==Side.back)
+            this.startSendingToDashboard();
     }
 
     onInputUpdated = function () {
@@ -45,20 +52,39 @@ export class WatchNode extends Node {
         this.isRecentlyActive = true;
     };
 
-    onGetMessageFromBackSide = function (data) {
-        this.lastData = data.value;
-        this.showValue(data.value);
+    startSendingToDashboard() {
+        let that = this;
+        setInterval(function () {
+            if (that.dataUpdated) {
+                that.dataUpdated = false;
+                let val = Utils.formatAndTrimValue(this.lastData);
+                that.sendMessageToDashboardSide({value: val});
+            }
+        }, this.UPDATE_INTERVAL);
+    }
+
+
+    onGetMessageToDashboardSide = function (data) {
+        console.log("!!!!" + data.value);
+        $('#labelName-' + this.id).html(this.title);
+        $('#labelValue-' + this.id).html(data.value);
     };
 
-    showValue(value: any) {
-        //show the current value
-        let val = Utils.formatAndTrimValue(value);
+    onAdded=function() {
+        if (this.side==Side.dashboard) {
+            $(labelTemplate(this))
+                .hide()
+                .appendTo("#uiContainer-" + this.container.id)
+                .fadeIn(300);
+        }
+    }
 
-        console.log("!!!!" + val);
 
-        this.setDirtyCanvas(true, false);
+    onRemoved=function() {
+
     }
 }
+
 Nodes.registerNodeType("ui/label", WatchNode);
 
 

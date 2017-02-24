@@ -2,7 +2,7 @@
  * Created by derwish on 11.02.17.
  */
 
-import {Container} from "./container";
+import {Container, Side} from "./container";
 import Utils from "./utils";
 import {Nodes} from "./nodes";
 
@@ -104,6 +104,7 @@ export class Node {
     id: number = -1;
     type: string;
     category: string;
+    side: Side;
     inputs: {[id: number]: NodeInput};
     outputs: {[id: number]: NodeOutput};
     //   connections: Array<any>;
@@ -135,6 +136,8 @@ export class Node {
     optional_inputs: {};
     optional_outputs: {};
     order: string;
+
+    createOnDashboard: boolean;
 
     isUpdated: boolean;
     isRecentlyActive: boolean;
@@ -186,8 +189,9 @@ export class Node {
     onSelected: Function;
     onDeselected: Function;
 
-    onGetMessageFromFrontSide: Function;
-    onGetMessageFromBackSide: Function;
+    onGetMessageToBackSide: Function;
+    onGetMessageToFrontSide: Function;
+    onGetMessageToDashboardSide: Function;
 
     onRunContainer: Function;
     onStopContainer: Function;
@@ -1195,35 +1199,21 @@ export class Node {
         return `[${this.type}][${this.container.id}/${this.id}]`;
     }
 
-
-    /**
-     * is node running on back-side
-     * @returns {boolean}
-     */
-    isBackside(): boolean {
-        return (typeof (window) === 'undefined')
+    sendMessageToBackSide(mess: any) {
+        this.container.socket.emit('node-message-to-back-side',
+            {id: this.id, cid: this.container.id, value: mess});
     }
 
     sendMessageToFrontSide(mess: any) {
-        if (this.isBackside() && this.id != -1) {
-            this.container.socket.emit('node-message-to-front-side',
-                {id: this.id, cid: this.container.id, value: mess});
-        }
+        this.container.socket.emit('node-message-to-front-side',
+            {id: this.id, cid: this.container.id, value: mess});
     }
 
     sendMessageToDashboardSide(mess: any) {
-        if (this.isBackside() && this.id != -1) {
-            this.container.socket.emit('node-message-to-dashboard-side',
-                {id: this.id, cid: this.container.id, value: mess});
-        }
+        this.container.socket.emit('node-message-to-dashboard-side',
+            {id: this.id, cid: this.container.id, value: mess});
     }
 
-    sendMessageToBackSide(mess: any) {
-        if (!this.isBackside() && this.id != -1) {
-            this.container.socket.emit('node-message-to-back-side',
-                {id: this.id, cid: this.container.id, value: mess});
-        }
-    }
 
     updateInputsLabels() {
         if (this.inputs) {

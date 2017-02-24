@@ -52,7 +52,7 @@ export class WatchNode extends Node {
         this.isRecentlyActive = true;
     };
 
-    onGetMessageFromBackSide = function (data) {
+    onGetMessageToFrontSide = function (data) {
         this.lastData = data.value;
         this.showValueOnInput(data.value);
     };
@@ -113,7 +113,7 @@ export class ConsoleNode extends Node {
         }
     };
 
-    onGetMessageFromBackSide = function (data) {
+    onGetMessageToFrontSide = function (data) {
 
         if (data.value)
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);

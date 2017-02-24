@@ -27,6 +27,12 @@ export interface SerializedContainer {
     serialized_nodes?: Array<SerializedNode>;
 }
 
+export enum Side{
+    back,
+    front,
+    dashboard
+}
+
 export class Container {
     static containers: {[id: number]: Container} = {};
     static last_container_id: number = -1;
@@ -40,6 +46,7 @@ export class Container {
     _nodes: {[id: number]: Node} = {};
 
     id: number;
+    side: Side;
     supported_types = ["number", "string", "boolean"];
     list_of_renderers: Array<Renderer>;
     isRunning: boolean;
@@ -69,7 +76,7 @@ export class Container {
     frame: number;
 
 
-    constructor(id?: number) {
+    constructor(side: Side, id?: number) {
         this.list_of_renderers = null;
 
         this.id = id || ++Container.last_container_id;
@@ -356,6 +363,9 @@ export class Container {
 
 
     create(node: Node) {
+        node.side = this.side;
+        node.container = this;
+
         if (node.onBeforeCreated)
             node.onBeforeCreated();
 
@@ -392,6 +402,7 @@ export class Container {
             node.id = this.last_node_id++;
 
         node.container = this;
+        node.side = this.side;
 
         this._nodes[node.id] = node;
 
@@ -483,8 +494,6 @@ export class Container {
         if (id == null) return null;
         return this._nodes[id];
     }
-
-
 
 
     /**
@@ -851,5 +860,4 @@ export class Container {
 }
 
 
-// export let rootContainer = new Container();
 

@@ -10,7 +10,7 @@ console.log("----------------------------- MyNodes -----------------------------
 
 let config = require('./config.json');
 import {Server} from './modules/web-server/server';
-import {Container} from './public/nodes/container'
+import {Container, Side} from './public/nodes/container'
 import {Database} from "./public/interfaces/database";
 
 //add app root dir to global
@@ -72,7 +72,7 @@ class App {
     }
 
     createRootContainer() {
-        this.rootContainer = new Container();
+        this.rootContainer = new Container(Side.back);
         this.rootContainer.socket = this.server.socket.io;
     }
 
@@ -126,7 +126,7 @@ class App {
 
                     let cont = Container.containers[n.cid];
                     if (!cont)
-                        cont = new Container(n.cid);
+                        cont = new Container(Side.back,n.cid);
 
                     cont.add_serialized_node(n, true);
 

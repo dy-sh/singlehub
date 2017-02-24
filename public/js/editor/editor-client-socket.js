@@ -3,10 +3,11 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./editor"], factory);
     }
 })(function (require, exports) {
@@ -108,8 +109,8 @@
             socket.on('node-message-to-front-side', function (n) {
                 let container = container_1.Container.containers[n.cid];
                 let node = container.getNodeById(n.id);
-                if (node.onGetMessageFromBackSide)
-                    node.onGetMessageFromBackSide(n.value);
+                if (node.onGetMessageToFrontSide)
+                    node.onGetMessageToFrontSide(n.value);
             });
             socket.on('link-create', function (data) {
                 let container = container_1.Container.containers[data.cid];
@@ -389,7 +390,7 @@
             this.socket.emit("get-slots-values", editor_1.editor.renderer.container.id);
         }
         sendJoinContainerRoom(cont_id) {
-            let room = "c" + cont_id;
+            let room = "f" + cont_id;
             log.debug("Join to room [" + room + "]");
             this.socket.emit('room', room);
         }

@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../nodes", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
@@ -47,7 +48,7 @@
                     let s_node = this.serialize(true);
                     this.container.db.updateNode(this.id, this.container.id, { outputs: s_node.outputs });
                 }
-                if (!this.isBackside()) {
+                if (this.side == container_1.Side.front) {
                     if (!window.editor.showSlotsValues) {
                         this.outputs[0].label = this.outputs[0].name;
                         this.setDirtyCanvas(true, true);
@@ -84,7 +85,7 @@
                 this.sub_container.parent_container_id = this.container.id;
             };
             this.onBeforeCreated = function () {
-                this.sub_container = new container_1.Container();
+                this.sub_container = new container_1.Container(this.side);
                 this.sub_container_id = this.sub_container.id;
                 this.title = "Container " + this.sub_container.id;
                 let rootContainer = container_1.Container.containers[0];
@@ -117,7 +118,7 @@
             super.configure(data);
             this.sub_container = container_1.Container.containers[data.sub_container.id];
             if (!this.sub_container)
-                this.sub_container = new container_1.Container(data.sub_container.id);
+                this.sub_container = new container_1.Container(this.side, data.sub_container.id);
             if (data.sub_container)
                 this.sub_container.configure(data.sub_container, true);
         }

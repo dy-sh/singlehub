@@ -2,10 +2,11 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "./utils", "./nodes"], factory);
     }
 })(function (require, exports) {
@@ -844,27 +845,14 @@
         getReadableId() {
             return `[${this.type}][${this.container.id}/${this.id}]`;
         }
-        /**
-         * is node running on back-side
-         * @returns {boolean}
-         */
-        isBackside() {
-            return (typeof (window) === 'undefined');
+        sendMessageToBackSide(mess) {
+            this.container.socket.emit('node-message-to-back-side', { id: this.id, cid: this.container.id, value: mess });
         }
         sendMessageToFrontSide(mess) {
-            if (this.isBackside() && this.id != -1) {
-                this.container.socket.emit('node-message-to-front-side', { id: this.id, cid: this.container.id, value: mess });
-            }
+            this.container.socket.emit('node-message-to-front-side', { id: this.id, cid: this.container.id, value: mess });
         }
         sendMessageToDashboardSide(mess) {
-            if (this.isBackside() && this.id != -1) {
-                this.container.socket.emit('node-message-to-dashboard-side', { id: this.id, cid: this.container.id, value: mess });
-            }
-        }
-        sendMessageToBackSide(mess) {
-            if (!this.isBackside() && this.id != -1) {
-                this.container.socket.emit('node-message-to-back-side', { id: this.id, cid: this.container.id, value: mess });
-            }
+            this.container.socket.emit('node-message-to-dashboard-side', { id: this.id, cid: this.container.id, value: mess });
         }
         updateInputsLabels() {
             if (this.inputs) {

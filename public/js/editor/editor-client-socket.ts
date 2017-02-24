@@ -128,11 +128,10 @@ export class EditorClientSocket {
         });
 
         socket.on('node-message-to-front-side', function (n) {
-
             let container = Container.containers[n.cid];
             let node = container.getNodeById(n.id);
-            if (node.onGetMessageFromBackSide)
-                node.onGetMessageFromBackSide(n.value);
+            if (node.onGetMessageToFrontSide)
+                node.onGetMessageToFrontSide(n.value);
         });
 
 
@@ -463,7 +462,7 @@ export class EditorClientSocket {
     }
 
     sendJoinContainerRoom(cont_id: number) {
-        let room = "c" + cont_id;
+        let room = "f" + cont_id;
 
         log.debug("Join to room [" + room + "]");
 

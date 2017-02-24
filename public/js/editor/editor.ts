@@ -6,7 +6,7 @@
 
 import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
-import {Container} from "../../nodes/container"
+import {Container, Side} from "../../nodes/container"
 import {Renderer} from "./renderer"
 import {EditorClientSocket, socket} from "./editor-client-socket";
 import {themes} from "./editor-themes"
@@ -44,7 +44,7 @@ export class Editor {
 
 
         //create root container
-        this.rootContainer = new Container();
+        this.rootContainer = new Container(Side.front);
 
         //create socket
         this.socket = socket;

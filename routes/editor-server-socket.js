@@ -3,15 +3,16 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'socket.io', "../public/nodes/container", "../public/nodes/utils", "../app"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "socket.io", "../public/nodes/container", "../public/nodes/utils", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const socket = require('socket.io');
+    const socket = require("socket.io");
     const container_1 = require("../public/nodes/container");
     const utils_1 = require("../public/nodes/utils");
     const app_1 = require("../app");
@@ -34,12 +35,47 @@
                     log.debug("Join to room [" + room + "]");
                 });
                 socket.on('node-message-to-back-side', function (n) {
-                    let node = app_1.app.rootContainer.getNodeById(n.id);
-                    if (!node) {
-                        log.error("Can't get node message from front-side. Node id does not exist");
+                    let cont = container_1.Container.containers[n.cid];
+                    if (!cont) {
+                        log.error("Can't send node message to back-side. Container id [" + n.cid + "] does not exist");
                         return;
                     }
-                    node.onGetMessageFromFrontSide(n.value);
+                    let node = cont.getNodeById(n.id);
+                    if (!node) {
+                        log.error("Can't send node message to back-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                        return;
+                    }
+                    node.onGetMessageToBackSide(n.value);
+                });
+                //redirect message
+                socket.on('node-message-to-front-side', function (n) {
+                    let cont = container_1.Container.containers[n.cid];
+                    if (!cont) {
+                        log.error("Can't send node message to back-side. Container id [" + n.cid + "] does not exist");
+                        return;
+                    }
+                    let node = cont.getNodeById(n.id);
+                    if (!node) {
+                        log.error("Can't send node message to front-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                        return;
+                    }
+                    let room = "f" + n.cid;
+                    app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-front-side', n);
+                });
+                //redirect message
+                socket.on('node-message-to-dashboard-side', function (n) {
+                    let cont = container_1.Container.containers[n.cid];
+                    if (!cont) {
+                        log.error("Can't send node message to back-side. Container id [" + n.cid + "] does not exist");
+                        return;
+                    }
+                    let node = cont.getNodeById(n.id);
+                    if (!node) {
+                        log.error("Can't send node message to dashboard-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                        return;
+                    }
+                    let room = "d" + n.cid;
+                    app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-dashboard-side', n);
                 });
                 socket.on("get-slots-values", function (cid) {
                     let container = container_1.Container.containers[cid];

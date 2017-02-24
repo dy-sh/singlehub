@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "./nodes", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -18,8 +19,14 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
+    var Side;
+    (function (Side) {
+        Side[Side["back"] = 0] = "back";
+        Side[Side["front"] = 1] = "front";
+        Side[Side["dashboard"] = 2] = "dashboard";
+    })(Side = exports.Side || (exports.Side = {}));
     class Container {
-        constructor(id) {
+        constructor(side, id) {
             this._nodes = {};
             this.supported_types = ["number", "string", "boolean"];
             this.list_of_renderers = null;
@@ -243,6 +250,8 @@
             return Object.keys(this._nodes).length;
         }
         create(node) {
+            node.side = this.side;
+            node.container = this;
             if (node.onBeforeCreated)
                 node.onBeforeCreated();
             this.add(node);
@@ -270,6 +279,7 @@
             if (node.id == null || node.id == -1)
                 node.id = this.last_node_id++;
             node.container = this;
+            node.side = this.side;
             this._nodes[node.id] = node;
             /*
              // rendering stuf...
@@ -632,5 +642,4 @@
     Container.last_container_id = -1;
     exports.Container = Container;
 });
-// export let rootContainer = new Container();
 //# sourceMappingURL=container.js.map

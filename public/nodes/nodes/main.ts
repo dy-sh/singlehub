@@ -11,7 +11,7 @@
 
 import {Nodes} from "../nodes";
 import {Node} from "../node";
-import {Container} from "../container";
+import {Container, Side} from "../container";
 import Utils from "../utils";
 
 
@@ -52,7 +52,6 @@ export class ConstantNode extends Node {
     }
 
 
-
     onSettingsChanged = function () {
         //change output type
         let out_type = this.settings["output-type"].value;
@@ -72,7 +71,7 @@ export class ConstantNode extends Node {
             this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
         }
 
-        if (!this.isBackside()) {
+        if (this.side == Side.front) {
             if (!(<any>window).editor.showSlotsValues) {
                 this.outputs[0].label = this.outputs[0].name;
                 this.setDirtyCanvas(true, true);
@@ -103,7 +102,7 @@ export class ContainerNode extends Node {
     };
 
     onBeforeCreated = function () {
-        this.sub_container = new Container();
+        this.sub_container = new Container(this.side);
         this.sub_container_id = this.sub_container.id;
         this.title = "Container " + this.sub_container.id;
 
@@ -142,7 +141,7 @@ export class ContainerNode extends Node {
 
         this.sub_container = Container.containers[data.sub_container.id];
         if (!this.sub_container)
-            this.sub_container = new Container(data.sub_container.id);
+            this.sub_container = new Container(this.side, data.sub_container.id);
 
         if (data.sub_container)
             this.sub_container.configure(data.sub_container, true);

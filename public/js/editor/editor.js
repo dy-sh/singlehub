@@ -3,10 +3,11 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-client-socket", "./editor-themes", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
@@ -34,7 +35,7 @@
             if (window.theme)
                 nodes_1.Nodes.options = editor_themes_1.themes[window.theme];
             //create root container
-            this.rootContainer = new container_1.Container();
+            this.rootContainer = new container_1.Container(container_1.Side.front);
             //create socket
             this.socket = editor_client_socket_1.socket;
             this.rootContainer.socket = editor_client_socket_1.socket.socket;

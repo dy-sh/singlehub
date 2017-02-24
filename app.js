@@ -3,11 +3,12 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", './public/nodes/container', 'path'], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./public/nodes/container", "path"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,9 +16,9 @@
     require('source-map-support').install();
     console.log("----------------------------- MyNodes -----------------------------");
     let config = require('./config.json');
-    const container_1 = require('./public/nodes/container');
+    const container_1 = require("./public/nodes/container");
     //add app root dir to global
-    const path = require('path');
+    const path = require("path");
     global.__rootdirname = path.resolve(__dirname);
     const log = require('logplease').create('app', { color: 2 });
     class App {
@@ -56,7 +57,7 @@
             require('./public/nodes/nodes/math');
         }
         createRootContainer() {
-            this.rootContainer = new container_1.Container();
+            this.rootContainer = new container_1.Container(container_1.Side.back);
             this.rootContainer.socket = this.server.socket.io;
         }
         connectDatabase() {
@@ -95,7 +96,7 @@
                         let root = container_1.Container.containers[0];
                         let cont = container_1.Container.containers[n.cid];
                         if (!cont)
-                            cont = new container_1.Container(n.cid);
+                            cont = new container_1.Container(container_1.Side.back, n.cid);
                         cont.add_serialized_node(n, true);
                     }
                     let contCount = Object.keys(container_1.Container.containers).length;
