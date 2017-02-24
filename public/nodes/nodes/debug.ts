@@ -71,6 +71,9 @@ export class WatchNode extends Node {
 }
 Nodes.registerNodeType("debug/watch", WatchNode);
 
+
+
+
 //Show value inside the debug console
 export class ConsoleNode extends Node {
     MAX_MESS_PER_SEC = 10;

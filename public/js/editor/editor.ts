@@ -1,6 +1,8 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
+
 
 import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"

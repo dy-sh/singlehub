@@ -1,7 +1,7 @@
-﻿/*  MyNodes.NET 
-    Copyright (C) 2016 Derwish <derwish.pro@gmail.com>
-    License: http://www.gnu.org/licenses/gpl-3.0.txt  
-*/
+﻿/**
+ * Created by Derwish (derwish.pro@gmail.com) on 24.02.2017.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
+ */
 
 var SLIDERS_UPDATE_INTERVAL = 50; //increase this interval if you get excaption on moving slider
 

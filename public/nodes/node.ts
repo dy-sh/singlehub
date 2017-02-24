@@ -103,6 +103,7 @@ export class Node {
     container: Container;
     id: number = -1;
     type: string;
+    category: string;
     inputs: {[id: number]: NodeInput};
     outputs: {[id: number]: NodeOutput};
     //   connections: Array<any>;
@@ -1206,6 +1207,13 @@ export class Node {
     sendMessageToFrontSide(mess: any) {
         if (this.isBackside() && this.id != -1) {
             this.container.socket.emit('node-message-to-front-side',
+                {id: this.id, cid: this.container.id, value: mess});
+        }
+    }
+
+    sendMessageToDashboardSide(mess: any) {
+        if (this.isBackside() && this.id != -1) {
+            this.container.socket.emit('node-message-to-dashboard-side',
                 {id: this.id, cid: this.container.id, value: mess});
         }
     }

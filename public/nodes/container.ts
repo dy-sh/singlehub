@@ -485,22 +485,7 @@ export class Container {
     }
 
 
-    /**
-     * Returns a list of nodes that matches a class
-     * @param classObject the class itself (not an string)
-     * @returns a list with all the nodes of this type
-     */
-    getNodesByClass(classObject: any): Array<Node> {
-        let r = [];
 
-        for (let id in this._nodes) {
-            let node = this._nodes[id];
-            if (node.constructor === classObject)
-                r.push(node);
-        }
-
-        return r;
-    }
 
     /**
      * Returns a list of nodes that matches a type
@@ -514,6 +499,24 @@ export class Container {
         for (let id in this._nodes) {
             let node = this._nodes[id];
             if (node.type.toLowerCase() == type)
+                r.push(node);
+        }
+
+        return r;
+    }
+
+    /**
+     * Returns a list of nodes that matches a category
+     * @param category the name of the node category
+     * @returns a list with all the nodes of this type
+     */
+    getNodesByCategory(category: string): Array<Node> {
+        category = category.toLowerCase();
+        let r = [];
+
+        for (let id in this._nodes) {
+            let node = this._nodes[id];
+            if (node.category.toLowerCase() == category)
                 r.push(node);
         }
 

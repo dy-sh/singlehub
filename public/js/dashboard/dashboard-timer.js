@@ -1,7 +1,7 @@
-/*  MyNodes.NET
-    Copyright (C) 2016 Derwish <derwish.pro@gmail.com>
-    License: http://www.gnu.org/licenses/gpl-3.0.txt
-*/
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 24.02.2017.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
+ */
 var MAIN_PANEL_ID = "Main";
 var elementsFadeTime = 300;
 var timerTemplate = Handlebars.compile($('#timerTemplate').html());

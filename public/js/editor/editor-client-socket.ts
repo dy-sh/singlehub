@@ -1,5 +1,6 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 02.07.2016.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 import {Nodes} from "../../nodes/nodes"
@@ -16,14 +17,10 @@ let log = Logger.create('client', {color: 3});
 export class EditorClientSocket {
 
 
-    socketConnected: boolean;
     socket: SocketIOClient.Socket;
-    container: Container;
 
     constructor() {
         let SLOTS_VALUES_INTERVAL = 200;
-
-        this.container = Container.containers[0];
 
         let socket = io();
         this.socket = socket;

@@ -143,6 +143,7 @@ export class Nodes {
 
 
         node.type = type;
+        node.category = base_class.category;
         if (!node.title) node.title = title;
         if (!node.properties) node.properties = {};
         if (!node.flags) node.flags = {};
