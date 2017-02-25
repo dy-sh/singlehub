@@ -3,7 +3,6 @@
  */
 
 
-
 import {Nodes} from "../nodes";
 import {Node} from "../node";
 import {Container, Side} from "../container";
@@ -90,23 +89,16 @@ export class ContainerNode extends Node {
         this.size = [120, 20];
     }
 
-
-    onAdded = function () {
-        this.sub_container.container_node = this;
-        this.sub_container.parent_container_id = this.container.id;
-    };
-
-    onBeforeCreated = function () {
+    onCreated = function () {
         this.sub_container = new Container(this.side);
         this.sub_container_id = this.sub_container.id;
         this.title = "Container " + this.sub_container.id;
 
-
-        let rootContainer = Container.containers[0];
-        if (rootContainer.db)
-            rootContainer.db.updateLastContainerId(this.sub_container_id);
+        if (this.container.db)
+            this.container.db.updateLastContainerId(this.sub_container_id);
 
     }
+
 
     onRemoved = function () {
         for (let id in this.sub_container._nodes) {
@@ -116,6 +108,30 @@ export class ContainerNode extends Node {
 
         delete Container.containers[this.sub_container.id];
     };
+
+    configure(data, from_db = false) {
+        super.configure(data);
+
+
+        this.sub_container = Container.containers[data.sub_container.id];
+        if (!this.sub_container)
+            this.sub_container = new Container(this.side, data.sub_container.id);
+
+        this.sub_container.container_node = this;
+        this.sub_container.parent_container_id = this.container.id;
+
+
+        if (data.sub_container)
+            this.sub_container.configure(data.sub_container, true);
+    }
+
+    serialize(for_db = false) {
+        let data = super.serialize(for_db);
+
+        (<any>data).sub_container = this.sub_container.serialize(!for_db);
+
+        return data;
+    }
 
 
     getExtraMenuOptions = function (renderer) {
@@ -131,25 +147,6 @@ export class ContainerNode extends Node {
         this.sub_container.runStep();
     }
 
-    configure(data, from_db = false) {
-        super.configure(data);
-
-        this.sub_container = Container.containers[data.sub_container.id];
-        if (!this.sub_container)
-            this.sub_container = new Container(this.side, data.sub_container.id);
-
-        if (data.sub_container)
-            this.sub_container.configure(data.sub_container, true);
-
-    }
-
-    serialize(for_db = false) {
-        let data = super.serialize(for_db);
-
-        (<any>data).sub_container = this.sub_container.serialize(!for_db);
-
-        return data;
-    }
 
     clone() {
 
@@ -184,7 +181,7 @@ export class ContainerInputNode extends Node {
 
     }
 
-    onAfterCreated = function () {
+    onCreated = function () {
 
 
         //add output on container node
@@ -247,7 +244,7 @@ export class ContainerOutputNode extends Node {
 
     }
 
-    onAfterCreated = function () {
+    onCreated = function () {
 
         //add output on container node
         let cont_node = this.container.container_node;

@@ -725,13 +725,6 @@
                 return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * nodes_1.Nodes.options.NODE_SLOT_HEIGHT];
             return [this.pos[0], this.pos[1] + 10 + slot_number * nodes_1.Nodes.options.NODE_SLOT_HEIGHT];
         }
-        /**
-         * Force align to grid
-         */
-        alignToGrid() {
-            this.pos[0] = nodes_1.Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / nodes_1.Nodes.options.CANVAS_GRID_SIZE);
-            this.pos[1] = nodes_1.Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / nodes_1.Nodes.options.CANVAS_GRID_SIZE);
-        }
         //
         // /* Console output */
         // trace(msg) {

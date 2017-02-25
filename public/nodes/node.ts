@@ -153,15 +153,11 @@ export class Node {
      */
     onRemoved: Function;
 
-    /**
-     * Invoked one time when node created and added to container (before onAdded)
-     */
-    onBeforeCreated: Function;
 
     /**
      * Invoked one time when node created and added to container (after onAdded)
      */
-    onAfterCreated: Function;
+    onCreated: Function;
 
     onDrawBackground: Function;
     onDrawForeground: Function;
@@ -1050,13 +1046,7 @@ export class Node {
     }
 
 
-    /**
-     * Force align to grid
-     */
-    alignToGrid(): void {
-        this.pos[0] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[0] / Nodes.options.CANVAS_GRID_SIZE);
-        this.pos[1] = Nodes.options.CANVAS_GRID_SIZE * Math.round(this.pos[1] / Nodes.options.CANVAS_GRID_SIZE);
-    }
+
 
     //
     // /* Console output */

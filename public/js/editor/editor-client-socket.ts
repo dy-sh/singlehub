@@ -6,9 +6,7 @@
 import {Nodes} from "../../nodes/nodes"
 import {Node, Link, LinkInfo} from "../../nodes/node"
 import {Container} from "../../nodes/container";
-import {editor} from "./editor";
-import Utils from "../../nodes/utils";
-import {ContainerNode, ContainerInputNode} from "../../nodes/nodes/main";
+import {Editor} from "./editor";
 
 //console logger
 declare let Logger: any; // tell the ts compiler global variable is defined
@@ -18,10 +16,12 @@ export class EditorClientSocket {
 
 
     socket: SocketIOClient.Socket;
+    editor: Editor;
 
-    constructor() {
+    constructor(editor) {
         let SLOTS_VALUES_INTERVAL = 200;
 
+        this.editor = editor;
         let socket = io();
         this.socket = socket;
 
@@ -39,7 +39,7 @@ export class EditorClientSocket {
         socket.on('connect', function () {
             log.debug("Connected to socket");
 
-            that.sendJoinContainerRoom(editor.renderer.container.id)
+            that.sendJoinContainerRoom(editor.renderer.container.id);
             editor.updateNodesLabels();
         });
 
@@ -67,11 +67,9 @@ export class EditorClientSocket {
 
         socket.on('node-create', function (n) {
             let container = Container.containers[n.cid];
-            let node = container.createNode(n.type);
-            node.pos = n.pos;
-            node.properties = n.properties;
-            //node.configure(n);
-            container.create(node);
+            let node = container.createNode(n.type, null,
+                {pos: n.pos});
+
         });
 
         socket.on('node-delete', function (n) {
@@ -268,22 +266,24 @@ export class EditorClientSocket {
     }
 
     getContainerState(): void {
+       let that=this;
         $.ajax({
             url: "/api/editor/state",
             success: function (state) {
                 if (state.isRunning)
-                    editor.onContainerRun();
+                    that.editor.onContainerRun();
                 else
-                    editor.onContainerStop();
+                    that.editor.onContainerStop();
             }
         });
     }
 
 
     sendCreateNode(type: string, position: [number, number]): void {
-        let json = JSON.stringify({type: type, position: position, container: editor.renderer.container.id});
+        let that=this;
+        let json = JSON.stringify({type: type, position: position, container: that.editor.renderer.container.id});
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/n/",
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
             contentType: 'application/json',
             type: 'POST',
             data: json
@@ -292,16 +292,18 @@ export class EditorClientSocket {
 
 
     sendRemoveNode(node: Node): void {
+        let that=this;
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/n/" + node.id,
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/" + node.id,
             type: 'DELETE'
         })
     };
 
 
     sendRemoveNodes(ids: Array<number>): void {
+        let that=this;
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/n/",
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
             type: 'DELETE',
             contentType: 'application/json',
             data: JSON.stringify(ids)
@@ -309,8 +311,9 @@ export class EditorClientSocket {
     };
 
     sendMoveToNewContainer(ids: Array<number>, pos: [number, number]): void {
+        let that=this;
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/n/move/",
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/move/",
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ids: ids, pos: pos})
@@ -318,8 +321,9 @@ export class EditorClientSocket {
     };
 
     sendUpdateNodePosition(node: Node): void {
+        let that=this;
         $.ajax({
-            url: `/api/editor/c/${editor.renderer.container.id}/n/${node.id}/position`,
+            url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/position`,
             contentType: 'application/json',
             type: 'PUT',
             data: JSON.stringify({position: node.pos})
@@ -327,8 +331,9 @@ export class EditorClientSocket {
     };
 
     sendUpdateNodeSize(node: Node): void {
+        let that=this;
         $.ajax({
-            url: `/api/editor/c/${editor.renderer.container.id}/n/${node.id}/size`,
+            url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/size`,
             contentType: 'application/json',
             type: 'PUT',
             data: JSON.stringify({size: node.size})
@@ -344,8 +349,9 @@ export class EditorClientSocket {
             target_slot: target_slot,
         };
 
+        let that=this;
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/l/",
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/l/",
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data)
@@ -361,8 +367,9 @@ export class EditorClientSocket {
             target_slot: target_slot,
         };
 
+        let that=this;
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id + "/l/",
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/l/",
             type: 'DELETE',
             contentType: 'application/json',
             data: JSON.stringify(data)
@@ -459,7 +466,7 @@ export class EditorClientSocket {
     //
     // }
     sendGetSlotsValues() {
-        this.socket.emit("get-slots-values", editor.renderer.container.id);
+        this.socket.emit("get-slots-values", this.editor.renderer.container.id);
     }
 
     sendJoinContainerRoom(cont_id: number) {
@@ -470,5 +477,3 @@ export class EditorClientSocket {
         this.socket.emit('room', room);
     }
 }
-
-export let socket = new EditorClientSocket();

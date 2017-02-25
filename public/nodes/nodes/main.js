@@ -75,17 +75,12 @@
     class ContainerNode extends node_1.Node {
         constructor(container) {
             super(container);
-            this.onAdded = function () {
-                this.sub_container.container_node = this;
-                this.sub_container.parent_container_id = this.container.id;
-            };
-            this.onBeforeCreated = function () {
+            this.onCreated = function () {
                 this.sub_container = new container_1.Container(this.side);
                 this.sub_container_id = this.sub_container.id;
                 this.title = "Container " + this.sub_container.id;
-                let rootContainer = container_1.Container.containers[0];
-                if (rootContainer.db)
-                    rootContainer.db.updateLastContainerId(this.sub_container_id);
+                if (this.container.db)
+                    this.container.db.updateLastContainerId(this.sub_container_id);
             };
             this.onRemoved = function () {
                 for (let id in this.sub_container._nodes) {
@@ -114,6 +109,8 @@
             this.sub_container = container_1.Container.containers[data.sub_container.id];
             if (!this.sub_container)
                 this.sub_container = new container_1.Container(this.side, data.sub_container.id);
+            this.sub_container.container_node = this;
+            this.sub_container.parent_container_id = this.container.id;
             if (data.sub_container)
                 this.sub_container.configure(data.sub_container, true);
         }
@@ -140,7 +137,7 @@
             super(container);
             this.onAdded = function () {
             };
-            this.onAfterCreated = function () {
+            this.onCreated = function () {
                 //add output on container node
                 let cont_node = this.container.container_node;
                 let id = cont_node.addInput(null, this.properties.type);
@@ -187,7 +184,7 @@
             super(container);
             this.onAdded = function () {
             };
-            this.onAfterCreated = function () {
+            this.onCreated = function () {
                 //add output on container node
                 let cont_node = this.container.container_node;
                 let id = cont_node.addOutput(null, this.properties.type);

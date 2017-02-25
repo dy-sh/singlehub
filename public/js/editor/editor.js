@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-client-socket", "./editor-themes", "../../nodes/utils", "../../nodes/nodes/index"], factory);
     }
 })(function (require, exports) {
@@ -38,8 +37,8 @@
             //create root container
             this.rootContainer = new container_1.Container(container_1.Side.editor);
             //create socket
-            this.socket = editor_client_socket_1.socket;
-            this.rootContainer.socket = editor_client_socket_1.socket.socket;
+            this.socket = new editor_client_socket_1.EditorClientSocket(this);
+            this.rootContainer.socket = this.socket.socket;
             //create canvas
             let renderer = this.renderer = new renderer_1.Renderer(canvas, this.rootContainer);
             // renderer.background_image = "/images/node-editor/grid.png";
@@ -413,17 +412,18 @@
             }).modal('setting', 'transition', 'fade up').modal('show');
         }
         addPlayButton() {
-            var that = this;
+            let that = this;
             $("#play-button").click(function () {
                 if (that.isRunning)
-                    editor_client_socket_1.socket.sendStopContainer();
+                    that.socket.sendStopContainer();
                 else
-                    editor_client_socket_1.socket.sendRunContainer();
+                    that.socket.sendRunContainer();
             });
         }
         addStepButton() {
+            let that = this;
             $("#step-button").click(function () {
-                editor_client_socket_1.socket.sendStepContainer();
+                that.socket.sendStepContainer();
                 // container.runStep();
             });
         }
@@ -435,7 +435,7 @@
         }
         onContainerRunStep() {
             if (this.showSlotsValues)
-                editor_client_socket_1.socket.sendGetSlotsValues();
+                this.socket.sendGetSlotsValues();
         }
         onContainerStop() {
             this.isRunning = false;
@@ -491,7 +491,9 @@
                     addendButton(cont_id, cont_name);
                 }
                 //add this container
-                let cont_name = this.renderer.container.container_node.title;
+                // console.log(this.renderer.container)
+                // let cont_name = this.renderer.container.container_node.title;
+                let cont_name = "Container " + this.renderer.container.id;
                 let cont_id = this.renderer.container.id;
                 addendButton(cont_id, cont_name);
             }

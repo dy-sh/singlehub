@@ -53,10 +53,7 @@ export class DashboardClientSocket {
         socket.on('node-create', function (n) {
             let container = Container.containers[n.cid];
             let node = container.createNode(n.type);
-            node.pos = n.pos;
-            node.properties = n.properties;
             //node.configure(n);
-            container.create(node);
         });
 
         socket.on('node-delete', function (n) {

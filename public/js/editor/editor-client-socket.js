@@ -8,31 +8,31 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./editor"], factory);
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const container_1 = require("../../nodes/container");
-    const editor_1 = require("./editor");
     let log = Logger.create('client', { color: 3 });
     class EditorClientSocket {
-        constructor() {
+        constructor(editor) {
             let SLOTS_VALUES_INTERVAL = 200;
+            this.editor = editor;
             let socket = io();
             this.socket = socket;
             let that = this;
             setInterval(function () {
                 if (that.socket
                     && that.socket.connected
-                    && editor_1.editor.showSlotsValues
-                    && editor_1.editor.isRunning)
+                    && editor.showSlotsValues
+                    && editor.isRunning)
                     that.sendGetSlotsValues();
             }, SLOTS_VALUES_INTERVAL);
             socket.on('connect', function () {
                 log.debug("Connected to socket");
-                that.sendJoinContainerRoom(editor_1.editor.renderer.container.id);
-                editor_1.editor.updateNodesLabels();
+                that.sendJoinContainerRoom(editor.renderer.container.id);
+                editor.updateNodesLabels();
             });
             //
             // socket.on('connect', function () {
@@ -56,11 +56,7 @@
             // });
             socket.on('node-create', function (n) {
                 let container = container_1.Container.containers[n.cid];
-                let node = container.createNode(n.type);
-                node.pos = n.pos;
-                node.properties = n.properties;
-                //node.configure(n);
-                container.create(node);
+                let node = container.createNode(n.type, null, { pos: n.pos });
             });
             socket.on('node-delete', function (n) {
                 let container = container_1.Container.containers[n.cid];
@@ -123,13 +119,13 @@
                 targetNode.disconnectInput(data.link.target_slot);
             });
             socket.on('container-run', function (l) {
-                editor_1.editor.onContainerRun();
+                editor.onContainerRun();
             });
             socket.on('container-run-step', function (l) {
-                editor_1.editor.onContainerRunStep();
+                editor.onContainerRunStep();
             });
             socket.on('container-stop', function (l) {
-                editor_1.editor.onContainerStop();
+                editor.onContainerStop();
             });
             socket.on('nodes-active', function (data) {
                 let container = container_1.Container.containers[data.cid];
@@ -212,20 +208,22 @@
             });
         }
         getContainerState() {
+            let that = this;
             $.ajax({
                 url: "/api/editor/state",
                 success: function (state) {
                     if (state.isRunning)
-                        editor_1.editor.onContainerRun();
+                        that.editor.onContainerRun();
                     else
-                        editor_1.editor.onContainerStop();
+                        that.editor.onContainerStop();
                 }
             });
         }
         sendCreateNode(type, position) {
-            let json = JSON.stringify({ type: type, position: position, container: editor_1.editor.renderer.container.id });
+            let that = this;
+            let json = JSON.stringify({ type: type, position: position, container: that.editor.renderer.container.id });
             $.ajax({
-                url: "/api/editor/c/" + editor_1.editor.renderer.container.id + "/n/",
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
                 contentType: 'application/json',
                 type: 'POST',
                 data: json
@@ -233,15 +231,17 @@
         }
         ;
         sendRemoveNode(node) {
+            let that = this;
             $.ajax({
-                url: "/api/editor/c/" + editor_1.editor.renderer.container.id + "/n/" + node.id,
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/" + node.id,
                 type: 'DELETE'
             });
         }
         ;
         sendRemoveNodes(ids) {
+            let that = this;
             $.ajax({
-                url: "/api/editor/c/" + editor_1.editor.renderer.container.id + "/n/",
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
                 type: 'DELETE',
                 contentType: 'application/json',
                 data: JSON.stringify(ids)
@@ -249,8 +249,9 @@
         }
         ;
         sendMoveToNewContainer(ids, pos) {
+            let that = this;
             $.ajax({
-                url: "/api/editor/c/" + editor_1.editor.renderer.container.id + "/n/move/",
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/move/",
                 type: 'PUT',
                 contentType: 'application/json',
                 data: JSON.stringify({ ids: ids, pos: pos })
@@ -258,8 +259,9 @@
         }
         ;
         sendUpdateNodePosition(node) {
+            let that = this;
             $.ajax({
-                url: `/api/editor/c/${editor_1.editor.renderer.container.id}/n/${node.id}/position`,
+                url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/position`,
                 contentType: 'application/json',
                 type: 'PUT',
                 data: JSON.stringify({ position: node.pos })
@@ -267,8 +269,9 @@
         }
         ;
         sendUpdateNodeSize(node) {
+            let that = this;
             $.ajax({
-                url: `/api/editor/c/${editor_1.editor.renderer.container.id}/n/${node.id}/size`,
+                url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/size`,
                 contentType: 'application/json',
                 type: 'PUT',
                 data: JSON.stringify({ size: node.size })
@@ -282,8 +285,9 @@
                 target_id: target_id,
                 target_slot: target_slot,
             };
+            let that = this;
             $.ajax({
-                url: "/api/editor/c/" + editor_1.editor.renderer.container.id + "/l/",
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/l/",
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data)
@@ -297,8 +301,9 @@
                 target_id: target_id,
                 target_slot: target_slot,
             };
+            let that = this;
             $.ajax({
-                url: "/api/editor/c/" + editor_1.editor.renderer.container.id + "/l/",
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/l/",
                 type: 'DELETE',
                 contentType: 'application/json',
                 data: JSON.stringify(data)
@@ -388,7 +393,7 @@
         //
         // }
         sendGetSlotsValues() {
-            this.socket.emit("get-slots-values", editor_1.editor.renderer.container.id);
+            this.socket.emit("get-slots-values", this.editor.renderer.container.id);
         }
         sendJoinContainerRoom(cont_id) {
             let room = "editor-container-" + cont_id;
@@ -397,6 +402,5 @@
         }
     }
     exports.EditorClientSocket = EditorClientSocket;
-    exports.socket = new EditorClientSocket();
 });
 //# sourceMappingURL=editor-client-socket.js.map

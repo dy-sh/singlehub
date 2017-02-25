@@ -31,7 +31,6 @@
     // }
     class NodesOptions {
         constructor() {
-            this.MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
             this.START_POS = 50;
             this.FREE_SPACE_UNDER = 30;
             this.NODE_TITLE_HEIGHT = 16;
@@ -40,7 +39,6 @@
             this.NODE_MIN_WIDTH = 50;
             this.NODE_COLLAPSED_RADIUS = 10;
             this.NODE_COLLAPSED_WIDTH = 150;
-            this.CANVAS_GRID_SIZE = 10;
             this.NODE_TITLE_COLOR = "#222";
             this.NODE_DEFAULT_COLOR = "#777";
             this.NODE_DEFAULT_BGCOLOR = "#373737";

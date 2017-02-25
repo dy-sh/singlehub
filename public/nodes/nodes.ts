@@ -28,7 +28,6 @@ else  //for frontside only
 
 export class NodesOptions {
 
-    MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
     START_POS = 50;
     FREE_SPACE_UNDER = 30;
 
@@ -38,7 +37,6 @@ export class NodesOptions {
     NODE_MIN_WIDTH = 50;
     NODE_COLLAPSED_RADIUS = 10;
     NODE_COLLAPSED_WIDTH = 150;
-    CANVAS_GRID_SIZE = 10;
     NODE_TITLE_COLOR = "#222";
     NODE_DEFAULT_COLOR = "#777";
     NODE_DEFAULT_BGCOLOR = "#373737";

@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "./nodes", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -18,12 +19,12 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
+    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(exports.Side || (exports.Side = {}));
-    var Side = exports.Side;
+    })(Side = exports.Side || (exports.Side = {}));
     class Container {
         constructor(side, id) {
             this._nodes = {};
@@ -251,58 +252,85 @@
         getNodesCount() {
             return Object.keys(this._nodes).length;
         }
-        create(node) {
-            node.side = this.side;
+        /**
+         * Create node and add to container
+         * If id is not defined, container will create a new instance of node,
+         * generate new id, call node.onCreated  and store it node in db,
+         * If id is defined, is will create node, add, call node.onAdded,
+         * and will not store it in db.
+         * @param type
+         * @param id
+         * @param properties
+         * @returns {Node}
+         */
+        createNode(type, node_id, properties) {
+            //check class exist
+            let node_class = nodes_1.Nodes.nodes_types[type];
+            if (!node_class) {
+                log.error("Can't create node. Node class of type [" + type + "] not registered.");
+                return null;
+            }
+            //check node id not exist
+            if (node_id != null && this._nodes[node_id]) {
+                log.error("Can't create node. Node id [" + node_id + " already exist.");
+                return null;
+            }
+            //get new id
+            let id = node_id;
+            if (id == null)
+                id = this.last_node_id++;
+            //create
+            let node = new node_class(this, id);
+            //add node
+            this._nodes[id] = node;
+            //set node properties
+            node.id = id;
             node.container = this;
-            if (node.onBeforeCreated)
-                node.onBeforeCreated();
-            this.add(node);
-            if (node.onAfterCreated)
-                node.onAfterCreated();
-            if (this.db) {
-                this.db.addNode(node);
-                if (this.id == 0)
-                    this.db.updateLastRootNodeId(this.last_node_id);
-                else
-                    this.db.updateNode(this.container_node.id, this.container_node.container.id, { "sub_container.last_node_id": this.container_node.sub_container.last_node_id });
+            node.side = this.side;
+            node.type = type;
+            node.category = node_class.category;
+            if (!node.title)
+                node.title = node.type;
+            if (!node.size)
+                node.size = node.computeSize();
+            //set additional properties
+            if (properties) {
+                for (let i in properties)
+                    node[i] = properties[i];
             }
             log.debug("New node created: " + node.getReadableId());
-        }
-        /**
-         * Adds a new node instasnce to this container
-         * @param node the instance of the node
-         */
-        add(node) {
-            if (!node || (node.id != -1 && this._nodes[node.id] != null))
-                return; //already added
-            if (this.getNodesCount() >= nodes_1.Nodes.options.MAX_NUMBER_OF_NODES)
-                throw ("Nodes: max number of nodes in a container reached");
-            //give him an id
-            if (node.id == null || node.id == -1)
-                node.id = this.last_node_id++;
-            node.container = this;
-            node.side = this.side;
-            this._nodes[node.id] = node;
-            /*
-             // rendering stuf...
-             if(node.bgImageUrl)
-             node.bgImage = node.loadImage(node.bgImageUrl);
-             */
-            if (node.onAdded)
-                node.onAdded();
-            if (this.config.align_to_grid)
-                node.alignToGrid();
-            if (this.onNodeAdded)
-                this.onNodeAdded(node);
+            if (node_id != null) {
+                if (node.onAdded)
+                    node.onAdded();
+            }
+            else {
+                if (node.onCreated)
+                    node.onCreated();
+                //add to database
+                if (this.db) {
+                    this.db.addNode(node);
+                    if (this.id == 0)
+                        this.db.updateLastRootNodeId(this.last_node_id);
+                    else
+                        this.db.updateNode(this.container_node.id, this.container_node.container.id, { "sub_container.last_node_id": this.container_node.sub_container.last_node_id });
+                }
+            }
             this.setDirtyCanvas(true, true);
+            return node;
         }
+        ;
         /**
          * Removes a node from the container
-         * @param node the instance of the node
+         * @param node the instance of the node or node id
          */
         remove(node) {
-            if (this._nodes[node.id] == null)
-                return;
+            //if id provided, get node
+            if (typeof node == "number") {
+                node = this._nodes[node];
+                if (!node)
+                    log.error("Can't remove node. Node id [" + node + " not exist.");
+                return null;
+            }
             if (node.ignore_remove)
                 return;
             //disconnect inputs
@@ -336,8 +364,6 @@
             delete this._nodes[node.id];
             log.debug("Node deleted: " + node.getReadableId());
             node.container = null;
-            if (this.onNodeRemoved)
-                this.onNodeRemoved(node);
             if (this.db)
                 this.db.removeNode(node.id, this.id);
             this.setDirtyCanvas(true, true);
@@ -491,34 +517,9 @@
         add_serialized_node(serialized_node, from_db = false) {
             let node = this.createNode(serialized_node.type, serialized_node.id);
             node.configure(serialized_node, from_db);
-            this.add(node);
             this.setDirtyCanvas(true, true);
             return node;
         }
-        createNode(type, id, properties) {
-            let node_class = nodes_1.Nodes.nodes_types[type];
-            if (!node_class) {
-                log.error("Can't create node. Node class of type \"" + type + "\" not registered.");
-                return null;
-            }
-            let node = new node_class(this, id);
-            node.id = id;
-            node.container = this;
-            node.side = this.side;
-            node.type = type;
-            node.category = node_class.category;
-            if (!node.title)
-                node.title = node.type;
-            if (!node.size)
-                node.size = node.computeSize();
-            //extra properties
-            if (properties) {
-                for (let i in properties)
-                    node[i] = properties[i];
-            }
-            return node;
-        }
-        ;
         getParentsStack() {
             let stack = [];
             if (this.parent_container_id) {

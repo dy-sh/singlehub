@@ -691,8 +691,6 @@
                     this.dirty_bgcanvas = true;
                     this.node_dragged.pos[0] = Math.round(this.node_dragged.pos[0]);
                     this.node_dragged.pos[1] = Math.round(this.node_dragged.pos[1]);
-                    if (this.container.config.align_to_grid)
-                        this.node_dragged.alignToGrid();
                     for (let i in this.selected_nodes) {
                         this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                         this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);

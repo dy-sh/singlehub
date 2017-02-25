@@ -53,7 +53,6 @@ export class Container {
     last_node_id: number;
     iteration: number;
     config: {
-        align_to_grid?: boolean;
         links_ontop?: boolean;
     };
     globaltime: number;
@@ -67,11 +66,9 @@ export class Container {
 
     onStopEvent: Function;
     on_change: Function;
-    onNodeAdded: Function;
     onExecuteStep: Function;
     onAfterExecute: Function;
     onConnectionChange: Function;
-    onNodeRemoved: Function;
     onPlayEvent: Function;
     frame: number;
 
@@ -366,78 +363,99 @@ export class Container {
     }
 
 
-    create(node: Node) {
-        node.side = this.side;
+    /**
+     * Create node and add to container
+     * If id is not defined, container will create a new instance of node,
+     * generate new id, call node.onCreated  and store it node in db,
+     * If id is defined, is will create node, add, call node.onAdded,
+     * and will not store it in db.
+     * @param type
+     * @param id
+     * @param properties
+     * @returns {Node}
+     */
+    createNode(type: string, node_id?: number, properties?: any): Node {
+        //check class exist
+        let node_class = Nodes.nodes_types[type];
+        if (!node_class) {
+            log.error("Can't create node. Node class of type [" + type + "] not registered.");
+            return null;
+        }
+
+        //check node id not exist
+        if (node_id != null && this._nodes[node_id]) {
+            log.error("Can't create node. Node id [" + node_id + " already exist.");
+            return null;
+        }
+
+
+        //get new id
+        let id = node_id;
+        if (id == null) id = this.last_node_id++;
+
+        //create
+        let node = new node_class(this, id);
+
+        //add node
+        this._nodes[id] = node;
+
+        //set node properties
+        node.id = id;
         node.container = this;
+        node.side = this.side;
+        node.type = type;
+        node.category = node_class.category;
 
-        if (node.onBeforeCreated)
-            node.onBeforeCreated();
+        if (!node.title) node.title = node.type;
+        if (!node.size) node.size = node.computeSize();
 
-        this.add(node);
-
-        if (node.onAfterCreated)
-            node.onAfterCreated();
-
-        if (this.db) {
-            this.db.addNode(node);
-
-            if (this.id == 0)
-                this.db.updateLastRootNodeId(this.last_node_id);
-            else
-                this.db.updateNode(this.container_node.id, this.container_node.container.id, {"sub_container.last_node_id": this.container_node.sub_container.last_node_id});
+        //set additional properties
+        if (properties) {
+            for (let i in properties)
+                node[i] = properties[i];
         }
 
         log.debug("New node created: " + node.getReadableId());
-    }
 
-    /**
-     * Adds a new node instasnce to this container
-     * @param node the instance of the node
-     */
-    add(node: Node) {
-        if (!node || (node.id != -1 && this._nodes[node.id] != null))
-            return; //already added
+        if (node_id != null) {
+            if (node.onAdded)
+                node.onAdded();
+        }
+        else {
+            if (node.onCreated)
+                node.onCreated();
 
-        if (this.getNodesCount() >= Nodes.options.MAX_NUMBER_OF_NODES)
-            throw("Nodes: max number of nodes in a container reached");
+            //add to database
+            if (this.db) {
+                this.db.addNode(node);
 
-        //give him an id
-        if (node.id == null || node.id == -1)
-            node.id = this.last_node_id++;
-
-        node.container = this;
-        node.side = this.side;
-
-        this._nodes[node.id] = node;
-
-        /*
-         // rendering stuf...
-         if(node.bgImageUrl)
-         node.bgImage = node.loadImage(node.bgImageUrl);
-         */
-
-
-        if (node.onAdded)
-            node.onAdded();
-
-        if (this.config.align_to_grid)
-            node.alignToGrid();
-
-        if (this.onNodeAdded)
-            this.onNodeAdded(node);
-
+                if (this.id == 0)
+                    this.db.updateLastRootNodeId(this.last_node_id);
+                else
+                    this.db.updateNode(this.container_node.id, this.container_node.container.id, {"sub_container.last_node_id": this.container_node.sub_container.last_node_id});
+            }
+        }
 
         this.setDirtyCanvas(true, true);
-    }
+
+        return node;
+    };
 
 
     /**
      * Removes a node from the container
-     * @param node the instance of the node
+     * @param node the instance of the node or node id
      */
-    remove(node: Node): void {
-        if (this._nodes[node.id] == null)
-            return;
+    remove(node: Node|number): void {
+
+        //if id provided, get node
+        if (typeof node == "number") {
+            node = this._nodes[node];
+            if (!node)
+                log.error("Can't remove node. Node id [" + node + " not exist.");
+            return null;
+        }
+
 
         if (node.ignore_remove)
             return;
@@ -480,8 +498,6 @@ export class Container {
         log.debug("Node deleted: " + node.getReadableId());
         node.container = null;
 
-        if (this.onNodeRemoved)
-            this.onNodeRemoved(node);
 
         if (this.db)
             this.db.removeNode(node.id, this.id);
@@ -672,38 +688,11 @@ export class Container {
     add_serialized_node(serialized_node: SerializedNode, from_db: boolean = false): Node {
         let node = this.createNode(serialized_node.type, serialized_node.id);
         node.configure(serialized_node, from_db);
-        this.add(node);
         this.setDirtyCanvas(true, true);
         return node;
 
     }
 
-    createNode(type: string, id?: number, properties?: any): Node {
-        let node_class = Nodes.nodes_types[type];
-        if (!node_class) {
-            log.error("Can't create node. Node class of type \"" + type + "\" not registered.");
-            return null;
-        }
-
-        let node = new node_class(this, id);
-
-        node.id = id;
-        node.container = this;
-        node.side = this.side;
-        node.type = type;
-        node.category = node_class.category;
-
-        if (!node.title) node.title = node.type;
-        if (!node.size) node.size = node.computeSize();
-
-        //extra properties
-        if (properties) {
-            for (let i in properties)
-                node[i] = properties[i];
-        }
-
-        return node;
-    };
 
     getParentsStack(): Array<number> {
         let stack = [];

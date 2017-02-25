@@ -34,7 +34,7 @@ function updateActiveNodes() {
 
         let room = "editor-container-" + container.id;
         if (activeNodesIds.length > 0)
-            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds,cid:container.id});
+            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
 
     }
 }
@@ -81,19 +81,17 @@ router.post('/c/:cid/n/', function (req, res) {
     let container = Container.containers[req.params.cid];
     if (!container) return res.status(404).send(`Can't create node. Container id [${req.params.cid}] not found.`);
 
-    let node = container.createNode(req.body.type);
+    let node = container.createNode(req.body.type, null,
+        {pos: req.body.position});
+
     if (!node) return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
 
-
-    node.pos = req.body.position;
-    container.create(node);
 
     app.server.socket.io.emit('node-create', {
         id: node.id,
         cid: req.params.cid,
         type: node.type,
-        pos: node.pos,
-        properties: node.properties
+        pos: node.pos
     });
 
     res.send(`New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);

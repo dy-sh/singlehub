@@ -8,7 +8,7 @@ import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
 import {Container, Side} from "../../nodes/container"
 import {Renderer} from "./renderer"
-import {EditorClientSocket, socket} from "./editor-client-socket";
+import {EditorClientSocket} from "./editor-client-socket";
 import {themes} from "./editor-themes"
 import Utils from "../../nodes/utils";
 
@@ -49,8 +49,8 @@ export class Editor {
         this.rootContainer = new Container(Side.editor);
 
         //create socket
-        this.socket = socket;
-        this.rootContainer.socket = socket.socket;
+        this.socket = new EditorClientSocket(this);
+        this.rootContainer.socket = this.socket.socket;
 
 
         //create canvas
@@ -515,19 +515,20 @@ export class Editor {
     }
 
     private addPlayButton() {
-        var that = this;
+        let that = this;
         $("#play-button").click(function () {
             if (that.isRunning)
-                socket.sendStopContainer();
+                that.socket.sendStopContainer();
             else
-                socket.sendRunContainer();
+                that.socket.sendRunContainer();
 
         });
     }
 
     private addStepButton() {
+        let that = this;
         $("#step-button").click(function () {
-            socket.sendStepContainer();
+            that.socket.sendStepContainer();
             // container.runStep();
         });
     }
@@ -541,7 +542,7 @@ export class Editor {
 
     onContainerRunStep() {
         if (this.showSlotsValues)
-            socket.sendGetSlotsValues();
+            this.socket.sendGetSlotsValues();
     }
 
     onContainerStop() {
@@ -607,7 +608,9 @@ export class Editor {
             }
 
             //add this container
-            let cont_name = this.renderer.container.container_node.title;
+            // console.log(this.renderer.container)
+            // let cont_name = this.renderer.container.container_node.title;
+            let cont_name = "Container " + this.renderer.container.id;
             let cont_id = this.renderer.container.id;
             addendButton(cont_id, cont_name);
 
@@ -642,7 +645,7 @@ export class Editor {
     getNodes() {
         this.socket.getContainerState();
 
-        let that = this;
+        let that=this;
         this.socket.getNodes(function (nodes) {
             //open container from url
             let cont_id = (<any>window).container_id;
