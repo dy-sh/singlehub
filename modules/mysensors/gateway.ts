@@ -5,11 +5,9 @@
 
 var mys = require('./mysensors');
 
-var debug = require('debug')('gateway:mys:      ');
-var debugLog = require('debug')('gateway:mys:log   ');
-var debugMes = require('debug')('gateway:mys:mes   ');
-var debugErr = require('debug')('gateway:mys:error ');
-debugErr.color = 1;
+//console logger
+let log = require('logplease').create('container', {color: 5});
+
 
 var _ = require("lodash");
 var eventEmitter = require("events");
@@ -39,24 +37,24 @@ Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
     this.port = new SerialPort(portName, {baudRate: baudRate, autoOpen: false});
 
     this.port.on("open", function () {
-        debug("Port connected");
+        log.debug("Port connected");
     });
 
     this.port.on("error", function (err) {
-        debugErr(err);
+        log.error(err);
     });
 
     this.port.on("close", function () {
-        debug("Port closed. ");
+        log.debug("Port closed. ");
     });
 
     this.port.on("disconnect", function (err) {
-        debug("Port disconnected. " + err);
+        log.debug("Port disconnected. " + err);
     });
 
     this.port.pipe(split()).on("data", this._readPortData.bind(this));
 
-    debug("Connecting to " + portName + " at " + baudRate + " ...");
+    log.debug("Connecting to " + portName + " at " + baudRate + " ...");
     this.port.open();
 };
 
@@ -64,7 +62,7 @@ Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
 Gateway.prototype._readPortData = function (data) {
     var mess = data.split(";");
     if (mess.length < 5) {
-        debugErr("Can`t parse message: " + data);
+        log.error("Can`t parse message: " + data);
         return;
     }
 
@@ -80,9 +78,9 @@ Gateway.prototype._readPortData = function (data) {
     //log message
     if (message.messageType == mys.messageType.C_INTERNAL
         && message.subType == mys.internalDataType.I_LOG_MESSAGE)
-        debugLog("<   " + data);
+        log.debugLog("<   " + data);
     else
-        debugMes("<   " + data);
+        log.debugMes("<   " + data);
 
     if (message.nodeId == GATEWAY_ID)
         this._receiveGatewayMessage(message);
@@ -99,13 +97,13 @@ Gateway.prototype._receiveGatewayMessage = function (message) {
 
                 case mys.internalDataType.I_GATEWAY_READY:
                     this.isConnected = true;
-                    debug("Gateway connected.");
+                    log.debug("Gateway connected.");
                     this.sendGetGatewayVersion();
                     break;
 
                 case mys.internalDataType.I_VERSION:
                     this.version = message.payload;
-                    debug("Gateway version: " + message.payload);
+                    log.debug("Gateway version: " + message.payload);
                     break;
             }
     }
@@ -160,7 +158,7 @@ Gateway.prototype._proceedPresentation = function (message) {
             ) {
                 node.isRepeatingNode = isRepeatingNode;
                 node.version = version;
-                debug(`Node[${node.id}] version: [${version}]`);
+                log.debug(`Node[${node.id}] version: [${version}]`);
             }
         }
 
@@ -170,7 +168,7 @@ Gateway.prototype._proceedPresentation = function (message) {
         if (sensor.type !== message.subType) {
             sensor.type = message.subType;
             sensor.dataType = mys.getDefaultDataType(message.subType);
-            debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
+            log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
             console.log(sensor.dataType);
             var node = this.getNode(message.nodeId);
             this.emit("sensorUpdated", sensor, "type");
@@ -188,11 +186,11 @@ Gateway.prototype._proceedSet = function (message) {
 
     if (sensor.dataType !== message.subType) {
         sensor.dataType = message.subType;
-        debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] dataType updated: [${mys.sensorDataTypeKey[message.subType]}]`);
+        log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] dataType updated: [${mys.sensorDataTypeKey[message.subType]}]`);
         this.emit("sensorUpdated", sensor, "type");
     }
 
-    debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] updated: [${message.payload}]`);
+    log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] updated: [${message.payload}]`);
     this.emit("sensorUpdated", sensor, "state");
 
 };
@@ -233,7 +231,7 @@ Gateway.prototype._proceedInternal = function (message) {
             var node = this.getNode(message.nodeId);
             if (node.sketchName !== message.payload) {
                 node.sketchName = message.payload;
-                debug(`Node[${message.nodeId}] sketch name: [${message.payload}]`);
+                log.debug(`Node[${message.nodeId}] sketch name: [${message.payload}]`);
                 this.emit("nodeUpdated", node, "sketchName");
             }
             break;
@@ -242,7 +240,7 @@ Gateway.prototype._proceedInternal = function (message) {
             var node = this.getNode(message.nodeId);
             if (node.sketchVersion !== message.payload) {
                 node.sketchVersion = message.payload;
-                debug(`Node[${message.nodeId}] sketch version: [${message.payload}]`);
+                log.debug(`Node[${message.nodeId}] sketch version: [${message.payload}]`);
                 this.emit("nodeUpdated", node, "sketchVersion");
             }
             break;
@@ -250,7 +248,7 @@ Gateway.prototype._proceedInternal = function (message) {
         case ( mys.internalDataType.I_BATTERY_LEVEL):
             var node = this.getNode(message.nodeId);
             node.batteryLevel = +message.payload;
-            debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
+            log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
             this.emit("nodeUpdated", node, "batteryLevel");
             break;
 
@@ -289,7 +287,7 @@ Gateway.prototype.sendMessage = function (message) {
 
     var mess = _.join(arr, ";");
 
-    debugMes("  > " + mess);
+    log.debugMes("  > " + mess);
     this.port.write(mess + "\n");
 };
 
@@ -334,7 +332,7 @@ Gateway.prototype._registerNode = function (nodeId) {
         };
 
         this.nodes.push(node);
-        debug(`Node[${nodeId}] registered.`);
+        log.debug(`Node[${nodeId}] registered.`);
         this.emit("newNode", node);
     }
     return node;
@@ -353,7 +351,7 @@ Gateway.prototype._registerSensor = function (nodeId, sensorId) {
         };
 
         node.sensors.push(sensor);
-        debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
+        log.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
         this.emit("newSensor", sensor);
     }
 
@@ -368,7 +366,7 @@ Gateway.prototype._getNewNodeId = function () {
             return i;
     }
 
-    debugErr('Can`t register new node. There are no available id.');
+    log.error('Can`t register new node. There are no available id.');
 };
 
 var mys_gateway = new Gateway;

@@ -3,15 +3,16 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container", "../public/nodes/nodes", "../app"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "express", "../public/nodes/container", "../public/nodes/nodes", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require('express');
+    const express = require("express");
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const nodes_1 = require("../public/nodes/nodes");
@@ -32,7 +33,7 @@
             }
             let room = "editor-container-" + container.id;
             if (activeNodesIds.length > 0)
-                app_1.app.server.socket.io.sockets.in(room).emit('nodes-active', { ids: activeNodesIds });
+                app_1.app.server.socket.io.sockets.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
         }
     }
     //------------------ info ------------------------

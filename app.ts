@@ -1,3 +1,4 @@
+import {Nodes} from "./public/nodes/nodes";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -65,10 +66,10 @@ class App {
     }
 
     createNodes() {
-        require('./public/nodes/nodes');
-        require('./public/nodes/nodes/main');
-        require('./public/nodes/nodes/debug');
-        require('./public/nodes/nodes/math');
+        require('./public/nodes/nodes/index');
+        let types = Nodes.nodes_types ? Object.keys(Nodes.nodes_types).length : 0;
+        log.debug("Registered " + types + " nodes types");
+
     }
 
     createRootContainer() {
@@ -126,17 +127,16 @@ class App {
 
                     let cont = Container.containers[n.cid];
                     if (!cont)
-                        cont = new Container(Side.server,n.cid);
+                        cont = new Container(Side.server, n.cid);
 
                     cont.add_serialized_node(n, true);
-
 
 
                     // console.log(root.id);
                 }
 
-                let contCount = Object.keys(Container.containers).length;
-                log.debug("Created " + contCount + " containers, " + nodes.length + " nodes");
+                let contCount = Container.containers ? Object.keys(Container.containers).length : 0;
+                log.info("Imported " + contCount + " containers, " + nodes.length + " nodes from database");
             });
         });
     }

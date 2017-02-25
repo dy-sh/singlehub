@@ -165,7 +165,7 @@ export class EditorClientSocket {
 
 
         socket.on('nodes-active', function (data) {
-            let container = editor.renderer.container;
+            let container = Container.containers[data.cid];
             for (let id of data.ids) {
                 let node = container.getNodeById(id);
                 if (!node)

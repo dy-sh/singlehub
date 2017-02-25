@@ -5,7 +5,7 @@
 
 let socketio = require('socket.io');
 let gateway = require('./gateway');
-let debug = require('debug')('server:io         ');
+
 
 module.exports.listen = function (app) {
 	io = socketio.listen(app).of('/mysensors');

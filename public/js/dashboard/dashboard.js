@@ -3,20 +3,19 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./dashboard-client-socket", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./dashboard-client-socket", "../../nodes/nodes/index"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const nodes_1 = require("../../nodes/nodes");
     const container_1 = require("../../nodes/container");
     const dashboard_client_socket_1 = require("./dashboard-client-socket");
-    require("../../nodes/nodes/main");
-    require("../../nodes/nodes/debug");
-    require("../../nodes/nodes/math");
+    require("../../nodes/nodes/index");
     window.Nodes = nodes_1.Nodes;
     window.Container = container_1.Container;
     let id = 0;

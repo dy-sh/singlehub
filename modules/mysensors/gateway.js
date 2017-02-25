@@ -3,20 +3,18 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports"], factory);
     }
 })(function (require, exports) {
     "use strict";
     var mys = require('./mysensors');
-    var debug = require('debug')('gateway:mys:      ');
-    var debugLog = require('debug')('gateway:mys:log   ');
-    var debugMes = require('debug')('gateway:mys:mes   ');
-    var debugErr = require('debug')('gateway:mys:error ');
-    debugErr.color = 1;
+    //console logger
+    let log = require('logplease').create('container', { color: 5 });
     var _ = require("lodash");
     var eventEmitter = require("events");
     var util = require("util");
@@ -38,25 +36,25 @@
         var SerialPort = require("serialport");
         this.port = new SerialPort(portName, { baudRate: baudRate, autoOpen: false });
         this.port.on("open", function () {
-            debug("Port connected");
+            log.debug("Port connected");
         });
         this.port.on("error", function (err) {
-            debugErr(err);
+            log.error(err);
         });
         this.port.on("close", function () {
-            debug("Port closed. ");
+            log.debug("Port closed. ");
         });
         this.port.on("disconnect", function (err) {
-            debug("Port disconnected. " + err);
+            log.debug("Port disconnected. " + err);
         });
         this.port.pipe(split()).on("data", this._readPortData.bind(this));
-        debug("Connecting to " + portName + " at " + baudRate + " ...");
+        log.debug("Connecting to " + portName + " at " + baudRate + " ...");
         this.port.open();
     };
     Gateway.prototype._readPortData = function (data) {
         var mess = data.split(";");
         if (mess.length < 5) {
-            debugErr("Can`t parse message: " + data);
+            log.error("Can`t parse message: " + data);
             return;
         }
         var message = {
@@ -70,9 +68,9 @@
         //log message
         if (message.messageType == mys.messageType.C_INTERNAL
             && message.subType == mys.internalDataType.I_LOG_MESSAGE)
-            debugLog("<   " + data);
+            log.debugLog("<   " + data);
         else
-            debugMes("<   " + data);
+            log.debugMes("<   " + data);
         if (message.nodeId == GATEWAY_ID)
             this._receiveGatewayMessage(message);
         else
@@ -84,12 +82,12 @@
                 switch (message.subType) {
                     case mys.internalDataType.I_GATEWAY_READY:
                         this.isConnected = true;
-                        debug("Gateway connected.");
+                        log.debug("Gateway connected.");
                         this.sendGetGatewayVersion();
                         break;
                     case mys.internalDataType.I_VERSION:
                         this.version = message.payload;
-                        debug("Gateway version: " + message.payload);
+                        log.debug("Gateway version: " + message.payload);
                         break;
                 }
         }
@@ -133,7 +131,7 @@
                     || node.version !== version) {
                     node.isRepeatingNode = isRepeatingNode;
                     node.version = version;
-                    debug(`Node[${node.id}] version: [${version}]`);
+                    log.debug(`Node[${node.id}] version: [${version}]`);
                 }
             }
         }
@@ -142,7 +140,7 @@
             if (sensor.type !== message.subType) {
                 sensor.type = message.subType;
                 sensor.dataType = mys.getDefaultDataType(message.subType);
-                debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
+                log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
                 console.log(sensor.dataType);
                 var node = this.getNode(message.nodeId);
                 this.emit("sensorUpdated", sensor, "type");
@@ -156,10 +154,10 @@
         sensor.lastSeen = Date.now();
         if (sensor.dataType !== message.subType) {
             sensor.dataType = message.subType;
-            debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] dataType updated: [${mys.sensorDataTypeKey[message.subType]}]`);
+            log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] dataType updated: [${mys.sensorDataTypeKey[message.subType]}]`);
             this.emit("sensorUpdated", sensor, "type");
         }
-        debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] updated: [${message.payload}]`);
+        log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] updated: [${message.payload}]`);
         this.emit("sensorUpdated", sensor, "state");
     };
     Gateway.prototype._proceedReq = function (message) {
@@ -193,7 +191,7 @@
                 var node = this.getNode(message.nodeId);
                 if (node.sketchName !== message.payload) {
                     node.sketchName = message.payload;
-                    debug(`Node[${message.nodeId}] sketch name: [${message.payload}]`);
+                    log.debug(`Node[${message.nodeId}] sketch name: [${message.payload}]`);
                     this.emit("nodeUpdated", node, "sketchName");
                 }
                 break;
@@ -201,14 +199,14 @@
                 var node = this.getNode(message.nodeId);
                 if (node.sketchVersion !== message.payload) {
                     node.sketchVersion = message.payload;
-                    debug(`Node[${message.nodeId}] sketch version: [${message.payload}]`);
+                    log.debug(`Node[${message.nodeId}] sketch version: [${message.payload}]`);
                     this.emit("nodeUpdated", node, "sketchVersion");
                 }
                 break;
             case (mys.internalDataType.I_BATTERY_LEVEL):
                 var node = this.getNode(message.nodeId);
                 node.batteryLevel = +message.payload;
-                debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
+                log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
                 this.emit("nodeUpdated", node, "batteryLevel");
                 break;
             case (mys.internalDataType.I_CONFIG):
@@ -241,7 +239,7 @@
             message.payload
         ];
         var mess = _.join(arr, ";");
-        debugMes("  > " + mess);
+        log.debugMes("  > " + mess);
         this.port.write(mess + "\n");
     };
     Gateway.prototype.getNodeIfExist = function (nodeId) {
@@ -276,7 +274,7 @@
                 lastSeen: Date.now()
             };
             this.nodes.push(node);
-            debug(`Node[${nodeId}] registered.`);
+            log.debug(`Node[${nodeId}] registered.`);
             this.emit("newNode", node);
         }
         return node;
@@ -291,7 +289,7 @@
                 lastSeen: Date.now()
             };
             node.sensors.push(sensor);
-            debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
+            log.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
             this.emit("newSensor", sensor);
         }
         return sensor;
@@ -302,7 +300,7 @@
             if (!node)
                 return i;
         }
-        debugErr('Can`t register new node. There are no available id.');
+        log.error('Can`t register new node. There are no available id.');
     };
     var mys_gateway = new Gateway;
     exports.mys_gateway = mys_gateway;

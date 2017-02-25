@@ -2,12 +2,6 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 
-// namespace MyNodes {
-
-// let debug = require('debug')('nodes:            ');
-// let debugLog = require('debug')('nodes:log         ');
-// let debugMes = require('debug')('modes:mes         ');
-// let debugErr = require('debug')('nodes:error       ');
 
 import {Nodes} from "../nodes";
 import {Node} from "../node";
@@ -35,6 +29,7 @@ class MathPlusNode extends Node {
     }
 }
 Nodes.registerNodeType("math/plus", MathPlusNode);
+
 
 
 

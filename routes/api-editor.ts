@@ -34,7 +34,7 @@ function updateActiveNodes() {
 
         let room = "editor-container-" + container.id;
         if (activeNodesIds.length > 0)
-            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds});
+            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds,cid:container.id});
 
     }
 }

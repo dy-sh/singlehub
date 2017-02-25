@@ -8,9 +8,8 @@ import {Container, Side} from "../../nodes/container"
 import {DashboardClientSocket} from "./dashboard-client-socket";
 
 
-import "../../nodes/nodes/main";
-import "../../nodes/nodes/debug";
-import "../../nodes/nodes/math";
+import "../../nodes/nodes/index";
+
 
 (<any>window).Nodes = Nodes;
 (<any>window).Container = Container;

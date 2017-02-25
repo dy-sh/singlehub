@@ -23,9 +23,8 @@
     </div>\
     </div>\
     </script>';
-    let labelTemplate = Handlebars.compile(template);
     //Watch a value in the editor
-    class WatchNode extends node_1.Node {
+    class UiLabelNode extends node_1.Node {
         constructor() {
             super();
             this.dataUpdated = false;
@@ -41,6 +40,7 @@
             };
             this.onAdded = function () {
                 if (this.side == container_1.Side.dashboard) {
+                    let labelTemplate = Handlebars.compile(template);
                     $(labelTemplate(this))
                         .hide()
                         .appendTo("#uiContainer-" + this.container.id)
@@ -69,7 +69,7 @@
             }, this.UPDATE_INTERVAL);
         }
     }
-    exports.WatchNode = WatchNode;
-    nodes_1.Nodes.registerNodeType("ui/label", WatchNode);
+    exports.UiLabelNode = UiLabelNode;
+    nodes_1.Nodes.registerNodeType("ui/label", UiLabelNode);
 });
 //# sourceMappingURL=label.js.map

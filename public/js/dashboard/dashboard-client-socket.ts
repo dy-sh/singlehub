@@ -1,3 +1,5 @@
+import {Container} from "../../nodes/container";
+import {Nodes} from "../../nodes/nodes";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 24.02.2017.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -45,26 +47,72 @@ export class DashboardClientSocket {
             that.reconnecting = true;
         });
 
+
         socket.on('node-create', function (n) {
-
+            let container = Container.containers[n.cid];
+            let node = Nodes.createNode(n.type);
+            node.pos = n.pos;
+            node.properties = n.properties;
+            //node.configure(n);
+            container.create(node);
         });
-
-        socket.on('node-update', function (n) {
-        });
-
-
 
         socket.on('node-delete', function (n) {
+            let container = Container.containers[n.cid];
+            let node = container.getNodeById(n.id);
+            container.remove(node);
+
+            //if current container removed
+            // if (n.id == editor.renderer.container.id) {
+            //     (<any>window).location = "/editor/";
+            // }
         });
 
-
         socket.on('nodes-delete', function (data) {
+            let container = Container.containers[data.cid];
             for (let id of data.nodes) {
-                // let node = container.getNodeById(id);
-                // container.remove(node);
+                let node = container.getNodeById(id);
+                container.remove(node);
             }
         });
 
+        socket.on('node-settings', function (n) {
+            let container = Container.containers[n.cid];
+            let node = container.getNodeById(n.id);
+            node.settings = n.settings;
+            if (node.onSettingsChanged)
+                node.onSettingsChanged();
+            node.setDirtyCanvas(true, true);
+        });
+
+        socket.on('nodes-move-to-new-container', function (data) {
+            //todo remove nodes
+            // let container = Container.containers[data.cid];
+            // container.mooveNodesToNewContainer(data.ids, data.pos);
+        });
+
+        socket.on('node-message-to-editor-side', function (n) {
+            let container = Container.containers[n.cid];
+            let node = container.getNodeById(n.id);
+            if (node.onGetMessageToEditorSide)
+                node.onGetMessageToEditorSide(n.value);
+        });
+
+        socket.on('nodes-active', function (data) {
+            let container = Container.containers[data.cid];
+            for (let id of data.ids) {
+                let node = container.getNodeById(id);
+                if (!node)
+                    continue;
+
+                node.boxcolor = Nodes.options.NODE_ACTIVE_BOXCOLOR;
+                node.setDirtyCanvas(true, true);
+                setTimeout(function () {
+                    node.boxcolor = Nodes.options.NODE_DEFAULT_BOXCOLOR;
+                    node.setDirtyCanvas(true, true);
+                }, 100);
+            }
+        });
     }
 
 

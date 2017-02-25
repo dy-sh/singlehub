@@ -19,11 +19,12 @@ let template =
     </div>\
     </script>';
 
-let labelTemplate = Handlebars.compile(template);
+
+
 
 
 //Watch a value in the editor
-export class WatchNode extends Node {
+export class UiLabelNode extends Node {
     UPDATE_INTERVAL: number;
 
     lastData: any;
@@ -42,7 +43,7 @@ export class WatchNode extends Node {
 
         this.addInput("input");
 
-        if (this.side==Side.server)
+        if (this.side == Side.server)
             this.startSendingToDashboard();
     }
 
@@ -70,8 +71,9 @@ export class WatchNode extends Node {
         $('#labelValue-' + this.id).html(data.value);
     };
 
-    onAdded=function() {
-        if (this.side==Side.dashboard) {
+    onAdded = function () {
+        if (this.side == Side.dashboard) {
+            let labelTemplate = Handlebars.compile(template);
             $(labelTemplate(this))
                 .hide()
                 .appendTo("#uiContainer-" + this.container.id)
@@ -80,12 +82,12 @@ export class WatchNode extends Node {
     }
 
 
-    onRemoved=function() {
+    onRemoved = function () {
 
     }
 }
 
-Nodes.registerNodeType("ui/label", WatchNode);
+Nodes.registerNodeType("ui/label", UiLabelNode);
 
 
 

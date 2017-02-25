@@ -3,10 +3,11 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./editor"], factory);
     }
 })(function (require, exports) {
@@ -131,7 +132,7 @@
                 editor_1.editor.onContainerStop();
             });
             socket.on('nodes-active', function (data) {
-                let container = editor_1.editor.renderer.container;
+                let container = container_1.Container.containers[data.cid];
                 for (let id of data.ids) {
                     let node = container.getNodeById(id);
                     if (!node)

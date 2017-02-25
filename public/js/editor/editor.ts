@@ -12,6 +12,8 @@ import {EditorClientSocket, socket} from "./editor-client-socket";
 import {themes} from "./editor-themes"
 import Utils from "../../nodes/utils";
 
+import "../../nodes/nodes/index";
+
 
 export class Editor {
 
@@ -640,7 +642,7 @@ export class Editor {
     getNodes() {
         this.socket.getContainerState();
 
-        let that=this;
+        let that = this;
         this.socket.getNodes(function (nodes) {
             //open container from url
             let cont_id = (<any>window).container_id;
@@ -686,3 +688,18 @@ let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').h
 
 
 export let editor = new Editor();
+
+
+(<any>window).rootContainer = Container.containers[0];
+(<any>window).Nodes = Nodes;
+(<any>window).Container = Container;
+(<any>window).renderer = editor.renderer;
+(<any>window).editor = editor;
+// socket.container_id=editor.renderer.container.container_id;
+
+window.addEventListener("resize", function () {
+    editor.renderer.resize();
+});
+
+
+editor.getNodes();

@@ -2,19 +2,15 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../nodes", "../node"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    // namespace MyNodes {
-    // let debug = require('debug')('nodes:            ');
-    // let debugLog = require('debug')('nodes:log         ');
-    // let debugMes = require('debug')('modes:mes         ');
-    // let debugErr = require('debug')('nodes:error       ');
     const nodes_1 = require("../nodes");
     const node_1 = require("../node");
     //Math Plus

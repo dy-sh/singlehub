@@ -1,16 +1,17 @@
-/**
- * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
- * License: http://www.gnu.org/licenses/gpl-3.0.txt
- */
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", './public/nodes/container', 'path'], factory);
+        define(["require", "exports", "./public/nodes/nodes", './public/nodes/container', 'path'], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const nodes_1 = require("./public/nodes/nodes");
+    /**
+     * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
+     * License: http://www.gnu.org/licenses/gpl-3.0.txt
+     */
     //source map for node typescript debug
     require('source-map-support').install();
     console.log("----------------------------- MyNodes -----------------------------");
@@ -50,10 +51,9 @@
             this.server = require('./modules/web-server/server').server;
         }
         createNodes() {
-            require('./public/nodes/nodes');
-            require('./public/nodes/nodes/main');
-            require('./public/nodes/nodes/debug');
-            require('./public/nodes/nodes/math');
+            require('./public/nodes/nodes/index');
+            let types = nodes_1.Nodes.nodes_types ? Object.keys(nodes_1.Nodes.nodes_types).length : 0;
+            log.debug("Registered " + types + " nodes types");
         }
         createRootContainer() {
             this.rootContainer = new container_1.Container(container_1.Side.server);
@@ -98,8 +98,8 @@
                             cont = new container_1.Container(container_1.Side.server, n.cid);
                         cont.add_serialized_node(n, true);
                     }
-                    let contCount = Object.keys(container_1.Container.containers).length;
-                    log.debug("Created " + contCount + " containers, " + nodes.length + " nodes");
+                    let contCount = container_1.Container.containers ? Object.keys(container_1.Container.containers).length : 0;
+                    log.info("Imported " + contCount + " containers, " + nodes.length + " nodes from database");
                 });
             });
         }

@@ -3,11 +3,12 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-client-socket", "./editor-themes", "../../nodes/utils"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-client-socket", "./editor-themes", "../../nodes/utils", "../../nodes/nodes/index"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -17,6 +18,7 @@
     const editor_client_socket_1 = require("./editor-client-socket");
     const editor_themes_1 = require("./editor-themes");
     const utils_1 = require("../../nodes/utils");
+    require("../../nodes/nodes/index");
     class Editor {
         constructor() {
             //nodes: Nodes;
@@ -555,5 +557,15 @@
     let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
     let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
     exports.editor = new Editor();
+    window.rootContainer = container_1.Container.containers[0];
+    window.Nodes = nodes_1.Nodes;
+    window.Container = container_1.Container;
+    window.renderer = exports.editor.renderer;
+    window.editor = exports.editor;
+    // socket.container_id=editor.renderer.container.container_id;
+    window.addEventListener("resize", function () {
+        exports.editor.renderer.resize();
+    });
+    exports.editor.getNodes();
 });
 //# sourceMappingURL=editor.js.map
