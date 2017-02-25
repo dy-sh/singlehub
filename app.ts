@@ -9,7 +9,6 @@ require('source-map-support').install();
 console.log("----------------------------- MyNodes -----------------------------");
 
 
-
 let config = require('./config.json');
 import {Server} from './modules/web-server/server';
 import {Container, Side} from './public/nodes/container'
@@ -127,7 +126,7 @@ class App {
                     if (!cont)
                         cont = new Container(Side.server, n.cid);
 
-                    cont.add_serialized_node(n, true);
+                    cont.createNode(n.type, null, n);
 
 
                     // console.log(root.id);

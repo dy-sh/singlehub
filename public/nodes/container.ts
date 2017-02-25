@@ -3,7 +3,6 @@
  */
 
 
-
 import {Node, SerializedNode} from "./node";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
@@ -99,7 +98,6 @@ export class Container {
     }
 
 
-
     /**
      * Register a node class so it can be listed when the user wants to create a new one
      * @param type name of the node and path
@@ -118,9 +116,6 @@ export class Container {
 
         log.debug("Node registered: " + type);
     };
-
-
-
 
 
     /**
@@ -256,7 +251,7 @@ export class Container {
         renderer.container = null;
 
         this.renderers.splice(pos, 1);
-        if (this.renderers.length==0)
+        if (this.renderers.length == 0)
             delete this.renderers;
     }
 
@@ -437,16 +432,17 @@ export class Container {
 
     /**
      * Create node and add to container
-     * If id is not defined, container will create a new instance of node,
+     * Yue can define any additional node properties or/and serialized node info.
+     * If properties.id and serialized_node.id is not defined, container will create a new instance of node,
      * generate new id, call node.onCreated  and store it node in db,
-     * If id is defined, is will create node, add, call node.onAdded,
+     * If properties.id or serialized_node.id is defined, is will create node, add, call node.onAdded,
      * and will not store it in db.
-     * @param type
-     * @param id
-     * @param properties
+     * @param type type of node
+     * @param properties set any additional node properties (pos, size, etc...)
+     * @param serialized_node configure node from serialized info
      * @returns {Node}
      */
-    createNode(type: string, node_id?: number, properties?: any): Node {
+    createNode(type: string, properties?: any, serialized_node?: SerializedNode): Node {
         //check class exist
         let node_class = Container.nodes_types[type];
         if (!node_class) {
@@ -454,16 +450,24 @@ export class Container {
             return null;
         }
 
+        //get node id
+        let id;
+        let is_new = false;
+        if (properties && properties.id != null)
+            id = properties.id;
+        else if (serialized_node && serialized_node.id != null)
+            id = serialized_node.id;
+        else {
+            id = this.last_node_id++;
+            is_new = true;
+        }
+
         //check node id not exist
-        if (node_id != null && this._nodes[node_id]) {
-            log.error("Can't create node. Node id [" + node_id + " already exist.");
+        if (this._nodes[id]) {
+            log.error("Can't create node. Node id [" + id + " already exist.");
             return null;
         }
 
-
-        //get new id
-        let id = node_id;
-        if (id == null) id = this.last_node_id++;
 
         //create
         let node = new node_class(this, id);
@@ -481,15 +485,24 @@ export class Container {
         if (!node.title) node.title = node.type;
         if (!node.size) node.size = node.computeSize();
 
+        //deserialize
+        if (serialized_node)
+            node.configure(serialized_node);
+
         //set additional properties
         if (properties) {
             for (let i in properties)
                 node[i] = properties[i];
         }
 
+        //overwrite id
+        node.id = id;
+
+
         log.debug("New node created: " + node.getReadableId());
 
-        if (node_id != null) {
+
+        if (!is_new) {
             if (node.onAdded)
                 node.onAdded();
         }
@@ -642,7 +655,6 @@ export class Container {
     }
 
 
-
     connectionChange(node: Node): void {
         if (this.onConnectionChange)
             this.onConnectionChange(node);
@@ -705,6 +717,7 @@ export class Container {
 
         //copy all fields to this container
         for (let i in data) {
+            //skip nodes
             if (i == "serialized_nodes")
                 continue;
 
@@ -715,7 +728,7 @@ export class Container {
 
         if (data.serialized_nodes) {
             for (let n of data.serialized_nodes) {
-                let node = this.add_serialized_node(n);
+                let node = this.createNode(n.type, null, n);
                 if (!node) error = true;
             }
         }
@@ -726,20 +739,6 @@ export class Container {
 
         this.setDirtyCanvas(true, true);
         return error;
-    }
-
-
-    /**
-     * Deserealize node and add
-     * @param serialized_node
-     * @returns {Node} result node (for check success)
-     */
-    add_serialized_node(serialized_node: SerializedNode, from_db: boolean = false): Node {
-        let node = this.createNode(serialized_node.type, serialized_node.id);
-        node.configure(serialized_node, from_db);
-        this.setDirtyCanvas(true, true);
-        return node;
-
     }
 
 
@@ -775,15 +774,13 @@ export class Container {
             return;
 
         //create new container
-        let new_cont_node: ContainerNode = (<any>this).createNode("main/container");
-        new_cont_node.pos = pos;
+        let new_cont_node: ContainerNode = <any>this.createNode("main/container",{pos: pos});
 
         let new_cont = new_cont_node.sub_container;
         new_cont.last_node_id = this.last_node_id;
-
-
         if (this.db)
             this.db.updateNode(new_cont_node.id, this.id, {"sub_container.last_node_id": new_cont_node.sub_container.last_node_id})
+
 
         // move nodes
         for (let id of ids) {
@@ -884,7 +881,6 @@ export class Container {
                                             output_node.pos[1] += 15;
                                     }
                                 }
-
 
 
                                 //connect new cont output to old target

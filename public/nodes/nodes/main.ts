@@ -114,7 +114,6 @@ export class ContainerNode extends Node {
     configure(data, from_db = false) {
         super.configure(data);
 
-
         this.sub_container = Container.containers[data.sub_container.id];
         if (!this.sub_container)
             this.sub_container = new Container(this.side, data.sub_container.id);
@@ -122,9 +121,7 @@ export class ContainerNode extends Node {
         this.sub_container.container_node = this;
         this.sub_container.parent_container_id = this.container.id;
 
-
-        if (data.sub_container)
-            this.sub_container.configure(data.sub_container, true);
+        this.sub_container.configure(data.sub_container, true);
     }
 
     serialize(for_db = false) {
@@ -179,9 +176,6 @@ export class ContainerInputNode extends Node {
         this.properties = {type: null};
     }
 
-    onAdded = function () {
-
-    }
 
     onCreated = function () {
 
@@ -241,10 +235,6 @@ export class ContainerOutputNode extends Node {
         this.properties = {type: null};
     }
 
-    onAdded = function () {
-
-
-    }
 
     onCreated = function () {
 

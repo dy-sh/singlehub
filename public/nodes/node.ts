@@ -100,7 +100,7 @@ export class Node {
     pos: [number, number] = [100, 100];
     size: [number, number];
     container: Container;
-    id: number = -1;
+    id?: number;
     type: string;
     category: string;
     side: Side;
@@ -142,21 +142,24 @@ export class Node {
     isRecentlyActive: boolean;
 
 //events
+
     /**
-     * Invoked every time when node added to container
+     * Invoked when new node created and added to container
+     */
+    onCreated: Function;
+
+    /**
+     * Invoked every time when node added to container again (restored from the database)
      */
     onAdded: Function;
 
     /**
-     * Invoked one time when node removed from container
+     * Invoked when node removed from container
      */
     onRemoved: Function;
 
 
-    /**
-     * Invoked one time when node created and added to container (after onAdded)
-     */
-    onCreated: Function;
+
 
     onDrawBackground: Function;
     onDrawForeground: Function;

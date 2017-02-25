@@ -94,7 +94,7 @@
                         let cont = container_1.Container.containers[n.cid];
                         if (!cont)
                             cont = new container_1.Container(container_1.Side.server, n.cid);
-                        cont.add_serialized_node(n, true);
+                        cont.createNode(n.type, null, n);
                     }
                     let contCount = container_1.Container.containers ? Object.keys(container_1.Container.containers).length : 0;
                     log.info("Imported " + contCount + " containers, " + nodes.length + " nodes from database");

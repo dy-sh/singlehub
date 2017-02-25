@@ -63,7 +63,7 @@
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
             return res.status(404).send(`Can't create node. Container id [${req.params.cid}] not found.`);
-        let node = container.createNode(req.body.type, null, { pos: req.body.position });
+        let node = container.createNode(req.body.type, { pos: req.body.position });
         if (!node)
             return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
         app_1.app.server.socket.io.emit('node-create', {

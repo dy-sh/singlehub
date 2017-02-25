@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
@@ -112,8 +111,7 @@
                 this.sub_container = new container_1.Container(this.side, data.sub_container.id);
             this.sub_container.container_node = this;
             this.sub_container.parent_container_id = this.container.id;
-            if (data.sub_container)
-                this.sub_container.configure(data.sub_container, true);
+            this.sub_container.configure(data.sub_container, true);
         }
         serialize(for_db = false) {
             let data = super.serialize(for_db);
@@ -136,8 +134,6 @@
     class ContainerInputNode extends node_1.Node {
         constructor(container) {
             super(container);
-            this.onAdded = function () {
-            };
             this.onCreated = function () {
                 //add output on container node
                 let cont_node = this.container.container_node;
@@ -183,8 +179,6 @@
     class ContainerOutputNode extends node_1.Node {
         constructor(container) {
             super(container);
-            this.onAdded = function () {
-            };
             this.onCreated = function () {
                 //add output on container node
                 let cont_node = this.container.container_node;
