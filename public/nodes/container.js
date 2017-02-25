@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./nodes", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -19,12 +18,12 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
-    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(Side = exports.Side || (exports.Side = {}));
+    })(exports.Side || (exports.Side = {}));
+    var Side = exports.Side;
     class Container {
         constructor(side, id) {
             this._nodes = {};
@@ -434,7 +433,7 @@
          * Creates a Object containing all the info about this container, it can be serialized
          * @returns value of the node
          */
-        serialize(include_nodes = true) {
+        serialize(include_nodes = true, only_dashboard_nodes = false) {
             let data = {
                 id: this.id,
                 last_node_id: this.last_node_id,
@@ -444,6 +443,8 @@
                 let ser_nodes = [];
                 for (let id in this._nodes) {
                     let node = this._nodes[id];
+                    if (only_dashboard_nodes && !node.createOnDashboard)
+                        continue;
                     ser_nodes.push(node.serialize());
                 }
                 data.serialized_nodes = ser_nodes;

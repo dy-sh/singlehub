@@ -14,7 +14,8 @@ import "../../nodes/nodes/index";
 (<any>window).Nodes = Nodes;
 (<any>window).Container = Container;
 
-let id = 0;
+//todo get id
+let container_id = 0;
 
 export class Dashboard {
 
@@ -22,17 +23,17 @@ export class Dashboard {
     socket: DashboardClientSocket;
 
     constructor() {
-        (<any>window).dashboard = this;
-
 
         //create container
-        this.container = new Container(Side.dashboard, id);
+        this.container = new Container(Side.dashboard, container_id);
 
         //create socket
-        this.socket = new DashboardClientSocket();
+        this.socket = new DashboardClientSocket(container_id);
         this.container.socket = this.socket.socket;
 
-        console.log("ok")
+        //globals for easy debug in dev-console
+        (<any>window).dashboard = this;
+        (<any>window).container = this.container;
     }
 
 

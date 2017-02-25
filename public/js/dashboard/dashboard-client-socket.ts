@@ -1,5 +1,6 @@
 import {Container} from "../../nodes/container";
 import {Nodes} from "../../nodes/nodes";
+import {dashboard} from "./dashboard";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 24.02.2017.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -14,19 +15,20 @@ export class DashboardClientSocket {
 
     socket: SocketIOClient.Socket;
 
+    container_id:number;
     reconnecting: boolean;
 
-    constructor() {
-
+    constructor(container_id: number) {
         let socket = io();
         this.socket = socket;
 
+        this.container_id=container_id;
 
         let that = this;
 
         socket.on('connect', function () {
             log.debug("Connected to socket");
-            that.sendJoinContainerRoom(0);
+            that.sendJoinContainerRoom(that.container_id);
 
             if (this.reconnecting) {
                 noty({text: 'Connection is restored.', type: 'alert'});
@@ -125,21 +127,26 @@ export class DashboardClientSocket {
     }
 
 
-    getNodes() {
+    getNodes(callback?: Function): void {
+        let that=this;
         $.ajax({
-            url: "api/dashboard/p/",
-            type: "GET",
+            url: "/api/dashboard/c/" +that.container_id,
             success: function (nodes) {
-                $("#panelsContainer").empty();
+                let cont = Container.containers[that.container_id];
+                cont.configure(nodes, false);
+                if (callback)
+                    callback(nodes);
+            }
+        });
+    }
 
-                if (!nodes || nodes.length == 0) {
-                    $('#empty-message').show();
-                    return;
-                }
-
-                for (let i = 0; i < nodes.length; i++) {
-                    // createNode(nodes[i]);
-                }
+    getContainerState(): void {
+        let that=this;
+        $.ajax({
+            url: "/api/editor/state",
+            success: function (state) {
+                // if (state.isRunning)
+                // else
             }
         });
     }

@@ -3,16 +3,15 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "../public/nodes/container", "../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', "../public/nodes/container", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
+    const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const app_1 = require("../app");
@@ -38,18 +37,13 @@
     /**
      * Get container
      */
-    router.get('/c/:id', function (req, res) {
+    router.get('/c/:cid', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
-            return res.status(404).send(`Can't get nodes. Container id [${req.params.cid}] not found.`);
-        let nodes = container.getNodesByCategory("ui");
-        if (!nodes)
-            return res.json();
-        let s_nodes = [];
-        for (let n of nodes) {
-            s_nodes.push(n.serialize());
-        }
-        res.json(s_nodes);
+            return res.status(404).send(`Can't get container. Container id [${req.params.cid}] not found.`);
+        let s = container.serialize(true, true);
+        res.json(s);
     });
+    module.exports = router;
 });
 //# sourceMappingURL=api-dashboard.js.map

@@ -255,10 +255,11 @@ export class EditorClientSocket {
 
 
     getNodes(callback?: Function): void {
+        let root_id = 0;
         $.ajax({
-            url: "/api/editor/c/" + editor.renderer.container.id,
+            url: "/api/editor/c/" + root_id,
             success: function (nodes) {
-                let rootContainer = Container.containers[0];
+                let rootContainer = Container.containers[root_id];
                 rootContainer.configure(nodes, false);
                 if (callback)
                     callback(nodes);

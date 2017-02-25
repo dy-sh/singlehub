@@ -78,6 +78,7 @@ export class Server {
         this.express.use('/', require('./../../routes/first-run'));
         this.express.use('/', require('./../../routes/index'));
         this.express.use('/dashboard', require('./../../routes/dashboard'));
+        this.express.use('/api/dashboard', require('./../../routes/api-dashboard'));
         this.express.use('/editor', require('./../../routes/editor'));
         this.express.use('/api/editor', require('./../../routes/api-editor'));
         this.express.use('/mysensors', require('./../../routes/mysensors'));

@@ -1,9 +1,8 @@
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/container", "../../nodes/nodes"], factory);
     }
 })(function (require, exports) {
@@ -12,13 +11,14 @@
     const nodes_1 = require("../../nodes/nodes");
     let log = Logger.create('client', { color: 3 });
     class DashboardClientSocket {
-        constructor() {
+        constructor(container_id) {
             let socket = io();
             this.socket = socket;
+            this.container_id = container_id;
             let that = this;
             socket.on('connect', function () {
                 log.debug("Connected to socket");
-                that.sendJoinContainerRoom(0);
+                that.sendJoinContainerRoom(that.container_id);
                 if (this.reconnecting) {
                     noty({ text: 'Connection is restored.', type: 'alert' });
                     //waiting while server initialized and read db
@@ -99,18 +99,25 @@
             log.debug("Join to room [" + room + "]");
             this.socket.emit('room', room);
         }
-        getNodes() {
+        getNodes(callback) {
+            let that = this;
             $.ajax({
-                url: "api/dashboard/p/",
-                type: "GET",
+                url: "/api/dashboard/c/" + that.container_id,
                 success: function (nodes) {
-                    $("#panelsContainer").empty();
-                    if (!nodes || nodes.length == 0) {
-                        $('#empty-message').show();
-                        return;
-                    }
-                    for (let i = 0; i < nodes.length; i++) {
-                    }
+                    let cont = container_1.Container.containers[that.container_id];
+                    cont.configure(nodes, false);
+                    if (callback)
+                        callback(nodes);
+                }
+            });
+        }
+        getContainerState() {
+            let that = this;
+            $.ajax({
+                url: "/api/editor/state",
+                success: function (state) {
+                    // if (state.isRunning)
+                    // else
                 }
             });
         }

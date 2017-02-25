@@ -595,7 +595,7 @@ export class Container {
      * Creates a Object containing all the info about this container, it can be serialized
      * @returns value of the node
      */
-    serialize(include_nodes = true): SerializedContainer {
+    serialize(include_nodes = true, only_dashboard_nodes = false): SerializedContainer {
 
         let data: SerializedContainer = {
             id: this.id,
@@ -608,6 +608,9 @@ export class Container {
 
             for (let id in this._nodes) {
                 let node = this._nodes[id];
+
+                if (only_dashboard_nodes && !node.createOnDashboard)
+                    continue;
 
                 ser_nodes.push(node.serialize())
             }

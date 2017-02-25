@@ -49,8 +49,11 @@ router.get('/info', function (req, res) {
 /**
  * Get container
  */
-router.get('/c/:id', function (req, res) {
-    let s = app.rootContainer.serialize();
+router.get('/c/:cid', function (req, res) {
+    let container = Container.containers[req.params.cid];
+    if (!container) return res.status(404).send(`Can't get container. Container id [${req.params.cid}] not found.`);
+
+    let s = container.serialize();
     res.json(s);
 });
 

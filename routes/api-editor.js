@@ -3,16 +3,15 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "../public/nodes/container", "../public/nodes/nodes", "../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', "../public/nodes/container", "../public/nodes/nodes", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
+    const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const nodes_1 = require("../public/nodes/nodes");
@@ -43,8 +42,11 @@
     /**
      * Get container
      */
-    router.get('/c/:id', function (req, res) {
-        let s = app_1.app.rootContainer.serialize();
+    router.get('/c/:cid', function (req, res) {
+        let container = container_1.Container.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`Can't get container. Container id [${req.params.cid}] not found.`);
+        let s = container.serialize();
         res.json(s);
     });
     router.get('/c/serialize', function (req, res) {

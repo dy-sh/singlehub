@@ -34,7 +34,7 @@ function updateActiveNodes() {
 
         let room = "dashboard-container-" + container.id;
         if (activeNodesIds.length > 0)
-            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds, cid:container.id});
+            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
 
     }
 }
@@ -43,19 +43,13 @@ function updateActiveNodes() {
 /**
  * Get container
  */
-router.get('/c/:id', function (req, res) {
+router.get('/c/:cid', function (req, res) {
     let container = Container.containers[req.params.cid];
-    if (!container) return res.status(404).send(`Can't get nodes. Container id [${req.params.cid}] not found.`);
+    if (!container) return res.status(404).send(`Can't get container. Container id [${req.params.cid}] not found.`);
 
-    let nodes = container.getNodesByCategory("ui");
-
-    if (!nodes)
-        return res.json();
-
-    let s_nodes = [];
-    for (let n of nodes) {
-        s_nodes.push(n.serialize())
-    }
-
-    res.json(s_nodes);
+    let s = container.serialize(true, true);
+    res.json(s);
 });
+
+
+module.exports = router;
