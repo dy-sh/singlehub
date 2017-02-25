@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../nodes", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
@@ -73,8 +72,8 @@
     nodes_1.Nodes.registerNodeType("main/constant", ConstantNode);
     //Container: a node that contains a container of other nodes
     class ContainerNode extends node_1.Node {
-        constructor() {
-            super();
+        constructor(container) {
+            super(container);
             this.onAdded = function () {
                 this.sub_container.container_node = this;
                 this.sub_container.parent_container_id = this.container.id;
@@ -123,7 +122,7 @@
             return data;
         }
         clone() {
-            let node = nodes_1.Nodes.createNode(this.type);
+            let node = this.container.createNode(this.type);
             let data = this.serialize();
             delete data["id"];
             delete data["inputs"];
@@ -136,8 +135,8 @@
     nodes_1.Nodes.registerNodeType("main/container", ContainerNode);
     //Input for a container
     class ContainerInputNode extends node_1.Node {
-        constructor() {
-            super();
+        constructor(container) {
+            super(container);
             this.onAdded = function () {
             };
             this.onAfterCreated = function () {
@@ -183,8 +182,8 @@
     nodes_1.Nodes.registerNodeType("main/input", ContainerInputNode);
     //Output for a container
     class ContainerOutputNode extends node_1.Node {
-        constructor() {
-            super();
+        constructor(container) {
+            super(container);
             this.onAdded = function () {
             };
             this.onAfterCreated = function () {

@@ -1,4 +1,3 @@
-import {Nodes} from "./public/nodes/nodes";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -8,6 +7,8 @@ import {Nodes} from "./public/nodes/nodes";
 require('source-map-support').install();
 
 console.log("----------------------------- MyNodes -----------------------------");
+
+import {Nodes} from "./public/nodes/nodes";
 
 let config = require('./config.json');
 import {Server} from './modules/web-server/server';
@@ -37,7 +38,7 @@ class App {
 
     start() {
         if (!this.rootContainer) {
-            this.createNodes();
+            this.registerNodes();
             this.createRootContainer();
         }
 
@@ -65,7 +66,7 @@ class App {
         this.server = require('./modules/web-server/server').server;
     }
 
-    createNodes() {
+    registerNodes() {
         require('./public/nodes/nodes/index');
         let types = Nodes.nodes_types ? Object.keys(Nodes.nodes_types).length : 0;
         log.debug("Registered " + types + " nodes types");
@@ -121,9 +122,6 @@ class App {
                     return;
 
                 for (let n of nodes) {
-                    let conts = Container.containers;
-                    let root = Container.containers[0];
-
 
                     let cont = Container.containers[n.cid];
                     if (!cont)

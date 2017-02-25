@@ -81,7 +81,7 @@ router.post('/c/:cid/n/', function (req, res) {
     let container = Container.containers[req.params.cid];
     if (!container) return res.status(404).send(`Can't create node. Container id [${req.params.cid}] not found.`);
 
-    let node = Nodes.createNode(req.body.type);
+    let node = container.createNode(req.body.type);
     if (!node) return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
 
 

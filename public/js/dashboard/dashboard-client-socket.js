@@ -38,7 +38,7 @@
             });
             socket.on('node-create', function (n) {
                 let container = container_1.Container.containers[n.cid];
-                let node = nodes_1.Nodes.createNode(n.type);
+                let node = container.createNode(n.type);
                 node.pos = n.pos;
                 node.properties = n.properties;
                 //node.configure(n);
@@ -73,11 +73,11 @@
                 // let container = Container.containers[data.cid];
                 // container.mooveNodesToNewContainer(data.ids, data.pos);
             });
-            socket.on('node-message-to-editor-side', function (n) {
+            socket.on('node-message-to-dashboard-side', function (n) {
                 let container = container_1.Container.containers[n.cid];
                 let node = container.getNodeById(n.id);
-                if (node.onGetMessageToEditorSide)
-                    node.onGetMessageToEditorSide(n.value);
+                if (node.onGetMessageToDashboardSide)
+                    node.onGetMessageToDashboardSide(n.value);
             });
             socket.on('nodes-active', function (data) {
                 let container = container_1.Container.containers[data.cid];

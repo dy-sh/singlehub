@@ -75,6 +75,8 @@ export class EditorServerSocket {
 
             //redirect message
             socket.on('node-message-to-dashboard-side', function (n) {
+                console.log(n)
+
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to dashboard-side. Container id [" + n.cid + "] does not exist");

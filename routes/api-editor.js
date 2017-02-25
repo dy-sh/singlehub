@@ -7,14 +7,13 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container", "../public/nodes/nodes", "../app"], factory);
+        define(["require", "exports", 'express', "../public/nodes/container", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
-    const nodes_1 = require("../public/nodes/nodes");
     const app_1 = require("../app");
     setInterval(updateActiveNodes, 300);
     function updateActiveNodes() {
@@ -63,7 +62,7 @@
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
             return res.status(404).send(`Can't create node. Container id [${req.params.cid}] not found.`);
-        let node = nodes_1.Nodes.createNode(req.body.type);
+        let node = container.createNode(req.body.type);
         if (!node)
             return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
         node.pos = req.body.position;

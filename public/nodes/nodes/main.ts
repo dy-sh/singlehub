@@ -81,8 +81,8 @@ Nodes.registerNodeType("main/constant", ConstantNode);
 export class ContainerNode extends Node {
     sub_container: Container;
 
-    constructor() {
-        super();
+    constructor(container) {
+        super(container);
 
         this.title = "Container";
         this.descriprion = "Contain other nodes";
@@ -153,7 +153,7 @@ export class ContainerNode extends Node {
 
     clone() {
 
-        let node = Nodes.createNode(this.type);
+        let node = this.container.createNode(this.type);
         let data = this.serialize();
         delete data["id"];
         delete data["inputs"];
@@ -169,8 +169,8 @@ Nodes.registerNodeType("main/container", ContainerNode);
 
 //Input for a container
 export class ContainerInputNode extends Node {
-    constructor() {
-        super();
+    constructor(container) {
+        super(container);
 
         this.title = "Input";
         this.descriprion = "Input of the container";
@@ -232,8 +232,8 @@ Nodes.registerNodeType("main/input", ContainerInputNode);
 
 //Output for a container
 export class ContainerOutputNode extends Node {
-    constructor() {
-        super();
+    constructor(container) {
+        super(container);
         this.title = "Ouput";
         this.descriprion = "Output of the container";
 

@@ -67,7 +67,7 @@ export class EditorClientSocket {
 
         socket.on('node-create', function (n) {
             let container = Container.containers[n.cid];
-            let node = Nodes.createNode(n.type);
+            let node = container.createNode(n.type);
             node.pos = n.pos;
             node.properties = n.properties;
             //node.configure(n);

@@ -11,25 +11,25 @@ let rootContainer = app.rootContainer;
 module.exports.test = function () {
 
 
-    let node_const_A = Nodes.createNode("main/constant");
+    let node_const_A = rootContainer.createNode("main/constant");
     node_const_A.pos = [10, 10];
     rootContainer.add(node_const_A);
     node_const_A.settings["value"].value = 5.4;
 
-    let node_const_B = Nodes.createNode("main/constant");
+    let node_const_B = rootContainer.createNode("main/constant");
     node_const_B.pos = [10, 100];
     rootContainer.add(node_const_B);
     node_const_B.settings["value"].value = 5.4;
 
-    let node_math = Nodes.createNode("math/plus");
+    let node_math = rootContainer.createNode("math/plus");
     node_math.pos = [200, 50];
     rootContainer.add(node_math);
 
-    let node_watch = Nodes.createNode("debug/console");
+    let node_watch = rootContainer.createNode("debug/console");
     node_watch.pos = [400, 50];
     rootContainer.add(node_watch);
 
-    // let node_watch2 = nodes.createNode("basic/console");
+    // let node_watch2 = rootContainer.createNode("basic/console");
     // node_watch2.pos = [700, 300];
     // rootContainer.add(node_watch2);
 

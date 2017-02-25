@@ -77,9 +77,13 @@ export class Container {
 
 
     constructor(side: Side, id?: number) {
+
+        if (typeof side != "number") throw "Container side is not defined";
+
         this.list_of_renderers = null;
 
         this.id = id || ++Container.last_container_id;
+        this.side = side;
 
         Container.containers[this.id] = this;
         this.clear();
@@ -666,9 +670,11 @@ export class Container {
      * @returns {Node} result node (for check success)
      */
     add_serialized_node(serialized_node: SerializedNode, from_db: boolean = false): Node {
-        let node = Nodes.createNode(serialized_node.type, serialized_node.title);
+        let node = this.createNode(serialized_node.type, serialized_node.title);
         if (node) {
             node.id = serialized_node.id;
+            node.container = this;
+            node.side = this.side;
             node.configure(serialized_node, from_db);
             this.add(node);
             this.setDirtyCanvas(true, true);
@@ -676,6 +682,31 @@ export class Container {
         }
     }
 
+    createNode(type: string, title?: string, options?: any): Node {
+        let node_class = Nodes.nodes_types[type];
+        if (!node_class) {
+            log.error("Can`t create node. Node type \"" + type + "\" not registered.");
+            return null;
+        }
+
+        let node = new node_class(this);
+
+        node.type = type;
+        node.category = node_class.category;
+        if (!node.title) node.title = title;
+        if (!node.properties) node.properties = {};
+        if (!node.flags) node.flags = {};
+        if (!node.size) node.size = node.computeSize();
+        if (!node.pos) node.pos = Nodes.options.DEFAULT_POSITION.concat();
+
+        //extra options
+        if (options) {
+            for (let i in options)
+                node[i] = options[i];
+        }
+
+        return node;
+    };
 
     getParentsStack(): Array<number> {
         let stack = [];
@@ -709,7 +740,7 @@ export class Container {
             return;
 
         //create new container
-        let new_cont_node: ContainerNode = (<any>Nodes).createNode("main/container");
+        let new_cont_node: ContainerNode = (<any>this).createNode("main/container");
         new_cont_node.pos = pos;
         this.create(new_cont_node);
 
@@ -746,7 +777,7 @@ export class Container {
                         if (old_target) {
 
                             //create input node
-                            let input_node = Nodes.createNode("main/input");
+                            let input_node = new_cont.createNode("main/input");
                             input_node.pos = Utils.cloneObject(old_target.pos);
                             input_node.outputs[0].links = [{target_node_id: node.id, target_slot: +i}];
 
@@ -806,7 +837,7 @@ export class Container {
                             if (old_target) {
 
                                 //create output node
-                                let output_node = Nodes.createNode("main/output");
+                                let output_node = new_cont.createNode("main/output");
                                 output_node.pos = Utils.cloneObject(old_target.pos);
                                 output_node.inputs[0].link = {target_node_id: node.id, target_slot: +o};
 

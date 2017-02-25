@@ -2,15 +2,15 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./utils", "./nodes"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "./container", "./utils", "./nodes"], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const container_1 = require("./container");
     const utils_1 = require("./utils");
     const nodes_1 = require("./nodes");
     //console logger back and front
@@ -29,10 +29,14 @@
     }
     exports.Link = Link;
     class Node {
-        constructor() {
+        constructor(container) {
             this.pos = [10, 10];
             this.id = -1;
             this.settings = {};
+            if (container) {
+                this.container = container;
+                this.side = container.side;
+            }
         }
         /**
          * Configure a node from an object containing the serialized ser_node
@@ -125,7 +129,7 @@
          * @returns {Node}
          */
         clone() {
-            let node = nodes_1.Nodes.createNode(this.type);
+            let node = this.container.createNode(this.type);
             let data = this.serialize();
             delete data["id"];
             node.configure(data);
@@ -846,13 +850,38 @@
             return `[${this.type}][${this.container.id}/${this.id}]`;
         }
         sendMessageToServerSide(mess) {
-            this.container.socket.emit('node-message-to-server-side', { id: this.id, cid: this.container.id, value: mess });
+            if (this.side == container_1.Side.server)
+                log.warn("Node " + this.getReadableId() + " is trying to send message from server side to server side");
+            else
+                this.container.socket.emit('node-message-to-server-side', { id: this.id, cid: this.container.id, value: mess });
         }
         sendMessageToEditorSide(mess) {
-            this.container.socket.emit('node-message-to-editor-side', { id: this.id, cid: this.container.id, value: mess });
+            let m = { id: this.id, cid: this.container.id, value: mess };
+            if (this.side == container_1.Side.editor) {
+                log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
+            }
+            else if (this.side == container_1.Side.server) {
+                let socket = this.container.socket;
+                let room = "editor-container-" + this.container.id;
+                socket.sockets.in(room).emit('node-message-to-editor-side', m);
+            }
+            else {
+                this.container.socket.emit('node-message-to-editor-side', m);
+            }
         }
         sendMessageToDashboardSide(mess) {
-            this.container.socket.emit('node-message-to-dashboard-side', { id: this.id, cid: this.container.id, value: mess });
+            let m = { id: this.id, cid: this.container.id, value: mess };
+            if (this.side == container_1.Side.dashboard) {
+                log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
+            }
+            else if (this.side == container_1.Side.server) {
+                let socket = this.container.socket;
+                let room = "dashboard-container-" + this.container.id;
+                socket.sockets.in(room).emit('node-message-to-dashboard-side', m);
+            }
+            else {
+                this.container.socket.emit('node-message-to-dashboard-side', m);
+            }
         }
         updateInputsLabels() {
             if (this.inputs) {

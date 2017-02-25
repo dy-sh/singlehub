@@ -2536,12 +2536,6 @@ export class Renderer {
             pos[1] = Math.round(pos[1]);
 
             editor.socket.sendCreateNode(type, pos);
-
-            // let node = Nodes.createNode(v.value);
-            // if (node) {
-            //     node.pos = pos;
-            //     this.renderer.container.add(node);
-            // }
         }
 
         return false;

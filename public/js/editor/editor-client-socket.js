@@ -55,7 +55,7 @@
             // });
             socket.on('node-create', function (n) {
                 let container = container_1.Container.containers[n.cid];
-                let node = nodes_1.Nodes.createNode(n.type);
+                let node = container.createNode(n.type);
                 node.pos = n.pos;
                 node.properties = n.properties;
                 //node.configure(n);

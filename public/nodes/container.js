@@ -28,8 +28,11 @@
         constructor(side, id) {
             this._nodes = {};
             this.supported_types = ["number", "string", "boolean"];
+            if (typeof side != "number")
+                throw "Container side is not defined";
             this.list_of_renderers = null;
             this.id = id || ++Container.last_container_id;
+            this.side = side;
             Container.containers[this.id] = this;
             this.clear();
             log.debug("Container created [" + this.id + "]");
@@ -486,15 +489,44 @@
          * @returns {Node} result node (for check success)
          */
         add_serialized_node(serialized_node, from_db = false) {
-            let node = nodes_1.Nodes.createNode(serialized_node.type, serialized_node.title);
+            let node = this.createNode(serialized_node.type, serialized_node.title);
             if (node) {
                 node.id = serialized_node.id;
+                node.container = this;
+                node.side = this.side;
                 node.configure(serialized_node, from_db);
                 this.add(node);
                 this.setDirtyCanvas(true, true);
                 return node;
             }
         }
+        createNode(type, title, options) {
+            let node_class = nodes_1.Nodes.nodes_types[type];
+            if (!node_class) {
+                log.error("Can`t create node. Node type \"" + type + "\" not registered.");
+                return null;
+            }
+            let node = new node_class(this);
+            node.type = type;
+            node.category = node_class.category;
+            if (!node.title)
+                node.title = title;
+            if (!node.properties)
+                node.properties = {};
+            if (!node.flags)
+                node.flags = {};
+            if (!node.size)
+                node.size = node.computeSize();
+            if (!node.pos)
+                node.pos = nodes_1.Nodes.options.DEFAULT_POSITION.concat();
+            //extra options
+            if (options) {
+                for (let i in options)
+                    node[i] = options[i];
+            }
+            return node;
+        }
+        ;
         getParentsStack() {
             let stack = [];
             if (this.parent_container_id) {
@@ -520,7 +552,7 @@
             if (ids.length == 0)
                 return;
             //create new container
-            let new_cont_node = nodes_1.Nodes.createNode("main/container");
+            let new_cont_node = this.createNode("main/container");
             new_cont_node.pos = pos;
             this.create(new_cont_node);
             let new_cont = new_cont_node.sub_container;
@@ -548,7 +580,7 @@
                             let old_target = this._nodes[input.link.target_node_id];
                             if (old_target) {
                                 //create input node
-                                let input_node = nodes_1.Nodes.createNode("main/input");
+                                let input_node = new_cont.createNode("main/input");
                                 input_node.pos = utils_1.default.cloneObject(old_target.pos);
                                 input_node.outputs[0].links = [{ target_node_id: node.id, target_slot: +i }];
                                 //find input new pos (for prevent overlapping with the same input)
@@ -596,7 +628,7 @@
                                 let old_target = this._nodes[link.target_node_id];
                                 if (old_target) {
                                     //create output node
-                                    let output_node = nodes_1.Nodes.createNode("main/output");
+                                    let output_node = new_cont.createNode("main/output");
                                     output_node.pos = utils_1.default.cloneObject(old_target.pos);
                                     output_node.inputs[0].link = { target_node_id: node.id, target_slot: +o };
                                     //find input new pos (for prevent overlapping with the same input)

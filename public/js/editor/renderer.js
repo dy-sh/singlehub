@@ -1,10 +1,9 @@
 ///<reference path='../../../types/my_types.d.ts'/>
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/nodes", "./editor", "../../nodes/utils"], factory);
     }
 })(function (require, exports) {
@@ -1976,11 +1975,6 @@
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
                 editor_1.editor.socket.sendCreateNode(type, pos);
-                // let node = Nodes.createNode(v.value);
-                // if (node) {
-                //     node.pos = pos;
-                //     this.renderer.container.add(node);
-                // }
             }
             return false;
         }

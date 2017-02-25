@@ -3,34 +3,32 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../public/nodes/nodes", "../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../public/nodes/nodes");
     const app_1 = require("../app");
     let rootContainer = app_1.app.rootContainer;
     module.exports.test = function () {
-        let node_const_A = nodes_1.Nodes.createNode("main/constant");
+        let node_const_A = rootContainer.createNode("main/constant");
         node_const_A.pos = [10, 10];
         rootContainer.add(node_const_A);
         node_const_A.settings["value"].value = 5.4;
-        let node_const_B = nodes_1.Nodes.createNode("main/constant");
+        let node_const_B = rootContainer.createNode("main/constant");
         node_const_B.pos = [10, 100];
         rootContainer.add(node_const_B);
         node_const_B.settings["value"].value = 5.4;
-        let node_math = nodes_1.Nodes.createNode("math/plus");
+        let node_math = rootContainer.createNode("math/plus");
         node_math.pos = [200, 50];
         rootContainer.add(node_math);
-        let node_watch = nodes_1.Nodes.createNode("debug/console");
+        let node_watch = rootContainer.createNode("debug/console");
         node_watch.pos = [400, 50];
         rootContainer.add(node_watch);
-        // let node_watch2 = nodes.createNode("basic/console");
+        // let node_watch2 = rootContainer.createNode("basic/console");
         // node_watch2.pos = [700, 300];
         // rootContainer.add(node_watch2);
         node_const_A.connect(0, node_math.id, 0);
