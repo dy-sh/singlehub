@@ -1,14 +1,18 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 24.02.2017.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
+ */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/container", "../../nodes/nodes"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../../nodes/container"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const container_1 = require("../../nodes/container");
-    const nodes_1 = require("../../nodes/nodes");
     let log = Logger.create('client', { color: 3 });
     class DashboardClientSocket {
         constructor(container_id) {
@@ -82,12 +86,6 @@
                     let node = container.getNodeById(id);
                     if (!node)
                         continue;
-                    node.boxcolor = nodes_1.Nodes.options.NODE_ACTIVE_BOXCOLOR;
-                    node.setDirtyCanvas(true, true);
-                    setTimeout(function () {
-                        node.boxcolor = nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR;
-                        node.setDirtyCanvas(true, true);
-                    }, 100);
                 }
             });
         }

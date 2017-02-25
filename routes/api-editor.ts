@@ -7,7 +7,6 @@ import * as express from 'express';
 let router = express.Router();
 
 import {Container} from "../public/nodes/container"
-import {Nodes} from "../public/nodes/nodes";
 import {Link, LinkInfo} from "../public/nodes/node";
 import {app} from "../app";
 

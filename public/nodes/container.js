@@ -2,15 +2,16 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./nodes", "./utils"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./node", "./utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("./nodes");
+    const node_1 = require("./node");
     const utils_1 = require("./utils");
     //console logger back and front
     let log;
@@ -18,12 +19,12 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
+    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(exports.Side || (exports.Side = {}));
-    var Side = exports.Side;
+    })(Side = exports.Side || (exports.Side = {}));
     class Container {
         constructor(side, id) {
             this._nodes = {};
@@ -44,6 +45,62 @@
                     this.db = rootContainer.db;
             }
         }
+        /**
+         * Register a node class so it can be listed when the user wants to create a new one
+         * @param type name of the node and path
+         * @param node_class class containing the structure of a node
+         */
+        static registerNodeType(type, node_class) {
+            if (!(node_class.prototype instanceof node_1.Node))
+                throw (`Can't register node of type [${type}]. Class must inherit Node base class!`);
+            node_class.type = type;
+            node_class.category = type.substr(0, type.lastIndexOf("/"));
+            node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
+            this.nodes_types[type] = node_class;
+            log.debug("Node registered: " + type);
+        }
+        ;
+        /**
+         * Returns a registered node type with a given name
+         * @param type full name of the node class. p.e. "math/sin"
+         * @returns {Node} the node class
+         */
+        static getNodeType(type) {
+            return this.nodes_types[type];
+        }
+        ;
+        /**
+         * Returns a list of node types matching one category
+         * @param category category name
+         * @returns {Array} array with all the node classes
+         */
+        static getNodeTypesInCategory(category) {
+            let r = [];
+            for (let i in this.nodes_types)
+                if (category == "") {
+                    if (this.nodes_types[i].category == null)
+                        r.push(this.nodes_types[i]);
+                }
+                else if (this.nodes_types[i].category == category)
+                    r.push(this.nodes_types[i]);
+            return r;
+        }
+        ;
+        /**
+         * Returns a list with all the node type categories
+         * @returns {Array} array with all the names of the categories
+         */
+        static getNodeTypesCategories() {
+            let categories = { "": 1 };
+            for (let i in this.nodes_types)
+                if (this.nodes_types[i].category)
+                    categories[this.nodes_types[i].category] = 1;
+            let result = [];
+            for (let i in categories)
+                result.push(i);
+            return result;
+        }
+        ;
         //used to know which types of connections support this container (some containers do not allow certain types)
         getSupportedTypes() {
             return this.supported_types;
@@ -264,7 +321,7 @@
          */
         createNode(type, node_id, properties) {
             //check class exist
-            let node_class = nodes_1.Nodes.nodes_types[type];
+            let node_class = Container.nodes_types[type];
             if (!node_class) {
                 log.error("Can't create node. Node class of type [" + type + "] not registered.");
                 return null;
@@ -419,30 +476,6 @@
                     r.push(node);
             }
             return r;
-        }
-        /**
-         * Returns the top-most node in this position of the renderer
-         * @param x the x coordinate in renderer space
-         * @param y the y coordinate in renderer space
-         * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the container
-         * @returns a list with all the nodes that intersect this coordinate
-         */
-        getNodeOnPos(x, y, nodes_list) {
-            if (nodes_list) {
-                for (let i = nodes_list.length - 1; i >= 0; i--) {
-                    let n = nodes_list[i];
-                    if (n.isPointInsideNode(x, y, 2))
-                        return n;
-                }
-            }
-            else {
-                for (let id in this._nodes) {
-                    let node = this._nodes[id];
-                    if (node.isPointInsideNode(x, y, 2))
-                        return node;
-                }
-            }
-            return null;
         }
         connectionChange(node) {
             if (this.onConnectionChange)
@@ -666,6 +699,7 @@
             }
         }
     }
+    Container.nodes_types = {};
     Container.containers = {};
     Container.last_container_id = -1;
     exports.Container = Container;

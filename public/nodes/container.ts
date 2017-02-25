@@ -3,7 +3,7 @@
  */
 
 
-import {Nodes} from "./nodes";
+
 import {Node, SerializedNode} from "./node";
 import {Renderer} from "../js/editor/renderer";
 import Timer = NodeJS.Timer;
@@ -34,6 +34,7 @@ export enum Side{
 }
 
 export class Container {
+    static nodes_types: {[type: string]: any} = {};
     static containers: {[id: number]: Container} = {};
     static last_container_id: number = -1;
 
@@ -97,6 +98,73 @@ export class Container {
         }
     }
 
+
+
+    /**
+     * Register a node class so it can be listed when the user wants to create a new one
+     * @param type name of the node and path
+     * @param node_class class containing the structure of a node
+     */
+    static registerNodeType(type: string, node_class: any): void {
+
+        if (!(node_class.prototype instanceof Node))
+            throw(`Can't register node of type [${type}]. Class must inherit Node base class!`);
+
+        node_class.type = type;
+        node_class.category = type.substr(0, type.lastIndexOf("/"));
+        node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
+
+        this.nodes_types[type] = node_class;
+
+        log.debug("Node registered: " + type);
+    };
+
+
+
+
+
+    /**
+     * Returns a registered node type with a given name
+     * @param type full name of the node class. p.e. "math/sin"
+     * @returns {Node} the node class
+     */
+    static getNodeType(type: string): Node {
+        return this.nodes_types[type];
+    };
+
+
+    /**
+     * Returns a list of node types matching one category
+     * @param category category name
+     * @returns {Array} array with all the node classes
+     */
+    static getNodeTypesInCategory(category: string): Array<any> {
+        let r = [];
+        for (let i in this.nodes_types)
+            if (category == "") {
+                if (this.nodes_types[i].category == null)
+                    r.push(this.nodes_types[i]);
+            }
+            else if (this.nodes_types[i].category == category)
+                r.push(this.nodes_types[i]);
+
+        return r;
+    };
+
+    /**
+     * Returns a list with all the node type categories
+     * @returns {Array} array with all the names of the categories
+     */
+    static getNodeTypesCategories(): Array<any> {
+        let categories = {"": 1};
+        for (let i in this.nodes_types)
+            if (this.nodes_types[i].category)
+                categories[this.nodes_types[i].category] = 1;
+        let result = [];
+        for (let i in categories)
+            result.push(i);
+        return result;
+    };
 
 //used to know which types of connections support this container (some containers do not allow certain types)
     getSupportedTypes(): Array<string> {
@@ -376,7 +444,7 @@ export class Container {
      */
     createNode(type: string, node_id?: number, properties?: any): Node {
         //check class exist
-        let node_class = Nodes.nodes_types[type];
+        let node_class = Container.nodes_types[type];
         if (!node_class) {
             log.error("Can't create node. Node class of type [" + type + "] not registered.");
             return null;
@@ -569,30 +637,7 @@ export class Container {
         return r;
     }
 
-    /**
-     * Returns the top-most node in this position of the renderer
-     * @param x the x coordinate in renderer space
-     * @param y the y coordinate in renderer space
-     * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the container
-     * @returns a list with all the nodes that intersect this coordinate
-     */
-    getNodeOnPos(x: number, y: number, nodes_list?: Array<Node>): Node {
-        if (nodes_list) {
-            for (let i = nodes_list.length - 1; i >= 0; i--) {
-                let n = nodes_list[i];
-                if (n.isPointInsideNode(x, y, 2))
-                    return n;
-            }
-        }
-        else {
-            for (let id in this._nodes) {
-                let node = this._nodes[id];
-                if (node.isPointInsideNode(x, y, 2))
-                    return node;
-            }
-        }
-        return null;
-    }
+
 
     connectionChange(node: Node): void {
         if (this.onConnectionChange)

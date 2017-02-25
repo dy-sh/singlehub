@@ -3,7 +3,7 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Nodes} from "../public/nodes/nodes";
+
 import {app} from "../app";
 
 let rootContainer = app.rootContainer;

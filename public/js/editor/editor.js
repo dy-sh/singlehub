@@ -7,20 +7,18 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./renderer", "./editor-client-socket", "./editor-themes", "../../nodes/utils", "../../nodes/nodes/index"], factory);
+        define(["require", "exports", "../../nodes/container", "./renderer", "./editor-client-socket", "./renderer-themes", "../../nodes/utils", "../../nodes/nodes/index"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../../nodes/nodes");
     const container_1 = require("../../nodes/container");
     const renderer_1 = require("./renderer");
     const editor_client_socket_1 = require("./editor-client-socket");
-    const editor_themes_1 = require("./editor-themes");
+    const renderer_themes_1 = require("./renderer-themes");
     const utils_1 = require("../../nodes/utils");
     require("../../nodes/nodes/index");
     class Editor {
         constructor() {
-            //nodes: Nodes;
             this.isRunning = false;
             this.showSlotsValues = false;
             window.editor = this;
@@ -31,16 +29,17 @@
             root.className = "node-editor";
             root.innerHTML = html;
             let canvas = root.querySelector(".canvas");
-            //nodes options theme
-            if (window.theme)
-                nodes_1.Nodes.options = editor_themes_1.themes[window.theme];
             //create root container
             this.rootContainer = new container_1.Container(container_1.Side.editor);
             //create socket
             this.socket = new editor_client_socket_1.EditorClientSocket(this);
             this.rootContainer.socket = this.socket.socket;
-            //create canvas
-            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.rootContainer);
+            //renderer theme
+            let theme;
+            if (window.theme)
+                theme = renderer_themes_1.themes[window.theme];
+            //create renderer
+            let renderer = this.renderer = new renderer_1.Renderer(canvas, this.rootContainer, theme);
             // renderer.background_image = "/images/node-editor/grid.png";
             this.rootContainer.onAfterExecute = function () {
                 renderer.draw(true);
@@ -560,7 +559,6 @@
     let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
     exports.editor = new Editor();
     window.rootContainer = container_1.Container.containers[0];
-    window.Nodes = nodes_1.Nodes;
     window.Container = container_1.Container;
     window.renderer = exports.editor.renderer;
     window.editor = exports.editor;

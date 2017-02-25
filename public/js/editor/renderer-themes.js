@@ -7,14 +7,64 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes"], factory);
+        define(["require", "exports"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../../nodes/nodes");
     exports.themes = [];
+    class RendererTheme {
+        constructor() {
+            this.START_POS = 50;
+            this.FREE_SPACE_UNDER = 30;
+            this.NODE_TITLE_HEIGHT = 16;
+            this.NODE_SLOT_HEIGHT = 15;
+            this.NODE_WIDTH = 150;
+            this.NODE_MIN_WIDTH = 50;
+            this.NODE_COLLAPSED_RADIUS = 10;
+            this.NODE_COLLAPSED_WIDTH = 150;
+            this.NODE_TITLE_COLOR = "#222";
+            this.NODE_DEFAULT_COLOR = "#777";
+            this.NODE_DEFAULT_BGCOLOR = "#373737";
+            this.CONTAINER_NODE_COLOR = "#777";
+            this.CONTAINER_NODE_BGCOLOR = "#373737";
+            this.IO_NODE_COLOR = "#777";
+            this.IO_NODE_BGCOLOR = "#373737";
+            this.NODE_DEFAULT_IO_COLOR = "#999";
+            this.NODE_OPTIONAL_IO_COLOR = "#777";
+            this.NODE_DEFAULT_BOXCOLOR = "#373737";
+            this.NODE_ACTIVE_BOXCOLOR = "#AEF";
+            this.NODE_DEFAULT_SHAPE = "box";
+            this.TITLE_TEXT_FONT = "bold 13px Arial";
+            this.INNER_TEXT_FONT = "normal 12px Arial";
+            this.SHADOWS_WIDTH = 2;
+            this.MENU_TEXT_COLOR = "#BBD";
+            this.MENU_BG_COLOR = "#353535";
+            this.BG_IMAGE = "/images/node-editor/grid.png";
+            this.NODE_IMAGES_PATH = "";
+            this.RENDER_CONNECTION_ARROWS = true;
+            this.CONNECTIONS_WIDTH = 4;
+            this.CONNECTIONS_SHADOW = 4;
+            this.SELECTION_COLOR = "#FFF";
+            this.SELECTION_WIDTH = 2;
+            this.DATATYPE_COLOR = {
+                0: "#AAA",
+                1: "#AAA",
+                2: "#AAA"
+            };
+            this.NEW_LINK_COLOR = "#CCC";
+            this.LINK_TYPE_COLORS = { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
+            this.LINK_COLORS = ["#AAC", "#ACA", "#CAA"];
+            this.NODE_COLORS = {
+                "red": { color: "#FAA", bgcolor: "#A44" },
+                "green": { color: "#AFA", bgcolor: "#4A4" },
+                "blue": { color: "#AAF", bgcolor: "#44A" },
+                "white": { color: "#FFF", bgcolor: "#AAA" }
+            };
+        }
+    }
+    exports.RendererTheme = RendererTheme;
     // --------------  THEME 0 -----------
-    let theme0 = new nodes_1.NodesOptions();
+    let theme0 = new RendererTheme();
     exports.themes.push(theme0);
     theme0.NODE_TITLE_HEIGHT = 16;
     theme0.NODE_SLOT_HEIGHT = 15;
@@ -48,7 +98,7 @@
     theme0.DATATYPE_COLOR = { 0: "#EEE", 1: "#9AE", 2: "#EB8" };
     theme0.LINK_TYPE_COLORS = { 0: "#EEE", 1: "#9AE", 2: "#EB8" };
     // --------------  THEME 1 -----------
-    let theme1 = new nodes_1.NodesOptions();
+    let theme1 = new RendererTheme();
     exports.themes.push(theme1);
     theme1.NODE_TITLE_HEIGHT = 16;
     theme1.NODE_SLOT_HEIGHT = 15;
@@ -82,7 +132,7 @@
     theme1.DATATYPE_COLOR = { 0: "#AAA", 1: "#9AB", 2: "#BA9" };
     theme1.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#9AB", 2: "#BA9" };
     // --------------  THEME 2 -----------
-    let theme2 = new nodes_1.NodesOptions();
+    let theme2 = new RendererTheme();
     exports.themes.push(theme2);
     theme2.NODE_TITLE_HEIGHT = 16;
     theme2.NODE_SLOT_HEIGHT = 15;
@@ -116,7 +166,7 @@
     theme2.DATATYPE_COLOR = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
     theme2.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
     // --------------  THEME 3 -----------
-    let theme3 = new nodes_1.NodesOptions();
+    let theme3 = new RendererTheme();
     exports.themes.push(theme3);
     theme3.NODE_TITLE_HEIGHT = 16;
     theme3.NODE_SLOT_HEIGHT = 15;
@@ -150,7 +200,7 @@
     theme3.DATATYPE_COLOR = { 0: "#666", 1: "#666", 2: "#666" };
     theme3.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
     // --------------  THEME 4 -----------
-    let theme4 = new nodes_1.NodesOptions();
+    let theme4 = new RendererTheme();
     exports.themes.push(theme4);
     theme4.NODE_TITLE_HEIGHT = 16;
     theme4.NODE_SLOT_HEIGHT = 15;
@@ -184,7 +234,7 @@
     theme4.DATATYPE_COLOR = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
     theme4.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
     // --------------  THEME 5 -----------
-    let theme5 = new nodes_1.NodesOptions();
+    let theme5 = new RendererTheme();
     exports.themes.push(theme5);
     theme5.NODE_TITLE_HEIGHT = 16;
     theme5.NODE_SLOT_HEIGHT = 15;
@@ -218,7 +268,7 @@
     theme5.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
     theme5.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
     // --------------  THEME 6 -----------
-    let theme6 = new nodes_1.NodesOptions();
+    let theme6 = new RendererTheme();
     exports.themes.push(theme6);
     theme6.NODE_TITLE_HEIGHT = 16;
     theme6.NODE_SLOT_HEIGHT = 15;
@@ -253,7 +303,7 @@
     theme6.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AF", 2: "#FB8" };
     theme6.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AF", 2: "#FB8" };
     // --------------  THEME 7 -----------
-    let theme7 = new nodes_1.NodesOptions();
+    let theme7 = new RendererTheme();
     exports.themes.push(theme7);
     theme7.NODE_TITLE_HEIGHT = 16;
     theme7.NODE_SLOT_HEIGHT = 15;
@@ -287,7 +337,7 @@
     theme7.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
     theme7.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
     // --------------  THEME 8 -----------
-    let theme8 = new nodes_1.NodesOptions();
+    let theme8 = new RendererTheme();
     exports.themes.push(theme8);
     theme8.NODE_TITLE_HEIGHT = 16;
     theme8.NODE_SLOT_HEIGHT = 15;
@@ -321,4 +371,4 @@
     theme8.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
     theme8.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
 });
-//# sourceMappingURL=editor-themes.js.map
+//# sourceMappingURL=renderer-themes.js.map

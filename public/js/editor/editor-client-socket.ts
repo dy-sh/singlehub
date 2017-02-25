@@ -3,7 +3,6 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Nodes} from "../../nodes/nodes"
 import {Node, Link, LinkInfo} from "../../nodes/node"
 import {Container} from "../../nodes/container";
 import {Editor} from "./editor";
@@ -169,12 +168,7 @@ export class EditorClientSocket {
                 if (!node)
                     continue;
 
-                node.boxcolor = Nodes.options.NODE_ACTIVE_BOXCOLOR;
-                node.setDirtyCanvas(true, true);
-                setTimeout(function () {
-                    node.boxcolor = Nodes.options.NODE_DEFAULT_BOXCOLOR;
-                    node.setDirtyCanvas(true, true);
-                }, 100);
+                editor.renderer.showNodeActivity(node);
             }
         });
 
@@ -266,7 +260,7 @@ export class EditorClientSocket {
     }
 
     getContainerState(): void {
-       let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/state",
             success: function (state) {
@@ -280,7 +274,7 @@ export class EditorClientSocket {
 
 
     sendCreateNode(type: string, position: [number, number]): void {
-        let that=this;
+        let that = this;
         let json = JSON.stringify({type: type, position: position, container: that.editor.renderer.container.id});
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
@@ -292,7 +286,7 @@ export class EditorClientSocket {
 
 
     sendRemoveNode(node: Node): void {
-        let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/" + node.id,
             type: 'DELETE'
@@ -301,7 +295,7 @@ export class EditorClientSocket {
 
 
     sendRemoveNodes(ids: Array<number>): void {
-        let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
             type: 'DELETE',
@@ -311,7 +305,7 @@ export class EditorClientSocket {
     };
 
     sendMoveToNewContainer(ids: Array<number>, pos: [number, number]): void {
-        let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/move/",
             type: 'PUT',
@@ -321,7 +315,7 @@ export class EditorClientSocket {
     };
 
     sendUpdateNodePosition(node: Node): void {
-        let that=this;
+        let that = this;
         $.ajax({
             url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/position`,
             contentType: 'application/json',
@@ -331,7 +325,7 @@ export class EditorClientSocket {
     };
 
     sendUpdateNodeSize(node: Node): void {
-        let that=this;
+        let that = this;
         $.ajax({
             url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/size`,
             contentType: 'application/json',
@@ -349,7 +343,7 @@ export class EditorClientSocket {
             target_slot: target_slot,
         };
 
-        let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/l/",
             type: 'POST',
@@ -367,7 +361,7 @@ export class EditorClientSocket {
             target_slot: target_slot,
         };
 
-        let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/l/",
             type: 'DELETE',

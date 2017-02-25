@@ -3,22 +3,22 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./public/nodes/nodes", './public/nodes/container', 'path'], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./public/nodes/container", "path"], factory);
     }
 })(function (require, exports) {
     "use strict";
     //source map for node typescript debug
     require('source-map-support').install();
     console.log("----------------------------- MyNodes -----------------------------");
-    const nodes_1 = require("./public/nodes/nodes");
     let config = require('./config.json');
-    const container_1 = require('./public/nodes/container');
+    const container_1 = require("./public/nodes/container");
     //add app root dir to global
-    const path = require('path');
+    const path = require("path");
     global.__rootdirname = path.resolve(__dirname);
     const log = require('logplease').create('app', { color: 2 });
     class App {
@@ -52,7 +52,7 @@
         }
         registerNodes() {
             require('./public/nodes/nodes/index');
-            let types = nodes_1.Nodes.nodes_types ? Object.keys(nodes_1.Nodes.nodes_types).length : 0;
+            let types = container_1.Container.nodes_types ? Object.keys(container_1.Container.nodes_types).length : 0;
             log.debug("Registered " + types + " nodes types");
         }
         createRootContainer() {

@@ -2,17 +2,18 @@
  * Created by Derwish (derwish.pro@gmail.com) on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../nodes", "../node", "../utils"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../node", "../utils", "../container"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../nodes");
     const node_1 = require("../node");
     const utils_1 = require("../utils");
+    const container_1 = require("../container");
     //console logger back and front
     let log;
     if (typeof (window) === 'undefined')
@@ -60,7 +61,7 @@
         }
     }
     exports.WatchNode = WatchNode;
-    nodes_1.Nodes.registerNodeType("debug/watch", WatchNode);
+    container_1.Container.registerNodeType("debug/watch", WatchNode);
     //Show value inside the debug console
     class ConsoleNode extends node_1.Node {
         constructor() {
@@ -102,6 +103,6 @@
         }
     }
     exports.ConsoleNode = ConsoleNode;
-    nodes_1.Nodes.registerNodeType("debug/console", ConsoleNode);
+    container_1.Container.registerNodeType("debug/console", ConsoleNode);
 });
 //# sourceMappingURL=debug.js.map

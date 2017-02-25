@@ -3,15 +3,15 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes", "../../node", "../../utils", "../../container"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../../node", "../../utils", "../../container"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../../nodes");
     const node_1 = require("../../node");
     const utils_1 = require("../../utils");
     const container_1 = require("../../container");
@@ -67,6 +67,6 @@
         }
     }
     exports.UiLabelNode = UiLabelNode;
-    nodes_1.Nodes.registerNodeType("ui/label", UiLabelNode);
+    container_1.Container.registerNodeType("ui/label", UiLabelNode);
 });
 //# sourceMappingURL=label.js.map

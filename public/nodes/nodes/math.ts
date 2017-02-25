@@ -3,8 +3,8 @@
  */
 
 
-import {Nodes} from "../nodes";
 import {Node} from "../node";
+import {Container} from "../container";
 
 
 
@@ -28,7 +28,7 @@ class MathPlusNode extends Node {
         this.setOutputData(0, result);
     }
 }
-Nodes.registerNodeType("math/plus", MathPlusNode);
+Container.registerNodeType("math/plus", MathPlusNode);
 
 
 

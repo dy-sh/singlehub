@@ -1,10 +1,12 @@
-import {Container} from "../../nodes/container";
-import {Nodes} from "../../nodes/nodes";
-import {dashboard} from "./dashboard";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 24.02.2017.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
+
+import {Container} from "../../nodes/container";
+import {dashboard} from "./dashboard";
+import {editor} from "../editor/editor";
+
 
 
 //console logger
@@ -104,12 +106,8 @@ export class DashboardClientSocket {
                 if (!node)
                     continue;
 
-                node.boxcolor = Nodes.options.NODE_ACTIVE_BOXCOLOR;
-                node.setDirtyCanvas(true, true);
-                setTimeout(function () {
-                    node.boxcolor = Nodes.options.NODE_DEFAULT_BOXCOLOR;
-                    node.setDirtyCanvas(true, true);
-                }, 100);
+                //todo
+                // editor.renderer.showNodeActivity(node);
             }
         });
     }

@@ -4,10 +4,9 @@
  */
 
 
-import {Nodes} from "../../nodes";
 import {Node} from "../../node";
 import Utils from "../../utils";
-import {Side} from "../../container";
+import {Side, Container} from "../../container";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -79,7 +78,7 @@ export class UiLabelNode extends Node {
     }
 }
 
-Nodes.registerNodeType("ui/label", UiLabelNode);
+Container.registerNodeType("ui/label", UiLabelNode);
 
 
 

@@ -3,7 +3,6 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Nodes} from "../../nodes/nodes"
 import {Container, Side} from "../../nodes/container"
 import {DashboardClientSocket} from "./dashboard-client-socket";
 
@@ -39,7 +38,6 @@ export class Dashboard {
         //globals for easy debug in dev-console
         (<any>window).dashboard = this;
         (<any>window).container = this.container;
-        (<any>window).Nodes = Nodes;
         (<any>window).Container = Container;
     }
 

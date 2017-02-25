@@ -8,7 +8,7 @@ require('source-map-support').install();
 
 console.log("----------------------------- MyNodes -----------------------------");
 
-import {Nodes} from "./public/nodes/nodes";
+
 
 let config = require('./config.json');
 import {Server} from './modules/web-server/server';
@@ -68,7 +68,7 @@ class App {
 
     registerNodes() {
         require('./public/nodes/nodes/index');
-        let types = Nodes.nodes_types ? Object.keys(Nodes.nodes_types).length : 0;
+        let types = Container.nodes_types ? Object.keys(Container.nodes_types).length : 0;
         log.debug("Registered " + types + " nodes types");
 
     }

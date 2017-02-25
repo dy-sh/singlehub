@@ -3,15 +3,15 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "../../nodes/container", "./dashboard-client-socket", "../../nodes/nodes/index"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../../nodes/container", "./dashboard-client-socket", "../../nodes/nodes/index"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const nodes_1 = require("../../nodes/nodes");
     const container_1 = require("../../nodes/container");
     const dashboard_client_socket_1 = require("./dashboard-client-socket");
     require("../../nodes/nodes/index");
@@ -32,7 +32,6 @@
             //globals for easy debug in dev-console
             window.dashboard = this;
             window.container = this.container;
-            window.Nodes = nodes_1.Nodes;
             window.Container = container_1.Container;
         }
         checkPanelForRemove(panelId) {

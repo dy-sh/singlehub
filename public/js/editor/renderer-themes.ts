@@ -3,17 +3,69 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {NodesOptions} from "../../nodes/nodes";
 
-export let themes: Array<NodesOptions> = [];
-
+export let themes: Array<RendererTheme> = [];
 
 
+export class RendererTheme {
+
+    START_POS = 50;
+    FREE_SPACE_UNDER = 30;
+
+    NODE_TITLE_HEIGHT = 16;
+    NODE_SLOT_HEIGHT = 15;
+    NODE_WIDTH = 150;
+    NODE_MIN_WIDTH = 50;
+    NODE_COLLAPSED_RADIUS = 10;
+    NODE_COLLAPSED_WIDTH = 150;
+    NODE_TITLE_COLOR = "#222";
+    NODE_DEFAULT_COLOR = "#777";
+    NODE_DEFAULT_BGCOLOR = "#373737";
+    CONTAINER_NODE_COLOR = "#777";
+    CONTAINER_NODE_BGCOLOR = "#373737";
+    IO_NODE_COLOR = "#777";
+    IO_NODE_BGCOLOR = "#373737";
+    NODE_DEFAULT_IO_COLOR = "#999";
+    NODE_OPTIONAL_IO_COLOR = "#777";
+    NODE_DEFAULT_BOXCOLOR = "#373737";
+    NODE_ACTIVE_BOXCOLOR = "#AEF";
+    NODE_DEFAULT_SHAPE = "box";
+    TITLE_TEXT_FONT = "bold 13px Arial";
+    INNER_TEXT_FONT = "normal 12px Arial";
+    SHADOWS_WIDTH = 2;
+    MENU_TEXT_COLOR = "#BBD";
+    MENU_BG_COLOR = "#353535";
+    BG_IMAGE = "/images/node-editor/grid.png";
+    NODE_IMAGES_PATH = "";
+
+    RENDER_CONNECTION_ARROWS = true;
+    CONNECTIONS_WIDTH = 4;
+    CONNECTIONS_SHADOW = 4;
+
+    SELECTION_COLOR = "#FFF";
+    SELECTION_WIDTH = 2;
+    DATATYPE_COLOR = {
+        0: "#AAA",
+        1: "#AAA",
+        2: "#AAA"
+    };
+    NEW_LINK_COLOR = "#CCC";
+    LINK_TYPE_COLORS = {0: "#AAC", 1: "#AAC", 2: "#AAC"};
+
+    LINK_COLORS = ["#AAC", "#ACA", "#CAA"];
+
+    NODE_COLORS = {
+        "red": {color: "#FAA", bgcolor: "#A44"},
+        "green": {color: "#AFA", bgcolor: "#4A4"},
+        "blue": {color: "#AAF", bgcolor: "#44A"},
+        "white": {color: "#FFF", bgcolor: "#AAA"}
+    };
+}
 
 // --------------  THEME 0 -----------
 
 
-let theme0 = new NodesOptions();
+let theme0 = new RendererTheme();
 themes.push(theme0);
 theme0.NODE_TITLE_HEIGHT = 16;
 theme0.NODE_SLOT_HEIGHT = 15;
@@ -50,7 +102,7 @@ theme0.LINK_TYPE_COLORS = {0: "#EEE", 1: "#9AE", 2: "#EB8"};
 
 // --------------  THEME 1 -----------
 
-let theme1 = new NodesOptions();
+let theme1 = new RendererTheme();
 themes.push(theme1);
 theme1.NODE_TITLE_HEIGHT = 16;
 theme1.NODE_SLOT_HEIGHT = 15;
@@ -87,7 +139,7 @@ theme1.LINK_TYPE_COLORS = {0: "#AAA", 1: "#9AB", 2: "#BA9"};
 
 // --------------  THEME 2 -----------
 
-let theme2 = new NodesOptions();
+let theme2 = new RendererTheme();
 themes.push(theme2);
 
 theme2.NODE_TITLE_HEIGHT = 16;
@@ -125,7 +177,7 @@ theme2.LINK_TYPE_COLORS = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
 
 // --------------  THEME 3 -----------
 
-let theme3 = new NodesOptions();
+let theme3 = new RendererTheme();
 themes.push(theme3);
 
 theme3.NODE_TITLE_HEIGHT = 16;
@@ -163,7 +215,7 @@ theme3.LINK_TYPE_COLORS = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
 
 // --------------  THEME 4 -----------
 
-let theme4 = new NodesOptions();
+let theme4 = new RendererTheme();
 themes.push(theme4);
 
 theme4.NODE_TITLE_HEIGHT = 16;
@@ -201,7 +253,7 @@ theme4.LINK_TYPE_COLORS = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
 
 // --------------  THEME 5 -----------
 
-let theme5 = new NodesOptions();
+let theme5 = new RendererTheme();
 themes.push(theme5);
 
 theme5.NODE_TITLE_HEIGHT = 16;
@@ -239,7 +291,7 @@ theme5.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
 
 // --------------  THEME 6 -----------
 
-let theme6 = new NodesOptions();
+let theme6 = new RendererTheme();
 themes.push(theme6);
 
 theme6.NODE_TITLE_HEIGHT = 16;
@@ -278,7 +330,7 @@ theme6.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AF", 2: "#FB8"};
 
 // --------------  THEME 7 -----------
 
-let theme7 = new NodesOptions();
+let theme7 = new RendererTheme();
 themes.push(theme7);
 
 theme7.NODE_TITLE_HEIGHT = 16;
@@ -316,7 +368,7 @@ theme7.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
 
 // --------------  THEME 8 -----------
 
-let theme8 = new NodesOptions();
+let theme8 = new RendererTheme();
 themes.push(theme8);
 
 theme8.NODE_TITLE_HEIGHT = 16;

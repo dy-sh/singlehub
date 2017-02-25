@@ -4,12 +4,11 @@
  */
 
 
-import {Nodes} from "../../nodes/nodes"
 import {Node} from "../../nodes/node"
 import {Container, Side} from "../../nodes/container"
 import {Renderer} from "./renderer"
 import {EditorClientSocket} from "./editor-client-socket";
-import {themes} from "./editor-themes"
+import {themes, RendererTheme} from "./renderer-themes"
 import Utils from "../../nodes/utils";
 
 import "../../nodes/nodes/index";
@@ -21,7 +20,7 @@ export class Editor {
     rootContainer: Container;
     renderer: Renderer;
     socket: EditorClientSocket;
-    //nodes: Nodes;
+
 
     isRunning = false;
     showSlotsValues = false;
@@ -40,10 +39,6 @@ export class Editor {
 
         let canvas = root.querySelector(".canvas");
 
-        //nodes options theme
-        if ((<any>window).theme)
-            Nodes.options = themes[(<any>window).theme];
-
 
         //create root container
         this.rootContainer = new Container(Side.editor);
@@ -52,11 +47,15 @@ export class Editor {
         this.socket = new EditorClientSocket(this);
         this.rootContainer.socket = this.socket.socket;
 
+        //renderer theme
+        let theme;
+        if ((<any>window).theme)
+            theme = themes[(<any>window).theme];
 
-        //create canvas
+        //create renderer
         let renderer = this.renderer = new Renderer(
             <HTMLCanvasElement>canvas,
-            this.rootContainer);
+            this.rootContainer, theme);
         // renderer.background_image = "/images/node-editor/grid.png";
         this.rootContainer.onAfterExecute = function () {
             renderer.draw(true)
@@ -645,7 +644,7 @@ export class Editor {
     getNodes() {
         this.socket.getContainerState();
 
-        let that=this;
+        let that = this;
         this.socket.getNodes(function (nodes) {
             //open container from url
             let cont_id = (<any>window).container_id;
@@ -694,7 +693,6 @@ export let editor = new Editor();
 
 
 (<any>window).rootContainer = Container.containers[0];
-(<any>window).Nodes = Nodes;
 (<any>window).Container = Container;
 (<any>window).renderer = editor.renderer;
 (<any>window).editor = editor;

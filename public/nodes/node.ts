@@ -4,7 +4,6 @@
 
 import {Container, Side} from "./container";
 import Utils from "./utils";
-import {Nodes} from "./nodes";
 
 
 //console logger back and front
@@ -670,7 +669,8 @@ export class Node {
             }
 
         size[0] = Math.max(input_width + output_width + 10, title_width);
-        size[0] = Math.max(size[0], Nodes.options.NODE_WIDTH);
+        //todo node NODE_MIN_WIDTH options
+        size[0] = Math.max(size[0], 100);
 
         function compute_text_size(text) {
             if (!text)
@@ -682,84 +682,10 @@ export class Node {
     }
 
 
-    /**
-     * Returns the bounding of the object, used for rendering purposes
-     * @returns {[number, number, number, number]} the total size
-     */
-
-    getBounding(): [number, number, number, number] {
-        return [this.pos[0] - 4, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT, this.pos[0] + this.size[0] + 4, this.pos[1] + this.size[1] + Nodes.options.NODE_TITLE_HEIGHT];
-    }
 
 
-    /**
-     * Is inside rectangle
-     * @param x
-     * @param y
-     * @param left
-     * @param top
-     * @param width
-     * @param height
-     * @returns {boolean}
-     */
-    isInsideRectangle(x: number, y: number, left: number, top: number, width: number, height: number): boolean {
-        if (left < x && (left + width) > x &&
-            top < y && (top + height) > y)
-            return true;
-        return false;
-    }
-
-    /**
-     * Checks if a point is inside the shape of a node
-     * @param x
-     * @param y
-     * @param margin
-     * @returns {boolean}
-     */
-    isPointInsideNode(x: number, y: number, margin: number): boolean {
-        margin = margin || 0;
-
-        // let margin_top = this.container ? 0 : 20;
-        let margin_top = 20;
-
-        if (this.flags.collapsed) {
-            //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
-            if (this.isInsideRectangle(x, y, this.pos[0] - margin, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT - margin, Nodes.options.NODE_COLLAPSED_WIDTH + 2 * margin, Nodes.options.NODE_TITLE_HEIGHT + 2 * margin))
-                return true;
-        }
-        else if ((this.pos[0] - 4 - margin) < x && (this.pos[0] + this.size[0] + 4 + margin) > x
-            && (this.pos[1] - margin_top - margin) < y && (this.pos[1] + this.size[1] + margin) > y)
-            return true;
-        return false;
-    }
 
 
-    /**
-     * Checks if a point is inside a node slot, and returns info about which slot
-     * @param x
-     * @param y
-     * @returns {IInputInfo|IOutputInfo} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
-     */
-    getSlotInPosition(x: number, y: number): IInputInfo|IOutputInfo {
-        //search for inputs
-        if (this.inputs)
-            for (let i in this.inputs) {
-                let input = this.inputs[i];
-                let link_pos = this.getConnectionPos(true, +i);
-                if (this.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-                    return {input: input, slot: +i, link_pos: link_pos, locked: input.locked};
-            }
-
-        if (this.outputs)
-            for (let o in this.outputs) {
-                let output = this.outputs[o];
-                let link_pos = this.getConnectionPos(false, +o);
-                if (this.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-                    return {output: output, slot: +o, link_pos: link_pos, locked: output.locked};
-            }
-
-        return null;
-    }
 
     /**
      * Returns the input slot with a given name (used for dynamic slots), -1 if not found
@@ -1016,60 +942,10 @@ export class Node {
     }
 
 
-    /**
-     * Returns the center of a connection point in renderer coords
-     * @param is_input true if if a input slot, false if it is an output
-     * @param slot (could be the number of the slot or the string with the name of the slot)
-     * @returns {[x,y]} the position
-     **/
-    getConnectionPos(is_input: boolean, slot_number: number): [number, number] {
-        if (this.flags.collapsed) {
-            if (is_input)
-                return [this.pos[0], this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
-            else
-                return [this.pos[0] + Nodes.options.NODE_COLLAPSED_WIDTH, this.pos[1] - Nodes.options.NODE_TITLE_HEIGHT * 0.5];
-            //return [this.pos[0] + this.size[0] * 0.5, this.pos[1] + this.size[1] * 0.5];
-        }
-
-        if (is_input && slot_number == -1) {
-            return [this.pos[0] + 10, this.pos[1] + 10];
-        }
-
-        if (is_input && this.inputs[slot_number] && this.inputs[slot_number].pos)
-            return [this.pos[0] + this.inputs[slot_number].pos[0], this.pos[1] + this.inputs[slot_number].pos[1]];
-        else if (!is_input && this.outputs[slot_number] && this.outputs[slot_number].pos)
-            return [this.pos[0] + this.outputs[slot_number].pos[0], this.pos[1] + this.outputs[slot_number].pos[1]];
-
-        if (!is_input) //output
-            return [this.pos[0] + this.size[0] + 1, this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
-        return [this.pos[0], this.pos[1] + 10 + slot_number * Nodes.options.NODE_SLOT_HEIGHT];
-    }
 
 
 
 
-    //
-    // /* Console output */
-    // trace(msg) {
-    //     if (!this.console)
-    //         this.console = [];
-    //     this.console.push(msg);
-    //     if (this.console.length > Node.MAX_CONSOLE)
-    //         this.console.shift();
-    //
-    //     nodeDebug(this.title + ": " + msg);
-    // }
-    //
-    // traceError(msg) {
-    //     if (!this.console)
-    //         this.console = [];
-    //     this.console.push(msg);
-    //     if (this.console.length > Node.MAX_CONSOLE)
-    //         this.console.shift();
-    //
-    //     nodeDebugErr(this.title + ": " + msg);
-    // }
-//
     /* Forces to redraw or the main renderer (Node) or the bg renderer (links) */
     setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean): void {
         if (!this.container)
@@ -1077,18 +953,7 @@ export class Node {
         this.container.sendActionToRenderer("setDirty", [dirty_foreground, dirty_background]);
     }
 
-    loadImage(url: string): HTMLImageElement {
-        let img = new Image();
-        img.src = Nodes.options.NODE_IMAGES_PATH + url;
-        (<any>img).ready = false;
 
-        let that = this;
-        img.onload = function () {
-            (<any>this).ready = true;
-            that.setDirtyCanvas(true);
-        }
-        return img;
-    }
 
 
     /**
@@ -1162,10 +1027,7 @@ export class Node {
     }
 
 
-    localToScreen(x, y, canvas): [number, number] {
-        return [(x + this.pos[0]) * canvas.scale + canvas.offset[0],
-            (y + this.pos[1]) * canvas.scale + canvas.offset[1]];
-    }
+
 
     /**
      * Print debug message to console

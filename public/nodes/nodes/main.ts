@@ -3,7 +3,6 @@
  */
 
 
-import {Nodes} from "../nodes";
 import {Node} from "../node";
 import {Container, Side} from "../container";
 import Utils from "../utils";
@@ -73,7 +72,7 @@ export class ConstantNode extends Node {
         }
     }
 }
-Nodes.registerNodeType("main/constant", ConstantNode);
+Container.registerNodeType("main/constant", ConstantNode);
 
 
 //Container: a node that contains a container of other nodes
@@ -164,7 +163,7 @@ export class ContainerNode extends Node {
 
 
 }
-Nodes.registerNodeType("main/container", ContainerNode);
+Container.registerNodeType("main/container", ContainerNode);
 
 
 //Input for a container
@@ -227,7 +226,7 @@ export class ContainerInputNode extends Node {
 
 
 }
-Nodes.registerNodeType("main/input", ContainerInputNode);
+Container.registerNodeType("main/input", ContainerInputNode);
 
 
 //Output for a container
@@ -290,4 +289,4 @@ export class ContainerOutputNode extends Node {
 
 
 }
-Nodes.registerNodeType("main/output", ContainerOutputNode);
+Container.registerNodeType("main/output", ContainerOutputNode);

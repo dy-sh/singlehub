@@ -2,9 +2,9 @@
  * Created by Derwish (derwish.pro@gmail.com) on 11.02.17.
  */
 
-import {Nodes} from "../nodes";
 import {Node} from "../node";
 import Utils from "../utils";
+import {Container} from "../container";
 
 
 //console logger back and front
@@ -69,7 +69,7 @@ export class WatchNode extends Node {
         this.showValueOnInput(this.lastData);
     }
 }
-Nodes.registerNodeType("debug/watch", WatchNode);
+Container.registerNodeType("debug/watch", WatchNode);
 
 
 
@@ -122,5 +122,5 @@ export class ConsoleNode extends Node {
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages due to too many");
     };
 }
-Nodes.registerNodeType("debug/console", ConsoleNode);
+Container.registerNodeType("debug/console", ConsoleNode);
 

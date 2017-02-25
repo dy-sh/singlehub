@@ -4,22 +4,19 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes", "./editor", "../../nodes/utils"], factory);
+        define(["require", "exports", "../../nodes/container", "./editor", "../../nodes/utils", "./renderer-themes"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    /**
-     * Created by Derwish (derwish.pro@gmail.com) on 22.01.17.
-     * License: http://www.gnu.org/licenses/gpl-3.0.txt
-     */
-    const nodes_1 = require("../../nodes/nodes");
+    const container_1 = require("../../nodes/container");
     const editor_1 = require("./editor");
     const utils_1 = require("../../nodes/utils");
+    const renderer_themes_1 = require("./renderer-themes");
     class Renderer {
-        constructor(canvas, container, skip_render) {
-            //derwish edit
+        constructor(canvas, container, theme, skip_render) {
             this.max_zoom = 2;
             this.min_zoom = 0.1;
+            this.theme = theme || new renderer_themes_1.RendererTheme();
             //link renderer and container
             if (container)
                 container.attachRenderer(this);
@@ -47,7 +44,7 @@
             this.editor_alpha = 1; //used for transition
             this.pause_rendering = false;
             this.render_shadows = true;
-            this.shadows_width = nodes_1.Nodes.options.SHADOWS_WIDTH;
+            this.shadows_width = this.theme.SHADOWS_WIDTH;
             this.clear_background = true;
             this.render_only_selected = true;
             this.live_mode = false;
@@ -60,14 +57,14 @@
             this.node_in_container = null;
             this.last_mouse = [0, 0];
             this.last_mouseclick = 0;
-            this.title_text_font = nodes_1.Nodes.options.TITLE_TEXT_FONT;
-            this.inner_text_font = nodes_1.Nodes.options.INNER_TEXT_FONT;
+            this.title_text_font = this.theme.TITLE_TEXT_FONT;
+            this.inner_text_font = this.theme.INNER_TEXT_FONT;
             this.render_connections_shadows = false; //too much cpu
             this.render_connections_border = true;
             this.render_curved_connections = true;
-            this.render_connection_arrows = nodes_1.Nodes.options.RENDER_CONNECTION_ARROWS;
-            this.connections_width = nodes_1.Nodes.options.CONNECTIONS_WIDTH;
-            this.connections_shadow = nodes_1.Nodes.options.CONNECTIONS_SHADOW;
+            this.render_connection_arrows = this.theme.RENDER_CONNECTION_ARROWS;
+            this.connections_width = this.theme.CONNECTIONS_WIDTH;
+            this.connections_shadow = this.theme.CONNECTIONS_SHADOW;
             if (this.onClear)
                 this.onClear();
             //this.UIinit();
@@ -404,7 +401,7 @@
             this.canvas.removeEventListener("mousemove", this._mousemove_callback);
             ref_window.document.addEventListener("mousemove", this._mousemove_callback, true); //catch for the entire window
             ref_window.document.addEventListener("mouseup", this._mouseup_callback, true);
-            let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+            let n = this.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
             let skip_dragging = false;
             //derwish added
             this.closeAllContextualMenus();
@@ -433,11 +430,11 @@
                         if (n.outputs)
                             for (let o in n.outputs) {
                                 let output = n.outputs[o];
-                                let link_pos = n.getConnectionPos(false, +o);
+                                let link_pos = this.getConnectionPos(n, false, +o);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     this.connecting_node = n;
                                     this.connecting_output = output;
-                                    this.connecting_pos = n.getConnectionPos(false, +o);
+                                    this.connecting_pos = this.getConnectionPos(n, false, +o);
                                     this.connecting_slot = +o;
                                     skip_action = true;
                                     break;
@@ -447,7 +444,7 @@
                         if (n.inputs)
                             for (let i in n.inputs) {
                                 let input = n.inputs[i];
-                                let link_pos = n.getConnectionPos(true, +i);
+                                let link_pos = this.getConnectionPos(n, true, +i);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                     if (input.link !== null) {
                                         editor_1.editor.socket.sendRemoveLink(input.link.target_node_id, input.link.target_slot, n.id, i);
@@ -466,7 +463,7 @@
                         }
                     }
                     //Search for corner
-                    if (!skip_action && utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0], n.pos[1] - nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT, nodes_1.Nodes.options.NODE_TITLE_HEIGHT)) {
+                    if (!skip_action && utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0], n.pos[1] - this.theme.NODE_TITLE_HEIGHT, this.theme.NODE_TITLE_HEIGHT, this.theme.NODE_TITLE_HEIGHT)) {
                         n.collapse();
                         skip_action = true;
                     }
@@ -550,7 +547,7 @@
                 if (this.connecting_node)
                     this.dirty_canvas = true;
                 //get node over
-                let n = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                let n = this.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                 //remove mouseover flag
                 for (let id in this.container._nodes) {
                     let node = this.container._nodes[id];
@@ -622,10 +619,10 @@
                     this.resizing_node.size[0] += delta[0] / this.scale;
                     //this.resizing_node.size[1] += delta[1] / this.scale;
                     // let max_slots = Math.max(this.resizing_node.inputs ? this.resizing_node.inputs.length : 0, this.resizing_node.outputs ? this.resizing_node.outputs.length : 0);
-                    //	if(this.resizing_node.size[1] < max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4)
-                    //		this.resizing_node.size[1] = max_slots * Nodes.options.NODE_SLOT_HEIGHT + 4;
-                    if (this.resizing_node.size[0] < nodes_1.Nodes.options.NODE_MIN_WIDTH)
-                        this.resizing_node.size[0] = nodes_1.Nodes.options.NODE_MIN_WIDTH;
+                    //	if(this.resizing_node.size[1] < max_slots * this.theme.NODE_SLOT_HEIGHT + 4)
+                    //		this.resizing_node.size[1] = max_slots * this.theme.NODE_SLOT_HEIGHT + 4;
+                    if (this.resizing_node.size[0] < this.theme.NODE_MIN_WIDTH)
+                        this.resizing_node.size[0] = this.theme.NODE_MIN_WIDTH;
                     this.canvas.style.cursor = "se-resize";
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
@@ -661,7 +658,7 @@
                 if (this.connecting_node) {
                     this.dirty_canvas = true;
                     this.dirty_bgcanvas = true;
-                    let node = this.container.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
+                    let node = this.getNodeOnPos(e.canvasX, e.canvasY, this.visible_nodes);
                     //node below mouse
                     if (node) {
                         if (this.connecting_output.type == 'node') {
@@ -761,7 +758,7 @@
             if (node.inputs)
                 for (let i in node.inputs) {
                     let input = node.inputs[i];
-                    let link_pos = node.getConnectionPos(true, +i);
+                    let link_pos = this.getConnectionPos(node, true, +i);
                     if (utils_1.default.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                         if (slot_pos) {
                             slot_pos[0] = link_pos[0];
@@ -776,7 +773,7 @@
             if (node.outputs)
                 for (let o in node.outputs) {
                     let output = node.outputs[o];
-                    let link_pos = node.getConnectionPos(false, +o);
+                    let link_pos = this.getConnectionPos(node, false, +o);
                     if (utils_1.default.isInsideRectangle(canvasx, canvasy, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                         if (slot_pos) {
                             slot_pos[0] = link_pos[0];
@@ -836,7 +833,7 @@
             e.preventDefault();
             this.adjustMouseEvent(e);
             let pos = [e.canvasX, e.canvasY];
-            let node = this.container.getNodeOnPos(pos[0], pos[1]);
+            let node = this.getNodeOnPos(pos[0], pos[1]);
             if (!node) {
                 if (this.onDropItem)
                     this.onDropItem(event);
@@ -1052,7 +1049,7 @@
                 //skip rendering nodes in live mode
                 if (this.live_mode && !node.onDrawBackground && !node.onDrawForeground)
                     continue;
-                if (!utils_1.default.overlapBounding(this.visible_area, node.getBounding()))
+                if (!utils_1.default.overlapBounding(this.visible_area, this.getBounding(node)))
                     continue; //out of the visible area
                 visible_nodes.push(node);
             }
@@ -1144,7 +1141,7 @@
                 //current connection
                 if (this.connecting_pos != null) {
                     ctx.lineWidth = this.connections_width;
-                    let link_color = nodes_1.Nodes.options.NEW_LINK_COLOR;
+                    let link_color = this.theme.NEW_LINK_COLOR;
                     //this.connecting_output.type == 'node' ? "#F85" : "#AFA";
                     this.renderLink(ctx, this.connecting_pos, [this.canvas_mouse[0], this.canvas_mouse[1]], link_color);
                     ctx.beginPath();
@@ -1215,13 +1212,13 @@
                 ctx.scale(this.scale, this.scale);
                 ctx.translate(this.offset[0], this.offset[1]);
                 //render BG
-                if (nodes_1.Nodes.options.BG_IMAGE && this.scale > 0.5) {
+                if (this.theme.BG_IMAGE && this.scale > 0.5) {
                     ctx.globalAlpha = (1.0 - 0.5 / this.scale) * this.editor_alpha;
                     ctx.imageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
-                    if (!this._bg_img || this._bg_img.name != nodes_1.Nodes.options.BG_IMAGE) {
+                    if (!this._bg_img || this._bg_img.name != this.theme.BG_IMAGE) {
                         this._bg_img = new Image();
-                        this._bg_img.name = nodes_1.Nodes.options.BG_IMAGE;
-                        this._bg_img.src = nodes_1.Nodes.options.BG_IMAGE;
+                        this._bg_img.name = this.theme.BG_IMAGE;
+                        this._bg_img.src = this.theme.BG_IMAGE;
                         let that = this;
                         this._bg_img.onload = function () {
                             that.draw(true, true);
@@ -1278,11 +1275,11 @@
          */
         drawNode(node, ctx) {
             let glow = false;
-            let color = node.color || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
+            let color = node.color || this.theme.NODE_DEFAULT_COLOR;
             if (node.type == "main/container")
-                color = nodes_1.Nodes.options.CONTAINER_NODE_COLOR;
+                color = this.theme.CONTAINER_NODE_COLOR;
             else if (node.type == "main/input" || node.type == "main/output")
-                color = nodes_1.Nodes.options.IO_NODE_COLOR;
+                color = this.theme.IO_NODE_COLOR;
             //if (this.selected) color = "#88F";
             let render_title = true;
             if (node.flags.skip_title_render)
@@ -1293,10 +1290,10 @@
             if (node.mouseOver)
                 glow = true;
             if (node.selected) {
-                ctx.shadowColor = nodes_1.Nodes.options.SELECTION_COLOR;
+                ctx.shadowColor = this.theme.SELECTION_COLOR;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 0;
-                ctx.shadowBlur = nodes_1.Nodes.options.SELECTION_WIDTH;
+                ctx.shadowBlur = this.theme.SELECTION_WIDTH;
             }
             else if (this.render_shadows) {
                 ctx.shadowColor = "rgba(0,0,0,0.5)";
@@ -1329,10 +1326,10 @@
             let editor_alpha = this.editor_alpha;
             ctx.globalAlpha = editor_alpha;
             //clip if required (mask)
-            let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
+            let shape = node.shape || this.theme.NODE_DEFAULT_SHAPE;
             let size = [node.size[0], node.size[1]];
             if (node.flags.collapsed) {
-                size[0] = nodes_1.Nodes.options.NODE_COLLAPSED_WIDTH;
+                size[0] = this.theme.NODE_COLLAPSED_WIDTH;
                 size[1] = 0;
             }
             //Start clipping
@@ -1371,8 +1368,8 @@
                         //hide self inputs
                         if (this.connecting_node == node)
                             ctx.globalAlpha = 0.4 * editor_alpha;
-                        ctx.fillStyle = slot.link != null ? "#7F7" : nodes_1.Nodes.options.DATATYPE_COLOR[slot.type];
-                        let pos = node.getConnectionPos(true, +i);
+                        ctx.fillStyle = slot.link != null ? "#7F7" : this.theme.DATATYPE_COLOR[slot.type];
+                        let pos = this.getConnectionPos(node, true, +i);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
                         ctx.beginPath();
@@ -1385,7 +1382,7 @@
                         if (render_text) {
                             let text = slot.label != null ? slot.label : slot.name;
                             if (text) {
-                                ctx.fillStyle = slot.isOptional ? nodes_1.Nodes.options.NODE_OPTIONAL_IO_COLOR : nodes_1.Nodes.options.NODE_DEFAULT_IO_COLOR;
+                                ctx.fillStyle = slot.isOptional ? this.theme.NODE_OPTIONAL_IO_COLOR : this.theme.NODE_DEFAULT_IO_COLOR;
                                 ctx.fillText(text, pos[0] + 10, pos[1] + 5);
                             }
                         }
@@ -1399,10 +1396,10 @@
                 if (node.outputs)
                     for (let o in node.outputs) {
                         let slot = node.outputs[o];
-                        let pos = node.getConnectionPos(false, +o);
+                        let pos = this.getConnectionPos(node, false, +o);
                         pos[0] -= node.pos[0];
                         pos[1] -= node.pos[1];
-                        ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : nodes_1.Nodes.options.DATATYPE_COLOR[slot.type];
+                        ctx.fillStyle = slot.links && slot.links.length ? "#7F7" : this.theme.DATATYPE_COLOR[slot.type];
                         ctx.beginPath();
                         //ctx.rect( node.size[0] - 14,i*14,10,10);
                         if (1 || slot.round)
@@ -1419,7 +1416,7 @@
                         if (render_text) {
                             let text = slot.label != null ? slot.label : slot.name;
                             if (text) {
-                                ctx.fillStyle = nodes_1.Nodes.options.NODE_DEFAULT_IO_COLOR;
+                                ctx.fillStyle = this.theme.NODE_DEFAULT_IO_COLOR;
                                 ctx.fillText(text, pos[0] - 10, pos[1] + 5);
                             }
                         }
@@ -1445,26 +1442,26 @@
          */
         drawNodeShape(node, ctx, size, fgcolor, bgcolor, no_title, selected) {
             //bg rect
-            ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
-            ctx.fillStyle = bgcolor || nodes_1.Nodes.options.NODE_DEFAULT_BGCOLOR;
+            ctx.strokeStyle = fgcolor || this.theme.NODE_DEFAULT_COLOR;
+            ctx.fillStyle = bgcolor || this.theme.NODE_DEFAULT_BGCOLOR;
             if (node.type == "main/container") {
-                ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.CONTAINER_NODE_COLOR;
-                ctx.fillStyle = bgcolor || nodes_1.Nodes.options.CONTAINER_NODE_BGCOLOR;
+                ctx.strokeStyle = fgcolor || this.theme.CONTAINER_NODE_COLOR;
+                ctx.fillStyle = bgcolor || this.theme.CONTAINER_NODE_BGCOLOR;
             }
             else if (node.type == "main/input" || node.type == "main/output") {
-                ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.IO_NODE_COLOR;
-                ctx.fillStyle = bgcolor || nodes_1.Nodes.options.IO_NODE_BGCOLOR;
+                ctx.strokeStyle = fgcolor || this.theme.IO_NODE_COLOR;
+                ctx.fillStyle = bgcolor || this.theme.IO_NODE_BGCOLOR;
             }
             /* gradient test
              let grad = ctx.createLinearGradient(0,0,0,node.size[1]);
              grad.addColorStop(0, "#AAA");
-             grad.addColorStop(0.5, fgcolor || Nodes.options.NODE_DEFAULT_COLOR);
-             grad.addColorStop(1, bgcolor || Nodes.options.NODE_DEFAULT_BGCOLOR);
+             grad.addColorStop(0.5, fgcolor || this.theme.NODE_DEFAULT_COLOR);
+             grad.addColorStop(1, bgcolor || this.theme.NODE_DEFAULT_BGCOLOR);
              ctx.fillStyle = grad;
              //*/
-            let title_height = nodes_1.Nodes.options.NODE_TITLE_HEIGHT;
+            let title_height = this.theme.NODE_TITLE_HEIGHT;
             //render depending on shape
-            let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
+            let shape = node.shape || this.theme.NODE_DEFAULT_SHAPE;
             if (shape == "box") {
                 ctx.beginPath();
                 ctx.rect(0, no_title ? 0 : -title_height, size[0] + 1, no_title ? size[1] : size[1] + title_height);
@@ -1484,12 +1481,12 @@
             if (node.bgImage && node.bgImage.width)
                 ctx.drawImage(node.bgImage, (size[0] - node.bgImage.width) * 0.5, (size[1] - node.bgImage.height) * 0.5);
             if (node.bgImageUrl && !node.bgImage)
-                node.bgImage = node.loadImage(node.bgImageUrl);
+                node.bgImage = this.loadImage(node.bgImageUrl);
             if (node.onDrawBackground)
                 node.onDrawBackground(ctx);
             //title bg
             if (!no_title) {
-                ctx.fillStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
+                ctx.fillStyle = fgcolor || this.theme.NODE_DEFAULT_COLOR;
                 let old_alpha = ctx.globalAlpha;
                 //ctx.globalAlpha = 0.5 * old_alpha;
                 if (shape == "box") {
@@ -1508,7 +1505,7 @@
                     ctx.fill();
                 }
                 //box
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || this.theme.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 if (shape == "round" || shape == "circle")
                     ctx.arc(title_height * 0.5, title_height * -0.5, (title_height - 6) * 0.5, 0, Math.PI * 2);
@@ -1520,7 +1517,7 @@
                 ctx.font = this.title_text_font;
                 let title = node.getTitle();
                 if (title && this.scale > 0.5) {
-                    ctx.fillStyle = nodes_1.Nodes.options.NODE_TITLE_COLOR;
+                    ctx.fillStyle = this.theme.NODE_TITLE_COLOR;
                     ctx.fillText(title, 16, 13 - title_height);
                 }
             }
@@ -1534,18 +1531,18 @@
          */
         drawNodeCollapsed(node, ctx, fgcolor, bgcolor) {
             //draw default collapsed shape
-            ctx.strokeStyle = fgcolor || nodes_1.Nodes.options.NODE_DEFAULT_COLOR;
-            ctx.fillStyle = bgcolor || nodes_1.Nodes.options.NODE_DEFAULT_BGCOLOR;
-            let collapsed_radius = nodes_1.Nodes.options.NODE_COLLAPSED_RADIUS;
+            ctx.strokeStyle = fgcolor || this.theme.NODE_DEFAULT_COLOR;
+            ctx.fillStyle = bgcolor || this.theme.NODE_DEFAULT_BGCOLOR;
+            let collapsed_radius = this.theme.NODE_COLLAPSED_RADIUS;
             //circle shape
-            let shape = node.shape || nodes_1.Nodes.options.NODE_DEFAULT_SHAPE;
+            let shape = node.shape || this.theme.NODE_DEFAULT_SHAPE;
             if (shape == "circle") {
                 ctx.beginPath();
                 ctx.roundRect(node.size[0] * 0.5 - collapsed_radius, node.size[1] * 0.5 - collapsed_radius, 2 * collapsed_radius, 2 * collapsed_radius, 5);
                 ctx.fill();
                 ctx.shadowColor = "rgba(0,0,0,0)";
                 ctx.stroke();
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || this.theme.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 ctx.roundRect(node.size[0] * 0.5 - collapsed_radius * 0.5, node.size[1] * 0.5 - collapsed_radius * 0.5, collapsed_radius, collapsed_radius, 2);
                 ctx.fill();
@@ -1556,7 +1553,7 @@
                 ctx.fill();
                 ctx.shadowColor = "rgba(0,0,0,0)";
                 ctx.stroke();
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || this.theme.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 ctx.roundRect(node.size[0] * 0.5 - collapsed_radius * 0.5, node.size[1] * 0.5 - collapsed_radius * 0.5, collapsed_radius, collapsed_radius, 2);
                 ctx.fill();
@@ -1568,7 +1565,7 @@
                 ctx.fill();
                 ctx.shadowColor = "rgba(0,0,0,0)";
                 ctx.stroke();
-                ctx.fillStyle = node.boxcolor || nodes_1.Nodes.options.NODE_DEFAULT_BOXCOLOR || fgcolor;
+                ctx.fillStyle = node.boxcolor || this.theme.NODE_DEFAULT_BOXCOLOR || fgcolor;
                 ctx.beginPath();
                 //ctx.rect(node.size[0] * 0.5 - collapsed_radius*0.5, uiNode.size[1] * 0.5 - collapsed_radius*0.5, collapsed_radius,collapsed_radius);
                 ctx.rect(collapsed_radius * 0.5, collapsed_radius * 0.5, collapsed_radius, collapsed_radius);
@@ -1601,11 +1598,11 @@
                         if (input.link.target_slot == -1)
                             start_node_slotpos = [start_node.pos[0] + 10, start_node.pos[1] + 10];
                         else
-                            start_node_slotpos = start_node.getConnectionPos(false, input.link.target_slot);
-                        let color = nodes_1.Nodes.options.LINK_TYPE_COLORS[node.inputs[i].type];
+                            start_node_slotpos = this.getConnectionPos(start_node, false, input.link.target_slot);
+                        let color = this.theme.LINK_TYPE_COLORS[node.inputs[i].type];
                         if (color == null && typeof (node.id) == "number")
-                            color = nodes_1.Nodes.options.LINK_COLORS[node.id % nodes_1.Nodes.options.LINK_COLORS.length];
-                        this.renderLink(ctx, start_node_slotpos, node.getConnectionPos(true, +i), color);
+                            color = this.theme.LINK_COLORS[node.id % this.theme.LINK_COLORS.length];
+                        this.renderLink(ctx, start_node_slotpos, this.getConnectionPos(node, true, +i), color);
                     }
             }
             ctx.globalAlpha = 1;
@@ -1897,7 +1894,7 @@
             //check if mouse is in input
             let slot = null;
             if (node)
-                slot = node.getSlotInPosition(event.canvasX, event.canvasY);
+                slot = this.getSlotInPosition(node, event.canvasX, event.canvasY);
             if (slot) {
             }
             else
@@ -1945,7 +1942,7 @@
          */
         onMenuAdd(node, e, prev_menu, canvas, first_event) {
             let window = canvas.getCanvasWindow();
-            let values = nodes_1.Nodes.getNodeTypesCategories();
+            let values = container_1.Container.getNodeTypesCategories();
             let entries = {};
             for (let i in values)
                 if (values[i])
@@ -1953,7 +1950,7 @@
             let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
             function inner_clicked(v, e) {
                 let category = v.value;
-                let node_types = nodes_1.Nodes.getNodeTypesInCategory(category);
+                let node_types = container_1.Container.getNodeTypesInCategory(category);
                 let values = [];
                 for (let i in node_types) {
                     //do ton show container input/output in root container
@@ -2118,8 +2115,8 @@
          */
         onMenuNodeColors(node, e, prev_menu) {
             let values = [];
-            for (let i in nodes_1.Nodes.options.NODE_COLORS) {
-                let color = nodes_1.Nodes.options.NODE_COLORS[i];
+            for (let i in this.theme.NODE_COLORS) {
+                let color = this.theme.NODE_COLORS[i];
                 let value = {
                     value: i,
                     content: "<span style='display: block; color:" + color.color + "; background-color:" + color.bgcolor + "'>" + i + "</span>"
@@ -2232,10 +2229,10 @@
             style.position = "fixed";
             style.top = "100px";
             style.left = "100px";
-            style.color = nodes_1.Nodes.options.MENU_TEXT_COLOR;
+            style.color = this.theme.MENU_TEXT_COLOR;
             style.padding = "2px";
-            style.borderBottom = "1px solid " + nodes_1.Nodes.options.MENU_TEXT_COLOR;
-            style.backgroundColor = nodes_1.Nodes.options.MENU_BG_COLOR;
+            style.borderBottom = "1px solid " + this.theme.MENU_TEXT_COLOR;
+            style.backgroundColor = this.theme.MENU_BG_COLOR;
             //title
             if (options.title) {
                 let element = document.createElement("div");
@@ -2347,6 +2344,127 @@
             for (let i in result)
                 if (result[i].parentNode)
                     result[i].parentNode.removeChild(result[i]);
+        }
+        /**
+         * Returns the center of a connection point in renderer coords
+         * @param is_input true if if a input slot, false if it is an output
+         * @param slot (could be the number of the slot or the string with the name of the slot)
+         * @returns {[x,y]} the position
+         **/
+        getConnectionPos(node, is_input, slot_number) {
+            if (node.flags.collapsed) {
+                if (is_input)
+                    return [node.pos[0], node.pos[1] - this.theme.NODE_TITLE_HEIGHT * 0.5];
+                else
+                    return [node.pos[0] + this.theme.NODE_COLLAPSED_WIDTH, node.pos[1] - this.theme.NODE_TITLE_HEIGHT * 0.5];
+            }
+            if (is_input && slot_number == -1) {
+                return [node.pos[0] + 10, node.pos[1] + 10];
+            }
+            if (is_input && node.inputs[slot_number] && node.inputs[slot_number].pos)
+                return [node.pos[0] + node.inputs[slot_number].pos[0], node.pos[1] + node.inputs[slot_number].pos[1]];
+            else if (!is_input && node.outputs[slot_number] && node.outputs[slot_number].pos)
+                return [node.pos[0] + node.outputs[slot_number].pos[0], node.pos[1] + node.outputs[slot_number].pos[1]];
+            if (!is_input)
+                return [node.pos[0] + node.size[0] + 1, node.pos[1] + 10 + slot_number * this.theme.NODE_SLOT_HEIGHT];
+            return [node.pos[0], node.pos[1] + 10 + slot_number * this.theme.NODE_SLOT_HEIGHT];
+        }
+        loadImage(url) {
+            let img = new Image();
+            img.src = this.theme.NODE_IMAGES_PATH + url;
+            img.ready = false;
+            img.onload = function () {
+                this.ready = true;
+            };
+            return img;
+        }
+        /**
+         * Returns the bounding of the object, used for rendering purposes
+         * @returns {[number, number, number, number]} the total size
+         */
+        getBounding(node) {
+            return [node.pos[0] - 4, node.pos[1] - this.theme.NODE_TITLE_HEIGHT, node.pos[0] + node.size[0] + 4, node.pos[1] + node.size[1] + this.theme.NODE_TITLE_HEIGHT];
+        }
+        /**
+         * Checks if a point is inside the shape of a node
+         * @param x
+         * @param y
+         * @param margin
+         * @returns {boolean}
+         */
+        isPointInsideNode(node, x, y, margin) {
+            margin = margin || 0;
+            // let margin_top = node.container ? 0 : 20;
+            let margin_top = 20;
+            if (node.flags.collapsed) {
+                //if ( distance([x,y], [node.pos[0] + node.size[0]*0.5, node.pos[1] + node.size[1]*0.5]) < Nodes.NODE_COLLAPSED_RADIUS)
+                if (utils_1.default.isInsideRectangle(x, y, node.pos[0] - margin, node.pos[1] - this.theme.NODE_TITLE_HEIGHT - margin, this.theme.NODE_COLLAPSED_WIDTH + 2 * margin, this.theme.NODE_TITLE_HEIGHT + 2 * margin))
+                    return true;
+            }
+            else if ((node.pos[0] - 4 - margin) < x && (node.pos[0] + node.size[0] + 4 + margin) > x
+                && (node.pos[1] - margin_top - margin) < y && (node.pos[1] + node.size[1] + margin) > y)
+                return true;
+            return false;
+        }
+        /**
+         * Checks if a point is inside a node slot, and returns info about which slot
+         * @param x
+         * @param y
+         * @returns {IInputInfo|IOutputInfo} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
+         */
+        getSlotInPosition(node, x, y) {
+            //search for inputs
+            if (node.inputs)
+                for (let i in node.inputs) {
+                    let input = node.inputs[i];
+                    let link_pos = this.getConnectionPos(node, true, +i);
+                    if (utils_1.default.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
+                        return { input: input, slot: +i, link_pos: link_pos, locked: input.locked };
+                }
+            if (node.outputs)
+                for (let o in node.outputs) {
+                    let output = node.outputs[o];
+                    let link_pos = this.getConnectionPos(node, false, +o);
+                    if (utils_1.default.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
+                        return { output: output, slot: +o, link_pos: link_pos, locked: output.locked };
+                }
+            return null;
+        }
+        /**
+         * Returns the top-most node in this position of the renderer
+         * @param x the x coordinate in renderer space
+         * @param y the y coordinate in renderer space
+         * @param nodes_list a list with all the nodes to search from, by default is all the nodes in the container
+         * @returns a list with all the nodes that intersect this coordinate
+         */
+        getNodeOnPos(x, y, nodes_list) {
+            if (nodes_list) {
+                for (let i = nodes_list.length - 1; i >= 0; i--) {
+                    let n = nodes_list[i];
+                    if (this.isPointInsideNode(n, x, y, 2))
+                        return n;
+                }
+            }
+            else {
+                for (let id in this.container._nodes) {
+                    let node = this.container._nodes[id];
+                    if (this.isPointInsideNode(node, x, y, 2))
+                        return node;
+                }
+            }
+            return null;
+        }
+        localToScreen(node, x, y, canvas) {
+            return [(x + node.pos[0]) * canvas.scale + canvas.offset[0],
+                (y + node.pos[1]) * canvas.scale + canvas.offset[1]];
+        }
+        showNodeActivity(node) {
+            node.boxcolor = this.theme.NODE_ACTIVE_BOXCOLOR;
+            node.setDirtyCanvas(true, true);
+            setTimeout(function () {
+                node.boxcolor = this.theme.NODE_DEFAULT_BOXCOLOR;
+                node.setDirtyCanvas(true, true);
+            }, 100);
         }
     }
     exports.Renderer = Renderer;
