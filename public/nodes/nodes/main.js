@@ -69,6 +69,37 @@
     }
     exports.ConstantNode = ConstantNode;
     container_1.Container.registerNodeType("main/constant", ConstantNode);
+    class CounterNode extends node_1.Node {
+        constructor() {
+            super();
+            this.value = 0;
+            this.onExecute = function () {
+                let now = Date.now();
+                if (!this.lastTime)
+                    this.lastTime = now;
+                let interval = 1000 / this.settings["speed"].value;
+                if (now - this.lastTime >= interval) {
+                    this.lastTime = now;
+                    this.value++;
+                    this.setOutputData(0, this.value);
+                    console.log(this.value);
+                }
+            };
+            this.onSettingsChanged = function () {
+                if (this.side == container_1.Side.server) {
+                    let speed = this.settings["speed"].value;
+                    this.stopCounting();
+                    this.startCounting(speed);
+                }
+            };
+            this.title = "Counter";
+            this.descriprion = "";
+            this.settings["speed"] = { description: "Limit speed (values/sec)", value: 10, type: "number" };
+            this.addOutput("value", "number");
+        }
+    }
+    exports.CounterNode = CounterNode;
+    container_1.Container.registerNodeType("main/counter", CounterNode);
     //Container: a node that contains a container of other nodes
     class ContainerNode extends node_1.Node {
         constructor(container) {
