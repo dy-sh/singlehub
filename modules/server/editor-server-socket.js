@@ -3,26 +3,25 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "socket.io", "../public/nodes/container", "../public/nodes/utils", "../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../../public/nodes/container", "../../app", "../../public/nodes/utils"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const socket = require("socket.io");
-    const container_1 = require("../public/nodes/container");
-    const utils_1 = require("../public/nodes/utils");
-    const app_1 = require("../app");
+    const container_1 = require("../../public/nodes/container");
+    const app_1 = require("../../app");
+    const utils_1 = require("../../public/nodes/utils");
     const log = require('logplease').create('server', { color: 3 });
     class EditorServerSocket {
-        constructor(server) {
-            let io = socket(server);
+        constructor(io_root) {
+            this.io_root = io_root;
+            let io = io_root.of('/editor');
             this.io = io;
             io.on('connection', function (socket) {
-                log.debug("New socket conection");
+                log.debug("New socket connection to editor");
                 // socket.on('test message', function (msg) {
                 //     io.emit('test message', msg + "2");
                 // });
@@ -60,7 +59,7 @@
                         return;
                     }
                     let room = "editor-container-" + n.cid;
-                    app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-editor-side', n);
+                    app_1.app.server.editorSocket.io.in(room).emit('node-message-to-editor-side', n);
                 });
                 //redirect message
                 socket.on('node-message-to-dashboard-side', function (n) {
@@ -76,7 +75,7 @@
                         return;
                     }
                     let room = "dashboard-container-" + n.cid;
-                    app_1.app.server.socket.io.sockets.in(room).emit('node-message-to-dashboard-side', n);
+                    app_1.app.server.dashboardSocket.io.in(room).emit('node-message-to-dashboard-side', n);
                 });
                 socket.on("get-slots-values", function (cid) {
                     let container = container_1.Container.containers[cid];

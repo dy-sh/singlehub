@@ -9,6 +9,7 @@ import Timer = NodeJS.Timer;
 import {ContainerNode, ContainerInputNode, ContainerOutputNode} from "./nodes/main"
 import {Database} from "../interfaces/database";
 import Utils from "./utils";
+import Namespace = SocketIO.Namespace;
 
 //console logger back and front
 let log;
@@ -40,7 +41,10 @@ export class Container {
     parent_container_id?: number;
     container_node: ContainerNode;
 
-    socket: SocketIOClient.Socket|SocketIO.Server;
+    clinet_socket: SocketIOClient.Socket;//SocketIOClient.Socket|SocketIO.Server;
+    server_dashboard_socket: Namespace;
+    server_editor_socket: Namespace;
+
     db: Database;
 
     _nodes: {[id: number]: Node} = {};
@@ -89,8 +93,14 @@ export class Container {
 
         let rootContainer = Container.containers[0];
         if (rootContainer) {
-            if (rootContainer.socket)
-                this.socket = rootContainer.socket;
+            if (rootContainer.server_dashboard_socket)
+                this.server_dashboard_socket = rootContainer.server_dashboard_socket;
+
+            if (rootContainer.server_editor_socket)
+                this.server_editor_socket = rootContainer.server_editor_socket;
+
+            if (rootContainer.clinet_socket)
+                this.clinet_socket = rootContainer.clinet_socket;
 
             if (rootContainer.db)
                 this.db = rootContainer.db;
@@ -774,7 +784,7 @@ export class Container {
             return;
 
         //create new container
-        let new_cont_node: ContainerNode = <any>this.createNode("main/container",{pos: pos});
+        let new_cont_node: ContainerNode = <any>this.createNode("main/container", {pos: pos});
 
         let new_cont = new_cont_node.sub_container;
         new_cont.last_node_id = this.last_node_id;

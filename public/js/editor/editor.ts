@@ -45,7 +45,7 @@ export class Editor {
 
         //create socket
         this.socket = new EditorClientSocket(this);
-        this.rootContainer.socket = this.socket.socket;
+        this.rootContainer.clinet_socket = this.socket.socket;
 
         //renderer theme
         let theme;

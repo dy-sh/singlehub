@@ -2,11 +2,10 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./container", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -715,7 +714,7 @@
             if (this.side == container_1.Side.server)
                 log.warn("Node " + this.getReadableId() + " is trying to send message from server side to server side");
             else
-                this.container.socket.emit('node-message-to-server-side', { id: this.id, cid: this.container.id, value: mess });
+                this.container.clinet_socket.emit('node-message-to-server-side', { id: this.id, cid: this.container.id, value: mess });
         }
         sendMessageToEditorSide(mess) {
             let m = { id: this.id, cid: this.container.id, value: mess };
@@ -723,12 +722,12 @@
                 log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
             }
             else if (this.side == container_1.Side.server) {
-                let socket = this.container.socket;
+                let socket = this.container.server_editor_socket;
                 let room = "editor-container-" + this.container.id;
-                socket.sockets.in(room).emit('node-message-to-editor-side', m);
+                socket.in(room).emit('node-message-to-editor-side', m);
             }
             else {
-                this.container.socket.emit('node-message-to-editor-side', m);
+                this.container.clinet_socket.emit('node-message-to-editor-side', m);
             }
         }
         sendMessageToDashboardSide(mess) {
@@ -737,12 +736,12 @@
                 log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
             }
             else if (this.side == container_1.Side.server) {
-                let socket = this.container.socket;
+                let socket = this.container.server_dashboard_socket;
                 let room = "dashboard-container-" + this.container.id;
-                socket.sockets.in(room).emit('node-message-to-dashboard-side', m);
+                socket.in(room).emit('node-message-to-dashboard-side', m);
             }
             else {
-                this.container.socket.emit('node-message-to-dashboard-side', m);
+                this.container.clinet_socket.emit('node-message-to-dashboard-side', m);
             }
         }
         updateInputsLabels() {

@@ -3,25 +3,26 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "path", "morgan", "cookie-parser", "body-parser", "http", "../../routes/editor-server-socket"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', 'socket.io', "./editor-server-socket", "./dashboard-server-socket"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
-    const path = require("path");
-    const morgan = require("morgan");
-    const cookieParser = require("cookie-parser");
-    const bodyParser = require("body-parser");
+    const express = require('express');
+    const path = require('path');
+    const morgan = require('morgan');
+    const cookieParser = require('cookie-parser');
+    const bodyParser = require('body-parser');
     // import * as expressValidator from 'express-validator';
     let expressValidator = require('express-validator');
-    const http = require("http");
+    const http = require('http');
+    const socket = require('socket.io');
     const log = require('logplease').create('server', { color: 3 });
-    const editor_server_socket_1 = require("../../routes/editor-server-socket");
+    const editor_server_socket_1 = require("./editor-server-socket");
+    const dashboard_server_socket_1 = require("./dashboard-server-socket");
     let config = require('./../../config.json');
     class Server {
         constructor() {
@@ -43,7 +44,9 @@
             //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
             if (config.webServer.debug)
                 this.express.use(morgan('dev', {
-                    skip: function (req, res) { return res.statusCode < 400; }
+                    skip: function (req, res) {
+                        return res.statusCode < 400;
+                    }
                 }));
             this.express.use(bodyParser.json());
             this.express.use(bodyParser.urlencoded({ extended: false }));
@@ -55,7 +58,7 @@
         routes() {
             //api console logger
             this.express.use('/api/', function (req, res, next) {
-                var send = res.send;
+                let send = res.send;
                 res.send = function (body) {
                     if (res.statusCode != 200)
                         log.warn(body);
@@ -147,7 +150,9 @@
             }
         }
         start_io() {
-            this.socket = new editor_server_socket_1.EditorServerSocket(this.server);
+            let io_root = socket(this.server);
+            this.editorSocket = new editor_server_socket_1.EditorServerSocket(io_root);
+            this.dashboardSocket = new dashboard_server_socket_1.DashboardServerSocket(io_root);
         }
     }
     exports.Server = Server;

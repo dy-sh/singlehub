@@ -32,7 +32,7 @@
             }
             let room = "dashboard-container-" + container.id;
             if (activeNodesIds.length > 0)
-                app_1.app.server.socket.io.sockets.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
+                app_1.app.server.editorSocket.io.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
         }
     }
     /**

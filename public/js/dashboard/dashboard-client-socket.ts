@@ -21,7 +21,7 @@ export class DashboardClientSocket {
     reconnecting: boolean;
 
     constructor(container_id: number) {
-        let socket = io();
+        let socket = io('/dashboard');
         this.socket = socket;
 
         this.container_id=container_id;

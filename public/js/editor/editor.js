@@ -34,7 +34,7 @@
             this.rootContainer = new container_1.Container(container_1.Side.editor);
             //create socket
             this.socket = new editor_client_socket_1.EditorClientSocket(this);
-            this.rootContainer.socket = this.socket.socket;
+            this.rootContainer.clinet_socket = this.socket.socket;
             //renderer theme
             let theme;
             if (window.theme)

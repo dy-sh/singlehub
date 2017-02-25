@@ -21,7 +21,8 @@ export class EditorClientSocket {
         let SLOTS_VALUES_INTERVAL = 200;
 
         this.editor = editor;
-        let socket = io();
+
+        let socket=io('/editor');
         this.socket = socket;
 
         let that = this;

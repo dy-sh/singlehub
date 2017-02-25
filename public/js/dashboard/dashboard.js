@@ -27,7 +27,7 @@
             this.container = new container_1.Container(container_1.Side.dashboard, container_id);
             //create socket
             this.socket = new dashboard_client_socket_1.DashboardClientSocket(container_id);
-            this.container.socket = this.socket.socket;
+            this.container.clinet_socket = this.socket.socket;
             this.socket.getNodes();
             //globals for easy debug in dev-console
             window.dashboard = this;

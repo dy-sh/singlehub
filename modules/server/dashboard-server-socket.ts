@@ -1,28 +1,30 @@
 /**
- * Created by Derwish (derwish.pro@gmail.com) on 25.01.2017.
+ * Created by Derwish (derwish.pro@gmail.com) on 25.02.17.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 
-import * as socket from 'socket.io';
-import * as http from 'http';
-import {Container} from "../public/nodes/container";
-import Utils from "../public/nodes/utils";
-import {app} from "../app";
+
+import {Container} from "../../public/nodes/container";
+import {app} from "../../app";
+import Namespace = SocketIO.Namespace;
+
 
 const log = require('logplease').create('server', {color: 3});
 
 
-export class EditorServerSocket {
+export class DashboardServerSocket {
 
-    io: SocketIO.Server;
+    io_root: SocketIO.Server;
+    io: Namespace;
 
-    constructor(server: http.Server) {
-        let io = socket(server);
+    constructor(io_root: SocketIO.Server) {
+        this.io_root = io_root;
+        let io = this.io_root.of('/dashboard');
         this.io = io;
 
         io.on('connection', function (socket) {
-            log.debug("New socket conection");
+            log.debug("New socket connection to dashboard");
             // socket.on('test message', function (msg) {
             //     io.emit('test message', msg + "2");
             // });
@@ -69,7 +71,7 @@ export class EditorServerSocket {
                 }
 
                 let room = "editor-container-" + n.cid;
-                app.server.socket.io.sockets.in(room).emit('node-message-to-editor-side', n);
+                app.server.editorSocket.io.in(room).emit('node-message-to-editor-side', n);
 
             });
 
@@ -90,57 +92,12 @@ export class EditorServerSocket {
                 }
 
                 let room = "dashboard-container-" + n.cid;
-                app.server.socket.io.sockets.in(room).emit('node-message-to-dashboard-side', n);
+                app.server.dashboardSocket.io.in(room).emit('node-message-to-dashboard-side', n);
             });
 
-            socket.on("get-slots-values", function (cid) {
-                let container = Container.containers[cid];
-                if (!container || !container._nodes)
-                    return;
 
-                let inputs_values = [];
-                let outputs_values = [];
-                for (let id in container._nodes) {
-                    let node = container._nodes[id];
-                    if (node.inputs) {
-                        for (let i in node.inputs) {
-                            let data = node.inputs[i].data;
-                            data = Utils.formatAndTrimValue(data);
-
-                            //todo convert and trim data
-                            inputs_values.push({
-                                nodeId: node.id,
-                                inputId: i,
-                                data: data
-                            })
-                        }
-                    }
-
-                    if (node.outputs) {
-                        for (let o in node.outputs) {
-                            let data = node.outputs[o].data;
-                            data = Utils.formatAndTrimValue(data);
-
-                            outputs_values.push({
-                                nodeId: node.id,
-                                outputId: o,
-                                data: data
-                            })
-                        }
-                    }
-                }
-
-                let slots_values = {
-                    cid: cid,
-                    inputs: inputs_values,
-                    outputs: outputs_values
-                };
-                socket.emit("slots-values", slots_values);
-            });
         });
 
 
     }
 }
-
-

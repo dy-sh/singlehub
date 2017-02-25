@@ -31,7 +31,7 @@ export class Dashboard {
 
         //create socket
         this.socket = new DashboardClientSocket(container_id);
-        this.container.socket = this.socket.socket;
+        this.container.clinet_socket = this.socket.socket;
 
         this.socket.getNodes();
 

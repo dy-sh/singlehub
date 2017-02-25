@@ -13,13 +13,12 @@ import * as bodyParser from 'body-parser';
 // import * as expressValidator from 'express-validator';
 let expressValidator = require('express-validator');
 import * as http from 'http';
+import * as socket from 'socket.io';
 
-const log = require('logplease').create('server',{color: 3});
+const log = require('logplease').create('server', {color: 3});
 
-import {EditorServerSocket} from "../../routes/editor-server-socket"
-
-
-
+import {EditorServerSocket} from "./editor-server-socket"
+import {DashboardServerSocket} from "./dashboard-server-socket"
 
 
 let config = require('./../../config.json');
@@ -27,7 +26,10 @@ let config = require('./../../config.json');
 export class Server {
     express: express.Application;
     server: http.Server;
-    socket: EditorServerSocket;
+
+    editorSocket: EditorServerSocket;
+    dashboardSocket: DashboardServerSocket;
+
     private __rootdirname;
 
     constructor() {
@@ -50,9 +52,11 @@ export class Server {
         // uncomment after placing your favicon in /public
         //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
         if (config.webServer.debug)
-            this.express.use(morgan('dev',{
-            skip: function (req, res) { return res.statusCode < 400 }
-        }));
+            this.express.use(morgan('dev', {
+                skip: function (req, res) {
+                    return res.statusCode < 400
+                }
+            }));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({extended: false}));
         this.express.use(cookieParser());
@@ -64,7 +68,7 @@ export class Server {
     private routes() {
         //api console logger
         this.express.use('/api/', function (req, res, next) {
-            var send = res.send;
+            let send = res.send;
             (<any>res).send = function (body) {
                 if (res.statusCode != 200)
                     log.warn(body);
@@ -165,7 +169,9 @@ export class Server {
     }
 
     private start_io() {
-        this.socket = new EditorServerSocket(this.server);
+        let io_root = socket(this.server);
+        this.editorSocket = new EditorServerSocket(io_root);
+        this.dashboardSocket = new DashboardServerSocket(io_root);
     }
 }
 

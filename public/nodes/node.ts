@@ -1058,7 +1058,7 @@ export class Node {
         if (this.side == Side.server)
             log.warn("Node " + this.getReadableId() + " is trying to send message from server side to server side");
         else
-            this.container.socket.emit('node-message-to-server-side',
+            this.container.clinet_socket.emit('node-message-to-server-side',
                 {id: this.id, cid: this.container.id, value: mess});
     }
 
@@ -1069,12 +1069,12 @@ export class Node {
             log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
         }
         else if (this.side == Side.server) {
-            let socket: SocketIO.Server = <any>this.container.socket;
+            let socket=this.container.server_editor_socket;
             let room = "editor-container-" + this.container.id;
-            socket.sockets.in(room).emit('node-message-to-editor-side', m);
+            socket.in(room).emit('node-message-to-editor-side', m);
         }
         else {
-            this.container.socket.emit('node-message-to-editor-side', m);
+            this.container.clinet_socket.emit('node-message-to-editor-side', m);
         }
     }
 
@@ -1084,12 +1084,12 @@ export class Node {
             log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
         }
         else if (this.side == Side.server) {
-            let socket: SocketIO.Server = <any>this.container.socket;
+            let socket=this.container.server_dashboard_socket;
             let room = "dashboard-container-" + this.container.id;
-            socket.sockets.in(room).emit('node-message-to-dashboard-side', m);
+            socket.in(room).emit('node-message-to-dashboard-side', m);
         }
         else {
-            this.container.socket.emit('node-message-to-dashboard-side', m);
+            this.container.clinet_socket.emit('node-message-to-dashboard-side', m);
         }
     }
 

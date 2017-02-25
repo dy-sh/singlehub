@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "./node", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -18,12 +19,12 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
+    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(exports.Side || (exports.Side = {}));
-    var Side = exports.Side;
+    })(Side = exports.Side || (exports.Side = {}));
     class Container {
         constructor(side, id) {
             this._nodes = {};
@@ -38,8 +39,12 @@
             log.debug("Container created [" + this.id + "]");
             let rootContainer = Container.containers[0];
             if (rootContainer) {
-                if (rootContainer.socket)
-                    this.socket = rootContainer.socket;
+                if (rootContainer.server_dashboard_socket)
+                    this.server_dashboard_socket = rootContainer.server_dashboard_socket;
+                if (rootContainer.server_editor_socket)
+                    this.server_editor_socket = rootContainer.server_editor_socket;
+                if (rootContainer.clinet_socket)
+                    this.clinet_socket = rootContainer.clinet_socket;
                 if (rootContainer.db)
                     this.db = rootContainer.db;
             }

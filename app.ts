@@ -10,7 +10,7 @@ console.log("----------------------------- MyNodes -----------------------------
 
 
 let config = require('./config.json');
-import {Server} from './modules/web-server/server';
+import {Server} from './modules/server/server';
 import {Container, Side} from './public/nodes/container'
 import {Database} from "./public/interfaces/database";
 
@@ -62,7 +62,7 @@ class App {
     }
 
     createServer() {
-        this.server = require('./modules/web-server/server').server;
+        this.server = require('./modules/server/server').server;
     }
 
     registerNodes() {
@@ -74,7 +74,10 @@ class App {
 
     createRootContainer() {
         this.rootContainer = new Container(Side.server);
-        this.rootContainer.socket = this.server.socket.io;
+        if (this.server.editorSocket)
+            this.rootContainer.server_editor_socket = this.server.editorSocket.io;
+        if (this.server.dashboardSocket)
+            this.rootContainer.server_dashboard_socket = this.server.dashboardSocket.io;
     }
 
 

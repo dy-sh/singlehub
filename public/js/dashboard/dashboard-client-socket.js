@@ -16,7 +16,7 @@
     let log = Logger.create('client', { color: 3 });
     class DashboardClientSocket {
         constructor(container_id) {
-            let socket = io();
+            let socket = io('/dashboard');
             this.socket = socket;
             this.container_id = container_id;
             let that = this;

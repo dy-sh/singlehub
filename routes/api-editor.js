@@ -32,7 +32,7 @@
             }
             let room = "editor-container-" + container.id;
             if (activeNodesIds.length > 0)
-                app_1.app.server.socket.io.sockets.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
+                app_1.app.server.editorSocket.io.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
         }
     }
     //------------------ info ------------------------
@@ -66,7 +66,7 @@
         let node = container.createNode(req.body.type, { pos: req.body.position });
         if (!node)
             return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
-        app_1.app.server.socket.io.emit('node-create', {
+        app_1.app.server.editorSocket.io.emit('node-create', {
             id: node.id,
             cid: req.params.cid,
             type: node.type,
@@ -85,7 +85,7 @@
         if (!node)
             return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
         container.remove(node);
-        app_1.app.server.socket.io.emit('node-delete', {
+        app_1.app.server.editorSocket.io.emit('node-delete', {
             id: req.params.id,
             cid: req.params.cid,
         });
@@ -104,7 +104,7 @@
                 return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
             container.remove(node);
         }
-        app_1.app.server.socket.io.emit('nodes-delete', {
+        app_1.app.server.editorSocket.io.emit('nodes-delete', {
             nodes: req.body,
             cid: req.params.cid
         });
@@ -123,7 +123,7 @@
         node.pos = req.body.position;
         if (app_1.app.db)
             app_1.app.db.updateNode(node.id, node.container.id, { pos: node.pos });
-        app_1.app.server.socket.io.emit('node-update-position', {
+        app_1.app.server.editorSocket.io.emit('node-update-position', {
             id: req.params.id,
             cid: req.params.cid,
             pos: node.pos
@@ -143,7 +143,7 @@
         node.size = req.body.size;
         if (app_1.app.db)
             app_1.app.db.updateNode(node.id, node.container.id, { size: node.size });
-        app_1.app.server.socket.io.emit('node-update-size', {
+        app_1.app.server.editorSocket.io.emit('node-update-size', {
             id: req.params.id,
             cid: req.params.cid,
             size: node.size
@@ -163,7 +163,7 @@
                 return res.status(404).send(`Can't move nodes. Node id [${req.params.cid}/${req.params.id}] not found.`);
         }
         container.mooveNodesToNewContainer(req.body.ids, req.body.pos);
-        app_1.app.server.socket.io.emit('nodes-move-to-new-container', {
+        app_1.app.server.editorSocket.io.emit('nodes-move-to-new-container', {
             ids: req.body.ids,
             pos: req.body.pos,
             cid: req.params.cid
@@ -186,7 +186,7 @@
             node.onSettingsChanged();
         if (app_1.app.db)
             app_1.app.db.updateNode(node.id, node.container.id, { settings: node.settings });
-        app_1.app.server.socket.io.emit('node-settings', {
+        app_1.app.server.editorSocket.io.emit('node-settings', {
             id: req.params.id,
             cid: req.params.cid,
             settings: node.settings
@@ -221,7 +221,7 @@
             link.target_slot = 0;
         }
         node.connect(link.origin_slot, targetNode.id, link.target_slot);
-        app_1.app.server.socket.io.emit('link-create', {
+        app_1.app.server.editorSocket.io.emit('link-create', {
             cid: req.params.cid,
             link: link
         });
@@ -243,7 +243,7 @@
             return res.status(404).send(`Can't create link. Node id [${req.params.cid}/${link.target_id}] not found.`);
         // node.disconnectOutput(link.origin_slot, targetNode);
         targetNode.disconnectInput(link.target_slot);
-        app_1.app.server.socket.io.emit('link-delete', {
+        app_1.app.server.editorSocket.io.emit('link-delete', {
             cid: req.params.cid,
             link: link
         });
@@ -264,7 +264,7 @@
      */
     router.post('/run', function (req, res) {
         app_1.app.rootContainer.run();
-        app_1.app.server.socket.io.emit('container-run');
+        app_1.app.server.editorSocket.io.emit('container-run');
         res.send(`Run container`);
     });
     /**
@@ -272,7 +272,7 @@
      */
     router.post('/stop', function (req, res) {
         app_1.app.rootContainer.stop();
-        app_1.app.server.socket.io.emit('container-stop');
+        app_1.app.server.editorSocket.io.emit('container-stop');
         res.send(`Stop container`);
     });
     /**
@@ -280,7 +280,7 @@
      */
     router.post('/step', function (req, res) {
         app_1.app.rootContainer.runStep();
-        app_1.app.server.socket.io.emit('container-run-step');
+        app_1.app.server.editorSocket.io.emit('container-run-step');
         res.send(`Run step container`);
     });
     //------------------ receiver ------------------------

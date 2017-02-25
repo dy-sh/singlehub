@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/container"], factory);
     }
 })(function (require, exports) {
@@ -18,7 +17,7 @@
         constructor(editor) {
             let SLOTS_VALUES_INTERVAL = 200;
             this.editor = editor;
-            let socket = io();
+            let socket = io('/editor');
             this.socket = socket;
             let that = this;
             setInterval(function () {

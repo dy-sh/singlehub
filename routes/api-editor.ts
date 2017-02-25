@@ -33,7 +33,7 @@ function updateActiveNodes() {
 
         let room = "editor-container-" + container.id;
         if (activeNodesIds.length > 0)
-            app.server.socket.io.sockets.in(room).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
+            app.server.editorSocket.io.in(room).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
 
     }
 }
@@ -85,7 +85,7 @@ router.post('/c/:cid/n/', function (req, res) {
     if (!node) return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
 
 
-    app.server.socket.io.emit('node-create', {
+    app.server.editorSocket.io.emit('node-create', {
         id: node.id,
         cid: req.params.cid,
         type: node.type,
@@ -108,7 +108,7 @@ router.delete('/c/:cid/n/:id', function (req, res) {
 
     container.remove(node);
 
-    app.server.socket.io.emit('node-delete', {
+    app.server.editorSocket.io.emit('node-delete', {
         id: req.params.id,
         cid: req.params.cid,
     });
@@ -131,7 +131,7 @@ router.delete('/c/:cid/n/', function (req, res) {
         container.remove(node);
     }
 
-    app.server.socket.io.emit('nodes-delete', {
+    app.server.editorSocket.io.emit('nodes-delete', {
         nodes: req.body,
         cid: req.params.cid
     });
@@ -155,7 +155,7 @@ router.put('/c/:cid/n/:id/position', function (req, res) {
     if (app.db)
         app.db.updateNode(node.id, node.container.id, {pos: node.pos});
 
-    app.server.socket.io.emit('node-update-position', {
+    app.server.editorSocket.io.emit('node-update-position', {
         id: req.params.id,
         cid: req.params.cid,
         pos: node.pos
@@ -178,7 +178,7 @@ router.put('/c/:cid/n/:id/size', function (req, res) {
     if (app.db)
         app.db.updateNode(node.id, node.container.id, {size: node.size});
 
-    app.server.socket.io.emit('node-update-size', {
+    app.server.editorSocket.io.emit('node-update-size', {
         id: req.params.id,
         cid: req.params.cid,
         size: node.size
@@ -201,7 +201,7 @@ router.put('/c/:cid/n/move/', function (req, res) {
 
     container.mooveNodesToNewContainer(req.body.ids, req.body.pos);
 
-    app.server.socket.io.emit('nodes-move-to-new-container', {
+    app.server.editorSocket.io.emit('nodes-move-to-new-container', {
         ids: req.body.ids,
         pos: req.body.pos,
         cid: req.params.cid
@@ -233,7 +233,7 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
     if (app.db)
         app.db.updateNode(node.id, node.container.id, {settings: node.settings});
 
-    app.server.socket.io.emit('node-settings', {
+    app.server.editorSocket.io.emit('node-settings', {
         id: req.params.id,
         cid: req.params.cid,
         settings: node.settings
@@ -277,7 +277,7 @@ router.post('/c/:cid/l', function (req, res) {
 
     node.connect(link.origin_slot, targetNode.id, link.target_slot);
 
-    app.server.socket.io.emit('link-create', {
+    app.server.editorSocket.io.emit('link-create', {
         cid: req.params.cid,
         link: link
     });
@@ -305,7 +305,7 @@ router.delete('/c/:cid/l', function (req, res) {
     // node.disconnectOutput(link.origin_slot, targetNode);
     targetNode.disconnectInput(link.target_slot);
 
-    app.server.socket.io.emit('link-delete', {
+    app.server.editorSocket.io.emit('link-delete', {
         cid: req.params.cid,
         link: link
     });
@@ -332,7 +332,7 @@ router.get('/state', function (req, res) {
  */
 router.post('/run', function (req, res) {
     app.rootContainer.run();
-    app.server.socket.io.emit('container-run');
+    app.server.editorSocket.io.emit('container-run');
     res.send(`Run container`);
 });
 
@@ -342,7 +342,7 @@ router.post('/run', function (req, res) {
  */
 router.post('/stop', function (req, res) {
     app.rootContainer.stop();
-    app.server.socket.io.emit('container-stop');
+    app.server.editorSocket.io.emit('container-stop');
     res.send(`Stop container`);
 });
 
@@ -352,7 +352,7 @@ router.post('/stop', function (req, res) {
  */
 router.post('/step', function (req, res) {
     app.rootContainer.runStep();
-    app.server.socket.io.emit('container-run-step');
+    app.server.editorSocket.io.emit('container-run-step');
     res.send(`Run step container`);
 });
 //------------------ receiver ------------------------
