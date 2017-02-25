@@ -2,11 +2,10 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./container", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -671,9 +670,9 @@
          * @param v
          */
         captureInput(v) {
-            if (!this.container || !this.container.list_of_renderers)
+            if (!this.container || !this.container.renderers)
                 return;
-            let list = this.container.list_of_renderers;
+            let list = this.container.renderers;
             for (let i = 0; i < list.length; ++i) {
                 let c = list[i];
                 //releasing somebody elses capture?!

@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./node", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -19,19 +18,19 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
-    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(Side = exports.Side || (exports.Side = {}));
+    })(exports.Side || (exports.Side = {}));
+    var Side = exports.Side;
     class Container {
         constructor(side, id) {
             this._nodes = {};
             this.supported_types = ["number", "string", "boolean"];
             if (typeof side != "number")
                 throw "Container side is not defined";
-            this.list_of_renderers = null;
+            this.renderers = null;
             this.id = id || ++Container.last_container_id;
             this.side = side;
             Container.containers[this.id] = this;
@@ -146,29 +145,31 @@
             }
         }
         /**
-         * Attach Renderer to this container
+         * Attach renderer to this container
          * @param renderer
          */
         attachRenderer(renderer) {
             if (renderer.container && renderer.container != this)
                 renderer.container.detachRenderer(renderer);
             renderer.container = this;
-            if (!this.list_of_renderers)
-                this.list_of_renderers = [];
-            this.list_of_renderers.push(renderer);
+            if (!this.renderers)
+                this.renderers = [];
+            this.renderers.push(renderer);
         }
         /**
-         * Detach Renderer from this container
+         * Detach renderer from this container
          * @param renderer
          */
         detachRenderer(renderer) {
-            if (!this.list_of_renderers)
+            if (!this.renderers)
                 return;
-            let pos = this.list_of_renderers.indexOf(renderer);
+            let pos = this.renderers.indexOf(renderer);
             if (pos == -1)
                 return;
             renderer.container = null;
-            this.list_of_renderers.splice(pos, 1);
+            this.renderers.splice(pos, 1);
+            if (this.renderers.length == 0)
+                delete this.renderers;
         }
         /**
          * Starts running this container every interval milliseconds.
@@ -293,10 +294,10 @@
          * @param params
          */
         sendActionToRenderer(action, params) {
-            if (!this.list_of_renderers)
+            if (!this.renderers)
                 return;
-            for (let i = 0; i < this.list_of_renderers.length; ++i) {
-                let c = this.list_of_renderers[i];
+            for (let i = 0; i < this.renderers.length; ++i) {
+                let c = this.renderers[i];
                 if (c[action])
                     c[action].apply(c, params);
             }
@@ -407,9 +408,9 @@
             if (node.onRemoved)
                 node.onRemoved();
             //remove from renderer
-            if (this.list_of_renderers) {
-                for (let i = 0; i < this.list_of_renderers.length; ++i) {
-                    let renderer = this.list_of_renderers[i];
+            if (this.renderers) {
+                for (let i = 0; i < this.renderers.length; ++i) {
+                    let renderer = this.renderers[i];
                     if (renderer.selected_nodes[node.id])
                         delete renderer.selected_nodes[node.id];
                     if (renderer.node_dragged == node)

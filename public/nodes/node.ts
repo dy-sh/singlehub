@@ -999,10 +999,10 @@ export class Node {
      * @param v
      */
     captureInput(v: any): void {
-        if (!this.container || !this.container.list_of_renderers)
+        if (!this.container || !this.container.renderers)
             return;
 
-        let list = this.container.list_of_renderers;
+        let list = this.container.renderers;
 
         for (let i = 0; i < list.length; ++i) {
             let c = list[i];
