@@ -82,14 +82,6 @@
                     this.lastTime = now;
                     this.value++;
                     this.setOutputData(0, this.value);
-                    console.log(this.value);
-                }
-            };
-            this.onSettingsChanged = function () {
-                if (this.side == container_1.Side.server) {
-                    let speed = this.settings["speed"].value;
-                    this.stopCounting();
-                    this.startCounting(speed);
                 }
             };
             this.title = "Counter";

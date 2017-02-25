@@ -75,6 +75,7 @@ export class ConstantNode extends Node {
 Container.registerNodeType("main/constant", ConstantNode);
 
 
+
 export class CounterNode extends Node {
     value = 0;
     lastTime: Date;
@@ -100,16 +101,6 @@ export class CounterNode extends Node {
             this.lastTime = now;
             this.value++;
             this.setOutputData(0, this.value);
-            console.log(this.value);
-        }
-    }
-
-
-    onSettingsChanged = function () {
-        if (this.side == Side.server) {
-            let speed = this.settings["speed"].value;
-            this.stopCounting();
-            this.startCounting(speed);
         }
     }
 }

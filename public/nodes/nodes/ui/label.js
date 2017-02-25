@@ -43,7 +43,6 @@
                 this.isRecentlyActive = true;
             };
             this.onGetMessageToDashboardSide = function (data) {
-                console.log("111 " + data);
                 $('#labelName-' + this.id).html(this.title);
                 $('#labelValue-' + this.id).html(data.value);
             };
