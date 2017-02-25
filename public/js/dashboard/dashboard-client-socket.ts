@@ -46,22 +46,15 @@ export class DashboardClientSocket {
         });
 
         socket.on('node-create', function (n) {
-            if ($('#node-' + n.id))
-                updateNode(n);
-            else
-                createNode(n);
+
         });
 
         socket.on('node-update', function (n) {
-            updateNode(n);
         });
 
-        socket.on('panel-update', function (n) {
-            updatePanel(n);
-        });
+
 
         socket.on('node-delete', function (n) {
-            removeNode(n);
         });
 
 
@@ -97,7 +90,7 @@ export class DashboardClientSocket {
                 }
 
                 for (let i = 0; i < nodes.length; i++) {
-                    createNode(nodes[i]);
+                    // createNode(nodes[i]);
                 }
             }
         });

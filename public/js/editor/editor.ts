@@ -78,10 +78,6 @@ export class Editor {
         this.addSlotsValuesButton();
         this.updateContainersNavigation();
 
-
-
-
-
     }
 
     addMiniWindow(w: number, h: number): void {
