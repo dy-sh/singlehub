@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../nodes", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
@@ -79,6 +78,8 @@
                 this.sub_container = new container_1.Container(this.side);
                 this.sub_container_id = this.sub_container.id;
                 this.title = "Container " + this.sub_container.id;
+                this.sub_container.container_node = this;
+                this.sub_container.parent_container_id = this.container.id;
                 if (this.container.db)
                     this.container.db.updateLastContainerId(this.sub_container_id);
             };

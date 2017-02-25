@@ -94,6 +94,9 @@ export class ContainerNode extends Node {
         this.sub_container_id = this.sub_container.id;
         this.title = "Container " + this.sub_container.id;
 
+        this.sub_container.container_node = this;
+        this.sub_container.parent_container_id = this.container.id;
+
         if (this.container.db)
             this.container.db.updateLastContainerId(this.sub_container_id);
 

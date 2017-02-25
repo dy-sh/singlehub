@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./nodes", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -19,12 +18,12 @@
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
-    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(Side = exports.Side || (exports.Side = {}));
+    })(exports.Side || (exports.Side = {}));
+    var Side = exports.Side;
     class Container {
         constructor(side, id) {
             this._nodes = {};
@@ -547,7 +546,6 @@
             //create new container
             let new_cont_node = this.createNode("main/container");
             new_cont_node.pos = pos;
-            this.create(new_cont_node);
             let new_cont = new_cont_node.sub_container;
             new_cont.last_node_id = this.last_node_id;
             if (this.db)
@@ -584,7 +582,6 @@
                                             input_node.pos[1] += 15;
                                     }
                                 }
-                                new_cont.create(input_node);
                                 //connect new cont input to old target
                                 new_cont_node.inputs[input_node.properties["slot"]].link =
                                     { target_node_id: input.link.target_node_id, target_slot: input.link.target_slot };
@@ -602,6 +599,9 @@
                                 if (this.db) {
                                     let s_old_target = old_target.serialize(true);
                                     let s_node = node.serialize(true);
+                                    let s_input_node = input_node.serialize(true);
+                                    this.db.updateNode(input_node.id, new_cont.id, { pos: s_input_node.pos });
+                                    this.db.updateNode(input_node.id, new_cont.id, { outputs: s_input_node.outputs });
                                     this.db.updateNode(old_target.id, this.id, { outputs: s_old_target.outputs });
                                     this.db.updateNode(node.id, new_cont.id, { inputs: s_node.inputs });
                                 }
@@ -632,7 +632,6 @@
                                                 output_node.pos[1] += 15;
                                         }
                                     }
-                                    new_cont.create(output_node);
                                     //connect new cont output to old target
                                     new_cont_node.outputs[output_node.properties["slot"]].links = [{
                                             target_node_id: link.target_node_id,
@@ -648,6 +647,9 @@
                                     if (this.db) {
                                         let s_old_target = old_target.serialize(true);
                                         let s_node = node.serialize(true);
+                                        let s_output_node = output_node.serialize(true);
+                                        this.db.updateNode(output_node.id, new_cont.id, { pos: s_output_node.pos });
+                                        this.db.updateNode(output_node.id, new_cont.id, { inputs: s_output_node.inputs });
                                         this.db.updateNode(old_target.id, this.id, { inputs: s_old_target.inputs });
                                         this.db.updateNode(node.id, new_cont.id, { outputs: s_node.outputs });
                                     }

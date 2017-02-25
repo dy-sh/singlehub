@@ -3,23 +3,22 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "path", "morgan", "cookie-parser", "body-parser", "http", "../../routes/editor-server-socket"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', 'path', 'morgan', 'cookie-parser', 'body-parser', 'http', "../../routes/editor-server-socket"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
-    const path = require("path");
-    const morgan = require("morgan");
-    const cookieParser = require("cookie-parser");
-    const bodyParser = require("body-parser");
+    const express = require('express');
+    const path = require('path');
+    const morgan = require('morgan');
+    const cookieParser = require('cookie-parser');
+    const bodyParser = require('body-parser');
     // import * as expressValidator from 'express-validator';
     let expressValidator = require('express-validator');
-    const http = require("http");
+    const http = require('http');
     const log = require('logplease').create('server', { color: 3 });
     const editor_server_socket_1 = require("../../routes/editor-server-socket");
     let config = require('./../../config.json');

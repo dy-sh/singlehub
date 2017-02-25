@@ -728,7 +728,6 @@ export class Container {
         //create new container
         let new_cont_node: ContainerNode = (<any>this).createNode("main/container");
         new_cont_node.pos = pos;
-        this.create(new_cont_node);
 
         let new_cont = new_cont_node.sub_container;
         new_cont.last_node_id = this.last_node_id;
@@ -776,9 +775,6 @@ export class Container {
                                 }
                             }
 
-                            new_cont.create(input_node);
-
-
                             //connect new cont input to old target
                             new_cont_node.inputs[input_node.properties["slot"]].link =
                                 {target_node_id: input.link.target_node_id, target_slot: input.link.target_slot}
@@ -799,6 +795,9 @@ export class Container {
                             if (this.db) {
                                 let s_old_target = old_target.serialize(true);
                                 let s_node = node.serialize(true);
+                                let s_input_node = input_node.serialize(true);
+                                this.db.updateNode(input_node.id, new_cont.id, {pos: s_input_node.pos});
+                                this.db.updateNode(input_node.id, new_cont.id, {outputs: s_input_node.outputs});
                                 this.db.updateNode(old_target.id, this.id, {outputs: s_old_target.outputs});
                                 this.db.updateNode(node.id, new_cont.id, {inputs: s_node.inputs});
                             }
@@ -837,7 +836,6 @@ export class Container {
                                     }
                                 }
 
-                                new_cont.create(output_node);
 
 
                                 //connect new cont output to old target
@@ -859,6 +857,9 @@ export class Container {
                                 if (this.db) {
                                     let s_old_target = old_target.serialize(true);
                                     let s_node = node.serialize(true);
+                                    let s_output_node = output_node.serialize(true);
+                                    this.db.updateNode(output_node.id, new_cont.id, {pos: s_output_node.pos});
+                                    this.db.updateNode(output_node.id, new_cont.id, {inputs: s_output_node.inputs});
                                     this.db.updateNode(old_target.id, this.id, {inputs: s_old_target.inputs});
                                     this.db.updateNode(node.id, new_cont.id, {outputs: s_node.outputs});
                                 }
