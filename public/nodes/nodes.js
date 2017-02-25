@@ -32,7 +32,6 @@
     class NodesOptions {
         constructor() {
             this.MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
-            this.DEFAULT_POSITION = [100, 100]; //default node position
             this.START_POS = 50;
             this.FREE_SPACE_UNDER = 30;
             this.NODE_TITLE_HEIGHT = 16;
@@ -137,8 +136,6 @@
             //  if (!node.size) node.size = [this.NODE_WIDTH, 60];
             if (!node.size)
                 node.size = node.computeSize();
-            if (!node.pos)
-                node.pos = this.options.DEFAULT_POSITION.concat();
             //extra options
             if (options) {
                 for (let i in options)

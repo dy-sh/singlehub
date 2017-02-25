@@ -98,7 +98,7 @@ export class Node {
 
     title: string;
     descriprion: string;
-    pos: [number, number] = [10, 10];
+    pos: [number, number] = [100, 100];
     size: [number, number];
     container: Container;
     id: number = -1;
@@ -108,7 +108,7 @@ export class Node {
     inputs: {[id: number]: NodeInput};
     outputs: {[id: number]: NodeOutput};
     //   connections: Array<any>;
-    properties: any;
+    properties = {};
     settings: {[name: string]: NodeSettings} = {};
 
     ignore_remove: boolean;
@@ -117,7 +117,7 @@ export class Node {
         unsafe_execution?: false,
         collapsed?: boolean,
         clip_area?: boolean
-    };
+    } = {};
 
     mouseOver: boolean;
     selected: boolean;
@@ -200,11 +200,7 @@ export class Node {
 
     onSettingsChanged: Function;
 
-    constructor(container?: Container) {
-        if (container) {
-            this.container = container;
-            this.side = container.side;
-        }
+    constructor(container?: Container, id?: number) {
     }
 
 
@@ -213,27 +209,27 @@ export class Node {
      * @param ser_node object with properties for configure
      */
     configure(ser_node: SerializedNode, from_db = false): void {
-        for (let j in ser_node) {
-            if (j == "console") continue;
+        for (let prop in ser_node) {
+            if (prop == "console") continue;
 
-            if (j == "properties") {
-                //i dont want to clone properties, I want to reuse the old container
+            if (prop == "properties") {
                 for (let k in ser_node.properties)
                     this.properties[k] = ser_node.properties[k];
                 continue;
             }
 
-            if (ser_node[j] == null)
+            if (ser_node[prop] == null)
                 continue;
-            else if (typeof(ser_node[j]) == 'object') //object
+
+            else if (typeof(ser_node[prop]) == 'object') //object
             {
-                if (this[j] && this[j].configure)
-                    this[j].configure(ser_node[j]);
+                if (this[prop] && this[prop].configure)
+                    this[prop].configure(ser_node[prop]);
                 else
-                    this[j] = Utils.cloneObject(ser_node[j], this[j]);
+                    this[prop] = Utils.cloneObject(ser_node[prop], this[prop]);
             }
             else //value
-                this[j] = ser_node[j];
+                this[prop] = ser_node[prop];
         }
 
     }

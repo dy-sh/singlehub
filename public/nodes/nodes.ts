@@ -29,7 +29,6 @@ else  //for frontside only
 export class NodesOptions {
 
     MAX_NUMBER_OF_NODES = 1000; //avoid infinite loops
-    DEFAULT_POSITION = [100, 100]; //default node position
     START_POS = 50;
     FREE_SPACE_UNDER = 30;
 
@@ -147,7 +146,6 @@ export class Nodes {
         if (!node.flags) node.flags = {};
         //  if (!node.size) node.size = [this.NODE_WIDTH, 60];
         if (!node.size) node.size = node.computeSize();
-        if (!node.pos) node.pos = this.options.DEFAULT_POSITION.concat();
 
         //extra options
         if (options) {

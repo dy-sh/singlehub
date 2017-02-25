@@ -2,10 +2,11 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "./container", "./utils", "./nodes"], factory);
     }
 })(function (require, exports) {
@@ -29,39 +30,37 @@
     }
     exports.Link = Link;
     class Node {
-        constructor(container) {
-            this.pos = [10, 10];
+        constructor(container, id) {
+            this.pos = [100, 100];
             this.id = -1;
+            //   connections: Array<any>;
+            this.properties = {};
             this.settings = {};
-            if (container) {
-                this.container = container;
-                this.side = container.side;
-            }
+            this.flags = {};
         }
         /**
          * Configure a node from an object containing the serialized ser_node
          * @param ser_node object with properties for configure
          */
         configure(ser_node, from_db = false) {
-            for (let j in ser_node) {
-                if (j == "console")
+            for (let prop in ser_node) {
+                if (prop == "console")
                     continue;
-                if (j == "properties") {
-                    //i dont want to clone properties, I want to reuse the old container
+                if (prop == "properties") {
                     for (let k in ser_node.properties)
                         this.properties[k] = ser_node.properties[k];
                     continue;
                 }
-                if (ser_node[j] == null)
+                if (ser_node[prop] == null)
                     continue;
-                else if (typeof (ser_node[j]) == 'object') {
-                    if (this[j] && this[j].configure)
-                        this[j].configure(ser_node[j]);
+                else if (typeof (ser_node[prop]) == 'object') {
+                    if (this[prop] && this[prop].configure)
+                        this[prop].configure(ser_node[prop]);
                     else
-                        this[j] = utils_1.default.cloneObject(ser_node[j], this[j]);
+                        this[prop] = utils_1.default.cloneObject(ser_node[prop], this[prop]);
                 }
                 else
-                    this[j] = ser_node[j];
+                    this[prop] = ser_node[prop];
             }
         }
         /**

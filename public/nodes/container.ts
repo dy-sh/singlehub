@@ -670,39 +670,36 @@ export class Container {
      * @returns {Node} result node (for check success)
      */
     add_serialized_node(serialized_node: SerializedNode, from_db: boolean = false): Node {
-        let node = this.createNode(serialized_node.type, serialized_node.title);
-        if (node) {
-            node.id = serialized_node.id;
-            node.container = this;
-            node.side = this.side;
-            node.configure(serialized_node, from_db);
-            this.add(node);
-            this.setDirtyCanvas(true, true);
-            return node;
-        }
+        let node = this.createNode(serialized_node.type, serialized_node.id);
+        node.configure(serialized_node, from_db);
+        this.add(node);
+        this.setDirtyCanvas(true, true);
+        return node;
+
     }
 
-    createNode(type: string, title?: string, options?: any): Node {
+    createNode(type: string, id?: number, properties?: any): Node {
         let node_class = Nodes.nodes_types[type];
         if (!node_class) {
-            log.error("Can`t create node. Node type \"" + type + "\" not registered.");
+            log.error("Can't create node. Node class of type \"" + type + "\" not registered.");
             return null;
         }
 
-        let node = new node_class(this);
+        let node = new node_class(this, id);
 
+        node.id = id;
+        node.container = this;
+        node.side = this.side;
         node.type = type;
         node.category = node_class.category;
-        if (!node.title) node.title = title;
-        if (!node.properties) node.properties = {};
-        if (!node.flags) node.flags = {};
-        if (!node.size) node.size = node.computeSize();
-        if (!node.pos) node.pos = Nodes.options.DEFAULT_POSITION.concat();
 
-        //extra options
-        if (options) {
-            for (let i in options)
-                node[i] = options[i];
+        if (!node.title) node.title = node.type;
+        if (!node.size) node.size = node.computeSize();
+
+        //extra properties
+        if (properties) {
+            for (let i in properties)
+                node[i] = properties[i];
         }
 
         return node;
@@ -794,7 +791,7 @@ export class Container {
 
 
                             //connect new cont input to old target
-                            new_cont_node.inputs[input_node.properties.slot].link =
+                            new_cont_node.inputs[input_node.properties["slot"]].link =
                                 {target_node_id: input.link.target_node_id, target_slot: input.link.target_slot}
 
                             //reconnect old target node to cont input
@@ -802,7 +799,7 @@ export class Container {
                             for (let out_link of t_out_links) {
                                 if (out_link.target_node_id == node.id && out_link.target_slot == +i) {
                                     out_link.target_node_id = new_cont_node.id;
-                                    out_link.target_slot = input_node.properties.slot;
+                                    out_link.target_slot = input_node.properties["slot"];
                                 }
                             }
 
@@ -855,7 +852,7 @@ export class Container {
 
 
                                 //connect new cont output to old target
-                                new_cont_node.outputs[output_node.properties.slot].links = [{
+                                new_cont_node.outputs[output_node.properties["slot"]].links = [{
                                     target_node_id: link.target_node_id,
                                     target_slot: link.target_slot
                                 }];
@@ -863,7 +860,7 @@ export class Container {
                                 //reconnect old target node to cont output
                                 let in_link = old_target.inputs[link.target_slot].link;
                                 in_link.target_node_id = new_cont_node.id;
-                                in_link.target_slot = output_node.properties.slot;
+                                in_link.target_slot = output_node.properties["slot"];
 
 
                                 //reconnect node to new output node

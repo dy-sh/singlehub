@@ -489,40 +489,32 @@
          * @returns {Node} result node (for check success)
          */
         add_serialized_node(serialized_node, from_db = false) {
-            let node = this.createNode(serialized_node.type, serialized_node.title);
-            if (node) {
-                node.id = serialized_node.id;
-                node.container = this;
-                node.side = this.side;
-                node.configure(serialized_node, from_db);
-                this.add(node);
-                this.setDirtyCanvas(true, true);
-                return node;
-            }
+            let node = this.createNode(serialized_node.type, serialized_node.id);
+            node.configure(serialized_node, from_db);
+            this.add(node);
+            this.setDirtyCanvas(true, true);
+            return node;
         }
-        createNode(type, title, options) {
+        createNode(type, id, properties) {
             let node_class = nodes_1.Nodes.nodes_types[type];
             if (!node_class) {
-                log.error("Can`t create node. Node type \"" + type + "\" not registered.");
+                log.error("Can't create node. Node class of type \"" + type + "\" not registered.");
                 return null;
             }
-            let node = new node_class(this);
+            let node = new node_class(this, id);
+            node.id = id;
+            node.container = this;
+            node.side = this.side;
             node.type = type;
             node.category = node_class.category;
             if (!node.title)
-                node.title = title;
-            if (!node.properties)
-                node.properties = {};
-            if (!node.flags)
-                node.flags = {};
+                node.title = node.type;
             if (!node.size)
                 node.size = node.computeSize();
-            if (!node.pos)
-                node.pos = nodes_1.Nodes.options.DEFAULT_POSITION.concat();
-            //extra options
-            if (options) {
-                for (let i in options)
-                    node[i] = options[i];
+            //extra properties
+            if (properties) {
+                for (let i in properties)
+                    node[i] = properties[i];
             }
             return node;
         }
@@ -593,14 +585,14 @@
                                 }
                                 new_cont.create(input_node);
                                 //connect new cont input to old target
-                                new_cont_node.inputs[input_node.properties.slot].link =
+                                new_cont_node.inputs[input_node.properties["slot"]].link =
                                     { target_node_id: input.link.target_node_id, target_slot: input.link.target_slot };
                                 //reconnect old target node to cont input
                                 let t_out_links = old_target.outputs[input.link.target_slot].links;
                                 for (let out_link of t_out_links) {
                                     if (out_link.target_node_id == node.id && out_link.target_slot == +i) {
                                         out_link.target_node_id = new_cont_node.id;
-                                        out_link.target_slot = input_node.properties.slot;
+                                        out_link.target_slot = input_node.properties["slot"];
                                     }
                                 }
                                 //reconnect node to new input node
@@ -641,14 +633,14 @@
                                     }
                                     new_cont.create(output_node);
                                     //connect new cont output to old target
-                                    new_cont_node.outputs[output_node.properties.slot].links = [{
+                                    new_cont_node.outputs[output_node.properties["slot"]].links = [{
                                             target_node_id: link.target_node_id,
                                             target_slot: link.target_slot
                                         }];
                                     //reconnect old target node to cont output
                                     let in_link = old_target.inputs[link.target_slot].link;
                                     in_link.target_node_id = new_cont_node.id;
-                                    in_link.target_slot = output_node.properties.slot;
+                                    in_link.target_slot = output_node.properties["slot"];
                                     //reconnect node to new output node
                                     link.target_node_id = output_node.id;
                                     link.target_slot = 0;
