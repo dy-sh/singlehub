@@ -25,7 +25,7 @@
     class UiLabelNode extends node_1.Node {
         constructor() {
             super();
-            this.UPDATE_INTERVAL = 300;
+            this.UPDATE_INTERVAL = 100;
             this.dataUpdated = false;
             this.onAdded = function () {
                 if (this.side == container_1.Side.server)
@@ -48,6 +48,12 @@
                 $('#labelValue-' + this.id).html(data.value);
             };
             this.onRemoved = function () {
+                if (this.side == container_1.Side.dashboard) {
+                    console.log("rem");
+                    $('#node-' + this.id).fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                }
             };
             this.title = "Label";
             this.descriprion = "Show value of input";

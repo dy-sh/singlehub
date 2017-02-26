@@ -10,6 +10,11 @@ import {ContainerNode, ContainerInputNode, ContainerOutputNode} from "./nodes/ma
 import {Database} from "../interfaces/database";
 import Utils from "./utils";
 import Namespace = SocketIO.Namespace;
+// import * as Emitter from 'component-emitter'
+
+declare let Emitter: any;
+// var Emitter = require('component-emitter');
+
 
 //console logger back and front
 let log;
@@ -20,7 +25,7 @@ else  //for frontside only
     log = Logger.create('container', {color: 5});
 
 
-export interface SerializedContainer {
+export interface SerializedContainer{
     id: number;
     last_node_id: number;
     config?: any;
@@ -32,6 +37,8 @@ export enum Side{
     editor,
     dashboard
 }
+
+const EventEmitter = require('events');
 
 export class Container {
     static nodes_types: {[type: string]: any} = {};
@@ -78,6 +85,9 @@ export class Container {
 
 
     constructor(side: Side, id?: number) {
+
+        //add event emitter
+        Emitter(this);
 
         if (typeof side != "number") throw "Container side is not defined";
 
@@ -934,6 +944,5 @@ export class Container {
 
     }
 }
-
 
 

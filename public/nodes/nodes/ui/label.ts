@@ -19,7 +19,7 @@ let template =
 
 //Watch a value in the editor
 export class UiLabelNode extends Node {
-    UPDATE_INTERVAL=300;
+    UPDATE_INTERVAL = 100;
 
     lastData: any;
     dataUpdated = false;
@@ -74,7 +74,12 @@ export class UiLabelNode extends Node {
 
 
     onRemoved = function () {
-
+        if (this.side == Side.dashboard) {
+            console.log("rem")
+            $('#node-' + this.id).fadeOut(300, function () {
+                $(this).remove();
+            });
+        }
     }
 }
 

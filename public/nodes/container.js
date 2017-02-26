@@ -13,6 +13,7 @@
     "use strict";
     const node_1 = require("./node");
     const utils_1 = require("./utils");
+    // var Emitter = require('component-emitter');
     //console logger back and front
     let log;
     if (typeof (window) === 'undefined')
@@ -25,10 +26,13 @@
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
     })(Side = exports.Side || (exports.Side = {}));
+    const EventEmitter = require('events');
     class Container {
         constructor(side, id) {
             this._nodes = {};
             this.supported_types = ["number", "string", "boolean"];
+            //add event emitter
+            Emitter(this);
             if (typeof side != "number")
                 throw "Container side is not defined";
             this.renderers = null;
