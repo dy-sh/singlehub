@@ -31,9 +31,8 @@ function updateActiveNodes() {
             }
         }
 
-        let room = "dashboard-container-" + container.id;
         if (activeNodesIds.length > 0)
-            app.server.editorSocket.io.in(room).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
+            app.server.editorSocket.io.in(""+container.id).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
 
     }
 }

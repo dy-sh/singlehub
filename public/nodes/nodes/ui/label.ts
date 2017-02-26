@@ -31,7 +31,7 @@ export class UiLabelNode extends Node {
         this.descriprion = "Show value of input";
         this.size = [60, 20];
 
-        this.createOnDashboard = true;
+        this.isDashboardNode = true;
 
         this.addInput("input");
     }

@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../node", "../../utils", "../../container"], factory);
     }
 })(function (require, exports) {
@@ -58,7 +57,7 @@
             this.title = "Label";
             this.descriprion = "Show value of input";
             this.size = [60, 20];
-            this.createOnDashboard = true;
+            this.isDashboardNode = true;
             this.addInput("input");
         }
         startSendingToDashboard() {

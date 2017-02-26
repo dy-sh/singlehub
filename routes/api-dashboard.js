@@ -3,16 +3,15 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "../public/nodes/container", "../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', "../public/nodes/container", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
+    const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const app_1 = require("../app");
@@ -30,9 +29,8 @@
                     activeNodesIds.push(node.id);
                 }
             }
-            let room = "dashboard-container-" + container.id;
             if (activeNodesIds.length > 0)
-                app_1.app.server.editorSocket.io.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
+                app_1.app.server.editorSocket.io.in("" + container.id).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
         }
     }
     /**

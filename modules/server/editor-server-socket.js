@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../public/nodes/container", "../../app", "../../public/nodes/utils"], factory);
     }
 })(function (require, exports) {
@@ -32,7 +31,7 @@
                         socket.leave(socket.room);
                     socket.room = room;
                     socket.join(room);
-                    log.debug("Join to room [" + room + "]");
+                    log.debug("Join to editor room [" + room + "]");
                 });
                 socket.on('node-message-to-server-side', function (n) {
                     let cont = container_1.Container.containers[n.cid];
@@ -59,8 +58,7 @@
                         log.error("Can't send node message to editor-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    let room = "editor-container-" + n.cid;
-                    app_1.app.server.editorSocket.io.in(room).emit('node-message-to-editor-side', n);
+                    app_1.app.server.editorSocket.io.in(n.cid).emit('node-message-to-editor-side', n);
                 });
                 //redirect message
                 socket.on('node-message-to-dashboard-side', function (n) {
@@ -75,8 +73,7 @@
                         log.error("Can't send node message to dashboard-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    let room = "dashboard-container-" + n.cid;
-                    app_1.app.server.dashboardSocket.io.in(room).emit('node-message-to-dashboard-side', n);
+                    app_1.app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
                 });
                 socket.on("get-slots-values", function (cid) {
                     let container = container_1.Container.containers[cid];

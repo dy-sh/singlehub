@@ -5,15 +5,11 @@
 
 import {Node, SerializedNode} from "./node";
 import {Renderer} from "../js/editor/renderer";
-import Timer = NodeJS.Timer;
-import {ContainerNode, ContainerInputNode, ContainerOutputNode} from "./nodes/main"
+import {ContainerNode} from "./nodes/main"
 import {Database} from "../interfaces/database";
 import Utils from "./utils";
 import Namespace = SocketIO.Namespace;
-// import * as Emitter from 'component-emitter'
-
-declare let Emitter: any;
-// var Emitter = require('component-emitter');
+import {Emitter} from '../js/emitter/emitter'
 
 
 //console logger back and front
@@ -25,7 +21,7 @@ else  //for frontside only
     log = Logger.create('container', {color: 5});
 
 
-export interface SerializedContainer{
+export interface SerializedContainer {
     id: number;
     last_node_id: number;
     config?: any;
@@ -38,9 +34,8 @@ export enum Side{
     dashboard
 }
 
-const EventEmitter = require('events');
 
-export class Container {
+export class Container extends Emitter {
     static nodes_types: {[type: string]: any} = {};
     static containers: {[id: number]: Container} = {};
     static last_container_id: number = -1;
@@ -72,7 +67,7 @@ export class Container {
     fixedtime_lapse: number;
     elapsed_time: number;
     starttime: number;
-    execution_timer_id: Timer;
+    execution_timer_id: number|any;
     errors_in_execution: boolean;
 
     onStopEvent: Function;
@@ -85,9 +80,8 @@ export class Container {
 
 
     constructor(side: Side, id?: number) {
+        super();
 
-        //add event emitter
-        Emitter(this);
 
         if (typeof side != "number") throw "Container side is not defined";
 
@@ -114,6 +108,9 @@ export class Container {
 
             if (rootContainer.db)
                 this.db = rootContainer.db;
+
+            if (rootContainer._events)
+                this._events = rootContainer._events;
         }
     }
 
@@ -565,6 +562,15 @@ export class Container {
         if (node.ignore_remove)
             return;
 
+        //event
+        this.emit('remove', node);
+
+
+        //node event
+        if (node.onRemoved)
+            node.onRemoved();
+
+
         //disconnect inputs
         if (node.inputs)
             for (let i in node.inputs) {
@@ -580,10 +586,6 @@ export class Container {
                 if (output.links != null && output.links.length > 0)
                     node.disconnectOutput(+o);
             }
-
-        //event
-        if (node.onRemoved)
-            node.onRemoved();
 
 
         //remove from renderer
@@ -710,7 +712,7 @@ export class Container {
             for (let id in this._nodes) {
                 let node = this._nodes[id];
 
-                if (only_dashboard_nodes && !node.createOnDashboard)
+                if (only_dashboard_nodes && !node.isDashboardNode)
                     continue;
 
                 ser_nodes.push(node.serialize())

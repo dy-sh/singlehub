@@ -3,20 +3,18 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../../public/nodes/container", "../../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../../public/nodes/container"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const container_1 = require("../../public/nodes/container");
-    const app_1 = require("../../app");
     const log = require('logplease').create('server', { color: 3 });
     class DashboardServerSocket {
-        constructor(io_root) {
+        constructor(io_root, app) {
             this.io_root = io_root;
             let io = this.io_root.of('/dashboard');
             this.io = io;
@@ -31,7 +29,7 @@
                         socket.leave(socket.room);
                     socket.room = room;
                     socket.join(room);
-                    log.debug("Join to room [" + room + "]");
+                    log.debug("Join to dashboard room [" + room + "]");
                 });
                 socket.on('node-message-to-server-side', function (n) {
                     let cont = container_1.Container.containers[n.cid];
@@ -58,8 +56,7 @@
                         log.error("Can't send node message to editor-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    let room = "editor-container-" + n.cid;
-                    app_1.app.server.editorSocket.io.in(room).emit('node-message-to-editor-side', n);
+                    app.server.editorSocket.io.in(n.cid).emit('node-message-to-editor-side', n);
                 });
                 //redirect message
                 socket.on('node-message-to-dashboard-side', function (n) {
@@ -74,10 +71,21 @@
                         log.error("Can't send node message to dashboard-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    let room = "dashboard-container-" + n.cid;
-                    app_1.app.server.dashboardSocket.io.in(room).emit('node-message-to-dashboard-side', n);
+                    app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
                 });
             });
+            // app.on('started', function () {
+            //     let rootContainer = Container.containers[0];
+            //     rootContainer.on('remove', function (node) {
+            //         if (node.isDashboardNode) {
+            //             app.server.dashboardSocket.io.in(node.cid).emit('node-delete', {
+            //                 id: node.id,
+            //                 cid: node.cid,
+            //             });
+            //             console.log(node.id);
+            //         }
+            //     })
+            // });
         }
     }
     exports.DashboardServerSocket = DashboardServerSocket;

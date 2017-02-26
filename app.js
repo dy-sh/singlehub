@@ -1,28 +1,37 @@
-/**
- * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
- * License: http://www.gnu.org/licenses/gpl-3.0.txt
- */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./public/nodes/container", "path"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "./public/js/emitter/emitter", './modules/server/server', './public/nodes/container', 'path'], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const emitter_1 = require("./public/js/emitter/emitter");
+    /**
+     * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
+     * License: http://www.gnu.org/licenses/gpl-3.0.txt
+     */
     //source map for node typescript debug
     require('source-map-support').install();
     console.log("----------------------------- MyNodes -----------------------------");
     let config = require('./config.json');
-    const container_1 = require("./public/nodes/container");
+    const server_1 = require('./modules/server/server');
+    const container_1 = require('./public/nodes/container');
     //add app root dir to global
-    const path = require("path");
+    const path = require('path');
     global.__rootdirname = path.resolve(__dirname);
     const log = require('logplease').create('app', { color: 2 });
-    class App {
+    class App extends emitter_1.Emitter {
         constructor() {
+            super();
+            this.createServer();
+            if (!config.firstRun)
+                this.start();
+            //this need for app. in other modules
+            // setTimeout(this.lateConstructor.bind(this),100);
+        }
+        lateConstructor() {
             this.createServer();
             if (!config.firstRun)
                 this.start();
@@ -40,6 +49,7 @@
             }
             if (this.rootContainer && this.db)
                 this.rootContainer.db = this.db;
+            this.emit('started');
             //add test nodes
             // require('./modules/test').test();
             //mysensors gateway
@@ -48,7 +58,7 @@
             // }
         }
         createServer() {
-            this.server = require('./modules/server/server').server;
+            this.server = new server_1.Server(this);
         }
         registerNodes() {
             require('./public/nodes/nodes/index');
@@ -105,6 +115,7 @@
             });
         }
     }
+    exports.App = App;
     exports.app = new App();
 });
 //# sourceMappingURL=app.js.map

@@ -2,37 +2,34 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./node", "./utils"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "./node", "./utils", '../js/emitter/emitter'], factory);
     }
 })(function (require, exports) {
     "use strict";
     const node_1 = require("./node");
     const utils_1 = require("./utils");
-    // var Emitter = require('component-emitter');
+    const emitter_1 = require('../js/emitter/emitter');
     //console logger back and front
     let log;
     if (typeof (window) === 'undefined')
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
-    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(Side = exports.Side || (exports.Side = {}));
-    const EventEmitter = require('events');
-    class Container {
+    })(exports.Side || (exports.Side = {}));
+    var Side = exports.Side;
+    class Container extends emitter_1.Emitter {
         constructor(side, id) {
+            super();
             this._nodes = {};
             this.supported_types = ["number", "string", "boolean"];
-            //add event emitter
-            Emitter(this);
             if (typeof side != "number")
                 throw "Container side is not defined";
             this.renderers = null;
@@ -51,6 +48,8 @@
                     this.clinet_socket = rootContainer.clinet_socket;
                 if (rootContainer.db)
                     this.db = rootContainer.db;
+                if (rootContainer._events)
+                    this._events = rootContainer._events;
             }
         }
         /**
@@ -412,6 +411,11 @@
             }
             if (node.ignore_remove)
                 return;
+            //event
+            this.emit('remove', node);
+            //node event
+            if (node.onRemoved)
+                node.onRemoved();
             //disconnect inputs
             if (node.inputs)
                 for (let i in node.inputs) {
@@ -426,9 +430,6 @@
                     if (output.links != null && output.links.length > 0)
                         node.disconnectOutput(+o);
                 }
-            //event
-            if (node.onRemoved)
-                node.onRemoved();
             //remove from renderer
             if (this.renderers) {
                 for (let i = 0; i < this.renderers.length; ++i) {
@@ -527,7 +528,7 @@
                 let ser_nodes = [];
                 for (let id in this._nodes) {
                     let node = this._nodes[id];
-                    if (only_dashboard_nodes && !node.createOnDashboard)
+                    if (only_dashboard_nodes && !node.isDashboardNode)
                         continue;
                     ser_nodes.push(node.serialize());
                 }

@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/container"], factory);
     }
 })(function (require, exports) {
@@ -42,28 +41,39 @@
             });
             socket.on('node-create', function (n) {
                 let container = container_1.Container.containers[n.cid];
+                if (!container) {
+                    log.error(`Can't create node. Container id [${n.cid}] not found.`);
+                    return;
+                }
                 let node = container.createNode(n.type);
                 //node.configure(n);
             });
-            socket.on('node-delete', function (n) {
-                let container = container_1.Container.containers[n.cid];
-                let node = container.getNodeById(n.id);
-                container.remove(node);
-                //if current container removed
-                // if (n.id == editor.renderer.container.id) {
-                //     (<any>window).location = "/editor/";
-                // }
-            });
             socket.on('nodes-delete', function (data) {
                 let container = container_1.Container.containers[data.cid];
+                if (!container) {
+                    log.error(`Can't delete node. Container id [${data.cid}] not found.`);
+                    return;
+                }
                 for (let id of data.nodes) {
                     let node = container.getNodeById(id);
+                    if (!node) {
+                        log.error(`Can't delete node. Node id [${data.cid}/${id}] not found.`);
+                        return;
+                    }
                     container.remove(node);
                 }
             });
             socket.on('node-settings', function (n) {
                 let container = container_1.Container.containers[n.cid];
+                if (!container) {
+                    log.error(`Can't set node settings. Container id [${n.cid}] not found.`);
+                    return;
+                }
                 let node = container.getNodeById(n.id);
+                if (!node) {
+                    log.error(`Can't set node settings. Node id [${n.cid}/${n.id}] not found.`);
+                    return;
+                }
                 node.settings = n.settings;
                 if (node.onSettingsChanged)
                     node.onSettingsChanged();
@@ -76,12 +86,22 @@
             });
             socket.on('node-message-to-dashboard-side', function (n) {
                 let container = container_1.Container.containers[n.cid];
+                if (!container) {
+                    log.error(`Can't send node message. Container id [${n.cid}] not found.`);
+                    return;
+                }
                 let node = container.getNodeById(n.id);
+                if (!node) {
+                    log.error(`Can't send node message. Node id [${n.cid}/${n.id}] not found.`);
+                    return;
+                }
                 if (node.onGetMessageToDashboardSide)
                     node.onGetMessageToDashboardSide(n.value);
             });
             socket.on('nodes-active', function (data) {
                 let container = container_1.Container.containers[data.cid];
+                if (!container)
+                    return;
                 for (let id of data.ids) {
                     let node = container.getNodeById(id);
                     if (!node)
@@ -90,9 +110,8 @@
             });
         }
         sendJoinContainerRoom(cont_id) {
-            let room = "dashboard-container-" + cont_id;
-            log.debug("Join to room [" + room + "]");
-            this.socket.emit('room', room);
+            log.debug("Join to dashboard room [" + cont_id + "]");
+            this.socket.emit('room', cont_id);
         }
         getNodes(callback) {
             let that = this;

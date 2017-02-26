@@ -1,3 +1,4 @@
+import {Emitter} from "./public/js/emitter/emitter";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -22,13 +23,24 @@ import * as path from 'path';
 const log = require('logplease').create('app', {color: 2});
 
 
-class App {
+export class App extends Emitter {
     db: Database;
     rootContainer: Container;
     server: Server;
 
     constructor() {
+        super();
 
+        this.createServer();
+
+        if (!config.firstRun)
+            this.start();
+
+        //this need for app. in other modules
+        // setTimeout(this.lateConstructor.bind(this),100);
+    }
+
+    private lateConstructor() {
         this.createServer();
 
         if (!config.firstRun)
@@ -52,6 +64,8 @@ class App {
         if (this.rootContainer && this.db)
             this.rootContainer.db = this.db;
 
+        this.emit('started');
+
         //add test nodes
         // require('./modules/test').test();
 
@@ -62,7 +76,7 @@ class App {
     }
 
     createServer() {
-        this.server = require('./modules/server/server').server;
+        this.server = new Server(this);
     }
 
     registerNodes() {

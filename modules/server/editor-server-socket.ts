@@ -37,7 +37,7 @@ export class EditorServerSocket {
 
                 (<any>socket).room = room;
                 socket.join(room);
-                log.debug("Join to room [" + room + "]");
+                log.debug("Join to editor room [" + room + "]");
             });
 
             socket.on('node-message-to-server-side', function (n) {
@@ -71,8 +71,7 @@ export class EditorServerSocket {
                     return;
                 }
 
-                let room = "editor-container-" + n.cid;
-                app.server.editorSocket.io.in(room).emit('node-message-to-editor-side', n);
+                app.server.editorSocket.io.in(n.cid).emit('node-message-to-editor-side', n);
 
             });
 
@@ -92,8 +91,7 @@ export class EditorServerSocket {
                     return;
                 }
 
-                let room = "dashboard-container-" + n.cid;
-                app.server.dashboardSocket.io.in(room).emit('node-message-to-dashboard-side', n);
+                app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
             });
 
             socket.on("get-slots-values", function (cid) {

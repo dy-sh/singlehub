@@ -31,9 +31,11 @@ function updateActiveNodes() {
             }
         }
 
-        let room = "editor-container-" + container.id;
         if (activeNodesIds.length > 0)
-            app.server.editorSocket.io.in(room).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
+            app.server.editorSocket.io.in("" + container.id).emit('nodes-active', {
+                ids: activeNodesIds,
+                cid: container.id
+            });
 
     }
 }
@@ -97,37 +99,20 @@ router.post('/c/:cid/n/', function (req, res) {
 
 
 /**
- * Delete node
- */
-router.delete('/c/:cid/n/:id', function (req, res) {
-    let container = Container.containers[req.params.cid];
-    if (!container) return res.status(404).send(`Can't delete node. Container id [${req.params.cid}] not found.`);
-
-    let node = container.getNodeById(req.params.id);
-    if (!node) return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
-
-    container.remove(node);
-
-    app.server.editorSocket.io.emit('node-delete', {
-        id: req.params.id,
-        cid: req.params.cid,
-    });
-
-
-    res.send(`Node deleted: type [${node.type}] id [${container.id}/${node.id}]`);
-});
-
-
-/**
  * Delete nodes
  */
 router.delete('/c/:cid/n/', function (req, res) {
     let container = Container.containers[req.params.cid];
     if (!container) return res.status(404).send(`Can't delete node. Container id [${req.params.cid}] not found.`);
 
+    let dashboardNodes = [];
     for (let id of req.body) {
         let node = container.getNodeById(id);
         if (!node) return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+
+        if (node.isDashboardNode)
+            dashboardNodes.push(id);
+
         container.remove(node);
     }
 
@@ -135,6 +120,13 @@ router.delete('/c/:cid/n/', function (req, res) {
         nodes: req.body,
         cid: req.params.cid
     });
+
+    if (dashboardNodes.length > 0) {
+        app.server.dashboardSocket.io.in(req.params.cid).emit('nodes-delete', {
+            nodes: dashboardNodes,
+            cid: req.params.cid,
+        });
+    }
 
     res.send(`Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
 });

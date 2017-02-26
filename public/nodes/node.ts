@@ -136,7 +136,7 @@ export class Node {
     optional_outputs: {};
     order: string;
 
-    createOnDashboard: boolean;
+    isDashboardNode: boolean;
 
     isUpdated: boolean;
     isRecentlyActive: boolean;
@@ -1070,8 +1070,7 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket=this.container.server_editor_socket;
-            let room = "editor-container-" + this.container.id;
-            socket.in(room).emit('node-message-to-editor-side', m);
+            socket.in(""+this.container.id).emit('node-message-to-editor-side', m);
         }
         else {
             this.container.clinet_socket.emit('node-message-to-editor-side', m);
@@ -1085,8 +1084,7 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket=this.container.server_dashboard_socket;
-            let room = "dashboard-container-" + this.container.id;
-            socket.in(room).emit('node-message-to-dashboard-side', m);
+            socket.in(""+this.container.id).emit('node-message-to-dashboard-side', m);
         }
         else {
             this.container.clinet_socket.emit('node-message-to-dashboard-side', m);

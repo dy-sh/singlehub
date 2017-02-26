@@ -3,16 +3,15 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "express", "../public/nodes/container", "../app"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", 'express', "../public/nodes/container", "../app"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require("express");
+    const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const app_1 = require("../app");
@@ -30,9 +29,11 @@
                     activeNodesIds.push(node.id);
                 }
             }
-            let room = "editor-container-" + container.id;
             if (activeNodesIds.length > 0)
-                app_1.app.server.editorSocket.io.in(room).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
+                app_1.app.server.editorSocket.io.in("" + container.id).emit('nodes-active', {
+                    ids: activeNodesIds,
+                    cid: container.id
+                });
         }
     }
     //------------------ info ------------------------
@@ -75,39 +76,31 @@
         res.send(`New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     /**
-     * Delete node
-     */
-    router.delete('/c/:cid/n/:id', function (req, res) {
-        let container = container_1.Container.containers[req.params.cid];
-        if (!container)
-            return res.status(404).send(`Can't delete node. Container id [${req.params.cid}] not found.`);
-        let node = container.getNodeById(req.params.id);
-        if (!node)
-            return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
-        container.remove(node);
-        app_1.app.server.editorSocket.io.emit('node-delete', {
-            id: req.params.id,
-            cid: req.params.cid,
-        });
-        res.send(`Node deleted: type [${node.type}] id [${container.id}/${node.id}]`);
-    });
-    /**
      * Delete nodes
      */
     router.delete('/c/:cid/n/', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
             return res.status(404).send(`Can't delete node. Container id [${req.params.cid}] not found.`);
+        let dashboardNodes = [];
         for (let id of req.body) {
             let node = container.getNodeById(id);
             if (!node)
                 return res.status(404).send(`Can't delete node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+            if (node.isDashboardNode)
+                dashboardNodes.push(id);
             container.remove(node);
         }
         app_1.app.server.editorSocket.io.emit('nodes-delete', {
             nodes: req.body,
             cid: req.params.cid
         });
+        if (dashboardNodes.length > 0) {
+            app_1.app.server.dashboardSocket.io.in(req.params.cid).emit('nodes-delete', {
+                nodes: dashboardNodes,
+                cid: req.params.cid,
+            });
+        }
         res.send(`Nodes deleted: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
     });
     /**
