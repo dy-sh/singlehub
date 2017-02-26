@@ -20,6 +20,7 @@
             this.io_root = io_root;
             let io = io_root.of('/editor');
             this.io = io;
+            let that = this;
             io.on('connection', function (socket) {
                 log.debug("New socket connection to editor");
                 // socket.on('test message', function (msg) {
@@ -75,46 +76,49 @@
                     }
                     app_1.app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
                 });
-                socket.on("get-slots-values", function (cid) {
-                    let container = container_1.Container.containers[cid];
-                    if (!container || !container._nodes)
-                        return;
-                    let inputs_values = [];
-                    let outputs_values = [];
-                    for (let id in container._nodes) {
-                        let node = container._nodes[id];
-                        if (node.inputs) {
-                            for (let i in node.inputs) {
-                                let data = node.inputs[i].data;
-                                data = utils_1.default.formatAndTrimValue(data);
-                                //todo convert and trim data
-                                inputs_values.push({
-                                    nodeId: node.id,
-                                    inputId: i,
-                                    data: data
-                                });
-                            }
-                        }
-                        if (node.outputs) {
-                            for (let o in node.outputs) {
-                                let data = node.outputs[o].data;
-                                data = utils_1.default.formatAndTrimValue(data);
-                                outputs_values.push({
-                                    nodeId: node.id,
-                                    outputId: o,
-                                    data: data
-                                });
-                            }
-                        }
-                    }
-                    let slots_values = {
-                        cid: cid,
-                        inputs: inputs_values,
-                        outputs: outputs_values
-                    };
-                    socket.emit("slots-values", slots_values);
+                socket.on("get-nodes-io-values", function (cid) {
+                    let slots_values = that.getNodesIOValues(cid);
+                    socket.emit("nodes-io-values", slots_values);
                 });
             });
+        }
+        getNodesIOValues(cid) {
+            let container = container_1.Container.containers[cid];
+            if (!container || !container._nodes)
+                return;
+            let inputs_values = [];
+            let outputs_values = [];
+            for (let id in container._nodes) {
+                let node = container._nodes[id];
+                if (node.inputs) {
+                    for (let i in node.inputs) {
+                        let data = node.inputs[i].data;
+                        data = utils_1.default.formatAndTrimValue(data);
+                        inputs_values.push({
+                            nodeId: node.id,
+                            inputId: i,
+                            data: data
+                        });
+                    }
+                }
+                if (node.outputs) {
+                    for (let o in node.outputs) {
+                        let data = node.outputs[o].data;
+                        data = utils_1.default.formatAndTrimValue(data);
+                        outputs_values.push({
+                            nodeId: node.id,
+                            outputId: o,
+                            data: data
+                        });
+                    }
+                }
+            }
+            let slots_values = {
+                cid: cid,
+                inputs: inputs_values,
+                outputs: outputs_values
+            };
+            return slots_values;
         }
     }
     exports.EditorServerSocket = EditorServerSocket;

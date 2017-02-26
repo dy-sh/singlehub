@@ -30,7 +30,7 @@ export class EditorClientSocket {
         setInterval(function () {
             if (that.socket
                 && that.socket.connected
-                && editor.showSlotsValues
+                && editor.showNodesIOValues
                 && editor.isRunning)
                 that.sendGetSlotsValues();
         }, SLOTS_VALUES_INTERVAL);
@@ -228,7 +228,10 @@ export class EditorClientSocket {
         });
 
 
-        socket.on('slots-values', function (slots_values) {
+        socket.on('nodes-io-values', function (slots_values) {
+            if(!that.editor.showNodesIOValues)
+                return;
+
             let container = Container.containers[slots_values.cid];
             if (!container) return;
 
@@ -516,7 +519,7 @@ export class EditorClientSocket {
     //
     // }
     sendGetSlotsValues() {
-        this.socket.emit("get-slots-values", this.editor.renderer.container.id);
+        this.socket.emit("get-nodes-io-values", this.editor.renderer.container.id);
     }
 
     sendJoinContainerRoom(cont_id: number) {

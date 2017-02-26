@@ -229,11 +229,8 @@ export default class Utils {
     }
 
     static formatAndTrimValue(val: any): string {
-        if (val === null)
+        if (val == null)
             return "";
-        if (typeof (val) == "undefined") {
-            return "";
-        }
         if (typeof (val) == "boolean") {
             return val ? "true" : "false";
         }

@@ -28,6 +28,61 @@
     }
     exports.Link = Link;
     class Node {
+        //events
+        // /**
+        //  * Invoked when new node created
+        //  */
+        // onCreated: Function;
+        //
+        // /**
+        //  * Invoked every time when node added to container (created or restored from the database)
+        //  */
+        // onAdded:Function;
+        //
+        // /**
+        //  * Invoked when node removed from container
+        //  */
+        // onRemoved: Function;
+        //
+        //
+        // onDrawBackground: Function;
+        // onDrawForeground: Function;
+        //
+        // //if returns false the incoming connection will be canceled
+        // onConnectInput: Function;
+        // onInputAdded: Function;
+        // onOutputAdded: Function;
+        // onGetInputs: Function;
+        // onGetOutputs: Function;
+        // onInputRemoved: Function;
+        // onOutputRemoved: Function;
+        //
+        // onMouseDown: Function;
+        // onMouseUp: Function;
+        // onMouseEnter: Function;
+        // onMouseMove: Function;
+        // onMouseLeave: Function;
+        // onDblClick: Function;
+        // onDropFile: Function;
+        // onDropItem: Function;
+        // onKeyDown: Function;
+        // onKeyUp: Function;
+        //
+        // onSelected: Function;
+        // onDeselected: Function;
+        //
+        // onGetMessageToServerSide: Function;
+        // onGetMessageToEditorSide: Function;
+        // onGetMessageToDashboardSide: Function;
+        //
+        // onRunContainer: Function;
+        // onStopContainer: Function;
+        // onExecute: Function;
+        // onInputUpdated: Function;
+        //
+        // onSettingsChanged: Function;
+        // getMenuOptions: Function;
+        // getExtraMenuOptions: Function;
         constructor(container, id) {
             this.pos = [100, 100];
             //   connections: Array<any>;
@@ -40,24 +95,24 @@
          * @param ser_node object with properties for configure
          */
         configure(ser_node, from_db = false) {
-            for (let prop in ser_node) {
-                if (prop == "console")
+            for (let key in ser_node) {
+                if (key == "console")
                     continue;
-                if (prop == "properties") {
-                    for (let k in ser_node.properties)
-                        this.properties[k] = ser_node.properties[k];
+                // if (key == "properties") {
+                //     for (let k in ser_node.properties)
+                //         this.properties[k] = ser_node.properties[k];
+                //     continue;
+                // }
+                if (ser_node[key] == null)
                     continue;
-                }
-                if (ser_node[prop] == null)
-                    continue;
-                else if (typeof (ser_node[prop]) == 'object') {
-                    if (this[prop] && this[prop].configure)
-                        this[prop].configure(ser_node[prop]);
+                else if (typeof (ser_node[key]) == 'object') {
+                    if (this[key] && this[key].configure)
+                        this[key].configure(ser_node[key]);
                     else
-                        this[prop] = utils_1.default.cloneObject(ser_node[prop], this[prop]);
+                        this[key] = utils_1.default.cloneObject(ser_node[key], this[key]);
                 }
                 else
-                    this[prop] = ser_node[prop];
+                    this[key] = ser_node[key];
             }
         }
         /**
@@ -68,20 +123,12 @@
                 cid: this.container.id,
                 id: this.id,
                 type: this.type,
-                title: this.title,
-                pos: this.pos,
-                size: this.size,
+                pos: this.pos
             };
             if (this.settings)
                 n.settings = utils_1.default.cloneObject(this.settings);
             if (this.properties)
                 n.properties = utils_1.default.cloneObject(this.properties);
-            if (this.color)
-                n.color = this.color;
-            if (this.bgcolor)
-                n.bgcolor = this.bgcolor;
-            if (this.boxcolor)
-                n.boxcolor = this.boxcolor;
             if (this.flags)
                 n.flags = utils_1.default.cloneObject(this.flags);
             //remove data from liks
@@ -246,8 +293,8 @@
             if (!this.outputs)
                 this.outputs = {};
             this.outputs[id] = output;
-            if (this.onOutputAdded)
-                this.onOutputAdded(output);
+            if (this['onOutputAdded'])
+                this['onOutputAdded'](output);
             this.size = this.computeSize();
             return id;
         }
@@ -275,8 +322,8 @@
                 if (!this.outputs)
                     this.outputs = {};
                 this.outputs[id] = output;
-                if (this.onOutputAdded)
-                    this.onOutputAdded(output);
+                if (this['onOutputAdded'])
+                    this['onOutputAdded'](output);
             }
             this.size = this.computeSize();
         }
@@ -288,8 +335,8 @@
             this.disconnectOutput(id);
             delete this.outputs[id];
             this.size = this.computeSize();
-            if (this.onOutputRemoved)
-                this.onOutputRemoved(id);
+            if (this['onOutputRemoved'])
+                this['onOutputRemoved'](id);
         }
         /**
          * Add a new input slot to use in this node
@@ -308,8 +355,8 @@
                 this.inputs = {};
             this.inputs[id] = input;
             this.size = this.computeSize();
-            if (this.onInputAdded)
-                this.onInputAdded(input);
+            if (this['onInputAdded'])
+                this['onInputAdded'](input);
             return id;
         }
         getFreeInputId() {
@@ -336,8 +383,8 @@
                 if (!this.inputs)
                     this.inputs = {};
                 this.inputs[id] = input;
-                if (this.onInputAdded)
-                    this.onInputAdded(input);
+                if (this['onInputAdded'])
+                    this['onInputAdded'](input);
             }
             this.size = this.computeSize();
         }
@@ -350,8 +397,8 @@
             this.disconnectInput(id);
             delete this.inputs[id];
             this.size = this.computeSize();
-            if (this.onInputRemoved)
-                this.onInputRemoved(id);
+            if (this['onInputRemoved'])
+                this['onInputRemoved'](id);
         }
         // /**
         //  * add an special connection to this node (used for special kinds of containers)
@@ -495,8 +542,8 @@
             if (input.type && output.type && input.type != output.type)
                 return false;
             //check target node allows connection
-            if (target_node.onConnectInput)
-                if (target_node.onConnectInput(input_id, output) == false)
+            if (target_node['onConnectInput'])
+                if (target_node['onConnectInput'](input_id, output) == false)
                     return false;
             //if target node input already connected
             if (input.link)
@@ -741,6 +788,38 @@
             else {
                 this.container.clinet_socket.emit('node-message-to-dashboard-side', m);
             }
+        }
+        sendIOValuesToEditor() {
+            let inputs_values = [];
+            let outputs_values = [];
+            if (this.inputs) {
+                for (let i in this.inputs) {
+                    let data = this.inputs[i].data;
+                    data = utils_1.default.formatAndTrimValue(data);
+                    inputs_values.push({
+                        nodeId: this.id,
+                        inputId: i,
+                        data: data
+                    });
+                }
+            }
+            if (this.outputs) {
+                for (let o in this.outputs) {
+                    let data = this.outputs[o].data;
+                    data = utils_1.default.formatAndTrimValue(data);
+                    outputs_values.push({
+                        nodeId: this.id,
+                        outputId: o,
+                        data: data
+                    });
+                }
+            }
+            let slots_values = {
+                cid: this.container.id,
+                inputs: inputs_values,
+                outputs: outputs_values
+            };
+            this.container.server_editor_socket.in("" + this.container.id).emit('nodes-io-values', slots_values);
         }
         updateInputsLabels() {
             if (this.inputs) {

@@ -94,6 +94,14 @@ router.post('/c/:cid/n/', function (req, res) {
         pos: node.pos
     });
 
+    if (node.isDashboardNode)
+        app.server.dashboardSocket.io.in(req.params.cid).emit('node-create', {
+            id: node.id,
+            cid: req.params.cid,
+            type: node.type,
+            pos: node.pos
+        });
+
     res.send(`New node created: type [${node.type}] id [${node.container.id}/${node.id}]`);
 });
 
@@ -226,6 +234,12 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
         app.db.updateNode(node.id, node.container.id, {settings: node.settings});
 
     app.server.editorSocket.io.emit('node-settings', {
+        id: req.params.id,
+        cid: req.params.cid,
+        settings: node.settings
+    });
+
+    app.server.dashboardSocket.io.in(req.params.cid).emit('node-settings', {
         id: req.params.id,
         cid: req.params.cid,
         settings: node.settings

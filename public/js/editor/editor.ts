@@ -23,7 +23,7 @@ export class Editor {
 
 
     isRunning = false;
-    showSlotsValues = false;
+    showNodesIOValues = false;
 
 
     constructor() {
@@ -540,7 +540,7 @@ export class Editor {
     }
 
     onContainerRunStep() {
-        if (this.showSlotsValues)
+        if (this.showNodesIOValues)
             this.socket.sendGetSlotsValues();
     }
 
@@ -553,17 +553,17 @@ export class Editor {
 
     private addSlotsValuesButton() {
         let that = this;
-        $("#slots-values-button").click(function () {
-            that.showSlotsValues = !that.showSlotsValues;
-            if (that.showSlotsValues) {
-                $("#slots-values-icon").addClass("hide");
-                $("#slots-values-icon").removeClass("unhide");
+        $("#nodes-io-values-button").click(function () {
+            that.showNodesIOValues = !that.showNodesIOValues;
+            if (that.showNodesIOValues) {
+                $("#nodes-io-values-icon").addClass("hide");
+                $("#nodes-io-values-icon").removeClass("unhide");
 
                 that.socket.sendGetSlotsValues();
 
             } else {
-                $("#slots-values-icon").removeClass("hide");
-                $("#slots-values-icon").addClass("unhide");
+                $("#nodes-io-values-icon").removeClass("hide");
+                $("#nodes-io-values-icon").addClass("unhide");
 
                 let container = that.renderer.container;
                 for (let id in container._nodes) {
@@ -576,7 +576,7 @@ export class Editor {
     }
 
     updateNodesLabels() {
-        if (this.showSlotsValues)
+        if (this.showNodesIOValues)
             this.socket.sendGetSlotsValues();
         else {
             let container = this.renderer.container;

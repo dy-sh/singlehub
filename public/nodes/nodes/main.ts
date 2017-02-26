@@ -33,19 +33,19 @@ export class ConstantNode extends Node {
         this.addOutput("1", "number");
     }
 
-    // setValue = function (v) {
+    // setValue  (v) {
     //     // if (typeof(v) == "string") v = parseFloat(v);
     //     this.settings["value"] = v;
     // }
 
-    onExecute = function () {
+    onExecute() {
         let val = this.settings["value"].value;
         let out_type = this.settings["output-type"].value;
         this.setOutputData(0, Utils.formatValue(val, out_type));
     }
 
 
-    onSettingsChanged = function () {
+    onSettingsChanged() {
         //change output type
         let out_type = this.settings["output-type"].value;
         if (out_type == "any")
@@ -65,7 +65,7 @@ export class ConstantNode extends Node {
         }
 
         if (this.side == Side.editor) {
-            if (!(<any>window).editor.showSlotsValues) {
+            if (!(<any>window).editor.showNodesIOValues) {
                 this.outputs[0].label = this.outputs[0].name;
                 this.setDirtyCanvas(true, true);
             }
@@ -75,10 +75,9 @@ export class ConstantNode extends Node {
 Container.registerNodeType("main/constant", ConstantNode);
 
 
-
 export class CounterNode extends Node {
     value = 0;
-    lastTime: Date;
+    lastTime: number;
 
     constructor() {
         super();
@@ -91,10 +90,10 @@ export class CounterNode extends Node {
     }
 
 
-    onExecute = function () {
+    onExecute() {
         let now = Date.now();
         if (!this.lastTime)
-            this.lastTime=now;
+            this.lastTime = now;
 
         let interval = 1000 / this.settings["speed"].value;
         if (now - this.lastTime >= interval) {
@@ -107,11 +106,10 @@ export class CounterNode extends Node {
 Container.registerNodeType("main/counter", CounterNode);
 
 
-
-
 //Container: a node that contains a container of other nodes
 export class ContainerNode extends Node {
     sub_container: Container;
+    sub_container_id: number;
 
     constructor(container) {
         super(container);
@@ -122,7 +120,7 @@ export class ContainerNode extends Node {
         this.size = [120, 20];
     }
 
-    onCreated = function () {
+    onCreated() {
         this.sub_container = new Container(this.side);
         this.sub_container_id = this.sub_container.id;
         this.title = "Container " + this.sub_container.id;
@@ -136,7 +134,7 @@ export class ContainerNode extends Node {
     }
 
 
-    onRemoved = function () {
+    onRemoved() {
         for (let id in this.sub_container._nodes) {
             let node = this.sub_container._nodes[id];
             node.container.remove(node);
@@ -167,7 +165,7 @@ export class ContainerNode extends Node {
     }
 
 
-    getExtraMenuOptions = function (renderer) {
+    getExtraMenuOptions(renderer) {
         let that = this;
         return [{
             content: "Open", callback: function () {
@@ -176,7 +174,7 @@ export class ContainerNode extends Node {
         }];
     }
 
-    onExecute = function () {
+    onExecute() {
         this.sub_container.runStep();
     }
 
@@ -211,14 +209,14 @@ export class ContainerInputNode extends Node {
     }
 
 
-    onCreated = function () {
+    onCreated() {
 
 
         //add output on container node
         let cont_node = this.container.container_node;
-        let id = cont_node.addInput(null, this.properties.type);
+        let id = cont_node.addInput(null, this.properties['type']);
         cont_node.setDirtyCanvas(true, true);
-        this.properties.slot = id;
+        this.properties['slot'] = id;
 
         //update name
         // this.outputs[0].name = cont_node.inputs[id].name;
@@ -231,13 +229,13 @@ export class ContainerInputNode extends Node {
         }
     }
 
-    onRemoved = function () {
+    onRemoved() {
         //remove  output on container node
         let cont_node = this.container.container_node;
-        cont_node.disconnectInput(this.properties.slot);
-        cont_node.removeInput(this.properties.slot);
+        cont_node.disconnectInput(this.properties['slot']);
+        cont_node.removeInput(this.properties['slot']);
         cont_node.setDirtyCanvas(true, true);
-        this.properties.slot = -1;
+        this.properties['slot'] = -1;
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
@@ -246,9 +244,9 @@ export class ContainerInputNode extends Node {
         }
     }
 
-    onExecute = function () {
+    onExecute() {
         let cont_node = this.container.container_node;
-        let val = cont_node.inputs[this.properties.slot].data;
+        let val = cont_node.inputs[this.properties['slot']].data;
         this.setOutputData(0, val);
     }
 
@@ -270,13 +268,13 @@ export class ContainerOutputNode extends Node {
     }
 
 
-    onCreated = function () {
+    onCreated() {
 
         //add output on container node
         let cont_node = this.container.container_node;
-        let id = cont_node.addOutput(null, this.properties.type);
+        let id = cont_node.addOutput(null, this.properties['type']);
         cont_node.setDirtyCanvas(true, true);
-        this.properties.slot = id;
+        this.properties['slot'] = id;
 
         //update name
         // this.inputs[0].name = cont_node.outputs[id].name;
@@ -289,13 +287,13 @@ export class ContainerOutputNode extends Node {
         }
     }
 
-    onRemoved = function () {
+    onRemoved() {
         //remove  output on container node
         let cont_node = this.container.container_node;
-        cont_node.disconnectOutput(this.properties.slot);
-        cont_node.removeOutput(this.properties.slot);
+        cont_node.disconnectOutput(this.properties['slot']);
+        cont_node.removeOutput(this.properties['slot']);
         cont_node.setDirtyCanvas(true, true);
-        this.properties.slot = -1;
+        this.properties['slot'] = -1;
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
@@ -305,10 +303,10 @@ export class ContainerOutputNode extends Node {
     }
 
 
-    onExecute = function () {
+    onExecute() {
         let cont_node = this.container.container_node;
         let val = this.getInputData(0);
-        cont_node.outputs[this.properties.slot].data = val;
+        cont_node.outputs[this.properties['slot']].data = val;
     }
 
 

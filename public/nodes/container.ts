@@ -449,11 +449,11 @@ export class Container extends Emitter {
 
     /**
      * Create node and add to container
-     * Yue can define any additional node properties or/and serialized node info.
-     * If properties.id and serialized_node.id is not defined, container will create a new instance of node,
-     * generate new id, call node.onCreated  and store it node in db,
-     * If properties.id or serialized_node.id is defined, is will create node, add, call node.onAdded,
-     * and will not store it in db.
+     * You can define any additional node properties or/and serialized node info.
+     * If properties.id && serialized_node.id is not defined, container will create a new instance of node,
+     * generate new id, call node.onCreated? store it node in db, and call node.onAdded.
+     * If properties.id || serialized_node.id is defined, it will create node, add and call node.onAdded
+     * (will not store node in db).
      * @param type type of node
      * @param properties set any additional node properties (pos, size, etc...)
      * @param serialized_node configure node from serialized info
@@ -519,11 +519,7 @@ export class Container extends Emitter {
         log.debug("New node created: " + node.getReadableId());
 
 
-        if (!is_new) {
-            if (node.onAdded)
-                node.onAdded();
-        }
-        else {
+        if (is_new) {
             if (node.onCreated)
                 node.onCreated();
 
@@ -537,6 +533,9 @@ export class Container extends Emitter {
                     this.db.updateNode(this.container_node.id, this.container_node.container.id, {"sub_container.last_node_id": this.container_node.sub_container.last_node_id});
             }
         }
+
+        if (node.onAdded)
+            node.onAdded();
 
         this.setDirtyCanvas(true, true);
 

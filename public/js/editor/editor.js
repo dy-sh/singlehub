@@ -20,7 +20,7 @@
     class Editor {
         constructor() {
             this.isRunning = false;
-            this.showSlotsValues = false;
+            this.showNodesIOValues = false;
             window.editor = this;
             //fill container
             let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
@@ -433,7 +433,7 @@
             $("#play-icon").removeClass("play");
         }
         onContainerRunStep() {
-            if (this.showSlotsValues)
+            if (this.showNodesIOValues)
                 this.socket.sendGetSlotsValues();
         }
         onContainerStop() {
@@ -444,16 +444,16 @@
         }
         addSlotsValuesButton() {
             let that = this;
-            $("#slots-values-button").click(function () {
-                that.showSlotsValues = !that.showSlotsValues;
-                if (that.showSlotsValues) {
-                    $("#slots-values-icon").addClass("hide");
-                    $("#slots-values-icon").removeClass("unhide");
+            $("#nodes-io-values-button").click(function () {
+                that.showNodesIOValues = !that.showNodesIOValues;
+                if (that.showNodesIOValues) {
+                    $("#nodes-io-values-icon").addClass("hide");
+                    $("#nodes-io-values-icon").removeClass("unhide");
                     that.socket.sendGetSlotsValues();
                 }
                 else {
-                    $("#slots-values-icon").removeClass("hide");
-                    $("#slots-values-icon").addClass("unhide");
+                    $("#nodes-io-values-icon").removeClass("hide");
+                    $("#nodes-io-values-icon").addClass("unhide");
                     let container = that.renderer.container;
                     for (let id in container._nodes) {
                         let node = container._nodes[id];
@@ -464,7 +464,7 @@
             });
         }
         updateNodesLabels() {
-            if (this.showSlotsValues)
+            if (this.showNodesIOValues)
                 this.socket.sendGetSlotsValues();
             else {
                 let container = this.renderer.container;

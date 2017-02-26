@@ -12,3 +12,6 @@ import "../../nodes/nodes/main";
 import "../../nodes/nodes/debug";
 import "../../nodes/nodes/math";
 import "../../nodes/nodes/ui/label";
+import "../../nodes/nodes/ui/toggle";
+import "../../nodes/nodes/ui/state";
+import "../../nodes/nodes/ui/button";

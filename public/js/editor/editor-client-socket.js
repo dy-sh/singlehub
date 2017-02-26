@@ -23,7 +23,7 @@
             setInterval(function () {
                 if (that.socket
                     && that.socket.connected
-                    && editor.showSlotsValues
+                    && editor.showNodesIOValues
                     && editor.isRunning)
                     that.sendGetSlotsValues();
             }, SLOTS_VALUES_INTERVAL);
@@ -191,7 +191,9 @@
                     editor.renderer.showNodeActivity(node);
                 }
             });
-            socket.on('slots-values', function (slots_values) {
+            socket.on('nodes-io-values', function (slots_values) {
+                if (!that.editor.showNodesIOValues)
+                    return;
                 let container = container_1.Container.containers[slots_values.cid];
                 if (!container)
                     return;
@@ -445,7 +447,7 @@
         //
         // }
         sendGetSlotsValues() {
-            this.socket.emit("get-slots-values", this.editor.renderer.container.id);
+            this.socket.emit("get-nodes-io-values", this.editor.renderer.container.id);
         }
         sendJoinContainerRoom(cont_id) {
             log.debug("Join to editor room [" + cont_id + "]");

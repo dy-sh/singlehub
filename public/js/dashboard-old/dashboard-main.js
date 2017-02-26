@@ -12,94 +12,42 @@ var switchTemplate = Handlebars.compile($('#switchTemplate').html());
 var stateTemplate = Handlebars.compile($('#stateTemplate').html());
 var textBoxTemplate = Handlebars.compile($('#textBoxTemplate').html());
 var chartTemplate = Handlebars.compile($('#chartTemplate').html());
-function createLabel(node) {
-    $(labelTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-}
-function createState(node) {
-    $(stateTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-}
 function createTextBox(node) {
     $(textBoxTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-    $('#textBoxSend-' + node.Id).click(function () {
-        sendTextBox(node.Id);
+    $('#textBoxSend-' + this.id).click(function () {
+        sendTextBox(this.id);
     });
 }
 function createProgress(node) {
     $(progressTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
 }
-function createButton(node) {
-    $(buttonTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-    $('#button-' + node.Id).click(function () {
-        sendButtonClick(node.Id);
-    });
-}
-function createToggleButton(node) {
-    $(toggleButtonTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-    $('#button-' + node.Id).click(function () {
-        sendToggleButtonClick(node.Id);
-    });
-}
 function createSwitch(node) {
     $(switchTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-    $('#switch-' + node.Id).click(function () {
-        sendSwitchClick(node.Id);
+    $('#switch-' + this.id).click(function () {
+        sendSwitchClick(this.id);
     });
 }
-function updateLabel(node) {
-    if (node.Value == null)
-        node.Value = "NULL";
-    $('#labelName-' + node.Id).html(node.Settings["Name"].Value);
-    $('#labelValue-' + node.Id).html(node.Value);
-}
-function updateState(node) {
-    if (node.Value == "1") {
-        $('#state-on-' + node.Id).show();
-        $('#state-off-' + node.Id).hide();
-        $('#state-null-' + node.Id).hide();
-    }
-    else if (node.Value == "0") {
-        $('#state-on-' + node.Id).hide();
-        $('#state-off-' + node.Id).show();
-        $('#state-null-' + node.Id).hide();
-    }
-    else {
-        $('#state-on-' + node.Id).hide();
-        $('#state-off-' + node.Id).hide();
-        $('#state-null-' + node.Id).show();
-    }
-    $('#stateName-' + node.Id).html(node.Settings["Name"].Value);
-}
 function updateTextBox(node) {
-    $('#textBoxName-' + node.Id).html(node.Settings["Name"].Value);
-    $('#textBoxText-' + node.Id).val(node.Value);
+    $('#textBoxName-' + this.id).html(node.Settings["Name"].Value);
+    $('#textBoxText-' + this.id).val(data.value);
 }
 function updateProgress(node) {
-    //if (uiNode.Value == null)
-    //    uiNode.Value = 0;
-    if (node.Value > 100)
-        node.Value = 100;
-    if (node.Value < 0)
-        node.Value = 0;
-    $('#progressName-' + node.Id).html(node.Settings["Name"].Value);
-    $('#progressBar-' + node.Id).progress({
-        percent: node.Value,
+    //if (uidata.value == null)
+    //    uidata.value = 0;
+    if (data.value > 100)
+        data.value = 100;
+    if (data.value < 0)
+        data.value = 0;
+    $('#progressName-' + this.id).html(node.Settings["Name"].Value);
+    $('#progressBar-' + this.id).progress({
+        percent: data.value,
         showActivity: false
     });
 }
-function updateButton(node) {
-    $('#buttonName-' + node.Id).html(node.Settings["Name"].Value);
-}
-function updateToggleButton(node) {
-    $('#buttonName-' + node.Id).html(node.Settings["Name"].Value);
-    if (node.Value == "1")
-        $('#button-' + node.Id).addClass("blue");
-    else
-        $('#button-' + node.Id).removeClass("blue");
-}
 function updateSwitch(node) {
-    $('#switchName-' + node.Id).html(node.Settings["Name"].Value);
-    $('#switch-' + node.Id).html(node.Settings["Name"].Value);
-    $('#switch-' + node.Id).prop('checked', node.Value == "1");
+    $('#switchName-' + this.id).html(node.Settings["Name"].Value);
+    $('#switch-' + this.id).html(node.Settings["Name"].Value);
+    $('#switch-' + this.id).prop('checked', data.value == "1");
 }
 function sendTextBox(nodeId) {
     var value = $('#textBoxText-' + nodeId).val();

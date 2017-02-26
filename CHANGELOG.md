@@ -4,6 +4,8 @@ MyNodes v4.0
 **Common changes:**
 
 - Rewritten on Node.js.
+- Code is written in TypeScript. 
+  But all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
 - Built-in database is replaced by NeDB.
 
 
@@ -40,4 +42,7 @@ MyNodes v4.0
 - Very comfortable color output debugging information to the console. 
   You can filter messages by importance: debug/info/warnings/errors.
   This also applies to the client part (in the debug panel of the browser).
+- API to create nodes is now much friendlier to developers. 
+  This is especially true of UI-nodes. 
+  All of the code for backend and frontend is now focused in the node class.  
   

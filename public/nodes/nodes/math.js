@@ -16,17 +16,17 @@
     class MathPlusNode extends node_1.Node {
         constructor() {
             super();
-            this.onInputUpdated = function () {
-                let a = this.getInputData(0);
-                let b = this.getInputData(1);
-                let result = a + b;
-                this.setOutputData(0, result);
-            };
             this.title = "Plus";
             this.descriprion = "Math plus operation";
             this.addInput("A", "number");
             this.addInput("B", "number");
             this.addOutput("A+B", "number");
+        }
+        onInputUpdated() {
+            let a = this.getInputData(0);
+            let b = this.getInputData(1);
+            let result = a + b;
+            this.setOutputData(0, result);
         }
     }
     container_1.Container.registerNodeType("math/plus", MathPlusNode);

@@ -16,61 +16,6 @@ else  //for frontside only
     log = Logger.create('node', {color: 5});
 
 
-//Watch a value in the editor
-export class WatchNode extends Node {
-    UPDATE_INTERVAL: number;
-
-    lastData: any;
-    dataUpdated = false;
-
-    constructor() {
-        super();
-
-        this.UPDATE_INTERVAL = 300;
-
-
-        this.title = "Watch";
-        this.descriprion = "Show value of input";
-        this.size = [60, 20];
-        this.addInput("", null, {label: ""});
-        this.startSending();
-    }
-
-    startSending() {
-        let that = this;
-        setInterval(function () {
-            if (that.dataUpdated) {
-                that.dataUpdated = false;
-                that.sendMessageToEditorSide({value: that.lastData});
-            }
-        }, this.UPDATE_INTERVAL);
-    }
-
-    onInputUpdated = function () {
-        this.lastData = this.getInputData(0);
-        this.dataUpdated = true;
-        this.isRecentlyActive = true;
-    };
-
-    onGetMessageToEditorSide = function (data) {
-        this.lastData = data.value;
-        this.showValueOnInput(data.value);
-    };
-
-    showValueOnInput(value: any) {
-        //show the current value
-        let val = Utils.formatAndTrimValue(value);
-        this.inputs[0].label = val;
-
-        this.setDirtyCanvas(true, false);
-    }
-
-    updateInputsLabels() {
-        this.showValueOnInput(this.lastData);
-    }
-}
-Container.registerNodeType("debug/watch", WatchNode);
-
 
 
 
@@ -102,7 +47,7 @@ export class ConsoleNode extends Node {
         }, 1000);
     }
 
-    onInputUpdated = function () {
+    onInputUpdated  () {
         let val = this.getInputData(0);
         this.isRecentlyActive = true;
 
@@ -113,9 +58,9 @@ export class ConsoleNode extends Node {
         }
     };
 
-    onGetMessageToEditorSide = function (data) {
+    onGetMessageToEditorSide  (data) {
 
-        if (data.value)
+        if (data.value!=null)
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
 
         if (data.dropped)
@@ -123,4 +68,65 @@ export class ConsoleNode extends Node {
     };
 }
 Container.registerNodeType("debug/console", ConsoleNode);
+
+
+
+
+
+
+//Watch a value in the editor
+export class WatchNode extends Node {
+    UPDATE_INTERVAL: number;
+
+    lastData: any;
+    dataUpdated = false;
+
+    constructor() {
+        super();
+
+        this.UPDATE_INTERVAL = 300;
+
+
+        this.title = "Watch";
+        this.descriprion = "Show value of input";
+        this.size = [60, 20];
+        this.addInput("", null, {label: ""});
+        this.startSending();
+    }
+
+    startSending() {
+        let that = this;
+        setInterval(function () {
+            if (that.dataUpdated) {
+                that.dataUpdated = false;
+                that.sendMessageToEditorSide({value: that.lastData});
+            }
+        }, this.UPDATE_INTERVAL);
+    }
+
+    onInputUpdated  () {
+        this.lastData = this.getInputData(0);
+        this.dataUpdated = true;
+        this.isRecentlyActive = true;
+    };
+
+    onGetMessageToEditorSide  (data) {
+        this.lastData = data.value;
+        this.showValueOnInput(data.value);
+    };
+
+    showValueOnInput(value: any) {
+        //show the current value
+        let val = Utils.formatAndTrimValue(value);
+        this.inputs[0].label = val;
+
+        this.setDirtyCanvas(true, false);
+    }
+
+    updateInputsLabels() {
+        this.showValueOnInput(this.lastData);
+    }
+}
+Container.registerNodeType("debug/watch", WatchNode);
+
 

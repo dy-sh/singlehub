@@ -210,11 +210,8 @@
             }
         }
         static formatAndTrimValue(val) {
-            if (val === null)
+            if (val == null)
                 return "";
-            if (typeof (val) == "undefined") {
-                return "";
-            }
             if (typeof (val) == "boolean") {
                 return val ? "true" : "false";
             }

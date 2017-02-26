@@ -70,17 +70,13 @@ export interface SerializedNode {
     id: number;
     cid: number;
     type: string;
-    title: string;
     pos: [number, number];
-    size: [number, number];
+    size?: [number, number];
     data?: any;
     inputs?: {[id: number]: NodeInput};
     outputs?: {[id: number]: NodeOutput};
     properties?: any;
     settings?: {[name: string]: NodeSettings};
-    color?: string;
-    bgcolor?: string;
-    boxcolor?: string;
     flags?: any;
 }
 
@@ -120,8 +116,7 @@ export class Node {
 
     mouseOver: boolean;
     selected: boolean;
-    getMenuOptions: Function;
-    getExtraMenuOptions: Function;
+
 
     color: string;
     bgcolor: string;
@@ -141,62 +136,65 @@ export class Node {
     isUpdated: boolean;
     isRecentlyActive: boolean;
 
+
+
 //events
 
-    /**
-     * Invoked when new node created and added to container
-     */
-    onCreated: Function;
+    // /**
+    //  * Invoked when new node created
+    //  */
+    // onCreated: Function;
+    //
+    // /**
+    //  * Invoked every time when node added to container (created or restored from the database)
+    //  */
+    // onAdded:Function;
+    //
+    // /**
+    //  * Invoked when node removed from container
+    //  */
+    // onRemoved: Function;
+    //
+    //
+    // onDrawBackground: Function;
+    // onDrawForeground: Function;
+    //
+    // //if returns false the incoming connection will be canceled
+    // onConnectInput: Function;
+    // onInputAdded: Function;
+    // onOutputAdded: Function;
+    // onGetInputs: Function;
+    // onGetOutputs: Function;
+    // onInputRemoved: Function;
+    // onOutputRemoved: Function;
+    //
+    // onMouseDown: Function;
+    // onMouseUp: Function;
+    // onMouseEnter: Function;
+    // onMouseMove: Function;
+    // onMouseLeave: Function;
+    // onDblClick: Function;
+    // onDropFile: Function;
+    // onDropItem: Function;
+    // onKeyDown: Function;
+    // onKeyUp: Function;
+    //
+    // onSelected: Function;
+    // onDeselected: Function;
+    //
+    // onGetMessageToServerSide: Function;
+    // onGetMessageToEditorSide: Function;
+    // onGetMessageToDashboardSide: Function;
+    //
+    // onRunContainer: Function;
+    // onStopContainer: Function;
+    // onExecute: Function;
+    // onInputUpdated: Function;
+    //
+    // onSettingsChanged: Function;
 
-    /**
-     * Invoked every time when node added to container again (restored from the database)
-     */
-    onAdded: Function;
-
-    /**
-     * Invoked when node removed from container
-     */
-    onRemoved: Function;
-
-
-
-
-    onDrawBackground: Function;
-    onDrawForeground: Function;
-
-    //if returns false the incoming connection will be canceled
-    onConnectInput: Function;
-    onInputAdded: Function;
-    onOutputAdded: Function;
-    onGetInputs: Function;
-    onGetOutputs: Function;
-    onInputRemoved: Function;
-    onOutputRemoved: Function;
-
-    onMouseDown: Function;
-    onMouseUp: Function;
-    onMouseEnter: Function;
-    onMouseMove: Function;
-    onMouseLeave: Function;
-    onDblClick: Function;
-    onDropFile: Function;
-    onDropItem: Function;
-    onKeyDown: Function;
-    onKeyUp: Function;
-
-    onSelected: Function;
-    onDeselected: Function;
-
-    onGetMessageToServerSide: Function;
-    onGetMessageToEditorSide: Function;
-    onGetMessageToDashboardSide: Function;
-
-    onRunContainer: Function;
-    onStopContainer: Function;
-    onExecute: Function;
-    onInputUpdated: Function;
-
-    onSettingsChanged: Function;
+    // getMenuOptions: Function;
+    // getExtraMenuOptions: Function;
 
     constructor(container?: Container, id?: number) {
     }
@@ -207,27 +205,27 @@ export class Node {
      * @param ser_node object with properties for configure
      */
     configure(ser_node: SerializedNode, from_db = false): void {
-        for (let prop in ser_node) {
-            if (prop == "console") continue;
+        for (let key in ser_node) {
+            if (key == "console") continue;
 
-            if (prop == "properties") {
-                for (let k in ser_node.properties)
-                    this.properties[k] = ser_node.properties[k];
+            // if (key == "properties") {
+            //     for (let k in ser_node.properties)
+            //         this.properties[k] = ser_node.properties[k];
+            //     continue;
+            // }
+
+            if (ser_node[key] == null)
                 continue;
-            }
 
-            if (ser_node[prop] == null)
-                continue;
-
-            else if (typeof(ser_node[prop]) == 'object') //object
+            else if (typeof(ser_node[key]) == 'object') //object
             {
-                if (this[prop] && this[prop].configure)
-                    this[prop].configure(ser_node[prop]);
+                if (this[key] && this[key].configure)
+                    this[key].configure(ser_node[key]);
                 else
-                    this[prop] = Utils.cloneObject(ser_node[prop], this[prop]);
+                    this[key] = Utils.cloneObject(ser_node[key], this[key]);
             }
             else //value
-                this[prop] = ser_node[prop];
+                this[key] = ser_node[key];
         }
 
     }
@@ -240,9 +238,7 @@ export class Node {
             cid: this.container.id,
             id: this.id,
             type: this.type,
-            title: this.title,
-            pos: this.pos,
-            size: this.size,
+            pos: this.pos
         };
 
         if (this.settings)
@@ -251,12 +247,7 @@ export class Node {
         if (this.properties)
             n.properties = Utils.cloneObject(this.properties);
 
-        if (this.color)
-            n.color = this.color;
-        if (this.bgcolor)
-            n.bgcolor = this.bgcolor;
-        if (this.boxcolor)
-            n.boxcolor = this.boxcolor;
+
         if (this.flags)
             n.flags = Utils.cloneObject(this.flags);
 
@@ -453,8 +444,8 @@ export class Node {
         if (!this.outputs) this.outputs = {};
 
         this.outputs[id] = output;
-        if (this.onOutputAdded)
-            this.onOutputAdded(output);
+        if (this['onOutputAdded'])
+            this['onOutputAdded'](output);
         this.size = this.computeSize();
 
         return id;
@@ -491,8 +482,8 @@ export class Node {
                 this.outputs = {};
 
             this.outputs[id] = output;
-            if (this.onOutputAdded)
-                this.onOutputAdded(output);
+            if (this['onOutputAdded'])
+                this['onOutputAdded'](output);
         }
 
         this.size = this.computeSize();
@@ -506,8 +497,8 @@ export class Node {
         this.disconnectOutput(id);
         delete this.outputs[id];
         this.size = this.computeSize();
-        if (this.onOutputRemoved)
-            this.onOutputRemoved(id);
+        if (this['onOutputRemoved'])
+            this['onOutputRemoved'](id);
     }
 
 
@@ -531,8 +522,8 @@ export class Node {
             this.inputs = {};
         this.inputs[id] = input;
         this.size = this.computeSize();
-        if (this.onInputAdded)
-            this.onInputAdded(input);
+        if (this['onInputAdded'])
+            this['onInputAdded'](input);
 
         return id;
     }
@@ -567,8 +558,8 @@ export class Node {
                 this.inputs = {};
 
             this.inputs[id] = input;
-            if (this.onInputAdded)
-                this.onInputAdded(input);
+            if (this['onInputAdded'])
+                this['onInputAdded'](input);
         }
 
         this.size = this.computeSize();
@@ -583,8 +574,8 @@ export class Node {
         this.disconnectInput(id);
         delete this.inputs[id];
         this.size = this.computeSize();
-        if (this.onInputRemoved)
-            this.onInputRemoved(id);
+        if (this['onInputRemoved'])
+            this['onInputRemoved'](id);
     }
 
 
@@ -685,11 +676,6 @@ export class Node {
     }
 
 
-
-
-
-
-
     /**
      * Returns the input slot with a given name (used for dynamic slots), -1 if not found
      * @param name the name of the slot
@@ -761,8 +747,8 @@ export class Node {
             return false;
 
         //check target node allows connection
-        if (target_node.onConnectInput)
-            if (target_node.onConnectInput(input_id, output) == false)
+        if (target_node['onConnectInput'])
+            if (target_node['onConnectInput'](input_id, output) == false)
                 return false;
 
 
@@ -945,18 +931,12 @@ export class Node {
     }
 
 
-
-
-
-
     /* Forces to redraw or the main renderer (Node) or the bg renderer (links) */
     setDirtyCanvas(dirty_foreground: boolean, dirty_background?: boolean): void {
         if (!this.container)
             return;
         this.container.sendActionToRenderer("setDirty", [dirty_foreground, dirty_background]);
     }
-
-
 
 
     /**
@@ -1030,8 +1010,6 @@ export class Node {
     }
 
 
-
-
     /**
      * Print debug message to console
      * @param message
@@ -1069,8 +1047,8 @@ export class Node {
             log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
         }
         else if (this.side == Side.server) {
-            let socket=this.container.server_editor_socket;
-            socket.in(""+this.container.id).emit('node-message-to-editor-side', m);
+            let socket = this.container.server_editor_socket;
+            socket.in("" + this.container.id).emit('node-message-to-editor-side', m);
         }
         else {
             this.container.clinet_socket.emit('node-message-to-editor-side', m);
@@ -1083,12 +1061,51 @@ export class Node {
             log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
         }
         else if (this.side == Side.server) {
-            let socket=this.container.server_dashboard_socket;
-            socket.in(""+this.container.id).emit('node-message-to-dashboard-side', m);
+            let socket = this.container.server_dashboard_socket;
+            socket.in("" + this.container.id).emit('node-message-to-dashboard-side', m);
         }
         else {
             this.container.clinet_socket.emit('node-message-to-dashboard-side', m);
         }
+    }
+
+    sendIOValuesToEditor() {
+        let inputs_values = [];
+        let outputs_values = [];
+
+        if (this.inputs) {
+            for (let i in this.inputs) {
+                let data = this.inputs[i].data;
+                data = Utils.formatAndTrimValue(data);
+
+                inputs_values.push({
+                    nodeId: this.id,
+                    inputId: i,
+                    data: data
+                })
+            }
+        }
+
+        if (this.outputs) {
+            for (let o in this.outputs) {
+                let data = this.outputs[o].data;
+                data = Utils.formatAndTrimValue(data);
+
+                outputs_values.push({
+                    nodeId: this.id,
+                    outputId: o,
+                    data: data
+                })
+            }
+        }
+
+        let slots_values = {
+            cid: this.container.id,
+            inputs: inputs_values,
+            outputs: outputs_values
+        };
+
+        this.container.server_editor_socket.in("" + this.container.id).emit('nodes-io-values', slots_values);
     }
 
 
