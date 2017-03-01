@@ -21,12 +21,6 @@ function createTextBox(node) {
 function createProgress(node) {
     $(progressTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
 }
-function createSwitch(node) {
-    $(switchTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-    $('#switch-' + this.id).click(function () {
-        sendSwitchClick(this.id);
-    });
-}
 function updateTextBox(node) {
     $('#textBoxName-' + this.id).html(node.Settings["Name"].Value);
     $('#textBoxText-' + this.id).val(data.value);
@@ -43,11 +37,6 @@ function updateProgress(node) {
         percent: data.value,
         showActivity: false
     });
-}
-function updateSwitch(node) {
-    $('#switchName-' + this.id).html(node.Settings["Name"].Value);
-    $('#switch-' + this.id).html(node.Settings["Name"].Value);
-    $('#switch-' + this.id).prop('checked', data.value == "1");
 }
 function sendTextBox(nodeId) {
     var value = $('#textBoxText-' + nodeId).val();

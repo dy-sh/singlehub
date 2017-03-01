@@ -233,8 +233,8 @@ export class Container extends Emitter {
 
         for (let id in this._nodes) {
             let node = this._nodes[id];
-            if (node.onStopContainer)
-                node.onStopContainer();
+            if (node['onStopContainer'])
+                node['onStopContainer']();
         }
     }
 
@@ -287,8 +287,8 @@ export class Container extends Emitter {
 
         for (let id in this._nodes) {
             let node = this._nodes[id];
-            if (node.onRunContainer)
-                node.onRunContainer();
+            if (node['onRunContainer'])
+                node['onRunContainer']();
         }
 
 
@@ -318,12 +318,12 @@ export class Container extends Emitter {
 
             for (let id in this._nodes) {
                 let node = this._nodes[id];
-                if (node.onExecute)
-                    node.onExecute();
+                if (node['onExecute'])
+                    node['onExecute']();
 
                 if (node.isUpdated) {
-                    if (node.onInputUpdated)
-                        node.onInputUpdated();
+                    if (node['onInputUpdated'])
+                        node['onInputUpdated']();
 
                     node.isUpdated = false;
 
@@ -566,8 +566,8 @@ export class Container extends Emitter {
 
 
         //node event
-        if (node.onRemoved)
-            node.onRemoved();
+        if (node['onRemoved'])
+            node['onRemoved']();
 
 
         //disconnect inputs

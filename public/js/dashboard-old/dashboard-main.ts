@@ -43,14 +43,6 @@ function createProgress(node) {
 
 
 
-function createSwitch(node) {
-    $(switchTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-
-    $('#switch-' + this.id).click(function () {
-        sendSwitchClick(this.id);
-    });
-}
-
 
 
 
@@ -86,13 +78,6 @@ function updateProgress(node) {
 
 
 
-
-
-function updateSwitch(node) {
-    $('#switchName-' + this.id).html(node.Settings["Name"].Value);
-    $('#switch-' + this.id).html(node.Settings["Name"].Value);
-    $('#switch-' + this.id).prop('checked', data.value == "1");
-}
 
 
 

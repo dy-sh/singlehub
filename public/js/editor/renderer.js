@@ -1,9 +1,10 @@
 ///<reference path='../../../types/my_types.d.ts'/>
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/container", "./editor", "../../nodes/utils", "./renderer-themes"], factory);
     }
 })(function (require, exports) {
@@ -474,13 +475,13 @@
                         let now = utils_1.default.getTime();
                         if ((now - this.last_mouseclick) < 300 && this.selected_nodes[n.id]) {
                             //double click node
-                            if (n.onDblClick)
-                                n.onDblClick(e);
+                            if (n['onDblClick'])
+                                n['onDblClick'](e);
                             this.processNodeDblClicked(n);
                             block_drag_node = true;
                         }
                         //if do not capture mouse
-                        if (n.onMouseDown && n.onMouseDown(e))
+                        if (n['onMouseDown'] && n['onMouseDown'](e))
                             block_drag_node = true;
                         else if (this.live_mode) {
                             clicking_canvas_bg = true;
@@ -554,8 +555,8 @@
                     if (node.mouseOver && n != node) {
                         //mouse leave
                         node.mouseOver = false;
-                        if (this.node_over && this.node_over.onMouseLeave)
-                            this.node_over.onMouseLeave(e);
+                        if (this.node_over && this.node_over['onMouseLeave'])
+                            this.node_over['onMouseLeave'](e);
                         this.node_over = null;
                         this.dirty_canvas = true;
                     }
@@ -572,11 +573,11 @@
                         n.mouseOver = true;
                         this.node_over = n;
                         this.dirty_canvas = true;
-                        if (n.onMouseEnter)
-                            n.onMouseEnter(e);
+                        if (n['onMouseEnter'])
+                            n['onMouseEnter'](e);
                     }
-                    if (n.onMouseMove)
-                        n.onMouseMove(e);
+                    if (n['onMouseMove'])
+                        n['onMouseMove'](e);
                     //ontop of input
                     if (this.connecting_node) {
                         let pos = this._highlight_input || [0, 0];
@@ -594,8 +595,8 @@
                     if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, n.pos[0] + n.size[0] - 10, n.pos[1] + n.size[1] - 10, 10, 10))
                         this.canvas.style.cursor = "se-resize";
                 }
-                if (this.node_capturing_input && this.node_capturing_input != n && this.node_capturing_input.onMouseMove) {
-                    this.node_capturing_input.onMouseMove(e);
+                if (this.node_capturing_input && this.node_capturing_input != n && this.node_capturing_input['onMouseMove']) {
+                    this.node_capturing_input['onMouseMove'](e);
                 }
                 if (this.node_dragged && !this.live_mode) {
                     /*
@@ -697,10 +698,10 @@
                 else {
                     this.dirty_canvas = true;
                     this.dragging_canvas = false;
-                    if (this.node_over && this.node_over.onMouseUp)
-                        this.node_over.onMouseUp(e);
-                    if (this.node_capturing_input && this.node_capturing_input.onMouseUp)
-                        this.node_capturing_input.onMouseUp(e);
+                    if (this.node_over && this.node_over['onMouseUp'])
+                        this.node_over['onMouseUp'](e);
+                    if (this.node_capturing_input && this.node_capturing_input['onMouseUp'])
+                        this.node_capturing_input['onMouseUp'](e);
                 }
             }
             else if (e.which == 2) {
@@ -809,14 +810,14 @@
                 //TODO
                 if (this.selected_nodes)
                     for (let i in this.selected_nodes)
-                        if (this.selected_nodes[i].onKeyDown)
-                            this.selected_nodes[i].onKeyDown(e);
+                        if (this.selected_nodes[i]['onKeyDown'])
+                            this.selected_nodes[i]['onKeyDown'](e);
             }
             else if (e.type == "keyup") {
                 if (this.selected_nodes)
                     for (let i in this.selected_nodes)
-                        if (this.selected_nodes[i].onKeyUp)
-                            this.selected_nodes[i].onKeyUp(e);
+                        if (this.selected_nodes[i]['onKeyUp'])
+                            this.selected_nodes[i]['onKeyUp'](e);
             }
             this.container.setDirtyCanvas(true, true);
             if (block_default) {
@@ -839,7 +840,7 @@
                     this.onDropItem(event);
                 return;
             }
-            if (node.onDropFile) {
+            if (node['onDropFile']) {
                 let files = e.dataTransfer.files;
                 if (files && files.length) {
                     for (let i = 0; i < files.length; i++) {
@@ -866,8 +867,8 @@
                     }
                 }
             }
-            if (node.onDropItem) {
-                if (node.onDropItem(event))
+            if (node['onDropItem']) {
+                if (node['onDropItem'](event))
                     return true;
             }
             if (this.onDropItem)
@@ -881,8 +882,8 @@
          */
         processNodeSelected(n, e) {
             n.selected = true;
-            if (n.onSelected)
-                n.onSelected();
+            if (n['onSelected'])
+                n['onSelected']();
             if (e && e.shiftKey)
                 this.selected_nodes[n.id] = n;
             else {
@@ -900,8 +901,8 @@
          */
         processNodeDeselected(n) {
             n.selected = false;
-            if (n.onDeselected)
-                n.onDeselected();
+            if (n['onDeselected'])
+                n['onDeselected']();
             delete this.selected_nodes[n.id];
             if (this.onNodeDeselected)
                 this.onNodeDeselected();
@@ -927,8 +928,8 @@
             this.deselectAllNodes();
             if (!node)
                 return;
-            if (!node.selected && node.onSelected)
-                node.onSelected();
+            if (!node.selected && node['onSelected'])
+                node['onSelected']();
             node.selected = true;
             this.selected_nodes[node.id] = node;
             this.setDirty(true);
@@ -939,8 +940,8 @@
         selectAllNodes() {
             for (let id in this.container._nodes) {
                 let node = this.container._nodes[id];
-                if (!node.selected && node.onSelected)
-                    node.onSelected();
+                if (!node.selected && node['onSelected'])
+                    node['onSelected']();
                 node.selected = true;
                 this.selected_nodes[node.id] = node;
             }
@@ -952,8 +953,8 @@
         deselectAllNodes() {
             for (let i in this.selected_nodes) {
                 let n = this.selected_nodes[i];
-                if (n.onDeselected)
-                    n.onDeselected();
+                if (n['onDeselected'])
+                    n['onDeselected']();
                 n.selected = false;
             }
             this.selected_nodes = {};
@@ -1047,7 +1048,7 @@
             for (let id in this.container._nodes) {
                 let node = this.container._nodes[id];
                 //skip rendering nodes in live mode
-                if (this.live_mode && !node.onDrawBackground && !node.onDrawForeground)
+                if (this.live_mode && !node['onDrawBackground'] && !node['onDrawForeground'])
                     continue;
                 if (!utils_1.default.overlapBounding(this.visible_area, this.getBounding(node)))
                     continue; //out of the visible area
@@ -1309,8 +1310,8 @@
                     ctx.shadowColor = "transparent";
                     //if(node.onDrawBackground)
                     //	node.onDrawBackground(ctx);
-                    if (node.onDrawForeground)
-                        node.onDrawForeground(ctx);
+                    if (node['onDrawForeground'])
+                        node['onDrawForeground'](ctx);
                 }
                 return;
             }
@@ -1423,8 +1424,8 @@
                     }
                 ctx.textAlign = "left";
                 ctx.globalAlpha = 1;
-                if (node.onDrawForeground)
-                    node.onDrawForeground(ctx);
+                if (node['onDrawForeground'])
+                    node['onDrawForeground'](ctx);
             } //!collapsed
             if (node.flags.clip_area)
                 ctx.restore();
@@ -1482,8 +1483,8 @@
                 ctx.drawImage(node.bgImage, (size[0] - node.bgImage.width) * 0.5, (size[1] - node.bgImage.height) * 0.5);
             if (node.bgImageUrl && !node.bgImage)
                 node.bgImage = this.loadImage(node.bgImageUrl);
-            if (node.onDrawBackground)
-                node.onDrawBackground(ctx);
+            if (node['onDrawBackground'])
+                node['onDrawBackground'](ctx);
             //title bg
             if (!no_title) {
                 ctx.fillStyle = fgcolor || this.theme.NODE_DEFAULT_COLOR;
@@ -1846,10 +1847,10 @@
                 });
                 options.push(null);
             }
-            if (node.getMenuOptions)
-                options = node.getMenuOptions(this);
-            if (node.getExtraMenuOptions) {
-                let extra = node.getExtraMenuOptions(this);
+            if (node['getMenuOptions'])
+                options = node['getMenuOptions'](this);
+            if (node['getExtraMenuOptions']) {
+                let extra = node['getExtraMenuOptions'](this);
                 if (extra) {
                     //extra.push(null);
                     options = extra.concat(options);
@@ -1869,13 +1870,13 @@
             // }
             if (node.removable !== false)
                 options.push({ content: "Remove", callback: this.onMenuNodeRemove });
-            if (node.onGetInputs) {
-                let inputs = node.onGetInputs();
+            if (node['onGetInputs']) {
+                let inputs = node['onGetInputs']();
                 if (inputs && inputs.length)
                     options[0].disabled = false;
             }
-            if (node.onGetOutputs) {
-                let outputs = node.onGetOutputs();
+            if (node['onGetOutputs']) {
+                let outputs = node['onGetOutputs']();
                 if (outputs && outputs.length)
                     options[1].disabled = false;
             }
@@ -2034,8 +2035,8 @@
             if (!node)
                 return;
             let options = node.optional_inputs;
-            if (node.onGetInputs)
-                options = node.onGetInputs();
+            if (node['onGetInputs'])
+                options = node['onGetInputs']();
             if (options) {
                 let entries = [];
                 for (let i in options) {
@@ -2065,8 +2066,8 @@
             if (!node)
                 return;
             let options = node.optional_outputs;
-            if (node.onGetOutputs)
-                options = node.onGetOutputs();
+            if (node['onGetOutputs'])
+                options = node['onGetOutputs']();
             if (options) {
                 let entries = [];
                 for (let i in options) {

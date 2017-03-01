@@ -55,7 +55,7 @@ export class EditorServerSocket {
                     return;
                 }
 
-                node.onGetMessageToServerSide(n.value);
+                node['onGetMessageToServerSide'](n.value);
             });
 
 

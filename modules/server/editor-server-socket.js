@@ -3,10 +3,11 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../public/nodes/container", "../../app", "../../public/nodes/utils"], factory);
     }
 })(function (require, exports) {
@@ -45,7 +46,7 @@
                         log.error("Can't send node message to server-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
                         return;
                     }
-                    node.onGetMessageToServerSide(n.value);
+                    node['onGetMessageToServerSide'](n.value);
                 });
                 //redirect message
                 socket.on('node-message-to-editor-side', function (n) {

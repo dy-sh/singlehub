@@ -2,29 +2,30 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./node", "./utils", '../js/emitter/emitter'], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./node", "./utils", "../js/emitter/emitter"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const node_1 = require("./node");
     const utils_1 = require("./utils");
-    const emitter_1 = require('../js/emitter/emitter');
+    const emitter_1 = require("../js/emitter/emitter");
     //console logger back and front
     let log;
     if (typeof (window) === 'undefined')
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
+    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(exports.Side || (exports.Side = {}));
-    var Side = exports.Side;
+    })(Side = exports.Side || (exports.Side = {}));
     class Container extends emitter_1.Emitter {
         constructor(side, id) {
             super();
@@ -148,8 +149,8 @@
             this.execution_timer_id = null;
             for (let id in this._nodes) {
                 let node = this._nodes[id];
-                if (node.onStopContainer)
-                    node.onStopContainer();
+                if (node['onStopContainer'])
+                    node['onStopContainer']();
             }
         }
         /**
@@ -191,8 +192,8 @@
                 this.onPlayEvent();
             for (let id in this._nodes) {
                 let node = this._nodes[id];
-                if (node.onRunContainer)
-                    node.onRunContainer();
+                if (node['onRunContainer'])
+                    node['onRunContainer']();
             }
             //launch
             this.starttime = utils_1.default.getTime();
@@ -214,11 +215,11 @@
                 this.transferDataBetweenNodes();
                 for (let id in this._nodes) {
                     let node = this._nodes[id];
-                    if (node.onExecute)
-                        node.onExecute();
+                    if (node['onExecute'])
+                        node['onExecute']();
                     if (node.isUpdated) {
-                        if (node.onInputUpdated)
-                            node.onInputUpdated();
+                        if (node['onInputUpdated'])
+                            node['onInputUpdated']();
                         node.isUpdated = false;
                         for (let i in node.inputs)
                             if (node.inputs[i].updated)
@@ -412,8 +413,8 @@
             //event
             this.emit('remove', node);
             //node event
-            if (node.onRemoved)
-                node.onRemoved();
+            if (node['onRemoved'])
+                node['onRemoved']();
             //disconnect inputs
             if (node.inputs)
                 for (let i in node.inputs) {

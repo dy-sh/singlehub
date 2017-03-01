@@ -97,8 +97,8 @@ export class DashboardClientSocket {
                 return;
             }
             node.settings = n.settings;
-            if (node.onSettingsChanged)
-                node.onSettingsChanged();
+            if (node['onSettingsChanged'])
+                node['onSettingsChanged']();
             node.setDirtyCanvas(true, true);
         });
 
@@ -119,8 +119,8 @@ export class DashboardClientSocket {
                 log.error(`Can't send node message. Node id [${n.cid}/${n.id}] not found.`);
                 return;
             }
-            if (node.onGetMessageToDashboardSide)
-                node.onGetMessageToDashboardSide(n.value);
+            if (node['onGetMessageToDashboardSide'])
+                node['onGetMessageToDashboardSide'](n.value);
         });
 
         socket.on('nodes-active', function (data) {

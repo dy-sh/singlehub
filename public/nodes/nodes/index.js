@@ -7,7 +7,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button"], factory);
+        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button", "../../nodes/nodes/ui/switch"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -21,5 +21,6 @@
     require("../../nodes/nodes/ui/toggle");
     require("../../nodes/nodes/ui/state");
     require("../../nodes/nodes/ui/button");
+    require("../../nodes/nodes/ui/switch");
 });
 //# sourceMappingURL=index.js.map

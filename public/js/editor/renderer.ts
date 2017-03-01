@@ -676,15 +676,15 @@ export class Renderer {
                     let now = Utils.getTime();
                     if ((now - this.last_mouseclick) < 300 && this.selected_nodes[n.id]) {
                         //double click node
-                        if (n.onDblClick)
-                            n.onDblClick(e);
+                        if (n['onDblClick'])
+                            n['onDblClick'](e);
                         this.processNodeDblClicked(n);
                         block_drag_node = true;
                     }
 
                     //if do not capture mouse
 
-                    if (n.onMouseDown && n.onMouseDown(e))
+                    if (n['onMouseDown'] && n['onMouseDown'](e))
                         block_drag_node = true;
                     else if (this.live_mode) {
                         clicking_canvas_bg = true;
@@ -777,8 +777,8 @@ export class Renderer {
                 if (node.mouseOver && n != node) {
                     //mouse leave
                     node.mouseOver = false;
-                    if (this.node_over && this.node_over.onMouseLeave)
-                        this.node_over.onMouseLeave(e);
+                    if (this.node_over && this.node_over['onMouseLeave'])
+                        this.node_over['onMouseLeave'](e);
                     this.node_over = null;
                     this.dirty_canvas = true;
                 }
@@ -800,10 +800,12 @@ export class Renderer {
                     this.node_over = n;
                     this.dirty_canvas = true;
 
-                    if (n.onMouseEnter) n.onMouseEnter(e);
+                    if (n['onMouseEnter'])
+                        n['onMouseEnter'](e);
                 }
 
-                if (n.onMouseMove) n.onMouseMove(e);
+                if (n['onMouseMove'])
+                    n['onMouseMove'](e);
 
                 //ontop of input
                 if (this.connecting_node) {
@@ -830,8 +832,8 @@ export class Renderer {
 
             }
 
-            if (this.node_capturing_input && this.node_capturing_input != n && this.node_capturing_input.onMouseMove) {
-                this.node_capturing_input.onMouseMove(e);
+            if (this.node_capturing_input && this.node_capturing_input != n && this.node_capturing_input['onMouseMove']) {
+                this.node_capturing_input['onMouseMove'](e);
             }
 
 
@@ -971,10 +973,10 @@ export class Renderer {
                 this.dirty_canvas = true;
                 this.dragging_canvas = false;
 
-                if (this.node_over && this.node_over.onMouseUp)
-                    this.node_over.onMouseUp(e);
-                if (this.node_capturing_input && this.node_capturing_input.onMouseUp)
-                    this.node_capturing_input.onMouseUp(e);
+                if (this.node_over && this.node_over['onMouseUp'])
+                    this.node_over['onMouseUp'](e);
+                if (this.node_capturing_input && this.node_capturing_input['onMouseUp'])
+                    this.node_capturing_input['onMouseUp'](e);
             }
         }
         else if (e.which == 2) //middle button
@@ -1112,14 +1114,14 @@ export class Renderer {
             //TODO
             if (this.selected_nodes)
                 for (let i in this.selected_nodes)
-                    if (this.selected_nodes[i].onKeyDown)
-                        this.selected_nodes[i].onKeyDown(e);
+                    if (this.selected_nodes[i]['onKeyDown'])
+                        this.selected_nodes[i]['onKeyDown'](e);
         }
         else if (e.type == "keyup") {
             if (this.selected_nodes)
                 for (let i in this.selected_nodes)
-                    if (this.selected_nodes[i].onKeyUp)
-                        this.selected_nodes[i].onKeyUp(e);
+                    if (this.selected_nodes[i]['onKeyUp'])
+                        this.selected_nodes[i]['onKeyUp'](e);
         }
 
         this.container.setDirtyCanvas(true, true);
@@ -1150,7 +1152,7 @@ export class Renderer {
             return;
         }
 
-        if (node.onDropFile) {
+        if (node['onDropFile']) {
             let files = e.dataTransfer.files;
             if (files && files.length) {
                 for (let i = 0; i < files.length; i++) {
@@ -1180,8 +1182,8 @@ export class Renderer {
             }
         }
 
-        if (node.onDropItem) {
-            if (node.onDropItem(event))
+        if (node['onDropItem']) {
+            if (node['onDropItem'](event))
                 return true;
         }
 
@@ -1198,8 +1200,8 @@ export class Renderer {
      */
     processNodeSelected(n: Node, e): void {
         n.selected = true;
-        if (n.onSelected)
-            n.onSelected();
+        if (n['onSelected'])
+            n['onSelected']();
 
         if (e && e.shiftKey) //add to selection
             this.selected_nodes[n.id] = n;
@@ -1222,8 +1224,8 @@ export class Renderer {
      */
     processNodeDeselected(n: Node): void {
         n.selected = false;
-        if (n.onDeselected)
-            n.onDeselected();
+        if (n['onDeselected'])
+            n['onDeselected']();
 
         delete this.selected_nodes[n.id];
 
@@ -1259,8 +1261,8 @@ export class Renderer {
         if (!node)
             return;
 
-        if (!node.selected && node.onSelected)
-            node.onSelected();
+        if (!node.selected && node['onSelected'])
+            node['onSelected']();
         node.selected = true;
         this.selected_nodes[node.id] = node;
         this.setDirty(true);
@@ -1272,8 +1274,8 @@ export class Renderer {
     selectAllNodes(): void {
         for (let id in this.container._nodes) {
             let node = this.container._nodes[id];
-            if (!node.selected && node.onSelected)
-                node.onSelected();
+            if (!node.selected && node['onSelected'])
+                node['onSelected']();
             node.selected = true;
             this.selected_nodes[node.id] = node;
         }
@@ -1287,8 +1289,8 @@ export class Renderer {
     deselectAllNodes(): void {
         for (let i in this.selected_nodes) {
             let n = this.selected_nodes[i];
-            if (n.onDeselected)
-                n.onDeselected();
+            if (n['onDeselected'])
+                n['onDeselected']();
             n.selected = false;
         }
         this.selected_nodes = {};
@@ -1399,7 +1401,7 @@ export class Renderer {
             let node = this.container._nodes[id];
 
             //skip rendering nodes in live mode
-            if (this.live_mode && !node.onDrawBackground && !node.onDrawForeground)
+            if (this.live_mode && !node['onDrawBackground'] && !node['onDrawForeground'])
                 continue;
 
             if (!Utils.overlapBounding(this.visible_area, this.getBounding(node)))
@@ -1720,8 +1722,8 @@ export class Renderer {
                 ctx.shadowColor = "transparent";
                 //if(node.onDrawBackground)
                 //	node.onDrawBackground(ctx);
-                if (node.onDrawForeground)
-                    node.onDrawForeground(ctx);
+                if (node['onDrawForeground'])
+                    node['onDrawForeground'](ctx);
             }
 
             return;
@@ -1864,8 +1866,8 @@ export class Renderer {
             ctx.textAlign = "left";
             ctx.globalAlpha = 1;
 
-            if (node.onDrawForeground)
-                node.onDrawForeground(ctx);
+            if (node['onDrawForeground'])
+                node['onDrawForeground'](ctx);
         }//!collapsed
 
         if (node.flags.clip_area)
@@ -1941,8 +1943,8 @@ export class Renderer {
         if (node.bgImageUrl && !node.bgImage)
             node.bgImage = this.loadImage(node.bgImageUrl);
 
-        if (node.onDrawBackground)
-            node.onDrawBackground(ctx);
+        if (node['onDrawBackground'])
+            node['onDrawBackground'](ctx);
 
         //title bg
         if (!no_title) {
@@ -2378,12 +2380,12 @@ export class Renderer {
         }
 
 
-        if (node.getMenuOptions)
-            options = node.getMenuOptions(this);
+        if (node['getMenuOptions'])
+            options = node['getMenuOptions'](this);
 
 
-        if (node.getExtraMenuOptions) {
-            let extra = node.getExtraMenuOptions(this);
+        if (node['getExtraMenuOptions']) {
+            let extra = node['getExtraMenuOptions'](this);
             if (extra) {
                 //extra.push(null);
                 options = extra.concat(options);
@@ -2411,14 +2413,14 @@ export class Renderer {
             options.push({content: "Remove", callback: this.onMenuNodeRemove});
 
 
-        if (node.onGetInputs) {
-            let inputs = node.onGetInputs();
+        if (node['onGetInputs']) {
+            let inputs = node['onGetInputs']();
             if (inputs && inputs.length)
                 options[0].disabled = false;
         }
 
-        if (node.onGetOutputs) {
-            let outputs = node.onGetOutputs();
+        if (node['onGetOutputs']) {
+            let outputs = node['onGetOutputs']();
             if (outputs && outputs.length)
                 options[1].disabled = false;
         }
@@ -2617,8 +2619,8 @@ export class Renderer {
         if (!node) return;
 
         let options = node.optional_inputs;
-        if (node.onGetInputs)
-            options = node.onGetInputs();
+        if (node['onGetInputs'])
+            options = node['onGetInputs']();
         if (options) {
             let entries = [];
             for (let i in options) {
@@ -2650,8 +2652,8 @@ export class Renderer {
         if (!node) return;
 
         let options = node.optional_outputs;
-        if (node.onGetOutputs)
-            options = node.onGetOutputs();
+        if (node['onGetOutputs'])
+            options = node['onGetOutputs']();
         if (options) {
             let entries = [];
             for (let i in options) {

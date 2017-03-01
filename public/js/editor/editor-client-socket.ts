@@ -142,8 +142,8 @@ export class EditorClientSocket {
                 return;
             }
             node.settings = n.settings;
-            if (node.onSettingsChanged)
-                node.onSettingsChanged();
+            if (node['onSettingsChanged'])
+                node['onSettingsChanged']();
             node.setDirtyCanvas(true, true);
         });
 
@@ -167,8 +167,8 @@ export class EditorClientSocket {
                 log.error(`Can't send node message. Node id [${n.cid}/${n.id}] not found.`);
                 return;
             }
-            if (node.onGetMessageToEditorSide)
-                node.onGetMessageToEditorSide(n.value);
+            if (node['onGetMessageToEditorSide'])
+                node['onGetMessageToEditorSide'](n.value);
         });
 
 

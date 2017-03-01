@@ -227,8 +227,8 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
         node.settings[s.key].value = s.value;
     }
 
-    if (node.onSettingsChanged)
-        node.onSettingsChanged();
+    if (node['onSettingsChanged'])
+        node['onSettingsChanged']();
 
     if (app.db)
         app.db.updateNode(node.id, node.container.id, {settings: node.settings});

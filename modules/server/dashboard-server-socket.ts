@@ -51,7 +51,7 @@ export class DashboardServerSocket {
                     return;
                 }
 
-                node.onGetMessageToServerSide(n.value);
+                node['onGetMessageToServerSide'](n.value);
             });
 
 
