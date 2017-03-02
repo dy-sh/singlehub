@@ -8,19 +8,20 @@
  * Add all new nodes classes here!!!
  */
 
-import "../../nodes/nodes/main";
-import "../../nodes/nodes/debug";
-import "../../nodes/nodes/math";
-import "../../nodes/nodes/ui/label";
-import "../../nodes/nodes/ui/toggle";
-import "../../nodes/nodes/ui/state";
-import "../../nodes/nodes/ui/button";
-import "../../nodes/nodes/ui/switch";
-import "../../nodes/nodes/ui/slider";
-import "../../nodes/nodes/ui/rgb-sliders";
-import "../../nodes/nodes/ui/rgbw-sliders";
-import "../../nodes/nodes/ui/text-box";
-import "../../nodes/nodes/ui/progress";
-import "../../nodes/nodes/ui/log";
-import "../../nodes/nodes/ui/audio";
+import "./main";
+import "./debug";
+import "./math";
+import "./ui/label";
+import "./ui/toggle";
+import "./ui/state";
+import "./ui/button";
+import "./ui/switch";
+import "./ui/slider";
+import "./ui/rgb-sliders";
+import "./ui/rgbw-sliders";
+import "./ui/text-box";
+import "./ui/progress";
+import "./ui/log";
+import "./ui/audio";
 import "./ui/voice-chrome";
+import "./ui/voice-yandex";

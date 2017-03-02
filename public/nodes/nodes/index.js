@@ -7,28 +7,29 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button", "../../nodes/nodes/ui/switch", "../../nodes/nodes/ui/slider", "../../nodes/nodes/ui/rgb-sliders", "../../nodes/nodes/ui/rgbw-sliders", "../../nodes/nodes/ui/text-box", "../../nodes/nodes/ui/progress", "../../nodes/nodes/ui/log", "../../nodes/nodes/ui/audio", "./ui/voice-chrome"], factory);
+        define(["require", "exports", "./main", "./debug", "./math", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex"], factory);
     }
 })(function (require, exports) {
     "use strict";
     /**
      * Add all new nodes classes here!!!
      */
-    require("../../nodes/nodes/main");
-    require("../../nodes/nodes/debug");
-    require("../../nodes/nodes/math");
-    require("../../nodes/nodes/ui/label");
-    require("../../nodes/nodes/ui/toggle");
-    require("../../nodes/nodes/ui/state");
-    require("../../nodes/nodes/ui/button");
-    require("../../nodes/nodes/ui/switch");
-    require("../../nodes/nodes/ui/slider");
-    require("../../nodes/nodes/ui/rgb-sliders");
-    require("../../nodes/nodes/ui/rgbw-sliders");
-    require("../../nodes/nodes/ui/text-box");
-    require("../../nodes/nodes/ui/progress");
-    require("../../nodes/nodes/ui/log");
-    require("../../nodes/nodes/ui/audio");
+    require("./main");
+    require("./debug");
+    require("./math");
+    require("./ui/label");
+    require("./ui/toggle");
+    require("./ui/state");
+    require("./ui/button");
+    require("./ui/switch");
+    require("./ui/slider");
+    require("./ui/rgb-sliders");
+    require("./ui/rgbw-sliders");
+    require("./ui/text-box");
+    require("./ui/progress");
+    require("./ui/log");
+    require("./ui/audio");
     require("./ui/voice-chrome");
+    require("./ui/voice-yandex");
 });
 //# sourceMappingURL=index.js.map
