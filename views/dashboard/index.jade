@@ -38,18 +38,7 @@ block content
         </div>
         </div>
         </div>
-    script#textBoxTemplate(type='text/x-handlebars-template').
-        <div class="ui attached clearing segment" id="node-{{id}}">
-        <span id="nodeTitle-{{id}}"></span>
-        <div class="ui form text-box-form">
-        <div class="ui field">
-        <div class="ui small action input">
-        <input type="text" id="textBoxText-{{id}}">
-        <button type="button" class="ui small button" id="textBoxSend-{{id}}">Send</button>
-        </div>
-        </div>
-        </div>
-        </div>
+
     script#logTemplate(type='text/x-handlebars-template').
         <div class="ui attached clearing segment" id="node-{{id}}">
         <span id="nodeTitle-{{id}}"></span>
@@ -67,16 +56,6 @@ block content
         </div>
         </div>
 
-
-    script#rgbwSlidersTemplate(type='text/x-handlebars-template').
-        <div class="ui attached clearing segment" id="node-{{id}}">
-        <span id="nodeTitle-{{id}}"></span>
-        <br />
-        <div id="slider-{{id}}-r" class="spacebottom"></div>
-        <div id="slider-{{id}}-g" class="spacebottom"></div>
-        <div id="slider-{{id}}-b" class="spacebottom"></div>
-        <div id="slider-{{id}}-w"></div>
-        </div>
     script#chartTemplate(type='text/x-handlebars-template').
         <div class="ui attached clearing segment" id="node-{{id}}">
         <div class="ui mini right floated basic buttons">
@@ -107,17 +86,6 @@ block content
     script#audioTemplate(type='text/x-handlebars-template').
         <div class="ui attached clearing segment" id="node-{{id}}">
         <span id="nodeTitle-{{id}}"></span>
-        </div>
-    script#stateSwitchTemplate(type='text/x-handlebars-template').
-        <div class="ui attached clearing segment" id="node-{{id}}">
-        <span id="nodeTitle-{{id}}"></span>
-        <div class="ui right floated basic  button nonbutton">
-        <label class="switch">
-        <input type="checkbox" class="switch-input" id="stateSwitch-{{id}}">
-        <span class="switch-label" data-on="On" data-off="Off"></span>
-        <span class="switch-handle"></span>
-        </label>
-        </div>
         </div>
 
 

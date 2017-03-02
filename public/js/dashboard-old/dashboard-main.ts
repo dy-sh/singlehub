@@ -28,12 +28,7 @@ var chartTemplate = Handlebars.compile($('#chartTemplate').html());
 
 
 
-function createTextBox(node) {
-    $(textBoxTemplate(node)).hide().appendTo("#uiContainer-" + node.PanelId).fadeIn(elementsFadeTime);
-    $('#textBoxSend-' + this.id).click(function () {
-        sendTextBox(this.id);
-    });
-}
+
 
 
 function createProgress(node) {
@@ -43,15 +38,6 @@ function createProgress(node) {
 
 
 
-
-
-
-
-
-function updateTextBox(node) {
-    $('#textBoxName-' + this.id).html(node.Settings["Name"].Value);
-    $('#textBoxText-' + this.id).val(data.value);
-}
 
 
 
@@ -81,42 +67,5 @@ function updateProgress(node) {
 
 
 
-
-
-
-function sendTextBox(nodeId) {
-    var value = $('#textBoxText-' + nodeId).val();
-    $.ajax({
-        url: "/DashboardAPI/SetValues/",
-        type: "POST",
-        data: { 'nodeId': nodeId, 'values': { text: value } }
-    });
-}
-
-
-
-
-function sendButtonClick(nodeId) {
-    $.ajax({
-        url: "/DashboardAPI/SetValues/",
-        type: "POST",
-        data: { 'nodeId': nodeId, 'values': { click: "true" } }
-    });
-}
-
-function sendToggleButtonClick(nodeId) {
-    $.ajax({
-        url: "/DashboardAPI/SetValues/",
-        type: "POST",
-        data: { 'nodeId': nodeId, 'values': { click: "true" } }
-    });
-}
-
-function sendSwitchClick(nodeId) {
-    $.ajax({
-        url: "/DashboardAPI/SetValues/",
-        type: "POST",
-        data: { 'nodeId': nodeId, 'values': { click: "true" } }
-    });
 }
 

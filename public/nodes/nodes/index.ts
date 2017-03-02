@@ -19,3 +19,4 @@ import "../../nodes/nodes/ui/switch";
 import "../../nodes/nodes/ui/slider";
 import "../../nodes/nodes/ui/rgb-sliders";
 import "../../nodes/nodes/ui/rgbw-sliders";
+import "../../nodes/nodes/ui/text-box";

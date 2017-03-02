@@ -55,8 +55,6 @@ export class UiSwitchNode extends UiNode {
     };
 
     onGetMessageToDashboardSide(data) {
-        // $('#switchName-' + this.id).html(node.Settings["Name"].Value);
-        // $('#switch-' + this.id).html(node.Settings["Name"].Value);
         $('#switch-' + this.id).prop('checked', data.value == true);
     };
 }

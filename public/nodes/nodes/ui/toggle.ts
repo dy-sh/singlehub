@@ -54,7 +54,6 @@ export class UiToggleNode extends UiNode {
     };
 
     onGetMessageToDashboardSide(data) {
-        $('#buttonName-' + this.id).html(this.title);
         if (data.value)
             $('#button-' + this.id).addClass("blue");
         else
