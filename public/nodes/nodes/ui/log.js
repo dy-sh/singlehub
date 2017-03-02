@@ -36,6 +36,9 @@
                 $('#clear-log-' + that.id).click(function () {
                     that.sendMessageToServerSide('clear');
                 });
+                if (this.properties['log'].length > 0)
+                    for (let rec of this.properties['log'])
+                        this.addLogRecord(rec);
             }
             if (this.side == container_1.Side.server)
                 this.updateMessPerSec();
@@ -49,7 +52,6 @@
                     that.properties['log'].push(record);
                     that.sendMessageToDashboardSide({ record: record });
                 }
-                console.log(that.messagesPerSec);
                 that.messagesPerSec = 0;
             }, 1000);
         }
@@ -61,7 +63,6 @@
                 let record = { date: Date.now(), value: val };
                 this.properties['log'].push(record);
                 this.sendMessageToDashboardSide({ record: record });
-                console.log("send");
             }
         }
         ;

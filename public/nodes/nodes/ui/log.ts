@@ -43,7 +43,9 @@ export class UiLogNode extends UiNode {
                 that.sendMessageToServerSide('clear');
             });
 
-            // this.onGetMessageToDashboardSide({value: this.properties['log']})
+            if (this.properties['log'].length > 0)
+                for (let rec of  this.properties['log'])
+                    this.addLogRecord(rec);
         }
 
         if (this.side == Side.server)
@@ -57,10 +59,9 @@ export class UiLogNode extends UiNode {
                 let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
                 let record = {date: Date.now(), value: "Dropped " + dropped + " messages (data rate limitation)"};
                 that.properties['log'].push(record);
-                that.sendMessageToDashboardSide({record:record});
+                that.sendMessageToDashboardSide({record: record});
             }
 
-            console.log(that.messagesPerSec)
             that.messagesPerSec = 0;
         }, 1000);
     }
@@ -73,8 +74,7 @@ export class UiLogNode extends UiNode {
         if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
             let record = {date: Date.now(), value: val};
             this.properties['log'].push(record);
-            this.sendMessageToDashboardSide({record:record});
-            console.log("send")
+            this.sendMessageToDashboardSide({record: record});
         }
     };
 

@@ -28,12 +28,14 @@ MyNodes v4.0
   - **Watcher**. Displays the value of the input as input label.
   - **Console**. Displays the value of the input to the console. 
   Synchronized between the client and the server (the value is displayed here and there).
-  Controls the data flow to prevent flooding.
   
 
 
 **Changed nodes:**
-  
+
+- All nodes that transmit data between server and browser
+  (UI, debug, etc..) now control the data rate to prevent flooding.
+    
 - **Main**:
   - **Constant**. Now it has a data type setting.
   
