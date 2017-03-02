@@ -88,7 +88,7 @@ export class UiLogNode extends UiNode {
             let max = this.settings['maxRecords'].value;
             let unwanted = records.length - max;
             records.splice(0, unwanted);
-            
+
             this.sendMessageToDashboardSide({record: record});
         }
     };

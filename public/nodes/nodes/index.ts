@@ -23,3 +23,4 @@ import "../../nodes/nodes/ui/text-box";
 import "../../nodes/nodes/ui/progress";
 import "../../nodes/nodes/ui/log";
 import "../../nodes/nodes/ui/audio";
+import "./ui/voice-chrome";
