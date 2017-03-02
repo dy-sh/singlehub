@@ -23,7 +23,7 @@
     class ConsoleNode extends node_1.Node {
         constructor() {
             super();
-            this.MAX_MESS_PER_SEC = 10;
+            this.MAX_MESS_PER_SEC = 11;
             this.messagesPerSec = 0;
             this.title = "Console";
             this.descriprion = "Show value inside the console";

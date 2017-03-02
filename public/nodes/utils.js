@@ -159,11 +159,22 @@
          * @param triplet
          * @returns {string}
          */
-        static num2hex(triplet) {
+        static numsToRgbHex(triplet) {
             let hex_alphabets = "0123456789ABCDEF";
             let hex = "#";
             let int1, int2;
             for (let i = 0; i < 3; i++) {
+                int1 = triplet[i] / 16;
+                int2 = triplet[i] % 16;
+                hex += hex_alphabets.charAt(int1) + hex_alphabets.charAt(int2);
+            }
+            return (hex);
+        }
+        static numsToRgbwHex(triplet) {
+            let hex_alphabets = "0123456789ABCDEF";
+            let hex = "#";
+            let int1, int2;
+            for (let i = 0; i < 4; i++) {
                 int1 = triplet[i] / 16;
                 int2 = triplet[i] % 16;
                 hex += hex_alphabets.charAt(int1) + hex_alphabets.charAt(int2);
@@ -223,13 +234,13 @@
                 return "[object]";
             }
             if (typeof (val) == "string") {
-                if (val.length > 8)
-                    val = val.substr(0, 8) + "...";
+                if (val.length > 9)
+                    val = val.substr(0, 9) + "...";
                 return val;
             }
             val = "" + val;
-            if (val.length > 8)
-                val = val.substr(0, 8) + "...";
+            if (val.length > 9)
+                val = val.substr(0, 9) + "...";
             return val;
         }
         /**

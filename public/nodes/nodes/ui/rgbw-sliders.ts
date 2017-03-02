@@ -15,12 +15,13 @@ let template =
         <br />\
         <div id="slider-{{id}}-r" class="spacebottom"></div>\
         <div id="slider-{{id}}-g" class="spacebottom"></div>\
-        <div id="slider-{{id}}-b"></div>\
+        <div id="slider-{{id}}-b" class="spacebottom"></div>\
+        <div id="slider-{{id}}-w"></div>\
     </div>';
 
 declare let noUiSlider;
 
-export class UiRGBSlidersNode extends UiNode {
+export class UiRGBWSlidersNode extends UiNode {
     UPDATE_INTERVAL = 100;
 
     dataUpdated = false;
@@ -28,6 +29,7 @@ export class UiRGBSlidersNode extends UiNode {
     sliderR: HTMLElement;
     sliderG: HTMLElement;
     sliderB: HTMLElement;
+    sliderW: HTMLElement;
 
 
     constructor() {
@@ -37,6 +39,7 @@ export class UiRGBSlidersNode extends UiNode {
         this.properties['r'] = 0;
         this.properties['g'] = 0;
         this.properties['b'] = 0;
+        this.properties['w'] = 0;
 
         this.addOutput("output", "string");
     }
@@ -49,6 +52,7 @@ export class UiRGBSlidersNode extends UiNode {
             this.sliderR = $("#slider-" + this.id + "-r")[0];
             this.sliderG = $("#slider-" + this.id + "-g")[0];
             this.sliderB = $("#slider-" + this.id + "-b")[0];
+            this.sliderW = $("#slider-" + this.id + "-w")[0];
 
             noUiSlider.create(this.sliderR, {
                 start: 0,
@@ -63,6 +67,12 @@ export class UiRGBSlidersNode extends UiNode {
                 range: {'min': 0, 'max': 255}
             });
             noUiSlider.create(this.sliderB, {
+                start: 0,
+                connect: 'lower',
+                animate: false,
+                range: {'min': 0, 'max': 255}
+            });
+            noUiSlider.create(this.sliderW, {
                 start: 0,
                 connect: 'lower',
                 animate: false,
@@ -83,6 +93,10 @@ export class UiRGBSlidersNode extends UiNode {
                 that.properties['b'] = (<any>that.sliderB).noUiSlider.get();
                 that.dataUpdated = true;
             });
+            (<any>this.sliderW).noUiSlider.on('slide', function () {
+                that.properties['w'] = (<any>that.sliderW).noUiSlider.get();
+                that.dataUpdated = true;
+            });
 
             this.startSendingToServer();
 
@@ -90,6 +104,7 @@ export class UiRGBSlidersNode extends UiNode {
                 r: this.properties['r'],
                 g: this.properties['g'],
                 b: this.properties['b'],
+                w: this.properties['w'],
             })
         }
     }
@@ -104,6 +119,7 @@ export class UiRGBSlidersNode extends UiNode {
                     r: that.properties['r'],
                     g: that.properties['g'],
                     b: that.properties['b'],
+                    w: that.properties['w'],
                 });
             }
         }, this.UPDATE_INTERVAL);
@@ -114,7 +130,8 @@ export class UiRGBSlidersNode extends UiNode {
         this.properties['r'] = data.r;
         this.properties['g'] = data.r;
         this.properties['b'] = data.r;
-        let hex = Utils.numsToRgbHex([data.r, data.g, data.b]);
+        this.properties['w'] = data.r;
+        let hex = Utils.numsToRgbwHex([data.r, data.g, data.b, data.w]);
         this.setOutputData(0, hex);
         this.sendIOValuesToEditor();
         this.sendMessageToDashboardSide(data);
@@ -124,7 +141,8 @@ export class UiRGBSlidersNode extends UiNode {
         (<any>this.sliderR).noUiSlider.set(data.r);
         (<any>this.sliderG).noUiSlider.set(data.g);
         (<any>this.sliderB).noUiSlider.set(data.b);
+        (<any>this.sliderW).noUiSlider.set(data.w);
     };
 }
 
-Container.registerNodeType("ui/rgb-sliders", UiRGBSlidersNode);
+Container.registerNodeType("ui/rgbw-sliders", UiRGBWSlidersNode);

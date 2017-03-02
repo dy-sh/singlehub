@@ -21,7 +21,7 @@ else  //for frontside only
 
 //Show value inside the debug console
 export class ConsoleNode extends Node {
-    MAX_MESS_PER_SEC = 10;
+    MAX_MESS_PER_SEC = 11;
     messagesPerSec = 0;
 
     constructor() {

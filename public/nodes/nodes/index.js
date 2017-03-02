@@ -7,7 +7,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button", "../../nodes/nodes/ui/switch", "../../nodes/nodes/ui/slider", "../../nodes/nodes/ui/rgb-sliders"], factory);
+        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button", "../../nodes/nodes/ui/switch", "../../nodes/nodes/ui/slider", "../../nodes/nodes/ui/rgb-sliders", "../../nodes/nodes/ui/rgbw-sliders"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -24,5 +24,6 @@
     require("../../nodes/nodes/ui/switch");
     require("../../nodes/nodes/ui/slider");
     require("../../nodes/nodes/ui/rgb-sliders");
+    require("../../nodes/nodes/ui/rgbw-sliders");
 });
 //# sourceMappingURL=index.js.map
