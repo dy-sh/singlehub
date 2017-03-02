@@ -7,7 +7,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button", "../../nodes/nodes/ui/switch", "../../nodes/nodes/ui/slider", "../../nodes/nodes/ui/rgb-sliders", "../../nodes/nodes/ui/rgbw-sliders", "../../nodes/nodes/ui/text-box", "../../nodes/nodes/ui/progress", "../../nodes/nodes/ui/log"], factory);
+        define(["require", "exports", "../../nodes/nodes/main", "../../nodes/nodes/debug", "../../nodes/nodes/math", "../../nodes/nodes/ui/label", "../../nodes/nodes/ui/toggle", "../../nodes/nodes/ui/state", "../../nodes/nodes/ui/button", "../../nodes/nodes/ui/switch", "../../nodes/nodes/ui/slider", "../../nodes/nodes/ui/rgb-sliders", "../../nodes/nodes/ui/rgbw-sliders", "../../nodes/nodes/ui/text-box", "../../nodes/nodes/ui/progress", "../../nodes/nodes/ui/log", "../../nodes/nodes/ui/audio"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -28,5 +28,6 @@
     require("../../nodes/nodes/ui/text-box");
     require("../../nodes/nodes/ui/progress");
     require("../../nodes/nodes/ui/log");
+    require("../../nodes/nodes/ui/audio");
 });
 //# sourceMappingURL=index.js.map
