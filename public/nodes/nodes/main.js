@@ -98,7 +98,6 @@
             super(container);
             this.title = "Container";
             this.descriprion = "Contain other nodes";
-            this.size = [120, 20];
         }
         onCreated() {
             this.sub_container = new container_1.Container(this.side);

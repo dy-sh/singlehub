@@ -21,3 +21,4 @@ import "../../nodes/nodes/ui/rgb-sliders";
 import "../../nodes/nodes/ui/rgbw-sliders";
 import "../../nodes/nodes/ui/text-box";
 import "../../nodes/nodes/ui/progress";
+import "../../nodes/nodes/ui/log";

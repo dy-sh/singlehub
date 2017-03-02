@@ -27,17 +27,18 @@
             this.messagesPerSec = 0;
             this.title = "Console";
             this.descriprion = "Show value inside the console";
-            this.size = [60, 20];
             this.addInput("input");
-            this.messagesPerSec = 0;
-            this.updateMessPerSec();
+        }
+        onAdded() {
+            if (this.side == container_1.Side.server)
+                this.updateMessPerSec();
         }
         updateMessPerSec() {
             let that = this;
             setInterval(function () {
                 if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
                     let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
-                    log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages due to too many");
+                    log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages (data rate limitation)");
                     that.sendMessageToEditorSide({ dropped: dropped });
                 }
                 that.messagesPerSec = 0;
@@ -57,7 +58,7 @@
             if (data.value != null)
                 log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
             if (data.dropped)
-                log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages due to too many");
+                log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages (data rate limitation)");
         }
         ;
     }
@@ -71,9 +72,11 @@
             this.UPDATE_INTERVAL = 300;
             this.title = "Watch";
             this.descriprion = "Show value of input";
-            this.size = [60, 20];
             this.addInput("", null, { label: "" });
-            this.startSending();
+        }
+        onAdded() {
+            if (this.side == container_1.Side.server)
+                this.startSending();
         }
         startSending() {
             let that = this;

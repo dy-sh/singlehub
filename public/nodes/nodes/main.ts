@@ -117,7 +117,6 @@ export class ContainerNode extends Node {
         this.title = "Container";
         this.descriprion = "Contain other nodes";
 
-        this.size = [120, 20];
     }
 
     onCreated() {

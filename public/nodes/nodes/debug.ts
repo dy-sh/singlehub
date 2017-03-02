@@ -4,7 +4,7 @@
 
 import {Node} from "../node";
 import Utils from "../utils";
-import {Container} from "../container";
+import {Container, Side} from "../container";
 
 
 //console logger back and front
@@ -16,9 +16,6 @@ else  //for frontside only
     log = Logger.create('node', {color: 5});
 
 
-
-
-
 //Show value inside the debug console
 export class ConsoleNode extends Node {
     MAX_MESS_PER_SEC = 11;
@@ -28,10 +25,14 @@ export class ConsoleNode extends Node {
         super();
         this.title = "Console";
         this.descriprion = "Show value inside the console";
-        this.size = [60, 20];
         this.addInput("input");
-        this.messagesPerSec = 0;
-        this.updateMessPerSec();
+
+
+    }
+
+    onAdded() {
+        if (this.side == Side.server)
+            this.updateMessPerSec();
     }
 
     updateMessPerSec() {
@@ -39,7 +40,7 @@ export class ConsoleNode extends Node {
         setInterval(function () {
             if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
                 let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
-                log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages due to too many");
+                log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages (data rate limitation)");
                 that.sendMessageToEditorSide({dropped: dropped});
             }
 
@@ -47,7 +48,7 @@ export class ConsoleNode extends Node {
         }, 1000);
     }
 
-    onInputUpdated  () {
+    onInputUpdated() {
         let val = this.getInputData(0);
         this.isRecentlyActive = true;
 
@@ -58,20 +59,16 @@ export class ConsoleNode extends Node {
         }
     };
 
-    onGetMessageToEditorSide  (data) {
+    onGetMessageToEditorSide(data) {
 
-        if (data.value!=null)
+        if (data.value != null)
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
 
         if (data.dropped)
-            log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages due to too many");
+            log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages (data rate limitation)");
     };
 }
 Container.registerNodeType("debug/console", ConsoleNode);
-
-
-
-
 
 
 //Watch a value in the editor
@@ -89,9 +86,13 @@ export class WatchNode extends Node {
 
         this.title = "Watch";
         this.descriprion = "Show value of input";
-        this.size = [60, 20];
         this.addInput("", null, {label: ""});
-        this.startSending();
+
+    }
+
+    onAdded() {
+        if (this.side == Side.server)
+            this.startSending();
     }
 
     startSending() {
@@ -104,13 +105,13 @@ export class WatchNode extends Node {
         }, this.UPDATE_INTERVAL);
     }
 
-    onInputUpdated  () {
+    onInputUpdated() {
         this.lastData = this.getInputData(0);
         this.dataUpdated = true;
         this.isRecentlyActive = true;
     };
 
-    onGetMessageToEditorSide  (data) {
+    onGetMessageToEditorSide(data) {
         this.lastData = data.value;
         this.showValueOnInput(data.value);
     };

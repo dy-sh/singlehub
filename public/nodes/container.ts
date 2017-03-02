@@ -516,10 +516,11 @@ export class Container extends Emitter {
         node.id = id;
 
 
-        log.debug("New node created: " + node.getReadableId());
 
 
         if (is_new) {
+            log.debug("New node created: " + node.getReadableId());
+
             if (node.onCreated)
                 node.onCreated();
 
