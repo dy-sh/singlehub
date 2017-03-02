@@ -43,7 +43,7 @@
                     }
                 });
                 let that = this;
-                that.slider.noUiSlider.on('slide', function () {
+                this.slider.noUiSlider.on('slide', function () {
                     let val = that.slider.noUiSlider.get();
                     that.properties['value'] = val;
                     that.dataUpdated = true;
@@ -77,7 +77,7 @@
             this.properties['value'] = data.value;
             this.setOutputData(0, data.value);
             this.sendIOValuesToEditor();
-            this.sendMessageToDashboardSide({ value: this.properties['value'] });
+            this.sendMessageToDashboardSide(data);
         }
         ;
         onGetMessageToDashboardSide(data) {

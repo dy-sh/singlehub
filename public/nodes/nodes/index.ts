@@ -17,3 +17,4 @@ import "../../nodes/nodes/ui/state";
 import "../../nodes/nodes/ui/button";
 import "../../nodes/nodes/ui/switch";
 import "../../nodes/nodes/ui/slider";
+import "../../nodes/nodes/ui/rgb-sliders";

@@ -55,7 +55,7 @@ export class UiSliderNode extends UiNode {
                 });
 
             let that = this;
-            (<any>that.slider).noUiSlider.on('slide', function () {
+            (<any>this.slider).noUiSlider.on('slide', function () {
                 let val = (<any>that.slider).noUiSlider.get();
                 that.properties['value'] = val;
                 that.dataUpdated = true;
@@ -97,7 +97,7 @@ export class UiSliderNode extends UiNode {
         this.properties['value'] = data.value;
         this.setOutputData(0, data.value);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboardSide({value: this.properties['value']});
+        this.sendMessageToDashboardSide(data);
     };
 
     onGetMessageToDashboardSide(data) {
