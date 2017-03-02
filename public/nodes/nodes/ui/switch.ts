@@ -1,32 +1,21 @@
-import {Container, Side} from "../../container";
-import {UiNode} from "./ui-node";
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 02.03.17.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-
-// let template =
-//     '  <div class="ui attached clearing segment" id="node-{{id}}">\
-//     <span id="nodeTitle-{{id}}"></span>\
-//     <div class="ui toggle checkbox">\
-//     <input type="checkbox" class="switch-input" id="switch-{{id}}">\
-//     <label></label>\
-//     </div>\
-//     </div>';
-
-
+import {Container, Side} from "../../container";
+import {UiNode} from "./ui-node";
 
 let template =
     '  <div class="ui attached clearing segment" id="node-{{id}}">\
-    <span id="nodeTitle-{{id}}"></span>\
-    <div class="ui right floated basic  button nonbutton">\
-    <label class="switch">\
-    <input type="checkbox" class="switch-input" id="switch-{{id}}">\
-    <span class="switch-label" data-on="On" data-off="Off"></span>\
-    <span class="switch-handle"></span>\
-    </label>\
-    </div>\
+        <span id="nodeTitle-{{id}}"></span>\
+        <div class="ui right floated basic  button nonbutton">\
+            <label class="switch">\
+            <input type="checkbox" class="switch-input" id="switch-{{id}}">\
+            <span class="switch-label" data-on="On" data-off="Off"></span>\
+            <span class="switch-handle"></span>\
+            </label>\
+        </div>\
     </div>';
 
 export class UiSwitchNode extends UiNode {

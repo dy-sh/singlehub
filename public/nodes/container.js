@@ -2,30 +2,29 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./node", "./utils", "../js/emitter/emitter"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "./node", "./utils", '../js/emitter/emitter'], factory);
     }
 })(function (require, exports) {
     "use strict";
     const node_1 = require("./node");
     const utils_1 = require("./utils");
-    const emitter_1 = require("../js/emitter/emitter");
+    const emitter_1 = require('../js/emitter/emitter');
     //console logger back and front
     let log;
     if (typeof (window) === 'undefined')
         log = require('logplease').create('container', { color: 5 });
     else
         log = Logger.create('container', { color: 5 });
-    var Side;
     (function (Side) {
         Side[Side["server"] = 0] = "server";
         Side[Side["editor"] = 1] = "editor";
         Side[Side["dashboard"] = 2] = "dashboard";
-    })(Side = exports.Side || (exports.Side = {}));
+    })(exports.Side || (exports.Side = {}));
+    var Side = exports.Side;
     class Container extends emitter_1.Emitter {
         constructor(side, id) {
             super();

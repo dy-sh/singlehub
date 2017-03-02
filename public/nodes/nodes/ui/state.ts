@@ -11,12 +11,12 @@ import {UiNode} from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
-    <span id="nodeTitle-{{id}}"></span>\
-    <div class="ui right floated basic disabled button nonbutton">\
-    <i class="big blue toggle on icon" id="state-on-{{id}}" style="display:none"></i>\
-    <i class="big toggle off icon" id="state-off-{{id}}" style="display:none"></i>\
-    <i class="big red toggle off icon" id="state-null-{{id}}" style="display:none"></i>\
-    </div>\
+        <span id="nodeTitle-{{id}}"></span>\
+        <div class="ui right floated basic disabled button nonbutton">\
+            <i class="big blue toggle on icon" id="state-on-{{id}}" style="display:none"></i>\
+            <i class="big toggle off icon" id="state-off-{{id}}" style="display:none"></i>\
+            <i class="big red toggle off icon" id="state-null-{{id}}" style="display:none"></i>\
+        </div>\
     </div>';
 
 

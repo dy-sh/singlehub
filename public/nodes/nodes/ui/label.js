@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../utils", "../../container", "./ui-node"], factory);
     }
 })(function (require, exports) {
@@ -16,10 +15,10 @@
     const container_1 = require("../../container");
     const ui_node_1 = require("./ui-node");
     let template = '<div class="ui attached clearing segment" id="node-{{id}}">\
-    <span id="nodeTitle-{{id}}"></span>\
-    <div class="ui right floated basic disabled button nonbutton">\
-    <span class="ui blue basic label" id="labelValue-{{id}}"></span>\
-    </div>\
+        <span id="nodeTitle-{{id}}"></span>\
+        <div class="ui right floated basic disabled button nonbutton">\
+            <span class="ui blue basic label" id="labelValue-{{id}}"></span>\
+        </div>\
     </div>';
     class UiLabelNode extends ui_node_1.UiNode {
         constructor() {

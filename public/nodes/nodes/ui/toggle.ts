@@ -11,9 +11,9 @@ import {UiNode} from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
-    <button class="ui right floated small toggle button" id="button-{{id}}">\
-    &nbsp <span id="nodeTitle-{{id}}"></span> &nbsp\
-    </button>\
+        <button class="ui right floated small toggle button" id="button-{{id}}">\
+            &nbsp <span id="nodeTitle-{{id}}"></span> &nbsp\
+        </button>\
     </div>';
 
 
