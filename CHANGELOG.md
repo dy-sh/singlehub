@@ -46,5 +46,9 @@ MyNodes v4.0
   This also applies to the client part (in the debug panel of the browser).
 - API to create nodes is now much friendlier to developers. 
   This is especially true of UI-nodes. 
-  All of the code for backend and frontend is now focused in the node class.  
+  All of the code for backend and frontend is now focused in the node class. 
+- Now, API allows the node to accept http requests from other nodes 
+  or from the browser and render interface (apart from the editor and dashboard).
+  Thus, for example ui-chart, renders simple interface on the dashboard 
+  and completely different when referring to it directly from the browser.
   

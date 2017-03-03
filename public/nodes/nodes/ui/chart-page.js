@@ -94,16 +94,6 @@ let graph2d = new vis.Graph2d(container, dataset, groups, options);
 //     //connection.start({ waitForPageLoad: true });
 //
 // });
-let lastChartData;
-function updateChart(node) {
-    $('.chartName').html(node.Name);
-    if (node.LastRecord == null || lastChartData == node.LastRecord.x)
-        return;
-    addChartData(node.LastRecord, node.Settings.MaxRecords.Value);
-}
-function onAutoscrollChange() {
-    autoscroll = $("#autoscroll").dropdown('get value')[0];
-}
 function renderStep() {
     let now = vis.moment();
     let range = graph2d.getWindow();
@@ -138,11 +128,14 @@ $(document).ready(function () {
         success: function (data) {
             $('#infoPanel').hide();
             $('#chartPanel').fadeIn(elementsFadeTime);
-            if (data)
-                setChartData(data);
+            if (data) {
+                dataset.add(data);
+                //force redraw
+                graph2d.setOptions(options);
+            }
             else
                 showAll();
-            $("#charttype").dropdown('set selected', style);
+            $("#chartstyle").dropdown('set selected', style);
             $("#autoscroll").dropdown('set selected', autoscroll);
         },
         error: function () {
@@ -151,17 +144,8 @@ $(document).ready(function () {
     });
     updateChartStyle();
 });
-function setChartData(data) {
-    if (data) {
-        dataset.add(data);
-        //force redraw
-        graph2d.setOptions(options);
-        lastChartData = data[data.length - 1].x;
-    }
-}
 function addChartData(chartData, maxRecords) {
     dataset.add(chartData);
-    lastChartData = chartData.x;
     let unwanted = dataset.length - maxRecords;
     if (unwanted > 0) {
         let items = dataset.get();
@@ -277,22 +261,22 @@ function share() {
     let url = $(location).attr('host') + $(location).attr('pathname');
     let start = graph2d.getWindow().start;
     let end = graph2d.getWindow().end;
-    url += "?autoscroll=" + $("#autoscroll").dropdown('get value')[0];
-    url += "&style=" + $("#charttype").dropdown('get value')[0];
+    url += "?autoscroll=" + $("#autoscroll").val();
+    url += "&style=" + $("#chartstyle").val();
     url += "&start=" + start.getTime();
     url += "&end=" + end.getTime();
     $('#shareModal').modal('setting', 'transition', 'vertical flip').modal('show');
     $('#url').val(url);
 }
-function onChartStyleChange() {
-    style = $("#charttype").dropdown('get value')[0];
+$('#chartstyle').change(function () {
+    style = this.value;
     updateChartStyle();
     $.ajax({
         url: "/api/editor/c/" + container_id + "/n/" + node_id + "/style",
         type: "POST",
         data: { style: style }
     });
-}
+});
 $('#clear-button').click(function () {
     $.ajax({
         url: "/api/editor/c/" + container_id + "/n/" + node_id + "/clear",
@@ -304,5 +288,14 @@ $('#clear-button').click(function () {
 });
 $('#share-button').click(function () {
     share();
+});
+$('#autoscroll').change(function () {
+    autoscroll = this.value;
+});
+$('#show-all-button').click(function () {
+    showAll();
+});
+$('#show-now-button').click(function () {
+    showNow();
 });
 //# sourceMappingURL=chart-page.js.map

@@ -119,21 +119,10 @@ let graph2d = new vis.Graph2d(container, dataset, groups, options);
 // });
 
 
-let lastChartData;
-
-function updateChart(node) {
-    $('.chartName').html(node.Name);
-
-    if (node.LastRecord == null || lastChartData == node.LastRecord.x)
-        return;
-
-    addChartData(node.LastRecord, node.Settings.MaxRecords.Value);
-}
 
 
-function onAutoscrollChange() {
-    autoscroll = (<any>$("#autoscroll")).dropdown('get value')[0];
-}
+
+
 
 
 function renderStep() {
@@ -178,11 +167,15 @@ $(document).ready(function () {
             $('#chartPanel').fadeIn(elementsFadeTime);
 
             if (data)
-                setChartData(data);
+            {
+                dataset.add(data);
+                //force redraw
+                graph2d.setOptions(options);
+            }
             else
                 showAll();
 
-            (<any>$("#charttype")).dropdown('set selected', style);
+            (<any>$("#chartstyle")).dropdown('set selected', style);
             (<any>$("#autoscroll")).dropdown('set selected', autoscroll);
         },
         error: function () {
@@ -194,22 +187,10 @@ $(document).ready(function () {
 });
 
 
-function setChartData(data) {
-    if (data) {
-        dataset.add(data);
-        //force redraw
-        graph2d.setOptions(options);
-        lastChartData = data[data.length - 1].x;
-    }
-
-
-}
 
 
 function addChartData(chartData, maxRecords) {
     dataset.add(chartData);
-
-    lastChartData = chartData.x;
 
     let unwanted = dataset.length - maxRecords;
     if (unwanted > 0) {
@@ -345,8 +326,8 @@ function share() {
     let url = $(location).attr('host') + $(location).attr('pathname');
     let start = graph2d.getWindow().start;
     let end = graph2d.getWindow().end;
-    url += "?autoscroll=" + (<any>$("#autoscroll")).dropdown('get value')[0];
-    url += "&style=" + (<any>$("#charttype")).dropdown('get value')[0];
+    url += "?autoscroll=" + (<any>$("#autoscroll")).val();
+    url += "&style=" + (<any>$("#chartstyle")).val();
     url += "&start=" + start.getTime();
     url += "&end=" + end.getTime();
     (<any>$('#shareModal')).modal('setting', 'transition', 'vertical flip').modal('show');
@@ -354,8 +335,9 @@ function share() {
 
 }
 
-function onChartStyleChange() {
-    style = (<any>$("#charttype")).dropdown('get value')[0];
+
+$('#chartstyle').change(function () {
+    style = this.value;
     updateChartStyle();
 
     $.ajax({
@@ -363,7 +345,7 @@ function onChartStyleChange() {
         type: "POST",
         data: {style: style}
     });
-}
+});
 
 
 $('#clear-button').click(function () {
@@ -378,4 +360,17 @@ $('#clear-button').click(function () {
 
 $('#share-button').click(function () {
     share()
+});
+
+
+$('#autoscroll').change(function () {
+    autoscroll = this.value;
+});
+
+$('#show-all-button').click(function () {
+    showAll();
+});
+
+$('#show-now-button').click(function () {
+    showNow();
 });

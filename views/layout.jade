@@ -47,7 +47,6 @@ html
 			script(src='/js/libs/logplease.min.js')
 			script(src='/libs/bootstrap-daterangepicker/daterangepicker.js')
 			script(src='/libs/nouislider/distribute/nouislider.js')
-			block scripts
 			script.
 				////page fade animation
 				//$('.body-content').fadeIn(700);
@@ -73,10 +72,10 @@ html
 					speed: 500 // unavailable - no need
 				};
 
-				$(document)
-								.ready(function () {
-									// show dropdown
-									$('.ui.dropdown').dropdown({on: 'click'});
-									// create sidebar and attach to menu open
-									$('.ui.sidebar').sidebar('attach events', '.sidebar-button');
-								});
+				$(document).ready(function () {
+					// show dropdown
+					$('.ui.dropdown').dropdown({on: 'click'});
+					// create sidebar and attach to menu open
+					$('.ui.sidebar').sidebar('attach events', '.sidebar-button');
+				});
+			block scripts

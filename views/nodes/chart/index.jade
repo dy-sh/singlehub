@@ -16,9 +16,9 @@ block content
         .ui.raised.segments
             .ui.secondary.clearing.segment
                 b.chartName #{node.title}
-                button#share-button.ui.right.floated.small.button(type="button")
+                button#share-button.ui.right.floated.small.button
                     b Share
-                button#clear-button.ui.right.floated.small.button(type="button") Clear
+                button#clear-button.ui.right.floated.small.button Clear
             .ui.segment
                 #infoPanel
                     | Requesting data...
@@ -30,14 +30,14 @@ block content
                         .ui.fields
                             .ui.field
                                 label Auto scroll:
-                                select#autoscroll(onchange="onAutoscrollChange()")
+                                select#autoscroll.ui.dropdown
                                     option(value="none", selected="") None
                                     option(value="continuous") Continuous
                                     option(value="discrete") Discrete
                                     option(value="static") Static
                             .ui.field
                                 label Style:
-                                select#charttype(onchange="onChartStyleChange()")
+                                select#chartstyle().ui.dropdown
                                     option(value="bars", selected="") Bars
                                     option(value="splines") Splines
                                     option(value="shadedsplines") Shaded Splines
@@ -47,9 +47,9 @@ block content
                             .ui.field
                                 br
                                 .ui.basic.buttons
-                                    button.ui.button(type="button", onclick="showAll()")
+                                    button#show-all-button.ui.button
                                         b Zoom All
-                                    button.ui.button(type="button", onclick="showNow()")
+                                    button#show-now-button.ui.button
                                         b Zoom Now
         #shareModal.ui.modal
             .header
@@ -76,8 +76,5 @@ block scripts
         var range_end = #{range_end};
         var autoscroll = "#{autoscroll}";
         var style = "#{style}";
-        $('#autoscroll').dropdown();
-        $('#charttype').dropdown();
-
 
     script(src="/nodes/nodes/ui/chart-page.js")
