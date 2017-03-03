@@ -36,6 +36,26 @@ router.get('/c/:cid', function (req, res) {
 });
 
 
+router.get('/c/:cid/n/:id', function (req, res) {
+    let cont=Container.containers[req.params.cid];
+    if (!cont){
+        res.redirect("/");
+        return;
+    }
+
+    let node=cont.getNodeById(req.params.id);
+    if (!node){
+        res.redirect("/");
+        return;
+    }
+
+    if (node['onGetRequest'])
+        node['onGetRequest'](req,res);
+    else
+        res.redirect("/");
+});
+
+
 router.get('/container', function (req, res) {
 
     // //todo if (rootContainer.isNotStarted)

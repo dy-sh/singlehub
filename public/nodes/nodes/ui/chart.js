@@ -19,7 +19,7 @@
             <button type="button" class="ui button" id="chart-style-{{id}}">Style</button>\
             <button type="button" class="ui button" id="chart-all-{{id}}">All</button>\
             <button type="button" class="ui button" id="chart-now-{{id}}">Now</button>\
-            <a href="/Dashboard/Chart/{{id}}" class="ui button" id="chart-open-{{id}}">Open</a>\
+            <a href="/editor/c/{{container.id}}/n/{{id}}" class="ui button" id="chart-open-{{id}}">Open</a>\
         </div>\
         <span id="nodeTitle-{{id}}"></span>\
         <br />\
@@ -330,6 +330,9 @@
             this.settings['style'].value = val;
             this.updateChartType();
             this.sendMessageToServerSide({ style: val });
+        }
+        onGetRequest(req, res) {
+            res.send("ok");
         }
     }
     exports.UiChartNode = UiChartNode;

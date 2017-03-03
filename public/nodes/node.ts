@@ -143,7 +143,7 @@ export class Node {
     // /**
     //  * Invoked when new node created
     //  */
-    // onCreated: Function;
+    // onCreatedlet
     //
     // /**
     //  * Invoked every time when node added to container (created or restored from the database)
@@ -153,48 +153,50 @@ export class Node {
     // /**
     //  * Invoked when node removed from container
     //  */
-    // onRemoved: Function;
+    // onRemovedlet
     //
     //
-    // onDrawBackground: Function;
-    // onDrawForeground: Function;
+    // onDrawBackgroundlet
+    // onDrawForegroundlet
     //
     // //if returns false the incoming connection will be canceled
-    // onConnectInput: Function;
-    // onInputAdded: Function;
-    // onOutputAdded: Function;
-    // onGetInputs: Function;
-    // onGetOutputs: Function;
-    // onInputRemoved: Function;
-    // onOutputRemoved: Function;
+    // onConnectInputlet
+    // onInputAddedlet
+    // onOutputAddedlet
+    // onGetInputslet
+    // onGetOutputslet
+    // onInputRemovedlet
+    // onOutputRemovedlet
     //
-    // onMouseDown: Function;
-    // onMouseUp: Function;
-    // onMouseEnter: Function;
-    // onMouseMove: Function;
-    // onMouseLeave: Function;
-    // onDblClick: Function;
-    // onDropFile: Function;
-    // onDropItem: Function;
-    // onKeyDown: Function;
-    // onKeyUp: Function;
+    // onMouseDownlet
+    // onMouseUplet
+    // onMouseEnterlet
+    // onMouseMovelet
+    // onMouseLeavelet
+    // onDblClicklet
+    // onDropFilelet
+    // onDropItemlet
+    // onKeyDownlet
+    // onKeyUplet
     //
-    // onSelected: Function;
-    // onDeselected: Function;
+    // onSelectedlet
+    // onDeselectedlet
     //
-    // onGetMessageToServerSide: Function;
-    // onGetMessageToEditorSide: Function;
-    // onGetMessageToDashboardSide: Function;
+    // onGetMessageToServerSidelet
+    // onGetMessageToEditorSidelet
+    // onGetMessageToDashboardSidelet
     //
-    // onRunContainer: Function;
-    // onStopContainer: Function;
-    // onExecute: Function;
-    // onInputUpdated: Function;
+    // onRunContainerlet
+    // onStopContainerlet
+    // onExecutelet
+    // onInputUpdatedlet
     //
-    // onSettingsChanged: Function;
+    // onSettingsChangedlet
 
-    // getMenuOptions: Function;
-    // getExtraMenuOptions: Function;
+    // getMenuOptionslet
+    // getExtraMenuOptionslet
+
+    //onGetRequest
 
     constructor(container?: Container, id?: number) {
     }
