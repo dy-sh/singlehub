@@ -34,11 +34,10 @@
             this.dataUpdated = false;
             //client side
             this.CHART_HEIGHT = "190px";
-            this.lastChartData = {};
             this.UPDATE_INTERVAL = 300;
             this.descriprion = "";
             this.properties['log'] = [];
-            this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 10 };
+            this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 100 };
             this.settings['style'] = { description: "Style", type: "string", value: "bars" };
             this.settings['autoScroll'] = { description: "Auto scroll", type: "string", value: "continuous" };
             this.addInput("input");
@@ -56,7 +55,7 @@
             setInterval(function () {
                 if (that.dataUpdated) {
                     that.dataUpdated = false;
-                    that.sendMessageToEditorSide({ value: that.lastData });
+                    that.sendMessageToDashboardSide({ value: that.lastData });
                 }
             }, this.UPDATE_INTERVAL);
         }
@@ -90,8 +89,8 @@
         onGetMessageToDashboardSide(data) {
             if (data.clear)
                 this.dataset.clear();
-            if (data.record)
-                this.addChartData(data.record);
+            if (data.value)
+                this.addChartData(data.value);
             if (data.style) {
                 this.settings['style'].value = data.style;
                 this.updateChartType();
@@ -140,8 +139,8 @@
             //             this.addChartData(chartData);
             //
             //             let options = {
-            //                 start: moment().add(-30, 'seconds'),
-            //                 end: moment()
+            //                 start: vis.moment().add(-30, 'seconds'),
+            //                 end: vis.moment()
             //             };
             //
             //             this.graph2d.setOptions(options);
@@ -150,14 +149,11 @@
             //         }
             //     }
             // });
+            this.renderStep();
         }
-        addChartData(chartData) {
+        addChartData(val) {
             let max = this.settings['maxRecords'].value;
-            this.dataset.add(chartData);
-            if (chartData.length != undefined)
-                this.lastChartData = chartData[chartData.length - 1].x;
-            else
-                this.lastChartData = chartData.x;
+            this.dataset.add({ x: new Date(), y: val });
             //let options = {
             //    dataAxis: {
             //        left: {
@@ -180,23 +176,29 @@
             }
         }
         renderStep() {
-            let now = moment();
+            // move the window (you can think of different strategies).
+            let now = vis.moment();
             let range = this.graph2d.getWindow();
             let interval = range.end - range.start;
+            let that = this;
             switch (this.settings['autoScroll'].value) {
                 case 'continuous':
+                    // continuously move the window
                     this.graph2d.setWindow(now - interval, now, { animation: false });
+                    requestAnimationFrame(that.renderStep.bind(that));
+                    break;
+                case 'discrete':
+                    this.graph2d.setWindow(now - interval, now, { animation: false });
+                    setTimeout(that.renderStep.bind(that), 1000);
                     break;
                 case 'none':
-                    break;
-                default:
                     // move the window 90% to the left when now is larger than the end of the window
                     if (now > range.end) {
                         this.graph2d.setWindow(now - 0.1 * interval, now + 0.9 * interval);
                     }
+                    setTimeout(that.renderStep.bind(that), 1000);
                     break;
             }
-            requestAnimationFrame(this.renderStep);
         }
         updateChartType() {
             switch (this.settings['style'].value) {
@@ -267,16 +269,17 @@
             this.graph2d = new vis.Graph2d(this.body, this.dataset, options);
         }
         showNow() {
+            let that = this;
             clearTimeout(this.zoomTimer);
             this.settings['autoScroll'].value = "none";
             let window = {
-                start: moment().add(-30, 'seconds'),
-                end: moment()
+                start: vis.moment().add(-30, 'seconds'),
+                end: vis.moment()
             };
             this.graph2d.setWindow(window);
             //timer needed for prevent zoomin freeze bug
             this.zoomTimer = setTimeout(function (parameters) {
-                this.autoScroll = "continuous";
+                that.settings['autoScroll'].value = "continuous";
             }, 1000);
         }
         showAll() {
@@ -285,14 +288,14 @@
             //   graph2d.fit();
             let start, end;
             if (this.dataset.length == 0) {
-                start = moment().add(-1, 'seconds');
-                end = moment().add(60, 'seconds');
+                start = vis.moment().add(-1, 'seconds');
+                end = vis.moment().add(60, 'seconds');
             }
             else {
                 let min = this.dataset.min('x');
                 let max = this.dataset.max('x');
-                start = moment(min.x).add(-1, 'seconds');
-                end = moment(max.x).add(60, 'seconds');
+                start = vis.moment(min.x).add(-1, 'seconds');
+                end = vis.moment(max.x).add(60, 'seconds');
             }
             let window = {
                 start: start,
