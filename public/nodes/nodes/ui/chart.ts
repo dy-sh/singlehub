@@ -113,7 +113,7 @@ export class UiChartNode extends UiNode {
 
         if (data.style) {
             this.settings['style'].value = data.style;
-            this.sendMessageToServerSide({style: data.style});
+            this.sendMessageToDashboardSide({style: data.style});
         }
     };
 
@@ -127,7 +127,7 @@ export class UiChartNode extends UiNode {
 
         if (data.style) {
             this.settings['style'].value = data.style;
-            this.updateChartType();
+            this.updateChartStyle();
         }
     };
 
@@ -137,7 +137,7 @@ export class UiChartNode extends UiNode {
 
 
         $('#chart-clear-' + this.id).click(function () {
-            that.sendMessageToServerSide('clear');
+            that.sendMessageToServerSide({clear: true});
         });
 
         $('#chart-now-' + this.id).click(function () {
@@ -150,6 +150,7 @@ export class UiChartNode extends UiNode {
 
         $('#chart-style-' + this.id).click(function () {
             that.changeStyle();
+            that.sendMessageToServerSide({style: that.settings['style'].value});
         });
 
 
@@ -166,7 +167,7 @@ export class UiChartNode extends UiNode {
         this.dataset = new vis.DataSet();
         this.graph2d = new (<any>vis).Graph2d(this.body, this.dataset, this.options);
 
-        this.updateChartType();
+        this.updateChartStyle();
 
         this.showNow();
 
@@ -222,7 +223,7 @@ export class UiChartNode extends UiNode {
     }
 
 
-    updateChartType() {
+    updateChartStyle() {
         switch (this.settings['style'].value) {
             case 'bars':
                 this.options = {
@@ -367,7 +368,7 @@ export class UiChartNode extends UiNode {
 
         this.settings['style'].value = val;
 
-        this.updateChartType();
+        this.updateChartStyle();
 
         this.sendMessageToServerSide({style: val});
     }
@@ -395,6 +396,7 @@ export class UiChartNode extends UiNode {
         //ajax get log
         if (req.params[0] == "/style") {
             this.settings['style'].value = req.body.style;
+            this.sendMessageToDashboardSide({style: req.body.style});
             res.json("ok");
         }
         if (req.params[0] == "/clear") {

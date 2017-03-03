@@ -20,7 +20,15 @@ socket.on('disconnect', function () {
 socket.on('node-message-to-dashboard-side', function (n) {
     if (n.cid != container_id || n.id != node_id)
         return;
-    addChartData(n.value.value);
+    let data = n.value;
+    if (data.clear)
+        dataset.clear();
+    if (data.value)
+        addChartData(data.value);
+    if (data.style) {
+        console.log(data.style);
+        $("#chartstyle").dropdown('set selected', data.style);
+    }
 });
 socket.on('node-settings', function (n) {
     if (n.cid != container_id || n.id != node_id)
@@ -217,10 +225,7 @@ $('#chartstyle').change(function () {
 $('#clear-button').click(function () {
     $.ajax({
         url: "/api/editor/c/" + container_id + "/n/" + node_id + "/clear",
-        type: "POST",
-        success: function () {
-            dataset.clear();
-        }
+        type: "POST"
     });
 });
 $('#share-button').click(function () {

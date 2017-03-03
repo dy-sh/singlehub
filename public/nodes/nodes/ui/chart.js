@@ -82,7 +82,7 @@
             }
             if (data.style) {
                 this.settings['style'].value = data.style;
-                this.sendMessageToServerSide({ style: data.style });
+                this.sendMessageToDashboardSide({ style: data.style });
             }
         }
         ;
@@ -93,14 +93,14 @@
                 this.addChartData(data.value);
             if (data.style) {
                 this.settings['style'].value = data.style;
-                this.updateChartType();
+                this.updateChartStyle();
             }
         }
         ;
         createChart() {
             let that = this;
             $('#chart-clear-' + this.id).click(function () {
-                that.sendMessageToServerSide('clear');
+                that.sendMessageToServerSide({ clear: true });
             });
             $('#chart-now-' + this.id).click(function () {
                 that.showNow();
@@ -110,6 +110,7 @@
             });
             $('#chart-style-' + this.id).click(function () {
                 that.changeStyle();
+                that.sendMessageToServerSide({ style: that.settings['style'].value });
             });
             this.body = document.getElementById('chart-body-' + this.id);
             this.options = {
@@ -120,7 +121,7 @@
             };
             this.dataset = new vis.DataSet();
             this.graph2d = new vis.Graph2d(this.body, this.dataset, this.options);
-            this.updateChartType();
+            this.updateChartStyle();
             this.showNow();
             if (this.properties['log'].length > 0) {
                 this.addChartData(this.properties['log']);
@@ -163,7 +164,7 @@
                     break;
             }
         }
-        updateChartType() {
+        updateChartStyle() {
             switch (this.settings['style'].value) {
                 case 'bars':
                     this.options = {
@@ -291,7 +292,7 @@
                     break;
             }
             this.settings['style'].value = val;
-            this.updateChartType();
+            this.updateChartStyle();
             this.sendMessageToServerSide({ style: val });
         }
         onGetRequest(req, res) {
@@ -315,6 +316,7 @@
             //ajax get log
             if (req.params[0] == "/style") {
                 this.settings['style'].value = req.body.style;
+                this.sendMessageToDashboardSide({ style: req.body.style });
                 res.json("ok");
             }
             if (req.params[0] == "/clear") {

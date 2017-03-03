@@ -66,6 +66,8 @@ export class App extends Emitter {
 
         this.emit('started');
 
+        this.rootContainer.run();
+
         //add test nodes
         // require('./modules/test').test();
 

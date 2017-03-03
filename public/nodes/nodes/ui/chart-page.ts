@@ -15,7 +15,6 @@ declare let moment;
 declare let DataSet;
 
 
-
 // --------------------- socket --------------
 
 
@@ -41,7 +40,21 @@ socket.on('node-message-to-dashboard-side', function (n) {
     if (n.cid != container_id || n.id != node_id)
         return;
 
-    addChartData(n.value.value);
+    let data = n.value;
+
+    if (data.clear)
+        dataset.clear();
+
+    if (data.value)
+        addChartData(data.value);
+
+    if (data.style) {
+        console.log(data.style);
+        (<any>$("#chartstyle")).dropdown('set selected', data.style);
+
+        // style = data.style;
+        // updateChartStyle();
+    }
 });
 
 socket.on('node-settings', function (n) {
@@ -71,7 +84,6 @@ let options: any = {
 
 
 let graph2d = new vis.Graph2d(chart_body, dataset, groups, options);
-
 
 
 function renderStep() {
@@ -287,10 +299,7 @@ $('#chartstyle').change(function () {
 $('#clear-button').click(function () {
     $.ajax({
         url: "/api/editor/c/" + container_id + "/n/" + node_id + "/clear",
-        type: "POST",
-        success: function () {
-            dataset.clear();
-        }
+        type: "POST"
     });
 });
 

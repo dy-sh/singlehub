@@ -50,6 +50,7 @@
             if (this.rootContainer && this.db)
                 this.rootContainer.db = this.db;
             this.emit('started');
+            this.rootContainer.run();
             //add test nodes
             // require('./modules/test').test();
             //mysensors gateway
