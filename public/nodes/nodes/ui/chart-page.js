@@ -194,7 +194,6 @@ function showNow() {
 function showAll() {
     clearTimeout(zoomTimer);
     $("#autoscroll").dropdown('set selected', "none");
-    //graph2d.fit();
     let start, end;
     if (dataset.length == 0) {
         start = vis.moment().add(-1, 'seconds');

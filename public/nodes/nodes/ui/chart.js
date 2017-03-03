@@ -157,9 +157,9 @@
                     break;
                 case 'none':
                     // move the window 90% to the left when now is larger than the end of the window
-                    if (now > range.end) {
-                        this.graph2d.setWindow(now - 0.1 * interval, now + 0.9 * interval);
-                    }
+                    // if (now > range.end) {
+                    //     this.graph2d.setWindow(now - 0.1 * interval, now + 0.9 * interval);
+                    // }
                     setTimeout(that.renderStep.bind(that), 1000);
                     break;
             }

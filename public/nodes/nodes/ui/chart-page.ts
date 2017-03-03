@@ -258,7 +258,6 @@ function showNow() {
 function showAll() {
     clearTimeout(zoomTimer);
     (<any>$("#autoscroll")).dropdown('set selected', "none");
-    //graph2d.fit();
 
 
     let start, end;
