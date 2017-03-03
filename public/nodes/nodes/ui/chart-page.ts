@@ -23,7 +23,7 @@ let socket = io('/dashboard');
 let reconnecting = false;
 
 socket.on('connect', function () {
-    //jijoin to room
+    //join to room
     socket.emit('room', container_id);
 
     if (reconnecting) {

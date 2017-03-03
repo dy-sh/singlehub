@@ -99,12 +99,6 @@
         ;
         createChart() {
             let that = this;
-            // if (this.properties['log'].length > 0) {
-            //     let log = $('#log-' + this.id);
-            //     for (let record of  this.properties['log']) {
-            //         //add data
-            //     }
-            // }
             $('#chart-clear-' + this.id).click(function () {
                 that.sendMessageToServerSide('clear');
             });
@@ -127,28 +121,10 @@
             this.dataset = new vis.DataSet();
             this.graph2d = new vis.Graph2d(this.body, this.dataset, this.options);
             this.updateChartType();
-            //Loading data frow server
             this.showNow();
-            // $.ajax({
-            //     url: "/DashboardAPI/GetValue/",
-            //     data: {'nodeId': this.id, 'name': "chartData"},
-            //     dataType: "json",
-            //     success: function (chartData) {
-            //         // dataset.clear();
-            //         if (chartData != null) {
-            //             this.addChartData(chartData);
-            //
-            //             let options = {
-            //                 start: vis.moment().add(-30, 'seconds'),
-            //                 end: vis.moment()
-            //             };
-            //
-            //             this.graph2d.setOptions(options);
-            //         } else {
-            //             this.showNow();
-            //         }
-            //     }
-            // });
+            if (this.properties['log'].length > 0) {
+                this.addChartData(this.properties['log']);
+            }
             this.renderStep();
         }
         addChartData(data) {
