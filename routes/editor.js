@@ -34,7 +34,7 @@
             theme: config.nodeEditor.theme
         });
     });
-    router.get('/c/:cid/n/:id', function (req, res) {
+    router.get('/c/:cid/n/:id*', function (req, res) {
         let cont = container_1.Container.containers[req.params.cid];
         if (!cont) {
             res.redirect("/");

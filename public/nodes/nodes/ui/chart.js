@@ -332,7 +332,17 @@
             this.sendMessageToServerSide({ style: val });
         }
         onGetRequest(req, res) {
-            res.send("ok");
+            //ajax get log
+            if (req.params[0] == "/log") {
+                res.json(this.properties['log']);
+            }
+            else {
+                res.render('nodes/chart/index', {
+                    node: this,
+                    range_start: Date.now() - 30000,
+                    range_end: Date.now()
+                });
+            }
         }
     }
     exports.UiChartNode = UiChartNode;

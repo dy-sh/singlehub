@@ -36,7 +36,7 @@ router.get('/c/:cid', function (req, res) {
 });
 
 
-router.get('/c/:cid/n/:id', function (req, res) {
+router.get('/c/:cid/n/:id*', function (req, res) {
     let cont=Container.containers[req.params.cid];
     if (!cont){
         res.redirect("/");

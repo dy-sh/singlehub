@@ -8,8 +8,7 @@ import {Node} from "../../node";
 import Utils from "../../utils";
 import {Side, Container} from "../../container";
 import {UiNode} from "./ui-node";
-// import * as moment from 'moment'
-// import {DataSet} from "vis";
+
 declare let vis;
 declare let moment;
 declare let DataSet;
@@ -411,7 +410,18 @@ export class UiChartNode extends UiNode {
     }
 
     onGetRequest(req, res){
-        res.send("ok");
+        //ajax get log
+        if (req.params[0]=="/log") {
+            res.json(this.properties['log']);
+        }
+        //browser get page
+        else {
+            res.render('nodes/chart/index', {
+                node: this,
+                range_start: Date.now() - 30000,
+                range_end: Date.now()
+            });
+        }
     }
 }
 

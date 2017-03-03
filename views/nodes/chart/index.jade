@@ -1,0 +1,83 @@
+extends ../../layout
+
+block styles
+    link(href='/libs/vis/dist/vis.min.css', rel='stylesheet')
+
+
+block content
+
+
+    .ui.container
+        a.ui.button.right.floated(href="/log") Show Log
+        h2.chartName #{node.title}
+        p
+            a(href="/dashboard") Dashboard
+        .ui.divider
+        .ui.raised.segments
+            .ui.secondary.clearing.segment
+                b.chartName #{node.title}
+                button#share-button.ui.right.floated.small.button(type="button")
+                    b Share
+                button#clear-button.ui.right.floated.small.button(type="button") Clear
+            .ui.segment
+                #infoPanel
+                    | Requesting data...
+                br
+                #chartPanel(style="display: none;")
+                    #visualization
+                    br
+                    .ui.form
+                        .ui.fields
+                            .ui.field
+                                label Auto scroll:
+                                select#autoscroll(onchange="onAutoscrollChange()")
+                                    option(value="none", selected="") None
+                                    option(value="continuous") Continuous
+                                    option(value="discrete") Discrete
+                                    option(value="static") Static
+                            .ui.field
+                                label Style:
+                                select#charttype(onchange="onCharTypeChange()")
+                                    option(value="bars", selected="") Bars
+                                    option(value="splines") Splines
+                                    option(value="shadedsplines") Shaded Splines
+                                    option(value="lines") Lines
+                                    option(value="shadedlines") Shaded Lines
+                                    option(value="dots") Dots
+                            .ui.field
+                                br
+                                .ui.basic.buttons
+                                    button.ui.button(type="button", onclick="showAll()")
+                                        b Zoom All
+                                    button.ui.button(type="button", onclick="showNow()")
+                                        b Zoom Now
+        #shareModal.ui.modal
+            .header
+                | Chart share URL
+            .content
+                .ui.form
+                    .field
+                        label URL:
+                        textarea#url(rows="3")
+            .actions
+                .ui.positive.right.button
+                    | OK
+
+
+
+
+block scripts
+    script(src='/libs/vis/dist/vis.min.js')
+
+    script(type="text/javascript").
+        var container_id = #{node.container.id};
+        var node_id = #{node.id};
+        var range_start = #{range_start};
+        var range_end = #{range_end};
+        var autoScroll = "none";
+        var charType = "bars";
+        $('#autoscroll').dropdown();
+        $('#charttype').dropdown();
+
+
+    script(src="/nodes/nodes/ui/chart-page.js")
