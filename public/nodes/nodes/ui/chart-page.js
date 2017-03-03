@@ -2,98 +2,44 @@
  * Created by Derwish (derwish.pro@gmail.com) on 03.03.17.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
-let clientsHub;
-let signalRServerConnected;
-let elementsFadeTime = 300;
+// --------------------- socket --------------
+let socket = io('/dashboard');
+let reconnecting = false;
+socket.on('connect', function () {
+    //jijoin to room
+    socket.emit('room', container_id);
+    if (reconnecting) {
+        noty({ text: 'Connection is restored.', type: 'alert' });
+        this.reconnecting = false;
+    }
+});
+socket.on('disconnect', function () {
+    noty({ text: 'Connection is lost!', type: 'error' });
+    reconnecting = true;
+});
+socket.on('node-message-to-dashboard-side', function (n) {
+    if (n.cid != container_id || n.id != node_id)
+        return;
+    addChartData(n.value.value);
+});
+socket.on('node-settings', function (n) {
+    if (n.cid != container_id || n.id != node_id)
+        return;
+    if (n.settings['maxRecords'])
+        max_records = n.settings['maxRecords'].value;
+});
+//------------------- chart --------------
 let groups = new vis.DataSet();
 groups.add({ id: 0 });
 let DELAY = 1000; // delay in ms to add new data points
 // create a graph2d with an (currently empty) dataset
-let container = document.getElementById('visualization');
+let chart_body = document.getElementById('visualization');
 let dataset = new vis.DataSet();
-//
-// let start, end;
-//
-// if (dataset.length == 0) {
-//     start = vis.moment().add(-1, 'seconds');
-//     end = vis.moment().add(60, 'seconds');
-// } else {
-//     start = vis.moment(dataset.min('x').x).add(-1, 'seconds');
-//     end = vis.moment(dataset.max('x').x).add(60 * 2, 'seconds');
-// }
-//
-// if (range_start != "0")
-//     start = new Date(range_start);
-//
-// if (range_end != "0")
-//     end = new Date(range_end);
-// else {
-//     end = new Date(new Date().getTime() + (10 * 60 * 1000));//now + 10 minutes
-// }
 let options = {
     start: range_start,
     end: range_end
 };
-let graph2d = new vis.Graph2d(container, dataset, groups, options);
-//let node_id - initialized from ViewBag
-//
-// $(function () {
-//
-//     //configure signalr
-//     let clientsHub = $.connection.dashboardHub;
-//
-//     clientsHub.client.OnGatewayConnected = function () {
-//         noty({text: 'Gateway is connected.', type: 'alert', timeout: false});
-//     };
-//
-//     clientsHub.client.OnGatewayDisconnected = function () {
-//         noty({text: 'Gateway is disconnected!', type: 'error', timeout: false});
-//     };
-//
-//
-//     clientsHub.client.OnUiNodeUpdated = function (node) {
-//         if (node.Id == node_id)
-//             updateChart(node);
-//     };
-//
-//     clientsHub.client.OnRemoveAllNodesAndLinks = function () {
-//         noty({text: 'This Node was removed!', type: 'error', timeout: false});
-//         $('#panelsContainer').empty();
-//     };
-//
-//     clientsHub.client.OnRemoveUiNode = function (node) {
-//         if (node.Id == node_id) {
-//             noty({text: 'This Node was removed!', type: 'error', timeout: false});
-//             $('#panelsContainer').empty();
-//         }
-//     };
-//
-//
-//     $.connection.hub.start(
-//         function () {
-//             clientsHub.server.join(container_id);
-//         });
-//
-//     $.connection.hub.stateChanged(function (change) {
-//         if (change.newState === $.signalR.connectionState.reconnecting) {
-//             noty({text: 'Web server is not responding!', type: 'error', timeout: false});
-//             signalRServerConnected = false;
-//         }
-//         else if (change.newState === $.signalR.connectionState.connected) {
-//             if (signalRServerConnected == false) {
-//                 noty({text: 'Connected to web server.', type: 'alert', timeout: false});
-//                 getNodes();
-//                 getGatewayInfo();
-//             }
-//             signalRServerConnected = true;
-//         }
-//     });
-//
-//     // let connection = $.connection(clientsHub);
-//     // connection.stateChanged(signalrConnectionStateChanged);
-//     //connection.start({ waitForPageLoad: true });
-//
-// });
+let graph2d = new vis.Graph2d(chart_body, dataset, groups, options);
 function renderStep() {
     let now = vis.moment();
     let range = graph2d.getWindow();
@@ -127,7 +73,7 @@ $(document).ready(function () {
         type: "GET",
         success: function (data) {
             $('#infoPanel').hide();
-            $('#chartPanel').fadeIn(elementsFadeTime);
+            $('#chartPanel').fadeIn(300);
             if (data) {
                 dataset.add(data);
                 //force redraw
@@ -144,9 +90,9 @@ $(document).ready(function () {
     });
     updateChartStyle();
 });
-function addChartData(chartData, maxRecords) {
-    dataset.add(chartData);
-    let unwanted = dataset.length - maxRecords;
+function addChartData(data) {
+    dataset.add(data);
+    let unwanted = dataset.length - max_records;
     if (unwanted > 0) {
         let items = dataset.get();
         for (let i = 0; i < unwanted; i++) {
@@ -220,8 +166,9 @@ function redrawChart(options) {
     options.start = window.start;
     options.end = window.end;
     graph2d.destroy();
-    graph2d = new vis.Graph2d(container, dataset, groups, options);
+    graph2d = new vis.Graph2d(chart_body, dataset, groups, options);
 }
+// -------------- zoom --------------------
 let zoomTimer;
 function showNow() {
     clearTimeout(zoomTimer);
@@ -257,17 +204,7 @@ function showAll() {
     };
     graph2d.setWindow(window);
 }
-function share() {
-    let url = $(location).attr('host') + $(location).attr('pathname');
-    let start = graph2d.getWindow().start;
-    let end = graph2d.getWindow().end;
-    url += "?autoscroll=" + $("#autoscroll").val();
-    url += "&style=" + $("#chartstyle").val();
-    url += "&start=" + start.getTime();
-    url += "&end=" + end.getTime();
-    $('#shareModal').modal('setting', 'transition', 'vertical flip').modal('show');
-    $('#url').val(url);
-}
+// -------------- ui controls events --------------------
 $('#chartstyle').change(function () {
     style = this.value;
     updateChartStyle();
@@ -287,7 +224,15 @@ $('#clear-button').click(function () {
     });
 });
 $('#share-button').click(function () {
-    share();
+    let url = $(location).attr('host') + $(location).attr('pathname');
+    let start = graph2d.getWindow().start;
+    let end = graph2d.getWindow().end;
+    url += "?autoscroll=" + $("#autoscroll").val();
+    url += "&style=" + $("#chartstyle").val();
+    url += "&start=" + start.getTime();
+    url += "&end=" + end.getTime();
+    $('#shareModal').modal('setting', 'transition', 'vertical flip').modal('show');
+    $('#url').val(url);
 });
 $('#autoscroll').change(function () {
     autoscroll = this.value;

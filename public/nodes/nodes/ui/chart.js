@@ -62,13 +62,13 @@
         onInputUpdated() {
             //store for sending later
             let val = this.getInputData(0);
-            this.lastData = val;
             this.dataUpdated = true;
             this.isRecentlyActive = true;
             //add to log
             let records = this.properties['log'];
             let record = { x: Date.now(), y: val };
             records.push(record);
+            this.lastData = record;
             let max = this.settings['maxRecords'].value;
             let unwanted = records.length - max;
             records.splice(0, unwanted);
@@ -151,22 +151,9 @@
             // });
             this.renderStep();
         }
-        addChartData(val) {
+        addChartData(data) {
+            this.dataset.add(data);
             let max = this.settings['maxRecords'].value;
-            this.dataset.add({ x: new Date(), y: val });
-            //let options = {
-            //    dataAxis: {
-            //        left: {
-            //            range: {
-            //                min: Number(dataset.min('y').y),
-            //                max: Number(dataset.max('y').y)
-            //            }
-            //        }
-            //    }
-            //};
-            //graph2d.setOptions(options);
-            //graph2d.linegraph.options.dataAxis.left.range.min = dataset.min('y').y;
-            //graph2d.linegraph.options.dataAxis.left.range.max = dataset.max('y').y;
             let unwanted = this.dataset.length - max;
             if (unwanted > 0) {
                 let items = this.dataset.get();
@@ -339,6 +326,7 @@
                 range_end: req.query.end || Date.now(),
                 autoscroll: req.query.autoscroll || this.settings['autoscroll'].value,
                 style: req.query.style || this.settings['style'].value,
+                max_records: this.settings['maxRecords'].value
             });
         }
         onGetApiRequest(req, res) {
