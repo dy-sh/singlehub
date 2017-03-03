@@ -1,3 +1,4 @@
+
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 02.03.17.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -9,6 +10,9 @@ import Utils from "../../utils";
 import {Side, Container} from "../../container";
 import {UiNode} from "./ui-node";
 
+declare let moment;
+
+
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
         <span id="nodeTitle-{{id}}"></span>\
@@ -17,7 +21,7 @@ let template =
         <div class="ui segment" style="overflow-y: scroll; height: 150px;" id="log-{{id}}"></div>\
     </div>';
 
-declare let moment;
+
 
 export class UiLogNode extends UiNode {
     MAX_MESS_PER_SEC = 11;

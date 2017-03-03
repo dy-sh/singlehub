@@ -38,22 +38,7 @@ block content
         </div>
         </div>
         </div>
-    script#chartTemplate(type='text/x-handlebars-template').
-        <div class="ui attached clearing segment" id="node-{{id}}">
-        <div class="ui mini right floated basic buttons">
-        @*<button type="button" class="ui button" id="chart-clear-{{id}}">Clr</button>*@
-        <button type="button" class="ui button" id="chart-style-{{id}}">Style</button>
-        <button type="button" class="ui button" id="chart-all-{{id}}">All</button>
-        <button type="button" class="ui button" id="chart-now-{{id}}">Now</button>
-        <a href="/Dashboard/Chart/{{id}}" class="ui button" id="chart-open-{{id}}">Open</a>
-        </div>
-        <span id="nodeTitle-{{id}}"></span>
-        <br />
-        <br />
-        <div id="chart-panel-{{id}}-">
-        <div id="chart-body-{{id}}"></div>
-        </div>
-        </div>
+
     script#timerTemplate(type='text/x-handlebars-template').
         <div class="ui attached clearing segment" id="node-{{id}}">
         <span id="nodeTitle-{{id}}"></span>
@@ -61,10 +46,7 @@ block content
         <a href="/UITimer/Tasks/{{id}}" class="ui button" id="timer-open-{{id}}">Open</a>
         </div>
         </div>
-    script#voiceTemplate(type='text/x-handlebars-template').
-        <div class="ui attached clearing segment" id="node-{{id}}">
-        <span id="nodeTitle-{{id}}"></span>
-        </div>
+
 
 
 

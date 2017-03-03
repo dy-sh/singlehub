@@ -11,6 +11,7 @@
 import "./main";
 import "./debug";
 import "./math";
+
 import "./ui/label";
 import "./ui/toggle";
 import "./ui/state";
@@ -25,3 +26,4 @@ import "./ui/log";
 import "./ui/audio";
 import "./ui/voice-chrome";
 import "./ui/voice-yandex";
+import "./ui/chart";
