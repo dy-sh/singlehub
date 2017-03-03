@@ -92,7 +92,7 @@ export class UiChartNode extends UiNode {
 
         //add to log
         let records = this.properties['log'];
-        let record = {date: Date.now(), value: val};
+        let record = {x: Date.now(), y: val};
         records.push(record);
 
         let max = this.settings['maxRecords'].value;
@@ -409,17 +409,19 @@ export class UiChartNode extends UiNode {
         this.sendMessageToServerSide({style: val});
     }
 
-    onGetRequest(req, res){
+    onGetRequest(req, res) {
         //ajax get log
-        if (req.params[0]=="/log") {
+        if (req.params[0] == "/log") {
             res.json(this.properties['log']);
         }
         //browser get page
         else {
             res.render('nodes/chart/index', {
                 node: this,
-                range_start: Date.now() - 30000,
-                range_end: Date.now()
+                range_start: req.query.start || Date.now() - 30000,
+                range_end: req.query.end || Date.now(),
+                autoscroll: req.query.autoscroll || "none",
+                style: req.query.style || "bars",
             });
         }
     }

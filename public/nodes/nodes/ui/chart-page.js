@@ -80,13 +80,13 @@ function updateChart(node) {
     addChartData(node.LastRecord, node.Settings.MaxRecords.Value);
 }
 function onAutoscrollChange() {
-    autoScroll = $("#autoscroll").dropdown('get value')[0];
+    autoscroll = $("#autoscroll").dropdown('get value')[0];
 }
 function renderStep() {
     let now = vis.moment();
     let range = graph2d.getWindow();
     let interval = range.end - range.start;
-    switch (autoScroll) {
+    switch (autoscroll) {
         case 'continuous':
             graph2d.setWindow(now - interval, now, { animation: false });
             requestAnimationFrame(renderStep);
@@ -109,26 +109,24 @@ function renderStep() {
 }
 renderStep();
 $(document).ready(function () {
-    //Loading data frow server
+    //Get chart data from server
     $.ajax({
         url: "/editor/c/" + container_id + "/n/" + node_id + "/log",
-        success: function (chartData) {
+        success: function (data) {
             $('#infoPanel').hide();
             $('#chartPanel').fadeIn(elementsFadeTime);
-            if (chartData != null) {
-                setChartData(chartData);
-            }
-            else {
+            if (data)
+                setChartData(data);
+            else
                 showAll();
-            }
-            $("#charttype").dropdown('set selected', charType);
-            $("#autoscroll").dropdown('set selected', autoScroll);
+            $("#charttype").dropdown('set selected', style);
+            $("#autoscroll").dropdown('set selected', autoscroll);
         },
         error: function () {
             $('#infoPanel').html("<p class='text-danger'>Failed to get data from server!</p>");
         }
     });
-    updateCharType();
+    updateChartStyle();
 });
 function setChartData(chartData) {
     dataset.add(chartData);
@@ -166,17 +164,17 @@ function addChartData(chartData, maxRecords) {
         }
     }
 }
-function onCharTypeChange() {
-    charType = $("#charttype").dropdown('get value')[0];
-    updateCharType();
+function onChartStyleChange() {
+    style = $("#charttype").dropdown('get value')[0];
+    updateChartStyle();
     $.ajax({
         url: "/DashboardAPI/SetValues/",
         type: "POST",
-        data: { 'node_id': node_id, 'values': { Style: charType } }
+        data: { 'node_id': node_id, 'values': { style: style } }
     });
 }
-function updateCharType() {
-    switch (charType) {
+function updateChartStyle() {
+    switch (style) {
         case 'bars':
             options = {
                 height: '370px',

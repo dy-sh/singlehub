@@ -67,7 +67,7 @@
             this.isRecentlyActive = true;
             //add to log
             let records = this.properties['log'];
-            let record = { date: Date.now(), value: val };
+            let record = { x: Date.now(), y: val };
             records.push(record);
             let max = this.settings['maxRecords'].value;
             let unwanted = records.length - max;
@@ -339,8 +339,10 @@
             else {
                 res.render('nodes/chart/index', {
                     node: this,
-                    range_start: Date.now() - 30000,
-                    range_end: Date.now()
+                    range_start: req.query.start || Date.now() - 30000,
+                    range_end: req.query.end || Date.now(),
+                    autoscroll: req.query.autoscroll || "none",
+                    style: req.query.style || "bars",
                 });
             }
         }

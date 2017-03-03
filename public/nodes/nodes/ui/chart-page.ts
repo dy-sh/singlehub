@@ -5,10 +5,10 @@
 
 declare let container_id: number;
 declare let node_id: number;
-declare let urlStart: any;
-declare let urlEnd: any;
-declare let autoScroll: string;
-declare let charType: string;
+declare let range_start: any;
+declare let range_end: any;
+declare let autoscroll: string;
+declare let style: string;
 declare let vis;
 declare let moment;
 declare let DataSet;
@@ -103,7 +103,7 @@ function updateChart(node) {
 
 
 function onAutoscrollChange() {
-    autoScroll = (<any>$("#autoscroll")).dropdown('get value')[0];
+    autoscroll = (<any>$("#autoscroll")).dropdown('get value')[0];
 }
 
 
@@ -114,7 +114,7 @@ function renderStep() {
     let range = graph2d.getWindow();
     let interval = range.end - range.start;
 
-    switch (autoScroll) {
+    switch (autoscroll) {
         case 'continuous':
             graph2d.setWindow(now - interval, now, {animation: false});
             requestAnimationFrame(renderStep);
@@ -142,27 +142,27 @@ renderStep();
 $(document).ready(function () {
 
 
-    //Loading data frow server
+    //Get chart data from server
     $.ajax({
         url: "/editor/c/"+container_id+"/n/"+node_id+"/log",
-        success: function (chartData) {
+        success: function (data) {
             $('#infoPanel').hide();
             $('#chartPanel').fadeIn(elementsFadeTime);
 
-            if (chartData != null) {
-                setChartData(chartData);
-            } else {
+            if (data)
+                setChartData(data);
+             else
                 showAll();
-            }
-            (<any>$("#charttype")).dropdown('set selected', charType);
-            (<any>$("#autoscroll")).dropdown('set selected', autoScroll);
+
+            (<any>$("#charttype")).dropdown('set selected', style);
+            (<any>$("#autoscroll")).dropdown('set selected', autoscroll);
         },
         error: function () {
             $('#infoPanel').html("<p class='text-danger'>Failed to get data from server!</p>");
         }
     });
 
-    updateCharType();
+    updateChartStyle();
 });
 
 
@@ -214,19 +214,19 @@ function addChartData(chartData, maxRecords) {
 }
 
 
-function onCharTypeChange() {
-    charType = (<any>$("#charttype")).dropdown('get value')[0];
-    updateCharType();
+function onChartStyleChange() {
+    style = (<any>$("#charttype")).dropdown('get value')[0];
+    updateChartStyle();
 
     $.ajax({
         url: "/DashboardAPI/SetValues/",
         type: "POST",
-        data: {'node_id': node_id, 'values': {Style: charType}}
+        data: {'node_id': node_id, 'values': {style: style}}
     });
 }
 
-function updateCharType() {
-    switch (charType) {
+function updateChartStyle() {
+    switch (style) {
         case 'bars':
             options = {
                 height: '370px',

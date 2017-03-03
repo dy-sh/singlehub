@@ -37,7 +37,7 @@ block content
                                     option(value="static") Static
                             .ui.field
                                 label Style:
-                                select#charttype(onchange="onCharTypeChange()")
+                                select#charttype(onchange="onChartStyleChange()")
                                     option(value="bars", selected="") Bars
                                     option(value="splines") Splines
                                     option(value="shadedsplines") Shaded Splines
@@ -74,8 +74,8 @@ block scripts
         var node_id = #{node.id};
         var range_start = #{range_start};
         var range_end = #{range_end};
-        var autoScroll = "none";
-        var charType = "bars";
+        var autoscroll = "#{autoscroll}";
+        var style = "#{style}";
         $('#autoscroll').dropdown();
         $('#charttype').dropdown();
 
