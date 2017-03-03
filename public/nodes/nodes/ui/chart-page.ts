@@ -25,8 +25,37 @@ let DELAY = 1000; // delay in ms to add new data points
 // create a graph2d with an (currently empty) dataset
 let container = document.getElementById('visualization');
 let dataset = new vis.DataSet();
-let options;
+
+
+//
+// let start, end;
+//
+// if (dataset.length == 0) {
+//     start = vis.moment().add(-1, 'seconds');
+//     end = vis.moment().add(60, 'seconds');
+// } else {
+//     start = vis.moment(dataset.min('x').x).add(-1, 'seconds');
+//     end = vis.moment(dataset.max('x').x).add(60 * 2, 'seconds');
+// }
+//
+// if (range_start != "0")
+//     start = new Date(range_start);
+//
+// if (range_end != "0")
+//     end = new Date(range_end);
+// else {
+//     end = new Date(new Date().getTime() + (10 * 60 * 1000));//now + 10 minutes
+// }
+
+
+let options:any = {
+    start: range_start,
+    end: range_end
+};
+
+
 let graph2d = new vis.Graph2d(container, dataset, groups, options);
+
 
 //let node_id - initialized from ViewBag
 
@@ -168,34 +197,12 @@ $(document).ready(function () {
 function setChartData(data) {
     if (data) {
         dataset.add(data);
+        //force redraw
+        graph2d.setOptions(options);
         lastChartData = data[data.length - 1].x;
     }
-    
-    let start, end;
-
-    if (dataset.length == 0) {
-        start = vis.moment().add(-1, 'seconds');
-        end = vis.moment().add(60, 'seconds');
-    } else {
-        start = vis.moment(dataset.min('x').x).add(-1, 'seconds');
-        end = vis.moment(dataset.max('x').x).add(60 * 2, 'seconds');
-    }
-
-    if (range_start != "0")
-        start = new Date(range_start);
-
-    if (range_end != "0")
-        end = new Date(range_end);
-    else {
-        end = new Date(new Date().getTime() + (10 * 60 * 1000));//now + 10 minutes
-    }
 
 
-    let options = {
-        start: start,
-        end: end
-    };
-    graph2d.setOptions(options);
 }
 
 
