@@ -84,6 +84,9 @@
         // getMenuOptionslet
         // getExtraMenuOptionslet
         //onGetRequest
+        //onPostRequest
+        //onGetApiRequest
+        //onPostApiRequest
         constructor(container, id) {
             this.pos = [100, 100];
             //   connections: Array<any>;

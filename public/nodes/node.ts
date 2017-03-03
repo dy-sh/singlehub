@@ -197,6 +197,9 @@ export class Node {
     // getExtraMenuOptionslet
 
     //onGetRequest
+    //onPostRequest
+    //onGetApiRequest
+    //onPostApiRequest
 
     constructor(container?: Container, id?: number) {
     }

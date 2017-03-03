@@ -39,7 +39,7 @@
             this.properties['log'] = [];
             this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 100 };
             this.settings['style'] = { description: "Style", type: "string", value: "bars" };
-            this.settings['autoScroll'] = { description: "Auto scroll", type: "string", value: "continuous" };
+            this.settings['autoscroll'] = { description: "Auto scroll", type: "string", value: "continuous" };
             this.addInput("input");
         }
         onAdded() {
@@ -181,7 +181,7 @@
             let range = this.graph2d.getWindow();
             let interval = range.end - range.start;
             let that = this;
-            switch (this.settings['autoScroll'].value) {
+            switch (this.settings['autoscroll'].value) {
                 case 'continuous':
                     // continuously move the window
                     this.graph2d.setWindow(now - interval, now, { animation: false });
@@ -271,7 +271,7 @@
         showNow() {
             let that = this;
             clearTimeout(this.zoomTimer);
-            this.settings['autoScroll'].value = "none";
+            this.settings['autoscroll'].value = "none";
             let window = {
                 start: vis.moment().add(-30, 'seconds'),
                 end: vis.moment()
@@ -279,12 +279,12 @@
             this.graph2d.setWindow(window);
             //timer needed for prevent zoomin freeze bug
             this.zoomTimer = setTimeout(function (parameters) {
-                that.settings['autoScroll'].value = "continuous";
+                that.settings['autoscroll'].value = "continuous";
             }, 1000);
         }
         showAll() {
             clearTimeout(this.zoomTimer);
-            this.settings['autoScroll'].value = "none";
+            this.settings['autoscroll'].value = "none";
             //   graph2d.fit();
             let start, end;
             if (this.dataset.length == 0) {
@@ -332,18 +332,32 @@
             this.sendMessageToServerSide({ style: val });
         }
         onGetRequest(req, res) {
+            //render chart page
+            res.render('nodes/chart/index', {
+                node: this,
+                range_start: req.query.start || Date.now() - 30000,
+                range_end: req.query.end || Date.now(),
+                autoscroll: req.query.autoscroll || this.settings['autoscroll'].value,
+                style: req.query.style || this.settings['style'].value,
+            });
+        }
+        onGetApiRequest(req, res) {
             //ajax get log
             if (req.params[0] == "/log") {
                 res.json(this.properties['log']);
             }
-            else {
-                res.render('nodes/chart/index', {
-                    node: this,
-                    range_start: req.query.start || Date.now() - 30000,
-                    range_end: req.query.end || Date.now(),
-                    autoscroll: req.query.autoscroll || "none",
-                    style: req.query.style || "bars",
-                });
+        }
+        onPostApiRequest(req, res) {
+            //ajax get log
+            if (req.params[0] == "/style") {
+                this.settings['style'].value = req.body.style;
+                res.json("ok");
+            }
+            if (req.params[0] == "/clear") {
+                this.isRecentlyActive = true;
+                this.properties['log'] = [];
+                this.sendMessageToDashboardSide({ clear: true });
+                res.json("ok");
             }
         }
     }

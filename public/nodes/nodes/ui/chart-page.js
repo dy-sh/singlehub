@@ -111,7 +111,8 @@ renderStep();
 $(document).ready(function () {
     //Get chart data from server
     $.ajax({
-        url: "/editor/c/" + container_id + "/n/" + node_id + "/log",
+        url: "/api/editor/c/" + container_id + "/n/" + node_id + "/log",
+        type: "GET",
         success: function (data) {
             $('#infoPanel').hide();
             $('#chartPanel').fadeIn(elementsFadeTime);
@@ -128,9 +129,11 @@ $(document).ready(function () {
     });
     updateChartStyle();
 });
-function setChartData(chartData) {
-    dataset.add(chartData);
-    lastChartData = chartData[chartData.length - 1].x;
+function setChartData(data) {
+    if (data) {
+        dataset.add(data);
+        lastChartData = data[data.length - 1].x;
+    }
     let start, end;
     if (dataset.length == 0) {
         start = vis.moment().add(-1, 'seconds');
@@ -163,15 +166,6 @@ function addChartData(chartData, maxRecords) {
             dataset.remove(items[i]);
         }
     }
-}
-function onChartStyleChange() {
-    style = $("#charttype").dropdown('get value')[0];
-    updateChartStyle();
-    $.ajax({
-        url: "/DashboardAPI/SetValues/",
-        type: "POST",
-        data: { 'node_id': node_id, 'values': { style: style } }
-    });
 }
 function updateChartStyle() {
     switch (style) {
@@ -287,11 +281,19 @@ function share() {
     $('#shareModal').modal('setting', 'transition', 'vertical flip').modal('show');
     $('#url').val(url);
 }
+function onChartStyleChange() {
+    style = $("#charttype").dropdown('get value')[0];
+    updateChartStyle();
+    $.ajax({
+        url: "/api/editor/c/" + container_id + "/n/" + node_id + "/style",
+        type: "POST",
+        data: { style: style }
+    });
+}
 $('#clear-button').click(function () {
     $.ajax({
-        url: "/DashboardAPI/SetValues/",
+        url: "/api/editor/c/" + container_id + "/n/" + node_id + "/clear",
         type: "POST",
-        data: { 'node_id': node_id, 'values': { Clear: "true" } },
         success: function () {
             dataset.clear();
         }

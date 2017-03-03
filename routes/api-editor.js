@@ -288,8 +288,30 @@
         app_1.app.server.editorSocket.io.emit('container-run-step');
         res.send(`Run step container`);
     });
-    //------------------ receiver ------------------------
-    router.post('/receiver/value', function (req, res) {
+    //------------------ nodes internal requests ------------------------
+    router.get('/c/:cid/n/:id*', function (req, res) {
+        let cont = container_1.Container.containers[req.params.cid];
+        if (!cont)
+            return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);
+        let node = cont.getNodeById(req.params.id);
+        if (!node)
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+        if (node['onGetApiRequest'])
+            node['onGetApiRequest'](req, res);
+        else
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
+    });
+    router.post('/c/:cid/n/:id*', function (req, res) {
+        let cont = container_1.Container.containers[req.params.cid];
+        if (!cont)
+            return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);
+        let node = cont.getNodeById(req.params.id);
+        if (!node)
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+        if (node['onPostApiRequest'])
+            node['onPostApiRequest'](req, res);
+        else
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
     });
     module.exports = router;
 });

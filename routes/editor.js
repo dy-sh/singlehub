@@ -36,19 +36,27 @@
     });
     router.get('/c/:cid/n/:id*', function (req, res) {
         let cont = container_1.Container.containers[req.params.cid];
-        if (!cont) {
-            res.redirect("/");
-            return;
-        }
+        if (!cont)
+            return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);
         let node = cont.getNodeById(req.params.id);
-        if (!node) {
-            res.redirect("/");
-            return;
-        }
+        if (!node)
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
         if (node['onGetRequest'])
             node['onGetRequest'](req, res);
         else
-            res.redirect("/");
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
+    });
+    router.post('/c/:cid/n/:id*', function (req, res) {
+        let cont = container_1.Container.containers[req.params.cid];
+        if (!cont)
+            return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);
+        let node = cont.getNodeById(req.params.id);
+        if (!node)
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+        if (node['onPostRequest'])
+            node['onPostRequest'](req, res);
+        else
+            return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
     });
     router.get('/container', function (req, res) {
         // //todo if (rootContainer.isNotStarted)
