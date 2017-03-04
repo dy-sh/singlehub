@@ -51,18 +51,31 @@
             socket.on('node-settings', function (n) {
                 if (n.cid != that.container_id || n.id != that.node_id)
                     return;
-                if (n.settings['maxRecords'])
+                if (n.settings['maxRecords']) {
                     that.max_records = n.settings['maxRecords'].value;
+                    that.removeOldRecords();
+                }
             });
         }
         addRecord(record) {
             let date = moment(record.y).format("DD.MM.YYYY - H:mm:ss.SSS");
             $('#history-table').append("<tr><td>" + date + "</td><td>" + record.y + "</td></tr>");
+            this.removeOldRecords();
+        }
+        removeOldRecords() {
+            let rows = $('#history-table tr');
+            let unwanted = rows.length - this.max_records;
+            if (unwanted > 0) {
+                for (let i = 0; i < unwanted; i++) {
+                    rows[i].remove();
+                }
+            }
         }
         createControles() {
+            let that = this;
             $('#clear-button').click(function () {
                 $.ajax({
-                    url: "/api/editor/c/" + this.container_id + "/n/" + this.node_id + "/clear",
+                    url: "/api/editor/c/" + that.container_id + "/n/" + that.node_id + "/clear",
                     type: "POST"
                 });
             });
