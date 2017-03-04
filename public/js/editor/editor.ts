@@ -490,10 +490,10 @@ export class Editor {
 
                     switch (node.settings[s].type) {
                         case "number":
-                            data.push({key: s, value: $('#node-setting-' + s).val()});
+                            data.push({key: s, value: +$('#node-setting-' + s).val()});
                             break;
                         case "boolean":
-                            data.push({key: s, value: $('#node-setting-' + s).prop('checked') ? "true" : "false"});
+                            data.push({key: s, value: $('#node-setting-' + s).prop('checked')});
                             break;
                         case "dropdown":
                             data.push({key: s, value: $('#node-setting-' + s).val()});

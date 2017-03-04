@@ -76,14 +76,13 @@
                 this.sendMessageToDashboardSide({ record: record });
                 //update in db
                 if (this.container.db && this.settings['saveInDb'].value) {
-                    this.container.db.updateNode(this.id, this.container.id, { $push: { "properties.log": { $each: [record], $slice: -max } } }, function () {
-                        console.log("updated");
-                    });
+                    this.container.db.updateNode(this.id, this.container.id, { $push: { "properties.log": { $each: [record], $slice: -max } } });
                 }
             }
         }
         ;
         onGetMessageToServerSide(data) {
+            //clear log
             this.isRecentlyActive = true;
             this.properties['log'] = [];
             this.sendMessageToDashboardSide({ clear: true });
