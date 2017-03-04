@@ -38,6 +38,7 @@
             this.descriprion = "";
             this.properties['log'] = [];
             this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 100 };
+            this.settings['saveToDb'] = { description: "Save data to DB", type: "boolean", value: false };
             this.settings['style'] = { description: "Style", type: "string", value: "bars" };
             this.settings['autoscroll'] = { description: "Auto scroll", type: "string", value: "continuous" };
             this.addInput("input");
@@ -72,6 +73,10 @@
             let max = this.settings['maxRecords'].value;
             let unwanted = records.length - max;
             records.splice(0, unwanted);
+            //update in db
+            if (this.container.db && this.settings['saveToDb'].value) {
+                this.container.db.updateNode(this.id, this.container.id, { $push: { "properties.log": { $each: [record], $slice: -max } } });
+            }
         }
         ;
         onGetMessageToServerSide(data) {
@@ -79,6 +84,10 @@
                 this.isRecentlyActive = true;
                 this.properties['log'] = [];
                 this.sendMessageToDashboardSide({ clear: true });
+                //update in db
+                if (this.container.db && this.settings['saveToDb'].value) {
+                    this.container.db.updateNode(this.id, this.container.id, { $unset: { "properties.log": true } });
+                }
             }
             if (data.style) {
                 this.settings['style'].value = data.style;

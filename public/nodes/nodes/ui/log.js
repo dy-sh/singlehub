@@ -27,7 +27,7 @@
             this.descriprion = "";
             this.properties['log'] = [];
             this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 10 };
-            this.settings['saveInDb'] = { description: "Save log in DB", type: "boolean", value: false };
+            this.settings['saveToDb'] = { description: "Save log to DB", type: "boolean", value: false };
             this.addInput("input");
         }
         onAdded() {
@@ -75,7 +75,7 @@
                 records.splice(0, unwanted);
                 this.sendMessageToDashboardSide({ record: record });
                 //update in db
-                if (this.container.db && this.settings['saveInDb'].value) {
+                if (this.container.db && this.settings['saveToDb'].value) {
                     this.container.db.updateNode(this.id, this.container.id, { $push: { "properties.log": { $each: [record], $slice: -max } } });
                 }
             }
@@ -87,7 +87,7 @@
             this.properties['log'] = [];
             this.sendMessageToDashboardSide({ clear: true });
             //update in db
-            if (this.container.db && this.settings['saveInDb'].value) {
+            if (this.container.db && this.settings['saveToDb'].value) {
                 this.container.db.updateNode(this.id, this.container.id, { $unset: { "properties.log": true } });
             }
         }
