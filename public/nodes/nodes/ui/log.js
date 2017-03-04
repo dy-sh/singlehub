@@ -86,6 +86,10 @@
             this.isRecentlyActive = true;
             this.properties['log'] = [];
             this.sendMessageToDashboardSide({ clear: true });
+            //update in db
+            if (this.container.db && this.settings['saveInDb'].value) {
+                this.container.db.updateNode(this.id, this.container.id, { $unset: { "properties.log": true } });
+            }
         }
         ;
         onGetMessageToDashboardSide(data) {
