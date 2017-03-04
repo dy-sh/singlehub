@@ -1,4 +1,3 @@
-
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 02.03.17.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -22,7 +21,6 @@ let template =
     </div>';
 
 
-
 export class UiLogNode extends UiNode {
     MAX_MESS_PER_SEC = 11;
     messagesPerSec = 0;
@@ -33,6 +31,7 @@ export class UiLogNode extends UiNode {
         this.descriprion = "";
         this.properties['log'] = [];
         this.settings['maxRecords'] = {description: "Max Records", type: "number", value: 10};
+        this.settings['saveInDb'] = {description: "Save log in DB", type: "boolean", value: false};
 
         this.addInput("input");
     }
@@ -95,7 +94,14 @@ export class UiLogNode extends UiNode {
 
             this.sendMessageToDashboardSide({record: record});
 
-
+            //update in db
+            if (this.container.db && this.settings['saveInDb'].value) {
+                this.container.db.updateNode(this.id, this.container.id,
+                    {$push: {"properties.log": {$each: [record], $slice: -max}}},
+                    function () {
+                        console.log("updated")
+                    });
+            }
         }
     };
 
