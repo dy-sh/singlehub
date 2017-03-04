@@ -15,6 +15,13 @@ router.get('/', function (req, res, next) {
 });
 
 
+router.get('/c/:cid', function (req, res, next) {
+    if (req.params.cid == 0)
+        res.redirect("/dashboard/");
+    else
+        res.render('dashboard/index');
+});
+
 router.get('/c/:cid/n/:id*', function (req, res) {
     let cont = Container.containers[req.params.cid];
     if (!cont) return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);

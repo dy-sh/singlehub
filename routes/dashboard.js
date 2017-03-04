@@ -19,6 +19,12 @@
         // res.redirect("/editor")
         res.render('dashboard/index');
     });
+    router.get('/c/:cid', function (req, res, next) {
+        if (req.params.cid == 0)
+            res.redirect("/dashboard/");
+        else
+            res.render('dashboard/index');
+    });
     router.get('/c/:cid/n/:id*', function (req, res) {
         let cont = container_1.Container.containers[req.params.cid];
         if (!cont)

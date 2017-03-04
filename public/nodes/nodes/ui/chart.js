@@ -296,8 +296,15 @@
             this.sendMessageToServerSide({ style: val });
         }
         onGetRequest(req, res) {
+            //render log page
+            if (req.params[0] == "/log") {
+                res.render('dashboard/nodes/chart/log', {
+                    node: this,
+                    max_records: this.settings['maxRecords'].value
+                });
+            }
             //render chart page
-            res.render('nodes/chart/index', {
+            res.render('dashboard/nodes/chart/index', {
                 node: this,
                 range_start: req.query.start || Date.now() - 30000,
                 range_end: req.query.end || Date.now(),

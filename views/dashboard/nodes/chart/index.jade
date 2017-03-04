@@ -1,23 +1,20 @@
-extends ../../layout
+extends ../../../layout
 
 block styles
     link(href='/libs/vis/dist/vis.min.css', rel='stylesheet')
 
 
 block content
-
-
     .ui.container
-        a.ui.button.right.floated(href="/log") Show Log
+        a.ui.button.right.floated(href="/dashboard/c/#{node.container.id}/n/#{node.id}/log") Show Log
         h2.chartName #{node.title}
         p
-            a(href="/dashboard") Dashboard
+            a(href="/dashboard/c/#{node.container.id}") Dashboard
         .ui.divider
         .ui.raised.segments
             .ui.secondary.clearing.segment
                 b.chartName #{node.title}
-                button#share-button.ui.right.floated.small.button
-                    b Share
+                button#share-button.ui.right.floated.small.button Share
                 button#clear-button.ui.right.floated.small.button Clear
             .ui.segment
                 #infoPanel
@@ -78,4 +75,4 @@ block scripts
         var style = "#{style}";
         var max_records = #{max_records};
 
-    script(src="/nodes/nodes/ui/chart-page.js")
+    script(src='/libs/requirejs/require.js' data-main="/nodes/nodes/ui/chart-index-page.js")
