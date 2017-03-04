@@ -28,6 +28,7 @@
         constructor(app) {
             this.__rootdirname = global.__rootdirname;
             this.express = express();
+            this.express.locals.moment = require('moment');
             this.setViewEngine();
             this.middleware();
             this.routes();

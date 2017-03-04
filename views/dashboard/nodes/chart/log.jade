@@ -15,50 +15,37 @@ block content
             .ui.secondary.clearing.segment
                 b.chartName #{node.title}
                 button#clear-button.ui.right.floated.small.button Clear
-            |
             .ui.attached.segment
-                | @if (!Model.Any())
-                | {
-                | @:There are no history. Log shows realtime data only. Check node
-                a(href="/Node/Settings/@ViewBag.uiNodeId") settings
-                |
-                br
-                |             }
-                |
                 table.ui.striped.table
                     thead
                         tr
                             th(scope="col")
                                 | Date
-                            |
                             th(scope="col")
                                 | State
-                    |
                     tbody#history-table
-                        | @foreach (SensorData item in Model)
-                        | {
-                        tr
-                            td @item.dateTime
-                            |
-                            td @item.state
-                        |                 }
-                    |                 @*todo table pagination*@
-                    |                 @*
-                    tfoot
-                        tr
-                            th(colspan="3")
-                                .ui.pagination.menu
-                                    a.icon.item
-                                        i.left.chevron.icon
-                                    |
-                                    a.item 1
-                                    |
-                                    a.item 2
-                                    |
-                                    a.item 3
-                                    |
-                                    a.item 4
-                                    |
-                                    a.icon.item
-                                        i.right.chevron.icon
-                    | *@
+                        for record in records
+                            tr
+                                td= moment(record.x).format("DD.MM.YYYY - H:mm:ss.SSS")
+                                td= record.y
+                    //tfoot
+                    //    tr
+                    //        th(colspan="3")
+                    //            .ui.pagination.menu
+                    //                a.icon.item
+                    //                    i.left.chevron.icon
+                    //                a.item 1
+                    //                a.item 2
+                    //                a.item 3
+                    //                a.item 4
+                    //                a.icon.item
+                    //                    i.right.chevron.icon
+
+
+block scripts
+    script(type="text/javascript").
+        var container_id = #{node.container.id};
+        var node_id = #{node.id};
+        var max_records = #{max_records};
+
+    script(src='/libs/requirejs/require.js' data-main="/nodes/nodes/ui/chart-log-page.js")

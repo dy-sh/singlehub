@@ -300,6 +300,7 @@
             if (req.params[0] == "/log") {
                 res.render('dashboard/nodes/chart/log', {
                     node: this,
+                    records: this.properties['log'],
                     max_records: this.settings['maxRecords'].value
                 });
             }

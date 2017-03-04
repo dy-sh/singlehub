@@ -36,6 +36,7 @@ export class Server {
     constructor(app:App) {
         this.__rootdirname = (<any>global).__rootdirname;
         this.express = express();
+        this.express.locals.moment = require('moment');
         this.setViewEngine();
         this.middleware();
         this.routes();
