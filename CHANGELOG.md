@@ -38,6 +38,8 @@ MyNodes v4.0
     
 - **Main**:
   - **Constant**. Now it has a data type setting.
+- **UI**:
+  - **Chart**. Changing settings in editor. Chart log realtime update. 
   
   
 **Other changes:**
