@@ -3,75 +3,89 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-export namespace ChartLogPage {
+declare let Logger: any; // tell the ts compiler global variable is defined
+let log = Logger.create('client', {color: 3});
+declare let moment;
 
-    declare let container_id: number;
-    declare let node_id: number;
-    declare let moment;
+export class ChartLogPage {
 
-// --------------------- socket --------------
+    container_id: number;
+    node_id: number;
+    max_records: number;
+    socket:SocketIOClient.Socket;
+    reconnecting=false;
 
+    constructor() {
+        this.container_id=(<any>window).container_id;
+        this.node_id=(<any>window).node_id;
+        this.max_records=(<any>window).max_records;
 
-    let socket = io('/dashboard');
-    let reconnecting = false;
-
-    socket.on('connect', function () {
-        //join to room
-        socket.emit('room', container_id);
-
-        if (reconnecting) {
-            noty({text: 'Connection is restored.', type: 'alert'});
-            this.reconnecting = false;
-        }
-    });
-
-    socket.on('disconnect', function () {
-        noty({text: 'Connection is lost!', type: 'error'});
-        reconnecting = true;
-    });
-
-    socket.on('node-message-to-dashboard-side', function (n) {
-        if (n.cid != container_id || n.id != node_id)
-            return;
-
-        let data = n.value;
-
-        if (data.clear)
-            dataset.clear();
-
-        if (data.value)
-            addChartData(data.value);
-
-        if (data.style) {
-            console.log(data.style);
-            (<any>$("#chartstyle")).dropdown('set selected', data.style);
-
-            // style = data.style;
-            // updateChartStyle();
-        }
-    });
-
-    socket.on('node-settings', function (n) {
-        if (n.cid != container_id || n.id != node_id)
-            return;
-
-        if (n.settings['maxRecords'])
-            max_records = n.settings['maxRecords'].value;
-    });
-
-
-    function updateLog(node) {
-
-        var now = moment().format("DD.MM.YYYY H:mm:ss");
-        $('#history-table').append("<tr><td>" + now + "</td><td>" + node.State + "</td></tr>");
+        this.createControles();
+        this.createSocket();
     }
 
 
-    $('#clear-button').click(function () {
-        $.ajax({
-            url: "/api/editor/c/" + container_id + "/n/" + node_id + "/clear",
-            type: "POST"
+    private createSocket() {
+        let socket = io('/dashboard');
+        this.socket=socket;
+        let that=this;
+
+        socket.on('connect', function () {
+            log.debug("Connected to socket");
+
+            //join to room
+            log.debug("Join to dashboard room [" + that.container_id + "]");
+            socket.emit('room', that.container_id);
+
+            if (that.reconnecting) {
+                noty({text: 'Connection is restored.', type: 'alert'});
+                that.reconnecting = false;
+            }
         });
-    });
+
+        socket.on('disconnect', function () {
+            noty({text: 'Connection is lost!', type: 'error'});
+            that.reconnecting = true;
+        });
+
+        socket.on('node-message-to-dashboard-side', function (n) {
+            if (n.cid != that.container_id || n.id != that.node_id)
+                return;
+
+            let data = n.value;
+
+            if (data.clear)
+                $('#history-table').html("");
+
+            if (data.value)
+                that.addRecord(data.value);
+        });
+
+        socket.on('node-settings', function (n) {
+            if (n.cid != that.container_id || n.id != that.node_id)
+                return;
+
+            if (n.settings['maxRecords'])
+                that.max_records = n.settings['maxRecords'].value;
+        });
+    }
+
+
+    addRecord(record) {
+
+        let date = moment(record.y).format("DD.MM.YYYY - H:mm:ss.SSS");
+        $('#history-table').append("<tr><td>" + date + "</td><td>" + record.y + "</td></tr>");
+    }
+
+    createControles() {
+        $('#clear-button').click(function () {
+            $.ajax({
+                url: "/api/editor/c/" + this.container_id + "/n/" + this.node_id + "/clear",
+                type: "POST"
+            });
+        });
+    }
 
 }
+
+export let page = new ChartLogPage();

@@ -23,10 +23,10 @@
             this.autoscroll = window.autoscroll;
             this.style = window.style;
             this.max_records = window.max_records;
-            this.createSocket();
             this.createChart();
             this.createControles();
             this.getDataFromServer();
+            this.createSocket();
         }
         createSocket() {
             let socket = io('/dashboard');

@@ -36,16 +36,14 @@ export class ChartIndexPage {
         this.style=(<any>window).style;
         this.max_records=(<any>window).max_records;
 
-        this.createSocket();
         this.createChart();
         this.createControles();
         this.getDataFromServer();
+        this.createSocket();
     }
 
 
     private createSocket() {
-
-
         let socket = io('/dashboard');
         this.socket=socket;
         let that=this;
