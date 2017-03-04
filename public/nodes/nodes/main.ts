@@ -61,7 +61,7 @@ export class ConstantNode extends Node {
 
         if (this.container.db) {
             let s_node = this.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
+            this.container.db.updateNode(this.id, this.container.id, {$set:{outputs: s_node.outputs}});
         }
 
         if (this.side == Side.editor) {
@@ -223,8 +223,8 @@ export class ContainerInputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: s_cont_node.inputs});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{inputs: s_cont_node.inputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
         }
     }
 
@@ -238,8 +238,8 @@ export class ContainerInputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {inputs: s_cont_node.inputs});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{inputs: s_cont_node.inputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
         }
     }
 
@@ -281,8 +281,8 @@ export class ContainerOutputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: s_cont_node.outputs});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{outputs: s_cont_node.outputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
         }
     }
 
@@ -296,8 +296,8 @@ export class ContainerOutputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {outputs: s_cont_node.outputs});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {size: cont_node.size});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{outputs: s_cont_node.outputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
         }
     }
 

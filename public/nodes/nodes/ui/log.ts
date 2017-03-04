@@ -94,6 +94,8 @@ export class UiLogNode extends UiNode {
             records.splice(0, unwanted);
 
             this.sendMessageToDashboardSide({record: record});
+
+
         }
     };
 

@@ -57,7 +57,7 @@
             this.outputs[0].name = utils_1.default.formatAndTrimValue(val);
             if (this.container.db) {
                 let s_node = this.serialize(true);
-                this.container.db.updateNode(this.id, this.container.id, { outputs: s_node.outputs });
+                this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: s_node.outputs } });
             }
             if (this.side == container_1.Side.editor) {
                 if (!window.editor.showNodesIOValues) {
@@ -173,8 +173,8 @@
             this.title = "Input " + (id + 1);
             if (this.container.db) {
                 let s_cont_node = cont_node.serialize(true);
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { inputs: s_cont_node.inputs });
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { inputs: s_cont_node.inputs } });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
             }
         }
         onRemoved() {
@@ -186,8 +186,8 @@
             this.properties['slot'] = -1;
             if (this.container.db) {
                 let s_cont_node = cont_node.serialize(true);
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { inputs: s_cont_node.inputs });
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { inputs: s_cont_node.inputs } });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
             }
         }
         onExecute() {
@@ -218,8 +218,8 @@
             this.title = "Output " + (id + 1);
             if (this.container.db) {
                 let s_cont_node = cont_node.serialize(true);
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { outputs: s_cont_node.outputs });
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { outputs: s_cont_node.outputs } });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
             }
         }
         onRemoved() {
@@ -231,8 +231,8 @@
             this.properties['slot'] = -1;
             if (this.container.db) {
                 let s_cont_node = cont_node.serialize(true);
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { outputs: s_cont_node.outputs });
-                this.container.db.updateNode(cont_node.id, cont_node.container.id, { size: cont_node.size });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { outputs: s_cont_node.outputs } });
+                this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
             }
         }
         onExecute() {

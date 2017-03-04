@@ -137,64 +137,63 @@ export class Node {
     isRecentlyActive: boolean;
 
 
-
 //events
 
     // /**
     //  * Invoked when new node created
     //  */
-    // onCreatedlet
+    // onCreated
     //
     // /**
     //  * Invoked every time when node added to container (created or restored from the database)
     //  */
-    // onAdded:Function;
+    // onAdded
     //
     // /**
     //  * Invoked when node removed from container
     //  */
-    // onRemovedlet
+    // onRemoved
     //
     //
-    // onDrawBackgroundlet
-    // onDrawForegroundlet
+    // onDrawBackground
+    // onDrawForeground
     //
     // //if returns false the incoming connection will be canceled
-    // onConnectInputlet
-    // onInputAddedlet
-    // onOutputAddedlet
-    // onGetInputslet
-    // onGetOutputslet
-    // onInputRemovedlet
-    // onOutputRemovedlet
+    // onConnectInput
+    // onInputAdded
+    // onOutputAdded
+    // onGetInputs
+    // onGetOutputs
+    // onInputRemoved
+    // onOutputRemoved
     //
-    // onMouseDownlet
-    // onMouseUplet
-    // onMouseEnterlet
-    // onMouseMovelet
-    // onMouseLeavelet
-    // onDblClicklet
-    // onDropFilelet
-    // onDropItemlet
-    // onKeyDownlet
-    // onKeyUplet
+    // onMouseDown
+    // onMouseUp
+    // onMouseEnter
+    // onMouseMove
+    // onMouseLeave
+    // onDblClick
+    // onDropFile
+    // onDropItem
+    // onKeyDown
+    // onKeyUp
     //
-    // onSelectedlet
-    // onDeselectedlet
+    // onSelected
+    // onDeselected
     //
-    // onGetMessageToServerSidelet
-    // onGetMessageToEditorSidelet
-    // onGetMessageToDashboardSidelet
+    // onGetMessageToServerSide
+    // onGetMessageToEditorSide
+    // onGetMessageToDashboardSide
     //
-    // onRunContainerlet
-    // onStopContainerlet
-    // onExecutelet
-    // onInputUpdatedlet
+    // onRunContainer
+    // onStopContainer
+    // onExecute
+    // onInputUpdated
     //
-    // onSettingsChangedlet
+    // onSettingsChanged
 
-    // getMenuOptionslet
-    // getExtraMenuOptionslet
+    // getMenuOptions
+    // getExtraMenuOptions
 
     //onGetRequest
     //onPostRequest
@@ -771,8 +770,8 @@ export class Node {
         if (this.container.db) {
             let s_node = this.serialize(true);
             let s_t_node = target_node.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {inputs: s_t_node.inputs});
+            this.container.db.updateNode(this.id, this.container.id, {$set:{outputs: s_node.outputs}});
+            this.container.db.updateNode(target_node.id, target_node.container.id,{$set: {inputs: s_t_node.inputs}});
         }
 
         this.setDirtyCanvas(false, true);
@@ -848,7 +847,7 @@ export class Node {
 
             if (this.container.db) {
                 let s_t_node = t_node.serialize(true);
-                this.container.db.updateNode(t_node.id, t_node.container.id, {inputs: s_t_node.inputs});
+                this.container.db.updateNode(t_node.id, t_node.container.id, {$set:{inputs: s_t_node.inputs}});
             }
 
             this.debug("disconnected from " + t_node.getReadableId());
@@ -860,7 +859,7 @@ export class Node {
 
         if (this.container.db) {
             let s_node = this.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {outputs: s_node.outputs});
+            this.container.db.updateNode(this.id, this.container.id,{$set: {outputs: s_node.outputs}});
         }
 
         this.setDirtyCanvas(false, true);
@@ -921,8 +920,8 @@ export class Node {
         if (this.container.db) {
             let s_node = this.serialize(true);
             let s_target_node = target_node.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {inputs: s_node.inputs});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {outputs: s_target_node.outputs});
+            this.container.db.updateNode(this.id, this.container.id, {$set:{inputs: s_node.inputs}});
+            this.container.db.updateNode(target_node.id, target_node.container.id, {$set:{outputs: s_target_node.outputs}});
         }
 
 
@@ -1133,6 +1132,58 @@ export class Node {
             this.setDirtyCanvas(true, true);
         }
     }
+
+    private propertiesForUpdateInDbP: {[name: string]: any} = {};
+    private updateInDbTimer: any;
+    UPDATE_IN_DB_INTERVAL = 5000;
+
+    updateInDb(prop_name: string, value: any, immediately = false) {
+        if (immediately) {
+            if (this.container.db) {
+                let saveObj = {};
+                saveObj[prop_name] = value;
+                console.log("saving immediately:" + JSON.stringify(saveObj));
+                this.container.db.updateNode(this.id, this.container.id, {$set:saveObj});
+            }
+        }
+        else {
+            this.propertiesForUpdateInDbP[prop_name] = value;
+            if (!this.updateInDbTimer)
+                this.startUpdateInDbTimer();
+        }
+
+    }
+
+    private startUpdateInDbTimer() {
+        if (!this.container.db)
+            return;
+
+        let that = this;
+        console.log("starting timer");
+
+        this.updateInDbTimer = setInterval(function () {
+            //stop timer if nothing to save
+            if (Object.keys(this.propertiesForUpdateInDbP).length == 0) {
+                clearInterval(that.updateInDbTimer)
+                that.updateInDbTimer = null;
+                console.log("stopping timer");
+                return;
+            }
+
+            for (let key in that.propertiesForUpdateInDbP) {
+                //delete key
+                let val = that.propertiesForUpdateInDbP[key];
+                delete that.propertiesForUpdateInDbP[key];
+
+                //save in db
+                let saveObj = {};
+                saveObj[key] = val;
+                console.log("saving :" + JSON.stringify(saveObj));
+                that.container.db.updateNode(that.id, that.container.id, {$set:saveObj});
+            }
+        }, this.UPDATE_IN_DB_INTERVAL)
+    }
+
 }
 
 

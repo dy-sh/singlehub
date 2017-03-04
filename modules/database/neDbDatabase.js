@@ -101,7 +101,7 @@
         }
         updateNode(id, cid, update, callback) {
             let _id = "c" + cid + "n" + id;
-            this.nodes.update({ _id: _id }, { $set: update }, function (err, updated) {
+            this.nodes.update({ _id: _id }, update, function (err, updated) {
                 if (err)
                     log.error(err);
                 if (updated == 0)

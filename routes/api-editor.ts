@@ -153,7 +153,7 @@ router.put('/c/:cid/n/:id/position', function (req, res) {
     node.pos = req.body.position;
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {pos: node.pos});
+        app.db.updateNode(node.id, node.container.id,{$set: {pos: node.pos}});
 
     app.server.editorSocket.io.emit('node-update-position', {
         id: req.params.id,
@@ -176,7 +176,7 @@ router.put('/c/:cid/n/:id/size', function (req, res) {
     node.size = req.body.size;
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {size: node.size});
+        app.db.updateNode(node.id, node.container.id, {$set:{size: node.size}});
 
     app.server.editorSocket.io.emit('node-update-size', {
         id: req.params.id,
@@ -231,7 +231,7 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
         node['onSettingsChanged']();
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {settings: node.settings});
+        app.db.updateNode(node.id, node.container.id, {$set:{settings: node.settings}});
 
     app.server.editorSocket.io.emit('node-settings', {
         id: req.params.id,

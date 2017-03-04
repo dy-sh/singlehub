@@ -106,7 +106,7 @@ class NeDbDatabase implements Database {
 
     updateNode(id: number, cid: number, update: any, callback?: (err?: Error) => void) {
         let _id = "c" + cid + "n" + id;
-        this.nodes.update({_id: _id}, {$set: update}, function (err, updated) {
+        this.nodes.update({_id: _id}, update, function (err, updated) {
             if (err) log.error(err);
             if (updated == 0) log.error(`Cat't update node [${cid}/${id}]. Document not found.`);
             if (callback) callback(err);

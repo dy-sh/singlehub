@@ -122,7 +122,7 @@
             return res.status(404).send(`Can't update node position. Node id [${req.params.cid}/${req.params.id}] not found.`);
         node.pos = req.body.position;
         if (app_1.app.db)
-            app_1.app.db.updateNode(node.id, node.container.id, { pos: node.pos });
+            app_1.app.db.updateNode(node.id, node.container.id, { $set: { pos: node.pos } });
         app_1.app.server.editorSocket.io.emit('node-update-position', {
             id: req.params.id,
             cid: req.params.cid,
@@ -142,7 +142,7 @@
             return res.status(404).send(`Can't update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
         node.size = req.body.size;
         if (app_1.app.db)
-            app_1.app.db.updateNode(node.id, node.container.id, { size: node.size });
+            app_1.app.db.updateNode(node.id, node.container.id, { $set: { size: node.size } });
         app_1.app.server.editorSocket.io.emit('node-update-size', {
             id: req.params.id,
             cid: req.params.cid,
@@ -185,7 +185,7 @@
         if (node['onSettingsChanged'])
             node['onSettingsChanged']();
         if (app_1.app.db)
-            app_1.app.db.updateNode(node.id, node.container.id, { settings: node.settings });
+            app_1.app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
         app_1.app.server.editorSocket.io.emit('node-settings', {
             id: req.params.id,
             cid: req.params.cid,

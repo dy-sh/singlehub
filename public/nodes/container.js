@@ -386,7 +386,7 @@
                     if (this.id == 0)
                         this.db.updateLastRootNodeId(this.last_node_id);
                     else
-                        this.db.updateNode(this.container_node.id, this.container_node.container.id, { "sub_container.last_node_id": this.container_node.sub_container.last_node_id });
+                        this.db.updateNode(this.container_node.id, this.container_node.container.id, { $set: { "sub_container.last_node_id": this.container_node.sub_container.last_node_id } });
                 }
             }
             if (node.onAdded)
@@ -593,7 +593,7 @@
             let new_cont = new_cont_node.sub_container;
             new_cont.last_node_id = this.last_node_id;
             if (this.db)
-                this.db.updateNode(new_cont_node.id, this.id, { "sub_container.last_node_id": new_cont_node.sub_container.last_node_id });
+                this.db.updateNode(new_cont_node.id, this.id, { $set: { "sub_container.last_node_id": new_cont_node.sub_container.last_node_id } });
             // move nodes
             for (let id of ids) {
                 let node = this.getNodeById(id);
@@ -644,10 +644,10 @@
                                     let s_old_target = old_target.serialize(true);
                                     let s_node = node.serialize(true);
                                     let s_input_node = input_node.serialize(true);
-                                    this.db.updateNode(input_node.id, new_cont.id, { pos: s_input_node.pos });
-                                    this.db.updateNode(input_node.id, new_cont.id, { outputs: s_input_node.outputs });
-                                    this.db.updateNode(old_target.id, this.id, { outputs: s_old_target.outputs });
-                                    this.db.updateNode(node.id, new_cont.id, { inputs: s_node.inputs });
+                                    this.db.updateNode(input_node.id, new_cont.id, { $set: { pos: s_input_node.pos } });
+                                    this.db.updateNode(input_node.id, new_cont.id, { $set: { outputs: s_input_node.outputs } });
+                                    this.db.updateNode(old_target.id, this.id, { $set: { outputs: s_old_target.outputs } });
+                                    this.db.updateNode(node.id, new_cont.id, { $set: { inputs: s_node.inputs } });
                                 }
                             }
                         }
@@ -692,10 +692,10 @@
                                         let s_old_target = old_target.serialize(true);
                                         let s_node = node.serialize(true);
                                         let s_output_node = output_node.serialize(true);
-                                        this.db.updateNode(output_node.id, new_cont.id, { pos: s_output_node.pos });
-                                        this.db.updateNode(output_node.id, new_cont.id, { inputs: s_output_node.inputs });
-                                        this.db.updateNode(old_target.id, this.id, { inputs: s_old_target.inputs });
-                                        this.db.updateNode(node.id, new_cont.id, { outputs: s_node.outputs });
+                                        this.db.updateNode(output_node.id, new_cont.id, { $set: { pos: s_output_node.pos } });
+                                        this.db.updateNode(output_node.id, new_cont.id, { $set: { inputs: s_output_node.inputs } });
+                                        this.db.updateNode(old_target.id, this.id, { $set: { inputs: s_old_target.inputs } });
+                                        this.db.updateNode(node.id, new_cont.id, { $set: { outputs: s_node.outputs } });
                                     }
                                 }
                             }
@@ -703,8 +703,8 @@
                     }
                     if (this.db) {
                         let s_new_cont_node = new_cont_node.serialize(true);
-                        this.db.updateNode(new_cont_node.id, this.id, { inputs: s_new_cont_node.inputs });
-                        this.db.updateNode(new_cont_node.id, this.id, { outputs: s_new_cont_node.outputs });
+                        this.db.updateNode(new_cont_node.id, this.id, { $set: { inputs: s_new_cont_node.inputs } });
+                        this.db.updateNode(new_cont_node.id, this.id, { $set: { outputs: s_new_cont_node.outputs } });
                     }
                 }
             }
