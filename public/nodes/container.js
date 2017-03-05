@@ -262,7 +262,11 @@
                             continue;
                         }
                         let target_input = target_node.inputs[link.target_slot];
-                        if (target_input.data !== output.data) {
+                        if (typeof (output.data) != 'undefined'
+                            && output.data !== target_input.data) {
+                            //don't send NaN twice
+                            if (output.type == "number" && isNaN(output.data) && isNaN(target_input.data))
+                                continue;
                             target_input.data = output.data;
                             target_node.isUpdated = true;
                             target_input.updated = true;

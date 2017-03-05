@@ -75,13 +75,13 @@ export class ConstantNode extends Node {
 Container.registerNodeType("main/constant", ConstantNode);
 
 
-export class CounterNode extends Node {
+export class NumberGeneratorNode extends Node {
     value = 0;
     lastTime: number;
 
     constructor() {
         super();
-        this.title = "Counter";
+        this.title = "Number Generator";
         this.descriprion = "";
 
         this.settings["speed"] = {description: "Limit speed (values/sec)", value: 10, type: "number"};
@@ -103,7 +103,7 @@ export class CounterNode extends Node {
         }
     }
 }
-Container.registerNodeType("main/counter", CounterNode);
+Container.registerNodeType("main/number-generator", NumberGeneratorNode);
 
 
 //Container: a node that contains a container of other nodes

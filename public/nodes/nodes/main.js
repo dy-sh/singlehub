@@ -69,11 +69,11 @@
     }
     exports.ConstantNode = ConstantNode;
     container_1.Container.registerNodeType("main/constant", ConstantNode);
-    class CounterNode extends node_1.Node {
+    class NumberGeneratorNode extends node_1.Node {
         constructor() {
             super();
             this.value = 0;
-            this.title = "Counter";
+            this.title = "Number Generator";
             this.descriprion = "";
             this.settings["speed"] = { description: "Limit speed (values/sec)", value: 10, type: "number" };
             this.addOutput("value", "number");
@@ -90,8 +90,8 @@
             }
         }
     }
-    exports.CounterNode = CounterNode;
-    container_1.Container.registerNodeType("main/counter", CounterNode);
+    exports.NumberGeneratorNode = NumberGeneratorNode;
+    container_1.Container.registerNodeType("main/number-generator", NumberGeneratorNode);
     //Container: a node that contains a container of other nodes
     class ContainerNode extends node_1.Node {
         constructor(container) {
