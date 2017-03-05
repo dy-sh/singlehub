@@ -40,6 +40,9 @@ export class UiSliderNode extends UiNode {
     onAdded() {
         super.onAdded();
 
+        if (this.side == Side.server)
+            this.setOutputData(0, this.properties['value']);
+
         if (this.side == Side.dashboard) {
 
             this.slider = $("#slider-" + this.id)[0];

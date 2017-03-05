@@ -31,6 +31,8 @@
         }
         onAdded() {
             super.onAdded();
+            if (this.side == container_1.Side.server)
+                this.setOutputData(0, this.properties['value']);
             if (this.side == container_1.Side.dashboard) {
                 this.slider = $("#slider-" + this.id)[0];
                 noUiSlider.create(this.slider, {

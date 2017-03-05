@@ -47,6 +47,15 @@ export class UiRGBWSlidersNode extends UiNode {
     onAdded() {
         super.onAdded();
 
+        if (this.side == Side.server) {
+            let hex = Utils.numsToRgbHex([
+                this.properties['r'],
+                this.properties['g'],
+                this.properties['b'],
+                this.properties['w']]);
+            this.setOutputData(0, hex);
+        }
+
         if (this.side == Side.dashboard) {
 
             this.sliderR = $("#slider-" + this.id + "-r")[0];

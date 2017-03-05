@@ -36,6 +36,14 @@
         }
         onAdded() {
             super.onAdded();
+            if (this.side == container_1.Side.server) {
+                let hex = utils_1.default.numsToRgbHex([
+                    this.properties['r'],
+                    this.properties['g'],
+                    this.properties['b'],
+                    this.properties['w']]);
+                this.setOutputData(0, hex);
+            }
             if (this.side == container_1.Side.dashboard) {
                 this.sliderR = $("#slider-" + this.id + "-r")[0];
                 this.sliderG = $("#slider-" + this.id + "-g")[0];
