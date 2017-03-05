@@ -28,7 +28,7 @@
                     setTimeout(function () {
                         $("#panelsContainer").empty();
                         $("#panelsContainer").show();
-                        that.getNodes();
+                        that.getContainer();
                     }, 2000);
                     this.reconnecting = false;
                 }
@@ -113,15 +113,16 @@
             log.debug("Join to dashboard room [" + cont_id + "]");
             this.socket.emit('room', cont_id);
         }
-        getNodes(callback) {
+        getContainer(callback) {
             let that = this;
             $.ajax({
                 url: "/api/dashboard/c/" + that.container_id,
-                success: function (nodes) {
+                success: function (c) {
                     let cont = container_1.Container.containers[that.container_id];
-                    cont.configure(nodes, false);
+                    cont.configure(c, false);
                     if (callback)
-                        callback(nodes);
+                        callback(c);
+                    $('#panelTitle-' + cont.id).html(cont.name);
                 }
             });
         }

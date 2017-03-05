@@ -209,16 +209,13 @@
                 }
         }
         static formatValue(val, type) {
-            switch (type) {
-                case "any" || "" || null:
-                    return val;
-                case "number":
-                    return parseFloat(val) || 0;
-                case "string":
-                    return "" + val;
-                case "boolean":
-                    return val == true || val == 1 || val == "true";
-            }
+            if (type == "number" && typeof val != "number")
+                return parseFloat(val) || 0;
+            else if (type == "string" && typeof val != "string")
+                return "" + val;
+            else if (type == "boolean" && typeof val != "boolean")
+                return val == true || val == 1 || val == "true";
+            return val;
         }
         static formatAndTrimValue(val) {
             if (val == null)
@@ -251,7 +248,14 @@
             return (typeof (performance) != "undefined") ? performance.now() : Date.now();
         }
         ;
+        static toFixedNumber(value, digits) {
+            let pow = Math.pow(10, digits);
+            return +(Math.round(value * pow) / pow);
+        }
     }
+    Utils.clamp = function (value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Utils;
 });

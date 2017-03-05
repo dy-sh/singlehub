@@ -38,7 +38,7 @@ export class DashboardClientSocket {
                 setTimeout(function () {
                     $("#panelsContainer").empty();
                     $("#panelsContainer").show();
-                    that.getNodes();
+                    that.getContainer();
                 }, 2000);
                 this.reconnecting = false;
             }
@@ -145,15 +145,17 @@ export class DashboardClientSocket {
     }
 
 
-    getNodes(callback?: Function): void {
+    getContainer(callback?: Function): void {
         let that=this;
         $.ajax({
             url: "/api/dashboard/c/" +that.container_id,
-            success: function (nodes) {
+            success: function (c) {
                 let cont = Container.containers[that.container_id];
-                cont.configure(nodes, false);
+                cont.configure(c, false);
                 if (callback)
-                    callback(nodes);
+                    callback(c);
+
+                $('#panelTitle-' + cont.id).html(cont.name);
             }
         });
     }

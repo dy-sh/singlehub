@@ -13,7 +13,6 @@ let panelTemplate = Handlebars.compile($('#panelTemplate').html());
 
 //todo get id
 let container_id = 0;
-let elementsFadeTime = 300;
 
 
 export class Dashboard {
@@ -23,8 +22,11 @@ export class Dashboard {
 
     constructor() {
 
+        //get vars from view
+        let container_id=(<any>window).container_id;
+
         //create panel
-        this.createPanel(0,"Main");
+        this.createPanel(container_id);
 
         //create container
         this.container = new Container(Side.dashboard, container_id);
@@ -33,7 +35,7 @@ export class Dashboard {
         this.socket = new DashboardClientSocket(container_id);
         this.container.clinet_socket = this.socket.socket;
 
-        this.socket.getNodes();
+        this.socket.getContainer();
 
         //globals for easy debug in dev-console
         (<any>window).dashboard = this;
@@ -49,17 +51,19 @@ export class Dashboard {
     }
 
 
-    createPanel(panel_id, title) {
+    createPanel(panel_id, title?) {
         $('#empty-message').hide();
 
         //create new
-        $(panelTemplate({panel_id: panel_id, title: title})).hide().appendTo("#panelsContainer").fadeIn(elementsFadeTime);
+        $(panelTemplate({
+            panel_id: panel_id,
+            title: title
+        })).hide().appendTo("#panelsContainer").fadeIn(300);
 
-        $('#panelTitle-' + panel_id).html(title);
     }
 
     removePanel(panelId) {
-        $('#panel-' + panelId).fadeOut(elementsFadeTime, function () {
+        $('#panel-' + panelId).fadeOut(300, function () {
             $(this).remove();
         });
     }

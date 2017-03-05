@@ -34,6 +34,8 @@
                 throw "Container side is not defined";
             this.renderers = null;
             this.id = id || ++Container.last_container_id;
+            if (this.id == 0)
+                this.name = "Main";
             this.side = side;
             Container.containers[this.id] = this;
             this.clear();
@@ -267,7 +269,7 @@
                             //don't send NaN twice
                             if (output.type == "number" && isNaN(output.data) && isNaN(target_input.data))
                                 continue;
-                            target_input.data = output.data;
+                            target_input.data = utils_1.default.formatValue(output.data, target_input.type);
                             target_node.isUpdated = true;
                             target_input.updated = true;
                         }
@@ -524,6 +526,7 @@
             let data = {
                 id: this.id,
                 last_node_id: this.last_node_id,
+                name: this.name,
                 config: this.config
             };
             if (include_nodes) {

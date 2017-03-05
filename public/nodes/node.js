@@ -83,10 +83,10 @@
         // onSettingsChanged
         // getMenuOptions
         // getExtraMenuOptions
-        //onGetRequest
-        //onPostRequest
-        //onGetApiRequest
-        //onPostApiRequest
+        //onDashboardGetRequest
+        //onDashboardPostRequest
+        //onEditorApiGetRequest
+        //onEditorApiPostRequest
         constructor(container, id) {
             this.pos = [100, 100];
             //   connections: Array<any>;
@@ -312,27 +312,32 @@
                     return i;
             }
         }
-        /**
-         * Add a new output slot to use in this node
-         * @param  array of triplets like [[name,type,extra_info],[...]]
-         */
-        addOutputs(array) {
-            for (let i = 0; i < array.length; ++i) {
-                let info = array[i];
-                let id = this.getFreeOutputId();
-                let name = info[0] || "output " + (id + 1);
-                let output = { name: name, type: info[1], links: null };
-                if (array[2])
-                    for (let j in info[2])
-                        output[j] = info[2][j];
-                if (!this.outputs)
-                    this.outputs = {};
-                this.outputs[id] = output;
-                if (this['onOutputAdded'])
-                    this['onOutputAdded'](output);
-            }
-            this.size = this.computeSize();
-        }
+        // /**
+        //  * Add a new output slot to use in this node
+        //  * @param  array of triplets like [[name,type,extra_info],[...]]
+        //  */
+        // addOutputs(array: Array<NodeOutput>): void {
+        //     for (let i = 0; i < array.length; ++i) {
+        //         let info = array[i];
+        //
+        //         let id = this.getFreeOutputId();
+        //         let name = info[0] || "output " + (id + 1);
+        //
+        //         let output = {name: name, type: info[1], links: null};
+        //         if (array[2])
+        //             for (let j in info[2])
+        //                 output[j] = info[2][j];
+        //
+        //         if (!this.outputs)
+        //             this.outputs = {};
+        //
+        //         this.outputs[id] = output;
+        //         if (this['onOutputAdded'])
+        //             this['onOutputAdded'](output);
+        //     }
+        //
+        //     this.size = this.computeSize();
+        // }
         /**
          * Remove an existing output slot
          * @param id slot id
@@ -373,27 +378,32 @@
                     return i;
             }
         }
-        /**
-         * add several new input slots in this node
-         * @param {Array} array of triplets like [[name,type,extra_info],[...]]
-         */
-        addInputs(array) {
-            for (let i = 0; i < array.length; ++i) {
-                let info = array[i];
-                let id = this.getFreeInputId();
-                let name = info[0] || "input " + (id + 1);
-                let input = { name: name, type: info[1] };
-                if (array[2])
-                    for (let j in info[2])
-                        input[j] = info[2][j];
-                if (!this.inputs)
-                    this.inputs = {};
-                this.inputs[id] = input;
-                if (this['onInputAdded'])
-                    this['onInputAdded'](input);
-            }
-            this.size = this.computeSize();
-        }
+        // /**
+        //  * add several new input slots in this node
+        //  * @param {Array} array of triplets like [[name,type,extra_info],[...]]
+        //  */
+        // addInputs(array: Array<NodeInput>): void {
+        //     for (let i = 0; i < array.length; ++i) {
+        //         let info = array[i];
+        //
+        //         let id = this.getFreeInputId();
+        //         let name = info[0] || "input " + (id + 1);
+        //
+        //         let input = {name: name, type: info[1]};
+        //         if (array[2])
+        //             for (let j in info[2])
+        //                 input[j] = info[2][j];
+        //
+        //         if (!this.inputs)
+        //             this.inputs = {};
+        //
+        //         this.inputs[id] = input;
+        //         if (this['onInputAdded'])
+        //             this['onInputAdded'](input);
+        //     }
+        //
+        //     this.size = this.computeSize();
+        // }
         /**
          * Remove an existing input slot
          * @method removeInput
@@ -422,6 +432,38 @@
         }
         getOutputsCount() {
             return this.outputs ? Object.keys(this.outputs).length : 0;
+        }
+        changeInputsCount(target_count, type) {
+            let current_count = this.getInputsCount();
+            let diff = target_count - current_count;
+            //add
+            if (diff > 0)
+                for (let i = 0; i < diff; i++)
+                    this.addInput(null, type);
+            //remove
+            if (diff < 0) {
+                let ids = Object.keys(this.inputs);
+                for (let i = 0; i > diff; i--) {
+                    let id = ids[ids.length + i - 1];
+                    this.removeInput(+id);
+                }
+            }
+        }
+        changeOutputsCount(target_count, type) {
+            let current_count = this.getOutputsCount();
+            let diff = target_count - current_count;
+            //add
+            if (diff > 0)
+                for (let i = 0; i < diff; i++)
+                    this.addOutput(null, type);
+            //remove
+            if (diff < 0) {
+                let ids = Object.keys(this.outputs);
+                for (let i = 0; i > diff; i--) {
+                    let id = ids[ids.length + i - 1];
+                    this.removeOutput(+id);
+                }
+            }
         }
         getLastInputIndes() {
             if (!this.inputs)

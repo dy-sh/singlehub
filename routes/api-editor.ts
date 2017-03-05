@@ -373,8 +373,8 @@ router.get('/c/:cid/n/:id*', function (req, res) {
     let node=cont.getNodeById(req.params.id);
     if (!node) return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
-    if (node['onGetApiRequest'])
-        node['onGetApiRequest'](req,res);
+    if (node['onEditorApiGetRequest'])
+        node['onEditorApiGetRequest'](req,res);
     else
         return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
 });
@@ -386,8 +386,8 @@ router.post('/c/:cid/n/:id*', function (req, res) {
     let node=cont.getNodeById(req.params.id);
     if (!node) return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
-    if (node['onPostApiRequest'])
-        node['onPostApiRequest'](req,res);
+    if (node['onEditorApiPostRequest'])
+        node['onEditorApiPostRequest'](req,res);
     else
         return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
 });

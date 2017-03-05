@@ -33,5 +33,6 @@ public/libs
 views/*.html
 
 .idea
+.DS_Store
 
 *.db

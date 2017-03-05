@@ -25,6 +25,7 @@ export interface SerializedContainer {
     id: number;
     last_node_id: number;
     config?: any;
+    name: string;
     serialized_nodes?: Array<SerializedNode>;
 }
 
@@ -52,6 +53,7 @@ export class Container extends Emitter {
     _nodes: {[id: number]: Node} = {};
 
     id: number;
+    name: string;
     side: Side;
     supported_types = ["number", "string", "boolean"];
     renderers: Array<Renderer>;
@@ -61,6 +63,7 @@ export class Container extends Emitter {
     config: {
         links_ontop?: boolean;
     };
+
     globaltime: number;
     runningtime: number;
     fixedtime: number;
@@ -88,6 +91,10 @@ export class Container extends Emitter {
         this.renderers = null;
 
         this.id = id || ++Container.last_container_id;
+
+        if (this.id == 0)
+            this.name = "Main";
+
         this.side = side;
 
         Container.containers[this.id] = this;
@@ -382,10 +389,11 @@ export class Container extends Emitter {
                         && output.data !== target_input.data) {
 
                         //don't send NaN twice
-                        if (output.type=="number" && isNaN(output.data) && isNaN(target_input.data))
+                        if (output.type == "number" && isNaN(output.data) && isNaN(target_input.data))
                             continue;
 
-                        target_input.data = output.data;
+                        target_input.data = Utils.formatValue(output.data, target_input.type);
+
                         target_node.isUpdated = true;
                         target_input.updated = true;
                     }
@@ -521,8 +529,6 @@ export class Container extends Emitter {
         node.id = id;
 
 
-
-
         if (is_new) {
             log.debug("New node created: " + node.getReadableId());
 
@@ -536,7 +542,7 @@ export class Container extends Emitter {
                 if (this.id == 0)
                     this.db.updateLastRootNodeId(this.last_node_id);
                 else
-                    this.db.updateNode(this.container_node.id, this.container_node.container.id, {$set:{"sub_container.last_node_id": this.container_node.sub_container.last_node_id}});
+                    this.db.updateNode(this.container_node.id, this.container_node.container.id, {$set: {"sub_container.last_node_id": this.container_node.sub_container.last_node_id}});
             }
         }
 
@@ -708,6 +714,7 @@ export class Container extends Emitter {
         let data: SerializedContainer = {
             id: this.id,
             last_node_id: this.last_node_id,
+            name: this.name,
             config: this.config
         };
 
@@ -806,7 +813,7 @@ export class Container extends Emitter {
         let new_cont = new_cont_node.sub_container;
         new_cont.last_node_id = this.last_node_id;
         if (this.db)
-            this.db.updateNode(new_cont_node.id, this.id, {$set:{"sub_container.last_node_id": new_cont_node.sub_container.last_node_id}})
+            this.db.updateNode(new_cont_node.id, this.id, {$set: {"sub_container.last_node_id": new_cont_node.sub_container.last_node_id}})
 
 
         // move nodes
@@ -869,10 +876,10 @@ export class Container extends Emitter {
                                 let s_old_target = old_target.serialize(true);
                                 let s_node = node.serialize(true);
                                 let s_input_node = input_node.serialize(true);
-                                this.db.updateNode(input_node.id, new_cont.id, {$set:{pos: s_input_node.pos}});
-                                this.db.updateNode(input_node.id, new_cont.id, {$set:{outputs: s_input_node.outputs}});
-                                this.db.updateNode(old_target.id, this.id, {$set:{outputs: s_old_target.outputs}});
-                                this.db.updateNode(node.id, new_cont.id, {$set:{inputs: s_node.inputs}});
+                                this.db.updateNode(input_node.id, new_cont.id, {$set: {pos: s_input_node.pos}});
+                                this.db.updateNode(input_node.id, new_cont.id, {$set: {outputs: s_input_node.outputs}});
+                                this.db.updateNode(old_target.id, this.id, {$set: {outputs: s_old_target.outputs}});
+                                this.db.updateNode(node.id, new_cont.id, {$set: {inputs: s_node.inputs}});
                             }
                         }
                     }
@@ -930,10 +937,10 @@ export class Container extends Emitter {
                                     let s_old_target = old_target.serialize(true);
                                     let s_node = node.serialize(true);
                                     let s_output_node = output_node.serialize(true);
-                                    this.db.updateNode(output_node.id, new_cont.id, {$set:{pos: s_output_node.pos}});
-                                    this.db.updateNode(output_node.id, new_cont.id, {$set:{inputs: s_output_node.inputs}});
-                                    this.db.updateNode(old_target.id, this.id, {$set:{inputs: s_old_target.inputs}});
-                                    this.db.updateNode(node.id, new_cont.id, {$set:{outputs: s_node.outputs}});
+                                    this.db.updateNode(output_node.id, new_cont.id, {$set: {pos: s_output_node.pos}});
+                                    this.db.updateNode(output_node.id, new_cont.id, {$set: {inputs: s_output_node.inputs}});
+                                    this.db.updateNode(old_target.id, this.id, {$set: {inputs: s_old_target.inputs}});
+                                    this.db.updateNode(node.id, new_cont.id, {$set: {outputs: s_node.outputs}});
                                 }
                             }
                         }
@@ -942,8 +949,8 @@ export class Container extends Emitter {
 
                 if (this.db) {
                     let s_new_cont_node = new_cont_node.serialize(true);
-                    this.db.updateNode(new_cont_node.id, this.id, {$set:{inputs: s_new_cont_node.inputs}});
-                    this.db.updateNode(new_cont_node.id, this.id, {$set:{outputs: s_new_cont_node.outputs}});
+                    this.db.updateNode(new_cont_node.id, this.id, {$set: {inputs: s_new_cont_node.inputs}});
+                    this.db.updateNode(new_cont_node.id, this.id, {$set: {outputs: s_new_cont_node.outputs}});
                 }
             }
         }

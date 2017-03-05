@@ -591,6 +591,17 @@ export class Editor {
     updateContainersNavigation() {
         let that = this;
 
+        //update dashboard button
+        $("#dashboard-button").attr("href", '/dashboard/c/' + that.renderer.container.id);
+
+        //update split button
+        let split=$("#split-button").attr("href").startsWith("/editor/split/");
+        if (split)
+            $("#split-button").attr("href", '/editor/split/c/' + that.renderer.container.id);
+        else
+            $("#split-button").attr("href", '/editor/c/' + that.renderer.container.id);
+
+        //update navigation buttons
         $("#containers-navigation").html("");
         addendButton(0, "Main");
 
@@ -601,7 +612,7 @@ export class Editor {
             //add containers
             let cont_count = this.renderer._containers_stack.length;
             for (let cont = 1; cont < cont_count; cont++) {
-                let cont_name = this.renderer._containers_stack[cont].container_node.title;
+                let cont_name = this.renderer._containers_stack[cont].name;
                 let cont_id = this.renderer._containers_stack[cont].id;
                 addendButton(cont_id, cont_name);
             }
@@ -609,7 +620,7 @@ export class Editor {
             //add this container
             // console.log(this.renderer.container)
             // let cont_name = this.renderer.container.container_node.title;
-            let cont_name = "Container " + this.renderer.container.id;
+            let cont_name = this.renderer.container.name;
             let cont_id = this.renderer.container.id;
             addendButton(cont_id, cont_name);
 

@@ -9,117 +9,110 @@ doctype html
 
 
 html
-	head
-		meta(charset='utf-8')
-		meta(name='viewport', content='width=device-width, initial-scale=1.0')
-		title MyNodes: #{title}
-		link(href='/libs/animate.css/animate.min.css', rel='stylesheet')
-		link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
-		link(rel='stylesheet', type='text/css', href='/css/node-editor.css')
-		link(rel='stylesheet', type='text/css', href="/css/editor-theme#{theme}.css")
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')
+        title MyNodes: #{title}
+        link(href='/libs/animate.css/animate.min.css', rel='stylesheet')
+        link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
+        link(rel='stylesheet', type='text/css', href='/css/node-editor.css')
+        link(rel='stylesheet', type='text/css', href="/css/editor-theme#{theme}.css")
 
-	body
-		// Header Menu
-		.header
-			.logo
-				a.ui.black.button(href='/about') MyNodes
-			.rightmenu
-				if (container_id == 0)
-					a.ui.black.tiny.compact.right.floated.button(href='/dashboard', target='_top') Dashboard
-						if (split)
-							a.ui.black.tiny.compact.right.floated.button(href='/editor', target='_top') Split
-						else
-							a.ui.black.tiny.compact.right.floated.button(href='/editor/split', target='_top') Split
-				else
-					a.ui.black.tiny.compact.right.floated.button(href='/dashboard', target='_top') Dashboard
-						if (split)
-							a.ui.black.tiny.compact.right.floated.button(href='/editor/panel?id=#{panel_id}', target='_top') Split
-						else
-							a.ui.black.tiny.compact.right.floated.button(href='/editor/split?id=#{panel_id}', target='_top') Split
-			//.ui.tiny.buttons
-			//	a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
-				//if panelsStack
-				//	each val, key in panelsStack
-				//		a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
+    body
+        // Header Menu
+        .header
+            .logo
+                a.ui.black.button(href='/about') MyNodes
+            .rightmenu
+                a#dashboard-button.ui.black.tiny.compact.right.floated.button(href='/dashboard/c/#{container_id}', target='_top') Dashboard
+                if (split)
+                    a#split-button.ui.black.tiny.compact.right.floated.button(href='/editor/c/#{container_id}', target='_top') Split
+                else
+                    a#split-button.ui.black.tiny.compact.right.floated.button(href='/editor/split/c/#{container_id}', target='_top') Split
+            //.ui.tiny.buttons
+            //	a.ui.inverted.tiny.basic.button(href='/editor') Main Panel
+                //if panelsStack
+                //	each val, key in panelsStack
+                //		a.ui.inverted.tiny.basic.button(href='/editor/panel?id=#{key}')= val
 
 
 
 
-	#main
-		#node-settings-panel.ui.small.modal
-			#node-settings-title.header
-			.content
-				#node-settings-body.ui.form
-			.actions
-				.ui.cancel.button Cancel
-				.ui.ok.blue.button OK
-		#import-panel.ui.small.modal
-			#import-panel-title.header
-			#import-panel-body.content
-				form.ui.form(name='uploadForm')
-					.fields
-						.field
-							| File:
-							input#uploadFile(type='file', name='uploadFile')
-			#import-panel-message.content
-			.actions
-				.ui.cancel.button Cancel
-		#modal-panel.ui.small.modal
-			#modal-panel-title.header
-			.content
-				form#modal-panel-form.ui.form
-				#modal-panel-message.ui.message(style='display: none')
-			#modal-panel-buttons.actions
-				.ui.cancel.button Cancel
-				#modal-panel-submit.ui.button(style='display: none') OK
-		script#textSettingTemplate(type='text/x-handlebars-template').
-			<div class="field">
-			<label> {{settings.description}} </label>
-			<input type="text" id="node-setting-{{key}}" value="{{settings.value}}">
-			</div>
-		script#numberSettingTemplate(type='text/x-handlebars-template').
-			<div class="field">
-			<label> {{settings.description}} </label>
-			<input type="number" id="node-setting-{{key}}" value="{{settings.value}}">
-			</div>
-		script#checkboxSettingTemplate(type='text/x-handlebars-template').
-			<div class="field">
-			<div class="ui toggle checkbox">
-			<input type="checkbox" name="public" id="node-setting-{{key}}" value="true">
-			<label> {{settings.description}} </label>
-			</div>
-			</div>
-		script#dropdownSettingTemplate(type='text/x-handlebars-template').
-			<div class="field">
-			<label> {{settings.description}} </label>
-			<select class="ui dropdown" id="node-setting-{{key}}">
-			{{#each settings.config.elements}}
-				{{#if selected}}
-					<option selected value="{{key}}">{{text}}</option>
-				{{else}}
-					<option value="{{key}}">{{text}}</option>
-				{{/if}}
-			{{/each}}
-			</select>
-			</div>
-		script.
-			//this var used in node-editor
-			var container_id = "#{container_id}";
-			var theme = "#{theme}"
+    #main
+        #node-settings-panel.ui.small.modal
+            #node-settings-title.header
+            .content
+                #node-settings-body.ui.form
+            .actions
+                .ui.cancel.button Cancel
+                .ui.ok.blue.button OK
+        #import-panel.ui.small.modal
+            #import-panel-title.header
+            #import-panel-body.content
+                form.ui.form(name='uploadForm')
+                    .fields
+                        .field
+                            | File:
+                            input#uploadFile(type='file', name='uploadFile')
+            #import-panel-message.content
+            .actions
+                .ui.cancel.button Cancel
+        #modal-panel.ui.small.modal
+            #modal-panel-title.header
+            .content
+                form#modal-panel-form.ui.form
+                #modal-panel-message.ui.message(style='display: none')
+            #modal-panel-buttons.actions
+                .ui.cancel.button Cancel
+                #modal-panel-submit.ui.button(style='display: none') OK
+        script#textSettingTemplate(type='text/x-handlebars-template').
+            <div class="field">
+            <label> {{settings.description}} </label>
+            <input type="text" id="node-setting-{{key}}" value="{{settings.value}}">
+            </div>
+        script#numberSettingTemplate(type='text/x-handlebars-template').
+            <div class="field">
+            <label> {{settings.description}} </label>
+            <input type="number" id="node-setting-{{key}}" value="{{settings.value}}">
+            </div>
+        script#checkboxSettingTemplate(type='text/x-handlebars-template').
+            <div class="field">
+            <div class="ui toggle checkbox">
+            <input type="checkbox" name="public" id="node-setting-{{key}}" value="true">
+            <label> {{settings.description}} </label>
+            </div>
+            </div>
+        script#dropdownSettingTemplate(type='text/x-handlebars-template').
+            <div class="field">
+            <label> {{settings.description}} </label>
+            <select class="ui dropdown" id="node-setting-{{key}}">
+            {{#each settings.config.elements}}
+                {{#if selected}}
+                    <option selected value="{{key}}">{{text}}</option>
+                {{else}}
+                    <option value="{{key}}">{{text}}</option>
+                {{/if}}
+            {{/each}}
+            </select>
+            </div>
+        script.
+            //this var used in node-editor
+            var container_id = "#{container_id}";
+            var theme = "#{theme}"
 
 
-	.footer
-		#containers-navigation
-			.ui.black.tiny.compact.button Main
-			//| |
-			//.ui.black.tiny.compact.button Main2
+    .footer
+        #containers-navigation
+            .ui.black.tiny.compact.button Main
+            //| |
+            //.ui.black.tiny.compact.button Main2
 
-		#play-button.ui.black.compact.right.floated.icon.button
-			i#play-icon.play.icon
-		#step-button.ui.black.compact.right.floated.icon.button
-			i.step.forward.icon
-		#nodes-io-values-button.ui.black.compact.right.floated.icon.button
-			i#nodes-io-values-icon.unhide.icon
+        #play-button.ui.black.compact.right.floated.icon.button
+            i#play-icon.play.icon
+        #step-button.ui.black.compact.right.floated.icon.button
+            i.step.forward.icon
+        #nodes-io-values-button.ui.black.compact.right.floated.icon.button
+            i#nodes-io-values-icon.unhide.icon
 
 
 script(src='/libs/jquery/dist/jquery.min.js')

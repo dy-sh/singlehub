@@ -195,10 +195,10 @@ export class Node {
     // getMenuOptions
     // getExtraMenuOptions
 
-    //onGetRequest
-    //onPostRequest
-    //onGetApiRequest
-    //onPostApiRequest
+    //onDashboardGetRequest
+    //onDashboardPostRequest
+    //onEditorApiGetRequest
+    //onEditorApiPostRequest
 
     constructor(container?: Container, id?: number) {
     }
@@ -466,32 +466,32 @@ export class Node {
     }
 
 
-    /**
-     * Add a new output slot to use in this node
-     * @param  array of triplets like [[name,type,extra_info],[...]]
-     */
-    addOutputs(array: Array<NodeOutput>): void {
-        for (let i = 0; i < array.length; ++i) {
-            let info = array[i];
-
-            let id = this.getFreeOutputId();
-            let name = info[0] || "output " + (id + 1);
-
-            let output = {name: name, type: info[1], links: null};
-            if (array[2])
-                for (let j in info[2])
-                    output[j] = info[2][j];
-
-            if (!this.outputs)
-                this.outputs = {};
-
-            this.outputs[id] = output;
-            if (this['onOutputAdded'])
-                this['onOutputAdded'](output);
-        }
-
-        this.size = this.computeSize();
-    }
+    // /**
+    //  * Add a new output slot to use in this node
+    //  * @param  array of triplets like [[name,type,extra_info],[...]]
+    //  */
+    // addOutputs(array: Array<NodeOutput>): void {
+    //     for (let i = 0; i < array.length; ++i) {
+    //         let info = array[i];
+    //
+    //         let id = this.getFreeOutputId();
+    //         let name = info[0] || "output " + (id + 1);
+    //
+    //         let output = {name: name, type: info[1], links: null};
+    //         if (array[2])
+    //             for (let j in info[2])
+    //                 output[j] = info[2][j];
+    //
+    //         if (!this.outputs)
+    //             this.outputs = {};
+    //
+    //         this.outputs[id] = output;
+    //         if (this['onOutputAdded'])
+    //             this['onOutputAdded'](output);
+    //     }
+    //
+    //     this.size = this.computeSize();
+    // }
 
     /**
      * Remove an existing output slot
@@ -532,6 +532,7 @@ export class Node {
         return id;
     }
 
+
     getFreeInputId(): number {
         if (!this.inputs)
             return 0;
@@ -542,32 +543,32 @@ export class Node {
         }
     }
 
-    /**
-     * add several new input slots in this node
-     * @param {Array} array of triplets like [[name,type,extra_info],[...]]
-     */
-    addInputs(array: Array<NodeInput>): void {
-        for (let i = 0; i < array.length; ++i) {
-            let info = array[i];
-
-            let id = this.getFreeInputId();
-            let name = info[0] || "input " + (id + 1);
-
-            let input = {name: name, type: info[1]};
-            if (array[2])
-                for (let j in info[2])
-                    input[j] = info[2][j];
-
-            if (!this.inputs)
-                this.inputs = {};
-
-            this.inputs[id] = input;
-            if (this['onInputAdded'])
-                this['onInputAdded'](input);
-        }
-
-        this.size = this.computeSize();
-    }
+    // /**
+    //  * add several new input slots in this node
+    //  * @param {Array} array of triplets like [[name,type,extra_info],[...]]
+    //  */
+    // addInputs(array: Array<NodeInput>): void {
+    //     for (let i = 0; i < array.length; ++i) {
+    //         let info = array[i];
+    //
+    //         let id = this.getFreeInputId();
+    //         let name = info[0] || "input " + (id + 1);
+    //
+    //         let input = {name: name, type: info[1]};
+    //         if (array[2])
+    //             for (let j in info[2])
+    //                 input[j] = info[2][j];
+    //
+    //         if (!this.inputs)
+    //             this.inputs = {};
+    //
+    //         this.inputs[id] = input;
+    //         if (this['onInputAdded'])
+    //             this['onInputAdded'](input);
+    //     }
+    //
+    //     this.size = this.computeSize();
+    // }
 
     /**
      * Remove an existing input slot
@@ -602,6 +603,48 @@ export class Node {
 
     getOutputsCount(): number {
         return this.outputs ? Object.keys(this.outputs).length : 0;
+    }
+
+
+    changeInputsCount(target_count: number, type?: string) {
+
+        let current_count = this.getInputsCount();
+        let diff = target_count - current_count;
+
+        //add
+        if (diff > 0)
+            for (let i = 0; i < diff; i++)
+                this.addInput(null, type);
+
+
+        //remove
+        if (diff < 0) {
+            let ids = Object.keys(this.inputs);
+            for (let i = 0; i > diff; i--) {
+                let id = ids[ids.length + i - 1];
+                this.removeInput(+id);
+            }
+        }
+    }
+
+    changeOutputsCount(target_count: number, type?: string) {
+        let current_count = this.getOutputsCount();
+        let diff = target_count - current_count;
+
+        //add
+        if (diff > 0)
+            for (let i = 0; i < diff; i++)
+                this.addOutput(null, type);
+
+        //remove
+        if (diff < 0) {
+            let ids = Object.keys(this.outputs);
+            for (let i = 0; i > diff; i--) {
+                let id = ids[ids.length + i - 1];
+                this.removeOutput(+id);
+            }
+        }
+
     }
 
     getLastInputIndes(): number {
@@ -770,8 +813,8 @@ export class Node {
         if (this.container.db) {
             let s_node = this.serialize(true);
             let s_t_node = target_node.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set:{outputs: s_node.outputs}});
-            this.container.db.updateNode(target_node.id, target_node.container.id,{$set: {inputs: s_t_node.inputs}});
+            this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: s_node.outputs}});
+            this.container.db.updateNode(target_node.id, target_node.container.id, {$set: {inputs: s_t_node.inputs}});
         }
 
         this.setDirtyCanvas(false, true);
@@ -847,7 +890,7 @@ export class Node {
 
             if (this.container.db) {
                 let s_t_node = t_node.serialize(true);
-                this.container.db.updateNode(t_node.id, t_node.container.id, {$set:{inputs: s_t_node.inputs}});
+                this.container.db.updateNode(t_node.id, t_node.container.id, {$set: {inputs: s_t_node.inputs}});
             }
 
             this.debug("disconnected from " + t_node.getReadableId());
@@ -859,7 +902,7 @@ export class Node {
 
         if (this.container.db) {
             let s_node = this.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id,{$set: {outputs: s_node.outputs}});
+            this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: s_node.outputs}});
         }
 
         this.setDirtyCanvas(false, true);
@@ -920,8 +963,8 @@ export class Node {
         if (this.container.db) {
             let s_node = this.serialize(true);
             let s_target_node = target_node.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set:{inputs: s_node.inputs}});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {$set:{outputs: s_target_node.outputs}});
+            this.container.db.updateNode(this.id, this.container.id, {$set: {inputs: s_node.inputs}});
+            this.container.db.updateNode(target_node.id, target_node.container.id, {$set: {outputs: s_target_node.outputs}});
         }
 
 
@@ -1143,7 +1186,7 @@ export class Node {
                 let saveObj = {};
                 saveObj[prop_name] = value;
                 console.log("saving immediately:" + JSON.stringify(saveObj));
-                this.container.db.updateNode(this.id, this.container.id, {$set:saveObj});
+                this.container.db.updateNode(this.id, this.container.id, {$set: saveObj});
             }
         }
         else {
@@ -1179,7 +1222,7 @@ export class Node {
                 let saveObj = {};
                 saveObj[key] = val;
                 console.log("saving :" + JSON.stringify(saveObj));
-                that.container.db.updateNode(that.id, that.container.id, {$set:saveObj});
+                that.container.db.updateNode(that.id, that.container.id, {$set: saveObj});
             }
         }, this.UPDATE_IN_DB_INTERVAL)
     }

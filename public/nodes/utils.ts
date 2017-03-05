@@ -229,16 +229,14 @@ export default class Utils {
     }
 
     static formatValue(val: any, type: string): any {
-        switch (type) {
-            case "any" || "" || null:
-                return val;
-            case "number":
-                return parseFloat(val) || 0;
-            case "string":
-                return "" + val;
-            case "boolean":
-                return val == true || val == 1 || val == "true";
-        }
+        if (type == "number" && typeof val != "number")
+            return parseFloat(val) || 0;
+        else if (type == "string" && typeof val != "string")
+            return "" + val;
+        else if (type == "boolean" && typeof val != "boolean")
+            return val == true || val == 1 || val == "true";
+
+        return val;
     }
 
     static formatAndTrimValue(val: any): string {
@@ -273,6 +271,16 @@ export default class Utils {
      */
     static getTime(): number {
         return (typeof(performance) != "undefined") ? performance.now() : Date.now();
+    };
+
+
+    static toFixedNumber(value, digits) {
+        let pow = Math.pow(10, digits);
+        return +( Math.round(value * pow) / pow );
+    }
+
+    static clamp = function(value:number, min:number, max:number):number {
+        return Math.min(Math.max(value, min), max);
     };
 }
 

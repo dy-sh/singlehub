@@ -14,73 +14,44 @@ let config = require('./../config');
 
 router.get('/', function (req, res) {
     res.render('editor/index', {
-        split: req.query.split,
+        split:req.query.split,
         container_id: 0,
         theme: config.nodeEditor.theme
     });
 });
 
 router.get('/c/:cid', function (req, res) {
-    let cid = req.params.cid || 0;
-    if (!Container.containers[cid]){
-        res.redirect("/");
-        return;
-    }
+    // if (req.params.cid == 0)
+    //     return res.redirect("/editor");
 
+    let cid = req.params.cid || 0;
+
+    if (!Container.containers[cid])
+        return res.redirect("/editor");
 
     res.render('editor/index', {
-        split: req.query.split,
+        split:req.query.split,
         container_id: cid,
         theme: config.nodeEditor.theme
     });
 });
 
 
-
-
-router.get('/container', function (req, res) {
-
-    // //todo if (rootContainer.isNotStarted)
-    // //	res.render("Error", "Root container is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
-    //
-    // if (!req.query.id || req.query.id == 0)
-    // 	res.redirect("/editor");
-    //
-    // let container = app.rootContainer.getContainerNode(req.query.id);
-    // if (!container)
-    // 	res.status(404).send('Container not found!');
-    //
-    // let containerStack = {};
-    // let p = container;
-    // while (true) {
-    // 	containerStack[p.id] = p.name;
-    // 	if (p.containerId == 0)
-    // 		break;
-    // 	p = app.rootContainer.getContainerNode(p.containerId);
-    // }
-    //
-    // res.render('editor/index', {
-    // 	split: req.query.split,
-    // 	containerId: container.id,
-    // 	ownerContainerId: container.containerId,
-    // 	containersStack: containerStack,
-    // 	theme: config.nodeEditor.theme
-    // });
-});
-
-
 router.get('/split', function (req, res) {
-    //todo if (rootContainer.isNotStarted)
-    //	res.render("Error", "Root container is not started.<br/><br/>   <a href='/Config'>Check settings</a>");
-
-    let route = req.query.id ? "container/" + req.query.id : "";
-
-    res.render('editor/split', {route: route});
+    res.render('editor/split', {container_id: 0});
 });
 
+router.get('/split/c/:cid', function (req, res) {
+    // if (req.params.cid == 0)
+    //     return res.redirect("/editor/split");
 
-router.get('/NodesDescription', function (req, res) {
-    //todo
+    let cid = req.params.cid || 0;
+
+    if (!Container.containers[cid])
+        return res.redirect("/editor/split");
+
+    res.render('editor/split', {container_id: cid});
 });
+
 
 module.exports = router;

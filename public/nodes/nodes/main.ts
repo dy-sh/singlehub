@@ -61,7 +61,7 @@ export class ConstantNode extends Node {
 
         if (this.container.db) {
             let s_node = this.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set:{outputs: s_node.outputs}});
+            this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: s_node.outputs}});
         }
 
         if (this.side == Side.editor) {
@@ -75,37 +75,6 @@ export class ConstantNode extends Node {
 Container.registerNodeType("main/constant", ConstantNode);
 
 
-export class NumberGeneratorNode extends Node {
-    value = 0;
-    lastTime: number;
-
-    constructor() {
-        super();
-        this.title = "Number Generator";
-        this.descriprion = "";
-
-        this.settings["speed"] = {description: "Limit speed (values/sec)", value: 10, type: "number"};
-
-        this.addOutput("value", "number");
-    }
-
-
-    onExecute() {
-        let now = Date.now();
-        if (!this.lastTime)
-            this.lastTime = now;
-
-        let interval = 1000 / this.settings["speed"].value;
-        if (now - this.lastTime >= interval) {
-            this.lastTime = now;
-            this.value++;
-            this.setOutputData(0, this.value);
-        }
-    }
-}
-Container.registerNodeType("main/number-generator", NumberGeneratorNode);
-
-
 //Container: a node that contains a container of other nodes
 export class ContainerNode extends Node {
     sub_container: Container;
@@ -116,13 +85,14 @@ export class ContainerNode extends Node {
 
         this.title = "Container";
         this.descriprion = "Contain other nodes";
-
+        this.settings["name"] = {description: "Container name", type: "string", value: this.title};
     }
 
     onCreated() {
         this.sub_container = new Container(this.side);
         this.sub_container_id = this.sub_container.id;
-        this.title = "Container " + this.sub_container.id;
+
+        this.settings["name"].value = "Container " + this.sub_container.id;;
 
         this.sub_container.container_node = this;
         this.sub_container.parent_container_id = this.container.id;
@@ -130,6 +100,10 @@ export class ContainerNode extends Node {
         if (this.container.db)
             this.container.db.updateLastContainerId(this.sub_container_id);
 
+    }
+
+    onAdded() {
+        this.changeTitle();
     }
 
 
@@ -175,6 +149,20 @@ export class ContainerNode extends Node {
 
     onExecute() {
         this.sub_container.runStep();
+    }
+
+    onSettingsChanged() {
+        this.changeTitle();
+    }
+
+    changeTitle() {
+        this.title = this.settings["name"].value;
+        this.size = this.computeSize();
+        this.sub_container.name = this.title;
+
+        // if (this.container.db)
+        //     this.container.db.updateNode(this.id,this.container.id,{$set:{}})
+        // if (this.side==Side.server)
     }
 
 
@@ -223,8 +211,8 @@ export class ContainerInputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{inputs: s_cont_node.inputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {inputs: s_cont_node.inputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
         }
     }
 
@@ -238,8 +226,8 @@ export class ContainerInputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{inputs: s_cont_node.inputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {inputs: s_cont_node.inputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
         }
     }
 
@@ -281,8 +269,8 @@ export class ContainerOutputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{outputs: s_cont_node.outputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {outputs: s_cont_node.outputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
         }
     }
 
@@ -296,8 +284,8 @@ export class ContainerOutputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{outputs: s_cont_node.outputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set:{size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {outputs: s_cont_node.outputs}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
         }
     }
 

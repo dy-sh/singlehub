@@ -8,9 +8,11 @@
  * Add all new nodes classes here!!!
  */
 
-import "./main";
+import "./connection";
 import "./debug";
+import "./main";
 import "./math";
+import "./numbers";
 
 import "./ui/label";
 import "./ui/toggle";

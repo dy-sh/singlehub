@@ -3,5 +3,5 @@ html
 	head
 		title MyNodes
 	frameset(cols='400px,*')
-		frame(name='dashboard', src='/dashboard/#{route}', scrolling='AUTO')
-		frame(name='editor', src='/editor/#{route}?split=true', scrolling='AUTO')
+		frame(name='dashboard', src='/dashboard/c/#{container_id}', scrolling='AUTO')
+		frame(name='editor', src='/editor/c/#{container_id}?split=true', scrolling='AUTO')

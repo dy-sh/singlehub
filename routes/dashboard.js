@@ -16,15 +16,15 @@
     let router = express.Router();
     //var config = require('./../config');
     router.get('/', function (req, res, next) {
-        // res.redirect("/editor")
-        res.render('dashboard/index');
+        res.render('dashboard/index', { container_id: 0 });
     });
     router.get('/c/:cid', function (req, res, next) {
-        if (req.params.cid == 0)
-            res.redirect("/dashboard/");
-        else
-            res.render('dashboard/index');
+        // if (req.params.cid == 0)
+        //     res.redirect("/dashboard/");
+        // else
+        res.render('dashboard/index', { container_id: req.params.cid });
     });
+    //node direct page get
     router.get('/c/:cid/n/:id*', function (req, res) {
         let cont = container_1.Container.containers[req.params.cid];
         if (!cont)
@@ -32,11 +32,12 @@
         let node = cont.getNodeById(req.params.id);
         if (!node)
             return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
-        if (node['onGetRequest'])
-            node['onGetRequest'](req, res);
+        if (node['onDashboardGetRequest'])
+            node['onDashboardGetRequest'](req, res);
         else
             return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
     });
+    //node direct page post
     router.post('/c/:cid/n/:id*', function (req, res) {
         let cont = container_1.Container.containers[req.params.cid];
         if (!cont)
@@ -44,8 +45,8 @@
         let node = cont.getNodeById(req.params.id);
         if (!node)
             return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
-        if (node['onPostRequest'])
-            node['onPostRequest'](req, res);
+        if (node['onDashboardPostRequest'])
+            node['onDashboardPostRequest'](req, res);
         else
             return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
     });

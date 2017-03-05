@@ -28,6 +28,8 @@ export class ChartIndexPage {
     reconnecting=false;
 
     constructor() {
+
+        //get vars from view
         this.container_id=(<any>window).container_id;
         this.node_id=(<any>window).node_id;
         this.range_start=(<any>window).range_start;

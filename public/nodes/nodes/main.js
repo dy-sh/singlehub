@@ -69,44 +69,26 @@
     }
     exports.ConstantNode = ConstantNode;
     container_1.Container.registerNodeType("main/constant", ConstantNode);
-    class NumberGeneratorNode extends node_1.Node {
-        constructor() {
-            super();
-            this.value = 0;
-            this.title = "Number Generator";
-            this.descriprion = "";
-            this.settings["speed"] = { description: "Limit speed (values/sec)", value: 10, type: "number" };
-            this.addOutput("value", "number");
-        }
-        onExecute() {
-            let now = Date.now();
-            if (!this.lastTime)
-                this.lastTime = now;
-            let interval = 1000 / this.settings["speed"].value;
-            if (now - this.lastTime >= interval) {
-                this.lastTime = now;
-                this.value++;
-                this.setOutputData(0, this.value);
-            }
-        }
-    }
-    exports.NumberGeneratorNode = NumberGeneratorNode;
-    container_1.Container.registerNodeType("main/number-generator", NumberGeneratorNode);
     //Container: a node that contains a container of other nodes
     class ContainerNode extends node_1.Node {
         constructor(container) {
             super(container);
             this.title = "Container";
             this.descriprion = "Contain other nodes";
+            this.settings["name"] = { description: "Container name", type: "string", value: this.title };
         }
         onCreated() {
             this.sub_container = new container_1.Container(this.side);
             this.sub_container_id = this.sub_container.id;
-            this.title = "Container " + this.sub_container.id;
+            this.settings["name"].value = "Container " + this.sub_container.id;
+            ;
             this.sub_container.container_node = this;
             this.sub_container.parent_container_id = this.container.id;
             if (this.container.db)
                 this.container.db.updateLastContainerId(this.sub_container_id);
+        }
+        onAdded() {
+            this.changeTitle();
         }
         onRemoved() {
             for (let id in this.sub_container._nodes) {
@@ -140,6 +122,17 @@
         }
         onExecute() {
             this.sub_container.runStep();
+        }
+        onSettingsChanged() {
+            this.changeTitle();
+        }
+        changeTitle() {
+            this.title = this.settings["name"].value;
+            this.size = this.computeSize();
+            this.sub_container.name = this.title;
+            // if (this.container.db)
+            //     this.container.db.updateNode(this.id,this.container.id,{$set:{}})
+            // if (this.side==Side.server)
         }
         clone() {
             let node = this.container.createNode(this.type);

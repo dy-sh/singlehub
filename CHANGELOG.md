@@ -24,12 +24,26 @@ MyNodes v4.0
  
 **New nodes:**
 
+
 - **Debug**:
   - **Watcher**. Displays the value of the input as input label.
   - **Console**. Displays the value of the input to the console. 
   Synchronized between the client and the server (the value is displayed here and there).
-  
 
+- **Math**:
+  - **Abs**. Returns the absolute value of a number. 
+  - **Acos**. Returns the arccosine of a number. 
+  - **Asin**. Returns the arcsine of a number. 
+  - **Atan**. Returns the arcsine of a number. 
+  - **Cbrt**. Returns the cube root of a number. 
+  - **Ceil**. Returns the smallest integer greater than or equal to a number. 
+  - **Exp**. Returns E pow x, where x is the argument, and E is Euler's constant (2.718…), the base of the natural logarithm.
+  - **Logarithm**. Returns the natural logarithm of a number.
+  - **Max**. Compares two numbers and return the highest value. 
+  - **Min**. Compares two numbers and return the lowest value.   
+  - **Sign**. Returns the sign of the x, indicating whether x is positive, negative or zero.   
+  - **Trunc**. Returns the integral part of the number x, removing any fractional digits.   
+  
 
 **Changed nodes:**
 
@@ -38,8 +52,13 @@ MyNodes v4.0
     
 - **Main**:
   - **Constant**. Now it has a data type setting.
+  
 - **UI**:
-  - **Chart**. Changing settings in editor. Chart log realtime update. 
+  - **Chart**. Changing settings in editor. Chart log realtime update.
+   
+- **Numbers**:
+  - **Random**. Now you can set the number of digits after the decimal point.
+      
   
   
 **Other changes:**

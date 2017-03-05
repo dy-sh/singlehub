@@ -386,7 +386,7 @@ export class UiChartNode extends UiNode {
         this.sendMessageToServerSide({style: val});
     }
 
-    onGetRequest(req, res) {
+    onDashboardGetRequest(req, res) {
         //render log page
         if (req.params[0] == "/log") {
             res.render('dashboard/nodes/chart/log', {
@@ -407,14 +407,14 @@ export class UiChartNode extends UiNode {
         });
     }
 
-    onGetApiRequest(req, res) {
+    onEditorApiGetRequest(req, res) {
         //ajax get log
         if (req.params[0] == "/log") {
             res.json(this.properties['log']);
         }
     }
 
-    onPostApiRequest(req, res) {
+    onEditorApiPostRequest(req, res) {
         //ajax get log
         if (req.params[0] == "/style") {
             this.settings['style'].value = req.body.style;

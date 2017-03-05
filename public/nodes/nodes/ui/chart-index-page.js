@@ -16,6 +16,7 @@
         constructor() {
             this.DELAY = 100;
             this.reconnecting = false;
+            //get vars from view
             this.container_id = window.container_id;
             this.node_id = window.node_id;
             this.range_start = window.range_start;
