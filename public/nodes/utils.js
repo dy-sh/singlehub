@@ -209,8 +209,12 @@
                 }
         }
         static formatValue(val, type) {
-            if (type == "number" && typeof val != "number")
-                return parseFloat(val) || 0;
+            if (type == "number" && typeof val != "number") {
+                if (typeof val == "boolean")
+                    return val ? 1 : 0;
+                else
+                    return parseFloat(val) || 0;
+            }
             else if (type == "string" && typeof val != "string")
                 return "" + val;
             else if (type == "boolean" && typeof val != "boolean")

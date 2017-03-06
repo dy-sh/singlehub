@@ -149,6 +149,33 @@
         }
     }
     container_1.Container.registerNodeType("numbers/sum", NumbersSumNode);
+    class NumbersClampNode extends node_1.Node {
+        constructor() {
+            super();
+            this.val = 0;
+            this.title = "Clamp";
+            this.descriprion = "This node limits the value to the specified range. <br/>" +
+                "For example, Min=3, Max=5. <br/>" +
+                "Now, if the \"Value\" input is 1, the output will be 3. <br/>" +
+                "If the value is 6, the output will be 5. <br/>" +
+                "If the value is 2.5, the output will be 2.5. <br/>";
+            this.addInput("value", "number");
+            this.addInput("min", "number");
+            this.addInput("max", "number");
+            this.addOutput("value", "number");
+        }
+        onInputUpdated() {
+            let val = this.getInputData(0);
+            let min = this.getInputData(1);
+            let max = this.getInputData(2);
+            if (val == null || min == null || max == null)
+                val = null;
+            else
+                val = utils_1.default.clamp(val, min, max);
+            this.setOutputData(0, val);
+        }
+    }
+    container_1.Container.registerNodeType("numbers/clamp", NumbersClampNode);
 });
 //
 // //Converter

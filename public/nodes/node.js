@@ -585,9 +585,9 @@
             }
             let output = this.outputs[output_id];
             let input = target_node.inputs[input_id];
-            //check data types compatible
-            if (input.type && output.type && input.type != output.type)
-                return false;
+            // //check data types compatible
+            // if (input.type && output.type && input.type != output.type)
+            //     return false;
             //check target node allows connection
             if (target_node['onConnectInput'])
                 if (target_node['onConnectInput'](input_id, output) == false)
