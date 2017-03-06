@@ -94,6 +94,7 @@
             if (this.getInputData(1) == true) {
                 this.val = null;
                 this.setOutputData(0, this.val);
+                return;
             }
             let inputVal = this.getInputData(0);
             if (this.val == null || this.val < inputVal) {
@@ -116,6 +117,7 @@
             if (this.getInputData(1) == true) {
                 this.val = null;
                 this.setOutputData(0, this.val);
+                return;
             }
             let inputVal = this.getInputData(0);
             if (this.val == null || this.val > inputVal) {
@@ -125,6 +127,35 @@
         }
     }
     container_1.Container.registerNodeType("numbers/lowest", NumbersLowestNode);
+    class NumbersAverageNode extends node_1.Node {
+        constructor() {
+            super();
+            this.values = [];
+            this.title = "Average";
+            this.descriprion = "This node calculates an average value from all input values. <br/>" +
+                "To reset node, send logical \"1\" to input named \"Reset\"";
+            this.addInput("value", "number");
+            this.addInput("reset", "boolean");
+            this.addOutput("average", "number");
+        }
+        onInputUpdated() {
+            if (this.getInputData(1) == true) {
+                this.values = [];
+                this.setOutputData(0, null);
+                return;
+            }
+            let val = this.getInputData(0);
+            if (val == null)
+                return;
+            this.values.push(val);
+            let sum = this.values.reduce(function (a, b) {
+                return a + b;
+            });
+            let avg = sum / this.values.length;
+            this.setOutputData(0, avg);
+        }
+    }
+    container_1.Container.registerNodeType("numbers/average", NumbersAverageNode);
     class NumbersSumNode extends node_1.Node {
         constructor() {
             super();

@@ -117,6 +117,7 @@ class NumbersHighestNode extends Node {
         if (this.getInputData(1) == true) {
             this.val = null;
             this.setOutputData(0, this.val);
+            return;
         }
 
         let inputVal = this.getInputData(0);
@@ -149,6 +150,7 @@ class NumbersLowestNode extends Node {
         if (this.getInputData(1) == true) {
             this.val = null;
             this.setOutputData(0, this.val);
+            return;
         }
 
         let inputVal = this.getInputData(0);
@@ -161,6 +163,46 @@ class NumbersLowestNode extends Node {
     }
 }
 Container.registerNodeType("numbers/lowest", NumbersLowestNode);
+
+
+class NumbersAverageNode extends Node {
+    values = [];
+
+    constructor() {
+        super();
+
+        this.title = "Average";
+        this.descriprion = "This node calculates an average value from all input values. <br/>" +
+            "To reset node, send logical \"1\" to input named \"Reset\"";
+
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("average", "number");
+    }
+
+    onInputUpdated() {
+        if (this.getInputData(1) == true) {
+            this.values = [];
+            this.setOutputData(0, null);
+            return;
+        }
+
+        let val=this.getInputData(0);
+        if (val==null)
+            return;
+
+        this.values.push(val);
+
+        let sum = this.values.reduce(function (a, b) {
+            return a + b;
+        });
+        let avg = sum / this.values.length;
+
+        this.setOutputData(0, avg);
+
+    }
+}
+Container.registerNodeType("numbers/average", NumbersAverageNode);
 
 
 class NumbersSumNode extends Node {
@@ -260,7 +302,7 @@ class NumbersRemapNode extends Node {
         let outMin = this.getInputData(3);
         let outMax = this.getInputData(4);
 
-        if (val == null || inMin == null || inMax == null || outMin==null || outMax==null)
+        if (val == null || inMin == null || inMax == null || outMin == null || outMax == null)
             val = null;
         else
             val = Utils.remap(val, inMin, inMax, outMin, outMax);
