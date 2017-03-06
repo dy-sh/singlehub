@@ -40,15 +40,16 @@
             if (interval == null)
                 interval = this.settings["interval"].value;
             let val = this.outputs[0].data;
+            if (this.settings["zero"].value) {
+                if (val && now - this.lastTime >= interval / 2) {
+                    this.setOutputData(0, false);
+                    return;
+                }
+            }
             if (now - this.lastTime >= interval) {
                 this.lastTime = now;
                 this.setOutputData(0, true);
                 return;
-            }
-            if (this.settings["zero"].value) {
-                if (val && now - this.lastTime >= interval / 2) {
-                    this.setOutputData(0, false);
-                }
             }
         }
     }
