@@ -17,17 +17,17 @@
         constructor() {
             super();
             this.title = "Ticker";
-            this.descriprion = "This node generates a sequence like 101010... with specified time interval. <br/>" +
+            this.descriprion = "This node generates a sequence like 101010 (true|false)... with specified time interval. <br/>" +
                 "You can set the time interval and activate the timer, " +
-                "giving \"1\" to the input named \"Enable\". <br/>" +
-                "If \"Generate Zero\" option is enabled in the settings of the node, " +
+                "giving \"true\" to the input named \"Enable\". <br/>" +
+                "If \"Generate False\" option is enabled in the settings of the node, " +
                 "node will generate a sequence like 101010... " +
                 "If disabled, the output will be 111111...";
             this.addInput("interval", "number");
             this.addInput("enable", "boolean");
             this.addOutput("tick", "boolean");
             this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
-            this.settings["zero"] = { description: "Generate Zero", value: true, type: "boolean" };
+            this.settings["false"] = { description: "Generate False", value: true, type: "boolean" };
         }
         onExecute() {
             let enable = this.getInputData(1);
@@ -40,7 +40,7 @@
             if (interval == null)
                 interval = this.settings["interval"].value;
             let val = this.outputs[0].data;
-            if (this.settings["zero"].value) {
+            if (this.settings["false"].value) {
                 if (val && now - this.lastTime >= interval / 2) {
                     this.setOutputData(0, false);
                     return;
