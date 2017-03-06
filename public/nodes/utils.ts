@@ -286,6 +286,11 @@ export default class Utils {
     static clamp = function (value: number, min: number, max: number): number {
         return Math.min(Math.max(value, min), max);
     };
+
+    static remap = function (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
+        return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
+
+    };
 }
 
 

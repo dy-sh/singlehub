@@ -260,6 +260,9 @@
     Utils.clamp = function (value, min, max) {
         return Math.min(Math.max(value, min), max);
     };
+    Utils.remap = function (value, inMin, inMax, outMin, outMax) {
+        return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
+    };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Utils;
 });

@@ -232,6 +232,45 @@ class NumbersClampNode extends Node {
 Container.registerNodeType("numbers/clamp", NumbersClampNode);
 
 
+class NumbersRemapNode extends Node {
+    val = 0;
+
+    constructor() {
+        super();
+
+        this.title = "Remap";
+        this.descriprion = "This node remaps a number. <br/>" +
+            "For example, in-min=1, in-max=100, out-min=10, out-max=20. <br/>" +
+            "If the Value is 1, Out is 10. <br/>" +
+            "If the Value is 100, Out is 20. <br/>" +
+            "If the Value is 50, Out is 20. <br/>";
+
+        this.addInput("value", "number");
+        this.addInput("in-min", "number");
+        this.addInput("in-max", "number");
+        this.addInput("out-min", "number");
+        this.addInput("out-max", "number");
+        this.addOutput("value", "number");
+    }
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        let inMin = this.getInputData(1);
+        let inMax = this.getInputData(2);
+        let outMin = this.getInputData(3);
+        let outMax = this.getInputData(4);
+
+        if (val == null || inMin == null || inMax == null || outMin==null || outMax==null)
+            val = null;
+        else
+            val = Utils.remap(val, inMin, inMax, outMin, outMax);
+
+        this.setOutputData(0, val);
+    }
+}
+Container.registerNodeType("numbers/remap", NumbersRemapNode);
+
+
 //
 // //Converter
 // 	class Converter {
