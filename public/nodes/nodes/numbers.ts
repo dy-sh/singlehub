@@ -49,8 +49,8 @@ class Random01Node extends Node {
 
         this.settings["digits"] = {description: "Number of digits after the decimal point", type: "number", value: 3};
 
-        this.addInput("Generate", "boolean");
-        this.addOutput("Random", "number");
+        this.addInput("generate", "boolean");
+        this.addOutput("random", "number");
     }
 
     onInputUpdated() {
@@ -76,10 +76,10 @@ class RandomNode extends Node {
 
         this.settings["digits"] = {description: "Number of digits after the decimal point", type: "number", value: 3};
 
-        this.addInput("Min", "number");
-        this.addInput("Max", "number");
-        this.addInput("Generate", "boolean");
-        this.addOutput("Random", "number");
+        this.addInput("min", "number");
+        this.addInput("max", "number");
+        this.addInput("generate", "boolean");
+        this.addOutput("random", "number");
     }
 
     onInputUpdated() {
@@ -108,9 +108,9 @@ class NumbersHighestNode extends Node {
         this.title = "Highest";
         this.descriprion = "Remembers the highest value at the input.";
 
-        this.addInput("Value", "number");
-        this.addInput("Reset", "boolean");
-        this.addOutput("Highest", "number");
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("highest", "number");
     }
 
     onInputUpdated() {
@@ -140,9 +140,9 @@ class NumbersLowestNode extends Node {
         this.title = "Lowest";
         this.descriprion = "Remembers the lowest value at the input.";
 
-        this.addInput("Value", "number");
-        this.addInput("Reset", "boolean");
-        this.addOutput("Lowest", "number");
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("lowest", "number");
     }
 
     onInputUpdated() {

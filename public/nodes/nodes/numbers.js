@@ -43,8 +43,8 @@
             this.title = "Random 0-1";
             this.descriprion = "Returns a random number between 0 and 1.";
             this.settings["digits"] = { description: "Number of digits after the decimal point", type: "number", value: 3 };
-            this.addInput("Generate", "boolean");
-            this.addOutput("Random", "number");
+            this.addInput("generate", "boolean");
+            this.addOutput("random", "number");
         }
         onInputUpdated() {
             let gen = this.getInputData(0);
@@ -63,10 +63,10 @@
             this.title = "Random";
             this.descriprion = "Returns a random number between Min and Max.";
             this.settings["digits"] = { description: "Number of digits after the decimal point", type: "number", value: 3 };
-            this.addInput("Min", "number");
-            this.addInput("Max", "number");
-            this.addInput("Generate", "boolean");
-            this.addOutput("Random", "number");
+            this.addInput("min", "number");
+            this.addInput("max", "number");
+            this.addInput("generate", "boolean");
+            this.addOutput("random", "number");
         }
         onInputUpdated() {
             let gen = this.getInputData(2);
@@ -86,9 +86,9 @@
             super();
             this.title = "Highest";
             this.descriprion = "Remembers the highest value at the input.";
-            this.addInput("Value", "number");
-            this.addInput("Reset", "boolean");
-            this.addOutput("Highest", "number");
+            this.addInput("value", "number");
+            this.addInput("reset", "boolean");
+            this.addOutput("highest", "number");
         }
         onInputUpdated() {
             if (this.getInputData(1) == true) {
@@ -108,9 +108,9 @@
             super();
             this.title = "Lowest";
             this.descriprion = "Remembers the lowest value at the input.";
-            this.addInput("Value", "number");
-            this.addInput("Reset", "boolean");
-            this.addOutput("Lowest", "number");
+            this.addInput("value", "number");
+            this.addInput("reset", "boolean");
+            this.addOutput("lowest", "number");
         }
         onInputUpdated() {
             if (this.getInputData(1) == true) {

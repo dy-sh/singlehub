@@ -75,7 +75,7 @@
     class GateNode extends node_1.Node {
         constructor() {
             super();
-            this.title = "Trunc";
+            this.title = "Gate";
             this.descriprion = "This node can block the transfer of messages from one node to another. <br/>" +
                 "Send \"1\" to \"Key\" to allow the transfer or \"0\" to block the transfer. <br/>" +
                 "If you enable the option \"Send null when closed\" in the settings node, " +
@@ -89,7 +89,8 @@
             let key = this.getInputData(1);
             if (key)
                 this.setOutputData(0, this.getInputData(0));
-            else if (this.settings["send-null"].value)
+            else if (this.settings["send-null"].value
+                && this.outputs[0].data != null)
                 this.setOutputData(0, null);
         }
     }

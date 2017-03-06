@@ -29,7 +29,7 @@ export class UiTextBoxNode extends UiNode {
         super("TextBox", template);
 
         this.descriprion = "";
-        this.properties['value'] = "";
+        this.properties['value'] = null;
 
         this.addOutput("output", "string");
     }
@@ -53,6 +53,8 @@ export class UiTextBoxNode extends UiNode {
 
     onGetMessageToServerSide(data) {
         this.isRecentlyActive = true;
+        if (data.value == "")
+            data.value = null;
         this.properties['value'] = data.value;
         this.setOutputData(0, data.value);
         this.sendMessageToDashboardSide(data);

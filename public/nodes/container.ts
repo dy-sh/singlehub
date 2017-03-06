@@ -367,16 +367,24 @@ export class Container extends Emitter {
 
 
     transferDataBetweenNodes() {
+        //all nodes
         for (let id in this._nodes) {
             let node = this._nodes[id];
             if (!node.outputs)
                 continue;
 
+            //all outputs
             for (let o in node.outputs) {
                 let output = node.outputs[o];
+                if (!output.updated)
+                    continue;
+
+                output.updated = false;
+
                 if (output.links == null)
                     continue;
 
+                //all output links
                 for (let link of output.links) {
 
                     let target_node = this._nodes[link.target_node_id];
@@ -384,19 +392,14 @@ export class Container extends Emitter {
                         log.error("Can't transfer data from node " + node.getReadableId() + ". Target node not found");
                         continue;
                     }
+
                     let target_input = target_node.inputs[link.target_slot];
-                    if (typeof (output.data) != 'undefined'
-                        && output.data !== target_input.data) {
 
-                        //don't send NaN twice
-                        if (output.type == "number" && isNaN(output.data) && isNaN(target_input.data))
-                            continue;
+                    target_input.data = Utils.formatValue(output.data, target_input.type);
 
-                        target_input.data = Utils.formatValue(output.data, target_input.type);
+                    target_node.isUpdated = true;
+                    target_input.updated = true;
 
-                        target_node.isUpdated = true;
-                        target_input.updated = true;
-                    }
                 }
             }
         }

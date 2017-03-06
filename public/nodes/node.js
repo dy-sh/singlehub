@@ -205,11 +205,10 @@
         setOutputData(output_id, data) {
             if (!this.outputs[output_id])
                 return;
-            if (this.outputs[output_id].data !== data) {
-                this.outputs[output_id].data = data;
-                if (!this.isRecentlyActive)
-                    this.isRecentlyActive = true;
-            }
+            this.outputs[output_id].updated = true;
+            if (!this.isRecentlyActive)
+                this.isRecentlyActive = true;
+            this.outputs[output_id].data = data;
         }
         /**
          * Retrieves the input data (data traveling through the connection) from one slotId
@@ -596,10 +595,16 @@
             //if target node input already connected
             if (input.link)
                 target_node.disconnectInput(input_id);
+            //create link
             if (!output.links)
                 output.links = [];
             output.links.push({ target_node_id: target_node_id, target_slot: input_id });
             input.link = { target_node_id: this.id, target_slot: output_id };
+            //update input value
+            input.updated = true;
+            input.data = output.data;
+            target_node.isUpdated = true;
+            //update db
             if (this.container.db) {
                 let s_node = this.serialize(true);
                 let s_t_node = target_node.serialize(true);

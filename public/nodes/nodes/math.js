@@ -17,8 +17,8 @@
             super();
             this.title = "Abs";
             this.descriprion = "Returns the absolute value of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Abs(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("abs(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -32,8 +32,8 @@
             super();
             this.title = "Acos";
             this.descriprion = "Returns the arccosine of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Acos(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("acos(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -47,8 +47,8 @@
             super();
             this.title = "Asin";
             this.descriprion = "Returns the arcsine of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Asin(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("asin(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -62,8 +62,8 @@
             super();
             this.title = "Atan";
             this.descriprion = "Returns the arctangent of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Atan(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("atan(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -77,8 +77,8 @@
             super();
             this.title = "Cbrt";
             this.descriprion = "Returns the cube root of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Cbrt(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("cbrt(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -92,8 +92,8 @@
             super();
             this.title = "Ceil";
             this.descriprion = "Returns the smallest integer greater than or equal to a number.";
-            this.addInput("X", "number");
-            this.addOutput("Ceil(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("ceil(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -107,8 +107,8 @@
             super();
             this.title = "Cos";
             this.descriprion = "Returns the cosine of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Cos(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("cos(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -122,9 +122,9 @@
             super();
             this.title = "Divide";
             this.descriprion = "This node divide one number by another.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("X/Y", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("x/y", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -139,8 +139,8 @@
             super();
             this.title = "Exp";
             this.descriprion = "Returns E pow x, where x is the argument, and E is Euler's constant (2.718…), the base of the natural logarithm.";
-            this.addInput("X", "number");
-            this.addOutput("Exp(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("exp(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -154,8 +154,8 @@
             super();
             this.title = "Floor";
             this.descriprion = "Returns the largest integer less than or equal to a number.";
-            this.addInput("X", "number");
-            this.addOutput("Floor(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("floor(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -169,8 +169,8 @@
             super();
             this.title = "Logarithm";
             this.descriprion = "Returns the natural logarithm of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Log(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("log(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -184,9 +184,9 @@
             super();
             this.title = "Max";
             this.descriprion = "Compares two numbers and return the highest value.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("Max(X,Y)", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("max(x,y)", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -201,9 +201,9 @@
             super();
             this.title = "Min";
             this.descriprion = "Compares two numbers and return the lowest value.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("Min(X,Y)", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("min(x,y)", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -218,9 +218,9 @@
             super();
             this.title = "Minus";
             this.descriprion = "This node subtracts one number from another.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("X-Y", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("x-y", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -235,9 +235,9 @@
             super();
             this.title = "Modulus";
             this.descriprion = "This node performs modulo operation (calculate the remainder after division of one number by another).";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("X%Y", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("x%y", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -252,9 +252,9 @@
             super();
             this.title = "Multiply";
             this.descriprion = "This node multiplies one number by another.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("X*Y", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("x*y", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -269,9 +269,9 @@
             super();
             this.title = "Pow";
             this.descriprion = "Returns base to the exponent power.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("X Pow Y", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("x pow y", "number");
         }
         onInputUpdated() {
             let x = this.getInputData(0);
@@ -286,9 +286,9 @@
             super();
             this.title = "Plus";
             this.descriprion = "This node adds one number to another.";
-            this.addInput("X", "number");
-            this.addInput("Y", "number");
-            this.addOutput("X+Y", "number");
+            this.addInput("x", "number");
+            this.addInput("y", "number");
+            this.addOutput("x+y", "number");
         }
         onInputUpdated() {
             let a = this.getInputData(0);
@@ -303,8 +303,8 @@
             super();
             this.title = "Round";
             this.descriprion = "Returns the value of a number rounded to the nearest integer.";
-            this.addInput("X", "number");
-            this.addOutput("Round(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("round(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -318,8 +318,8 @@
             super();
             this.title = "Sign";
             this.descriprion = "Returns the sign of the x, indicating whether x is positive, negative or zero.";
-            this.addInput("X", "number");
-            this.addOutput("Sign(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("sign(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -333,8 +333,8 @@
             super();
             this.title = "Sin";
             this.descriprion = "Returns the sine of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Sin(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("sin(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -348,8 +348,8 @@
             super();
             this.title = "Sqrt";
             this.descriprion = "Returns the positive square root of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Sqrt(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("sqrt(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -363,8 +363,8 @@
             super();
             this.title = "Tan";
             this.descriprion = "Returns the tangent of a number.";
-            this.addInput("X", "number");
-            this.addOutput("Tan(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("tan(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
@@ -378,8 +378,8 @@
             super();
             this.title = "Trunc";
             this.descriprion = "Returns the integral part of the number x, removing any fractional digits.";
-            this.addInput("X", "number");
-            this.addOutput("Trunc(X)", "number");
+            this.addInput("x", "number");
+            this.addOutput("trunc(x)", "number");
         }
         onInputUpdated() {
             let val = this.getInputData(0);
