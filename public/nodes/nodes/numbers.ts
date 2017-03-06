@@ -156,8 +156,8 @@ class NumbersAverageNode extends Node {
             return;
         }
 
-        let val=this.getInputData(0);
-        if (val==null)
+        let val = this.getInputData(0);
+        if (val == null)
             return;
 
         this.values.push(val);
@@ -192,7 +192,9 @@ class NumbersSumNode extends Node {
     }
 
     onInputUpdated() {
-        if (this.inputs[2].updated)
+        let old = this.outputs[0].data;
+
+        if (this.inputs[2].updated && this.inputs[2].data)
             this.val = 0;
 
         else if (this.inputs[1].updated)
@@ -202,7 +204,8 @@ class NumbersSumNode extends Node {
             this.val += this.inputs[0].data;
 
 
-        this.setOutputData(0, this.val);
+        if (this.val !== old)
+            this.setOutputData(0, this.val);
     }
 }
 Container.registerNodeType("numbers/sum", NumbersSumNode);

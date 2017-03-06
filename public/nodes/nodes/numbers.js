@@ -147,13 +147,15 @@
             this.addOutput("sum", "number");
         }
         onInputUpdated() {
-            if (this.inputs[2].updated)
+            let old = this.outputs[0].data;
+            if (this.inputs[2].updated && this.inputs[2].data)
                 this.val = 0;
             else if (this.inputs[1].updated)
                 this.val = this.inputs[1].data;
             else if (this.inputs[0].updated)
                 this.val += this.inputs[0].data;
-            this.setOutputData(0, this.val);
+            if (this.val !== old)
+                this.setOutputData(0, this.val);
         }
     }
     container_1.Container.registerNodeType("numbers/sum", NumbersSumNode);
