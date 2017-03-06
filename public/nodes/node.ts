@@ -813,7 +813,7 @@ export class Node {
 
         //update input value
         input.updated = true;
-        input.data = output.data;
+        input.data = Utils.formatValue(output.data, input.type);
         target_node.isUpdated = true;
 
 

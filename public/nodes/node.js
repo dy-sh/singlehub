@@ -602,7 +602,7 @@
             input.link = { target_node_id: this.id, target_slot: output_id };
             //update input value
             input.updated = true;
-            input.data = output.data;
+            input.data = utils_1.default.formatValue(output.data, input.type);
             target_node.isUpdated = true;
             //update db
             if (this.container.db) {

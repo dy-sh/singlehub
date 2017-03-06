@@ -128,6 +128,7 @@
     class NumbersSumNode extends node_1.Node {
         constructor() {
             super();
+            this.val = 0;
             this.title = "Sum";
             this.descriprion = "This node calculates sum of all incoming values. <br/>" +
                 "The internal counter can be overridden by the input named \"Set Value\". <br/>" +
@@ -138,12 +139,12 @@
             this.addOutput("sum", "number");
         }
         onInputUpdated() {
-            if (this.inputs[0].updated)
-                this.val += this.inputs[0].data;
-            if (this.inputs[1].updated)
-                this.val = this.inputs[0].data;
             if (this.inputs[2].updated)
                 this.val = 0;
+            else if (this.inputs[1].updated)
+                this.val = this.inputs[1].data;
+            else if (this.inputs[0].updated)
+                this.val += this.inputs[0].data;
             this.setOutputData(0, this.val);
         }
     }
