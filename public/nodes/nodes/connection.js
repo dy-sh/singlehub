@@ -72,5 +72,27 @@
         }
     }
     container_1.Container.registerNodeType("connection/hub", HubNode);
+    class GateNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Trunc";
+            this.descriprion = "This node can block the transfer of messages from one node to another. <br/>" +
+                "Send \"1\" to \"Key\" to allow the transfer or \"0\" to block the transfer. <br/>" +
+                "If you enable the option \"Send null when closed\" in the settings node, " +
+                "then the node will send null to the output when the transmission is locked.";
+            this.addInput("value");
+            this.addInput("key");
+            this.addOutput("value");
+            this.settings["send-null"] = { description: "Send null when closed", value: false, type: "boolean" };
+        }
+        onInputUpdated() {
+            let key = this.getInputData(1);
+            if (key)
+                this.setOutputData(0, this.getInputData(0));
+            else if (this.settings["send-null"].value)
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("connection/gate", GateNode);
 });
 //# sourceMappingURL=connection.js.map
