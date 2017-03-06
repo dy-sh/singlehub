@@ -140,15 +140,11 @@ export class App extends Emitter {
                     return;
 
                 for (let n of nodes) {
-
                     let cont = Container.containers[n.cid];
                     if (!cont)
                         cont = new Container(Side.server, n.cid);
 
                     cont.createNode(n.type, null, n);
-
-
-                    // console.log(root.id);
                 }
 
                 let contCount = Container.containers ? Object.keys(Container.containers).length : 0;

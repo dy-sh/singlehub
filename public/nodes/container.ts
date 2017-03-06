@@ -512,9 +512,6 @@ export class Container extends Emitter {
         node.type = type;
         node.category = node_class.category;
 
-        if (!node.title) node.title = node.type;
-        if (!node.size) node.size = node.computeSize();
-
         //deserialize
         if (serialized_node)
             node.configure(serialized_node);
@@ -524,6 +521,11 @@ export class Container extends Emitter {
             for (let i in properties)
                 node[i] = properties[i];
         }
+
+        if (!node.title) node.title = node.type;
+        if ((!properties || !properties.properties)
+            && (!serialized_node || !serialized_node.size))
+            node.size = node.computeSize();
 
         //overwrite id
         node.id = id;

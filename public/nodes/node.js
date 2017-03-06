@@ -496,7 +496,7 @@
             let rows = Math.max(this.inputs ? i_slots : 1, this.outputs ? o_slots : 1);
             let size = [0, 0];
             rows = Math.max(rows, 1);
-            size[1] = rows * 14 + 6;
+            size[1] = rows * 15 + 6;
             let font_size = 14;
             let title_width = compute_text_size(this.title);
             let input_width = 0;
