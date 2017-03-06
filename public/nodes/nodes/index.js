@@ -7,7 +7,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./connection", "./debug", "./main", "./math", "./numbers", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart"], factory);
+        define(["require", "exports", "./connection", "./debug", "./main", "./math", "./numbers", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,6 +19,7 @@
     require("./main");
     require("./math");
     require("./numbers");
+    require("./time");
     require("./ui/label");
     require("./ui/toggle");
     require("./ui/state");

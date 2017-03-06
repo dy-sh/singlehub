@@ -13,6 +13,7 @@ import "./debug";
 import "./main";
 import "./math";
 import "./numbers";
+import "./time";
 
 import "./ui/label";
 import "./ui/toggle";

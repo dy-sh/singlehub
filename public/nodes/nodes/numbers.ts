@@ -9,37 +9,6 @@ import {Container} from "../container";
 import Utils from "../utils";
 
 
-export class NumberGeneratorNode extends Node {
-    value = 0;
-    lastTime: number;
-
-    constructor() {
-        super();
-        this.title = "Number Generator";
-        this.descriprion = "";
-
-        this.settings["speed"] = {description: "Limit speed (values/sec)", value: 10, type: "number"};
-
-        this.addOutput("value", "number");
-    }
-
-
-    onExecute() {
-        let now = Date.now();
-        if (!this.lastTime)
-            this.lastTime = now;
-
-        let interval = 1000 / this.settings["speed"].value;
-        if (now - this.lastTime >= interval) {
-            this.lastTime = now;
-            this.value++;
-            this.setOutputData(0, this.value);
-        }
-    }
-}
-Container.registerNodeType("numbers/number-generator", NumberGeneratorNode);
-
-
 class Random01Node extends Node {
     constructor() {
         super();

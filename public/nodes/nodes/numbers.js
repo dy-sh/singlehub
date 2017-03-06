@@ -14,29 +14,6 @@
     const node_1 = require("../node");
     const container_1 = require("../container");
     const utils_1 = require("../utils");
-    class NumberGeneratorNode extends node_1.Node {
-        constructor() {
-            super();
-            this.value = 0;
-            this.title = "Number Generator";
-            this.descriprion = "";
-            this.settings["speed"] = { description: "Limit speed (values/sec)", value: 10, type: "number" };
-            this.addOutput("value", "number");
-        }
-        onExecute() {
-            let now = Date.now();
-            if (!this.lastTime)
-                this.lastTime = now;
-            let interval = 1000 / this.settings["speed"].value;
-            if (now - this.lastTime >= interval) {
-                this.lastTime = now;
-                this.value++;
-                this.setOutputData(0, this.value);
-            }
-        }
-    }
-    exports.NumberGeneratorNode = NumberGeneratorNode;
-    container_1.Container.registerNodeType("numbers/number-generator", NumberGeneratorNode);
     class Random01Node extends node_1.Node {
         constructor() {
             super();
