@@ -91,5 +91,31 @@
     }
     exports.DelayNode = DelayNode;
     container_1.Container.registerNodeType("time/delay", DelayNode);
+    class DelayMeterNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Delay meter";
+            this.descriprion = "This node measures the delay between the incoming events. <br/>" +
+                "Any value sent to the input (excluding null) will be accepted.";
+            this.addInput("value");
+            this.addInput("reset", "boolean");
+            this.addOutput("ms", "number");
+        }
+        onInputUpdated() {
+            if (this.inputs[1].updated && this.inputs[1].data == true) {
+                this.lastTime = null;
+                this.setOutputData(0, null);
+            }
+            if (this.inputs[0].updated && this.inputs[0].data !== null) {
+                if (this.lastTime !== null) {
+                    let delay = Date.now() - this.lastTime;
+                    this.setOutputData(0, delay);
+                }
+                this.lastTime = Date.now();
+            }
+        }
+    }
+    exports.DelayMeterNode = DelayMeterNode;
+    container_1.Container.registerNodeType("time/delay-meter", DelayMeterNode);
 });
 //# sourceMappingURL=time.js.map

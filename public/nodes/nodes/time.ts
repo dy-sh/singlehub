@@ -93,14 +93,14 @@ export class DelayNode extends Node {
     }
 
     onExecute() {
-        if (this.delayedValues.length==0)
+        if (this.delayedValues.length == 0)
             return;
 
         let interval = this.getInputData(1);
         if (interval == null)
             interval = this.settings["interval"].value;
 
-        let val=this.delayedValues[0];
+        let val = this.delayedValues[0];
         if (Date.now() - val.time >= interval) {
             this.delayedValues.shift();
             this.setOutputData(0, val.val);
@@ -109,4 +109,37 @@ export class DelayNode extends Node {
     }
 }
 Container.registerNodeType("time/delay", DelayNode);
+
+
+export class DelayMeterNode extends Node {
+    lastTime;
+
+    constructor() {
+        super();
+        this.title = "Delay meter";
+        this.descriprion = "This node measures the delay between the incoming events. <br/>" +
+            "Any value sent to the input (excluding null) will be accepted.";
+
+        this.addInput("value");
+        this.addInput("reset", "boolean");
+        this.addOutput("ms", "number");
+    }
+
+    onInputUpdated() {
+        if (this.inputs[1].updated && this.inputs[1].data == true) {
+            this.lastTime = null;
+            this.setOutputData(0, null);
+        }
+        if (this.inputs[0].updated && this.inputs[0].data !== null) {
+            if (this.lastTime !== null) {
+                let delay = Date.now() - this.lastTime;
+                this.setOutputData(0, delay);
+            }
+
+            this.lastTime = Date.now();
+        }
+
+    }
+}
+Container.registerNodeType("time/delay-meter", DelayMeterNode);
 
