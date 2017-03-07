@@ -55,7 +55,7 @@
         }
         ;
         onGetMessageToEditorSide(data) {
-            if (data.value != null)
+            if (data.value !== null)
                 log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
             if (data.dropped)
                 log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages (data rate limitation)");

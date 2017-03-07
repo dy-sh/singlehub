@@ -227,7 +227,7 @@
         isInputConnected(slot) {
             if (!this.inputs)
                 return false;
-            return (this.inputs[slot].link != null);
+            return (this.inputs[slot].link !== null);
         }
         /**
          * Returns info about an input connection (which node, type, etc)

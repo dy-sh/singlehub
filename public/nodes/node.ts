@@ -363,7 +363,7 @@ export class Node {
     isInputConnected(slot: number): boolean {
         if (!this.inputs)
             return false;
-        return (this.inputs[slot].link != null);
+        return (this.inputs[slot].link !== null);
     }
 
     /**

@@ -37,7 +37,7 @@ export class TickerNode extends Node {
 
     onExecute() {
         let enable = this.getInputData(1);
-        if (enable==false)
+        if (enable == false)
             return;
 
         let now = Date.now();
@@ -62,9 +62,51 @@ export class TickerNode extends Node {
             this.setOutputData(0, true);
             return;
         }
-
-
     }
 }
 Container.registerNodeType("time/ticker", TickerNode);
+
+
+export class DelayNode extends Node {
+    delayedValues = [];
+
+    constructor() {
+        super();
+        this.title = "Delay";
+        this.descriprion = "This node introduces a delay in the flow of events. <br/>" +
+            "All incoming values (including null) " +
+            "will be sent to the output after a specified time interval.";
+
+        this.addInput("value");
+        this.addInput("interval", "boolean");
+        this.addOutput("value");
+
+        this.settings["interval"] = {description: "Interval", value: 1000, type: "number"};
+    }
+
+    onInputUpdated() {
+        if (this.inputs[0].updated)
+            this.delayedValues.push({
+                val: this.inputs[0].data,
+                time: Date.now()
+            });
+    }
+
+    onExecute() {
+        if (this.delayedValues.length==0)
+            return;
+
+        let interval = this.getInputData(1);
+        if (interval == null)
+            interval = this.settings["interval"].value;
+
+        let val=this.delayedValues[0];
+        if (Date.now() - val.time >= interval) {
+            this.delayedValues.shift();
+            this.setOutputData(0, val.val);
+            return;
+        }
+    }
+}
+Container.registerNodeType("time/delay", DelayNode);
 
