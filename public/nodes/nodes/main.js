@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
@@ -185,8 +184,9 @@
         }
         onExecute() {
             let cont_node = this.container.container_node;
-            let val = cont_node.inputs[this.properties['slot']].data;
-            this.setOutputData(0, val);
+            let input = cont_node.inputs[this.properties['slot']];
+            if (input.updated)
+                this.setOutputData(0, input.data);
         }
     }
     exports.ContainerInputNode = ContainerInputNode;
@@ -228,10 +228,11 @@
                 this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
             }
         }
-        onExecute() {
-            let cont_node = this.container.container_node;
+        onInputUpdated() {
             let val = this.getInputData(0);
-            cont_node.outputs[this.properties['slot']].data = val;
+            let cont_node = this.container.container_node;
+            let slot = this.properties['slot'];
+            cont_node.setOutputData(slot, val);
         }
     }
     exports.ContainerOutputNode = ContainerOutputNode;

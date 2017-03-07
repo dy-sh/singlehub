@@ -58,6 +58,9 @@ class RandomNode extends Node {
             let min = this.getInputData(0);
             let max = this.getInputData(1);
 
+            if (min == null || max == null)
+                return;
+
             let digits = this.settings["digits"].value;
             let result = (Math.random() * (max - min) + min);
             result = Utils.toFixedNumber(result, digits);
@@ -90,6 +93,8 @@ class NumbersHighestNode extends Node {
         }
 
         let inputVal = this.getInputData(0);
+        if (inputVal == null)
+            return;
 
         if (this.val == null || this.val < inputVal) {
             this.val = inputVal;
@@ -123,6 +128,8 @@ class NumbersLowestNode extends Node {
         }
 
         let inputVal = this.getInputData(0);
+        if (inputVal == null)
+            return;
 
         if (this.val == null || this.val > inputVal) {
             this.val = inputVal;
@@ -194,13 +201,13 @@ class NumbersSumNode extends Node {
     onInputUpdated() {
         let old = this.outputs[0].data;
 
-        if (this.inputs[2].updated && this.inputs[2].data==true)
+        if (this.inputs[2].updated && this.inputs[2].data == true)
             this.val = 0;
 
-        else if (this.inputs[1].updated)
+        else if (this.inputs[1].updated && this.inputs[1].link)
             this.val = this.inputs[1].data;
 
-        else if (this.inputs[0].updated)
+        else if (this.inputs[0].updated && this.inputs[1].data != null)
             this.val += this.inputs[0].data;
 
 
@@ -235,12 +242,10 @@ class NumbersClampNode extends Node {
         let min = this.getInputData(1);
         let max = this.getInputData(2);
 
-        if (val == null || min == null || max == null)
-            val = null;
+        if (val != null && min != null && max != null)
+            this.setOutputData(0, Utils.clamp(val, min, max));
         else
-            val = Utils.clamp(val, min, max);
-
-        this.setOutputData(0, val);
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("numbers/clamp", NumbersClampNode);
@@ -283,8 +288,6 @@ class NumbersRemapNode extends Node {
     }
 }
 Container.registerNodeType("numbers/remap", NumbersRemapNode);
-
-
 
 
 //

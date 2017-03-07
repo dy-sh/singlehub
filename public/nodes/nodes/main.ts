@@ -34,7 +34,7 @@ export class ConstantNode extends Node {
     }
 
     onAdded() {
-        if (this.side==Side.server) {
+        if (this.side == Side.server) {
             let val = this.settings["value"].value;
             let out_type = this.settings["output-type"].value;
             this.setOutputData(0, Utils.formatValue(val, out_type));
@@ -68,7 +68,7 @@ export class ConstantNode extends Node {
             }
         }
 
-        this.setOutputData(0,val);
+        this.setOutputData(0, val);
     }
 }
 Container.registerNodeType("main/constant", ConstantNode);
@@ -91,7 +91,8 @@ export class ContainerNode extends Node {
         this.sub_container = new Container(this.side);
         this.sub_container_id = this.sub_container.id;
 
-        this.settings["name"].value = "Container " + this.sub_container.id;;
+        this.settings["name"].value = "Container " + this.sub_container.id;
+        ;
 
         this.sub_container.container_node = this;
         this.sub_container.parent_container_id = this.container.id;
@@ -232,8 +233,9 @@ export class ContainerInputNode extends Node {
 
     onExecute() {
         let cont_node = this.container.container_node;
-        let val = cont_node.inputs[this.properties['slot']].data;
-        this.setOutputData(0, val);
+        let input = cont_node.inputs[this.properties['slot']];
+        if (input.updated)
+            this.setOutputData(0, input.data);
     }
 
 
@@ -289,10 +291,11 @@ export class ContainerOutputNode extends Node {
     }
 
 
-    onExecute() {
-        let cont_node = this.container.container_node;
+    onInputUpdated() {
         let val = this.getInputData(0);
-        cont_node.outputs[this.properties['slot']].data = val;
+        let cont_node = this.container.container_node;
+        let slot=this.properties['slot'];
+        cont_node.setOutputData(slot,val);
     }
 
 

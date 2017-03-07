@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../node", "../container", "../utils"], factory);
     }
 })(function (require, exports) {
@@ -51,6 +50,8 @@
             if (gen) {
                 let min = this.getInputData(0);
                 let max = this.getInputData(1);
+                if (min == null || max == null)
+                    return;
                 let digits = this.settings["digits"].value;
                 let result = (Math.random() * (max - min) + min);
                 result = utils_1.default.toFixedNumber(result, digits);
@@ -75,6 +76,8 @@
                 return;
             }
             let inputVal = this.getInputData(0);
+            if (inputVal == null)
+                return;
             if (this.val == null || this.val < inputVal) {
                 this.val = inputVal;
                 this.setOutputData(0, this.val);
@@ -98,6 +101,8 @@
                 return;
             }
             let inputVal = this.getInputData(0);
+            if (inputVal == null)
+                return;
             if (this.val == null || this.val > inputVal) {
                 this.val = inputVal;
                 this.setOutputData(0, this.val);
@@ -151,9 +156,9 @@
             let old = this.outputs[0].data;
             if (this.inputs[2].updated && this.inputs[2].data == true)
                 this.val = 0;
-            else if (this.inputs[1].updated)
+            else if (this.inputs[1].updated && this.inputs[1].link)
                 this.val = this.inputs[1].data;
-            else if (this.inputs[0].updated)
+            else if (this.inputs[0].updated && this.inputs[1].data != null)
                 this.val += this.inputs[0].data;
             if (this.val !== old)
                 this.setOutputData(0, this.val);
@@ -179,11 +184,10 @@
             let val = this.getInputData(0);
             let min = this.getInputData(1);
             let max = this.getInputData(2);
-            if (val == null || min == null || max == null)
-                val = null;
+            if (val != null && min != null && max != null)
+                this.setOutputData(0, utils_1.default.clamp(val, min, max));
             else
-                val = utils_1.default.clamp(val, min, max);
-            this.setOutputData(0, val);
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("numbers/clamp", NumbersClampNode);

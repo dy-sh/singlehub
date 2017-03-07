@@ -49,6 +49,9 @@ export class ConsoleNode extends Node {
     }
 
     onInputUpdated() {
+        if (!this.inputs[0].link)
+            return;
+
         let val = this.getInputData(0);
         this.isRecentlyActive = true;
 
