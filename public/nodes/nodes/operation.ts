@@ -99,7 +99,7 @@ class StackNode extends Node {
             "Node can be used as a buffer. <br/>" +
             // "Values are stored in the database and available after restart of the server.";
 
-        this.addInput("add value");
+            this.addInput("add value");
         this.addInput("get value", "boolean");
         this.addInput("clear", "boolean");
         this.addOutput("value");
@@ -128,7 +128,6 @@ class StackNode extends Node {
     }
 }
 Container.registerNodeType("operation/stack", StackNode);
-
 
 
 class QueueNode extends Node {
@@ -172,3 +171,35 @@ class QueueNode extends Node {
     }
 }
 Container.registerNodeType("operation/queue", QueueNode);
+
+
+class CrossfadeNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Crossfade";
+        this.descriprion = "This node makes the crossfade between two values. <br/>" +
+            "\"Crossfade\" input takes a value from 0 to 100. <br/>" +
+            "If Crossfade is 0, the output will be equal to A. <br/>" +
+            "If Crossfade is 100, then the output is equal to B. <br/>" +
+            "The intermediate value between 0 and 100 will give " +
+            "intermediate number between A and B. ";
+
+        this.addInput("0-100", "number");
+        this.addInput("a", "number");
+        this.addInput("b", "number");
+        this.addOutput("a--b");
+
+    }
+
+    onInputUpdated() {
+        let x = this.getInputData(0);
+        let a = this.getInputData(1);
+        let b = this.getInputData(2);
+
+        let val = a * (1 - x / 100) + b * x / 100;
+
+        this.setOutputData(0,val);
+    }
+}
+Container.registerNodeType("operation/crossfade", CrossfadeNode);
