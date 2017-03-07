@@ -2,223 +2,234 @@
  * Created by Derwish (derwish.pro@gmail.com) on 05.03.17.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
-(function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var node_1 = require("../node");
+var container_1 = require("../container");
+var utils_1 = require("../utils");
+var Random01Node = (function (_super) {
+    __extends(Random01Node, _super);
+    function Random01Node() {
+        _super.call(this);
+        this.title = "Random 0-1";
+        this.descriprion = "Returns a random number between 0 and 1.";
+        this.settings["digits"] = { description: "Number of digits after the decimal point", type: "number", value: 3 };
+        this.addInput("generate", "boolean");
+        this.addOutput("random", "number");
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../node", "../container", "../utils"], factory);
+    Random01Node.prototype.onInputUpdated = function () {
+        var gen = this.getInputData(0);
+        if (gen) {
+            var digits = this.settings["digits"].value;
+            var result = Math.random();
+            result = utils_1.default.toFixedNumber(result, digits);
+            this.setOutputData(0, result);
+        }
+    };
+    return Random01Node;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/random01", Random01Node);
+var RandomNode = (function (_super) {
+    __extends(RandomNode, _super);
+    function RandomNode() {
+        _super.call(this);
+        this.title = "Random";
+        this.descriprion = "Returns a random number between Min and Max.";
+        this.settings["digits"] = { description: "Number of digits after the decimal point", type: "number", value: 3 };
+        this.addInput("min", "number");
+        this.addInput("max", "number");
+        this.addInput("generate", "boolean");
+        this.addOutput("random", "number");
     }
-})(function (require, exports) {
-    "use strict";
-    const node_1 = require("../node");
-    const container_1 = require("../container");
-    const utils_1 = require("../utils");
-    class Random01Node extends node_1.Node {
-        constructor() {
-            super();
-            this.title = "Random 0-1";
-            this.descriprion = "Returns a random number between 0 and 1.";
-            this.settings["digits"] = { description: "Number of digits after the decimal point", type: "number", value: 3 };
-            this.addInput("generate", "boolean");
-            this.addOutput("random", "number");
+    RandomNode.prototype.onInputUpdated = function () {
+        var gen = this.getInputData(2);
+        if (gen) {
+            var min = this.getInputData(0);
+            var max = this.getInputData(1);
+            var digits = this.settings["digits"].value;
+            var result = (Math.random() * (max - min) + min);
+            result = utils_1.default.toFixedNumber(result, digits);
+            this.setOutputData(0, result);
         }
-        onInputUpdated() {
-            let gen = this.getInputData(0);
-            if (gen) {
-                let digits = this.settings["digits"].value;
-                let result = Math.random();
-                result = utils_1.default.toFixedNumber(result, digits);
-                this.setOutputData(0, result);
-            }
-        }
+    };
+    return RandomNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/random", RandomNode);
+var NumbersHighestNode = (function (_super) {
+    __extends(NumbersHighestNode, _super);
+    function NumbersHighestNode() {
+        _super.call(this);
+        this.title = "Highest";
+        this.descriprion = "Remembers the highest value at the input.";
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("highest", "number");
     }
-    container_1.Container.registerNodeType("numbers/random01", Random01Node);
-    class RandomNode extends node_1.Node {
-        constructor() {
-            super();
-            this.title = "Random";
-            this.descriprion = "Returns a random number between Min and Max.";
-            this.settings["digits"] = { description: "Number of digits after the decimal point", type: "number", value: 3 };
-            this.addInput("min", "number");
-            this.addInput("max", "number");
-            this.addInput("generate", "boolean");
-            this.addOutput("random", "number");
+    NumbersHighestNode.prototype.onInputUpdated = function () {
+        if (this.getInputData(1) == true) {
+            this.val = null;
+            this.setOutputData(0, this.val);
+            return;
         }
-        onInputUpdated() {
-            let gen = this.getInputData(2);
-            if (gen) {
-                let min = this.getInputData(0);
-                let max = this.getInputData(1);
-                let digits = this.settings["digits"].value;
-                let result = (Math.random() * (max - min) + min);
-                result = utils_1.default.toFixedNumber(result, digits);
-                this.setOutputData(0, result);
-            }
+        var inputVal = this.getInputData(0);
+        if (this.val == null || this.val < inputVal) {
+            this.val = inputVal;
+            this.setOutputData(0, this.val);
         }
+    };
+    return NumbersHighestNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/highest", NumbersHighestNode);
+var NumbersLowestNode = (function (_super) {
+    __extends(NumbersLowestNode, _super);
+    function NumbersLowestNode() {
+        _super.call(this);
+        this.title = "Lowest";
+        this.descriprion = "Remembers the lowest value at the input.";
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("lowest", "number");
     }
-    container_1.Container.registerNodeType("numbers/random", RandomNode);
-    class NumbersHighestNode extends node_1.Node {
-        constructor() {
-            super();
-            this.title = "Highest";
-            this.descriprion = "Remembers the highest value at the input.";
-            this.addInput("value", "number");
-            this.addInput("reset", "boolean");
-            this.addOutput("highest", "number");
+    NumbersLowestNode.prototype.onInputUpdated = function () {
+        if (this.getInputData(1) == true) {
+            this.val = null;
+            this.setOutputData(0, this.val);
+            return;
         }
-        onInputUpdated() {
-            if (this.getInputData(1) == true) {
-                this.val = null;
-                this.setOutputData(0, this.val);
-                return;
-            }
-            let inputVal = this.getInputData(0);
-            if (this.val == null || this.val < inputVal) {
-                this.val = inputVal;
-                this.setOutputData(0, this.val);
-            }
+        var inputVal = this.getInputData(0);
+        if (this.val == null || this.val > inputVal) {
+            this.val = inputVal;
+            this.setOutputData(0, this.val);
         }
+    };
+    return NumbersLowestNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/lowest", NumbersLowestNode);
+var NumbersAverageNode = (function (_super) {
+    __extends(NumbersAverageNode, _super);
+    function NumbersAverageNode() {
+        _super.call(this);
+        this.values = [];
+        this.title = "Average";
+        this.descriprion = "This node calculates an average value from all input values. <br/>" +
+            "To reset node, send logical \"1\" to input named \"Reset\"";
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("average", "number");
     }
-    container_1.Container.registerNodeType("numbers/highest", NumbersHighestNode);
-    class NumbersLowestNode extends node_1.Node {
-        constructor() {
-            super();
-            this.title = "Lowest";
-            this.descriprion = "Remembers the lowest value at the input.";
-            this.addInput("value", "number");
-            this.addInput("reset", "boolean");
-            this.addOutput("lowest", "number");
-        }
-        onInputUpdated() {
-            if (this.getInputData(1) == true) {
-                this.val = null;
-                this.setOutputData(0, this.val);
-                return;
-            }
-            let inputVal = this.getInputData(0);
-            if (this.val == null || this.val > inputVal) {
-                this.val = inputVal;
-                this.setOutputData(0, this.val);
-            }
-        }
-    }
-    container_1.Container.registerNodeType("numbers/lowest", NumbersLowestNode);
-    class NumbersAverageNode extends node_1.Node {
-        constructor() {
-            super();
+    NumbersAverageNode.prototype.onInputUpdated = function () {
+        if (this.getInputData(1) == true) {
             this.values = [];
-            this.title = "Average";
-            this.descriprion = "This node calculates an average value from all input values. <br/>" +
-                "To reset node, send logical \"1\" to input named \"Reset\"";
-            this.addInput("value", "number");
-            this.addInput("reset", "boolean");
-            this.addOutput("average", "number");
+            this.setOutputData(0, null);
+            return;
         }
-        onInputUpdated() {
-            if (this.getInputData(1) == true) {
-                this.values = [];
-                this.setOutputData(0, null);
-                return;
-            }
-            let val = this.getInputData(0);
-            if (val == null)
-                return;
-            this.values.push(val);
-            let sum = this.values.reduce(function (a, b) {
-                return a + b;
-            });
-            let avg = sum / this.values.length;
-            this.setOutputData(0, avg);
-        }
+        var val = this.getInputData(0);
+        if (val == null)
+            return;
+        this.values.push(val);
+        var sum = this.values.reduce(function (a, b) {
+            return a + b;
+        });
+        var avg = sum / this.values.length;
+        this.setOutputData(0, avg);
+    };
+    return NumbersAverageNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/average", NumbersAverageNode);
+var NumbersSumNode = (function (_super) {
+    __extends(NumbersSumNode, _super);
+    function NumbersSumNode() {
+        _super.call(this);
+        this.val = 0;
+        this.title = "Sum";
+        this.descriprion = "This node calculates sum of all incoming values. <br/>" +
+            "The internal counter can be overridden by the input named \"Set Value\". <br/>" +
+            "To reset node, send logical \"1\" to input named \"Reset\"";
+        this.addInput("add value", "number");
+        this.addInput("set value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("sum", "number");
     }
-    container_1.Container.registerNodeType("numbers/average", NumbersAverageNode);
-    class NumbersSumNode extends node_1.Node {
-        constructor() {
-            super();
+    NumbersSumNode.prototype.onInputUpdated = function () {
+        var old = this.outputs[0].data;
+        if (this.inputs[2].updated && this.inputs[2].data == true)
             this.val = 0;
-            this.title = "Sum";
-            this.descriprion = "This node calculates sum of all incoming values. <br/>" +
-                "The internal counter can be overridden by the input named \"Set Value\". <br/>" +
-                "To reset node, send logical \"1\" to input named \"Reset\"";
-            this.addInput("add value", "number");
-            this.addInput("set value", "number");
-            this.addInput("reset", "boolean");
-            this.addOutput("sum", "number");
-        }
-        onInputUpdated() {
-            let old = this.outputs[0].data;
-            if (this.inputs[2].updated && this.inputs[2].data == true)
-                this.val = 0;
-            else if (this.inputs[1].updated)
-                this.val = this.inputs[1].data;
-            else if (this.inputs[0].updated)
-                this.val += this.inputs[0].data;
-            if (this.val !== old)
-                this.setOutputData(0, this.val);
-        }
+        else if (this.inputs[1].updated)
+            this.val = this.inputs[1].data;
+        else if (this.inputs[0].updated)
+            this.val += this.inputs[0].data;
+        if (this.val !== old)
+            this.setOutputData(0, this.val);
+    };
+    return NumbersSumNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/sum", NumbersSumNode);
+var NumbersClampNode = (function (_super) {
+    __extends(NumbersClampNode, _super);
+    function NumbersClampNode() {
+        _super.call(this);
+        this.val = 0;
+        this.title = "Clamp";
+        this.descriprion = "This node limits the value to the specified range. <br/>" +
+            "For example, Min=3, Max=5. <br/>" +
+            "Now, if the \"Value\" input is 1, the output will be 3. <br/>" +
+            "If the value is 6, the output will be 5. <br/>" +
+            "If the value is 2.5, the output will be 2.5. <br/>";
+        this.addInput("value", "number");
+        this.addInput("min", "number");
+        this.addInput("max", "number");
+        this.addOutput("value", "number");
     }
-    container_1.Container.registerNodeType("numbers/sum", NumbersSumNode);
-    class NumbersClampNode extends node_1.Node {
-        constructor() {
-            super();
-            this.val = 0;
-            this.title = "Clamp";
-            this.descriprion = "This node limits the value to the specified range. <br/>" +
-                "For example, Min=3, Max=5. <br/>" +
-                "Now, if the \"Value\" input is 1, the output will be 3. <br/>" +
-                "If the value is 6, the output will be 5. <br/>" +
-                "If the value is 2.5, the output will be 2.5. <br/>";
-            this.addInput("value", "number");
-            this.addInput("min", "number");
-            this.addInput("max", "number");
-            this.addOutput("value", "number");
-        }
-        onInputUpdated() {
-            let val = this.getInputData(0);
-            let min = this.getInputData(1);
-            let max = this.getInputData(2);
-            if (val == null || min == null || max == null)
-                val = null;
-            else
-                val = utils_1.default.clamp(val, min, max);
-            this.setOutputData(0, val);
-        }
+    NumbersClampNode.prototype.onInputUpdated = function () {
+        var val = this.getInputData(0);
+        var min = this.getInputData(1);
+        var max = this.getInputData(2);
+        if (val == null || min == null || max == null)
+            val = null;
+        else
+            val = utils_1.default.clamp(val, min, max);
+        this.setOutputData(0, val);
+    };
+    return NumbersClampNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/clamp", NumbersClampNode);
+var NumbersRemapNode = (function (_super) {
+    __extends(NumbersRemapNode, _super);
+    function NumbersRemapNode() {
+        _super.call(this);
+        this.val = 0;
+        this.title = "Remap";
+        this.descriprion = "This node remaps a number. <br/>" +
+            "For example, in-min=1, in-max=100, out-min=10, out-max=20. <br/>" +
+            "If the Value is 1, Out is 10. <br/>" +
+            "If the Value is 100, Out is 20. <br/>" +
+            "If the Value is 50, Out is 20. <br/>";
+        this.addInput("value", "number");
+        this.addInput("in-min", "number");
+        this.addInput("in-max", "number");
+        this.addInput("out-min", "number");
+        this.addInput("out-max", "number");
+        this.addOutput("value", "number");
     }
-    container_1.Container.registerNodeType("numbers/clamp", NumbersClampNode);
-    class NumbersRemapNode extends node_1.Node {
-        constructor() {
-            super();
-            this.val = 0;
-            this.title = "Remap";
-            this.descriprion = "This node remaps a number. <br/>" +
-                "For example, in-min=1, in-max=100, out-min=10, out-max=20. <br/>" +
-                "If the Value is 1, Out is 10. <br/>" +
-                "If the Value is 100, Out is 20. <br/>" +
-                "If the Value is 50, Out is 20. <br/>";
-            this.addInput("value", "number");
-            this.addInput("in-min", "number");
-            this.addInput("in-max", "number");
-            this.addInput("out-min", "number");
-            this.addInput("out-max", "number");
-            this.addOutput("value", "number");
-        }
-        onInputUpdated() {
-            let val = this.getInputData(0);
-            let inMin = this.getInputData(1);
-            let inMax = this.getInputData(2);
-            let outMin = this.getInputData(3);
-            let outMax = this.getInputData(4);
-            if (val == null || inMin == null || inMax == null || outMin == null || outMax == null)
-                val = null;
-            else
-                val = utils_1.default.remap(val, inMin, inMax, outMin, outMax);
-            this.setOutputData(0, val);
-        }
-    }
-    container_1.Container.registerNodeType("numbers/remap", NumbersRemapNode);
-});
+    NumbersRemapNode.prototype.onInputUpdated = function () {
+        var val = this.getInputData(0);
+        var inMin = this.getInputData(1);
+        var inMax = this.getInputData(2);
+        var outMin = this.getInputData(3);
+        var outMax = this.getInputData(4);
+        if (val == null || inMin == null || inMax == null || outMin == null || outMax == null)
+            val = null;
+        else
+            val = utils_1.default.remap(val, inMin, inMax, outMin, outMax);
+        this.setOutputData(0, val);
+    };
+    return NumbersRemapNode;
+}(node_1.Node));
+container_1.Container.registerNodeType("numbers/remap", NumbersRemapNode);
 //
 // //Converter
 // 	class Converter {
@@ -932,4 +943,3 @@
 // 	} //glMatrix
 //
 // } 
-//# sourceMappingURL=numbers.js.map

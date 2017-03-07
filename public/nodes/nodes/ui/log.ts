@@ -78,6 +78,9 @@ export class UiLogNode extends UiNode {
     }
 
     onInputUpdated() {
+        if (!this.inputs[0].link)
+            return;
+
         let val = this.getInputData(0);
         this.isRecentlyActive = true;
 

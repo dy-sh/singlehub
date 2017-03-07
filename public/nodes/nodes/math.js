@@ -2,11 +2,10 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../node", "../container"], factory);
     }
 })(function (require, exports) {
@@ -23,8 +22,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.abs(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.abs(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/abs", MathAbsNode);
@@ -38,8 +39,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.acos(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.acos(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/acos", MathAcosNode);
@@ -53,8 +56,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.asin(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.asin(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/asin", MathAsinNode);
@@ -68,8 +73,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.atan(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.atan(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/atan", MathAtanNode);
@@ -83,8 +90,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.cbrt(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.cbrt(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/cbrt", MathCbrtNode);
@@ -98,8 +107,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.ceil(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.ceil(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/ceil", MathCeilNode);
@@ -113,8 +124,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.cos(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.cos(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/cos", MathCosNode);
@@ -130,8 +143,10 @@
         onInputUpdated() {
             let a = this.getInputData(0);
             let b = this.getInputData(1);
-            let result = a / b;
-            this.setOutputData(0, result);
+            if (a != null && b != null)
+                this.setOutputData(0, a / b);
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/divide", MathDivideNode);
@@ -145,8 +160,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.exp(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.exp(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/exp", MathExpNode);
@@ -160,8 +177,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.floor(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.floor(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/floor", MathFloorNode);
@@ -175,8 +194,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.log(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.log(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/logarithm", MathLogarithmNode);
@@ -192,8 +213,10 @@
         onInputUpdated() {
             let a = this.getInputData(0);
             let b = this.getInputData(1);
-            let result = a - b;
-            this.setOutputData(0, result);
+            if (a != null && b != null)
+                this.setOutputData(0, a - b);
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/minus", MathMinusNode);
@@ -209,8 +232,10 @@
         onInputUpdated() {
             let a = this.getInputData(0);
             let b = this.getInputData(1);
-            let result = a % b;
-            this.setOutputData(0, result);
+            if (a != null && b != null)
+                this.setOutputData(0, a % b);
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/modulus", MathModulusNode);
@@ -226,8 +251,10 @@
         onInputUpdated() {
             let a = this.getInputData(0);
             let b = this.getInputData(1);
-            let result = a - b;
-            this.setOutputData(0, result);
+            if (a != null && b != null)
+                this.setOutputData(0, a * b);
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/multiply", MathMultiplyNode);
@@ -243,8 +270,10 @@
         onInputUpdated() {
             let x = this.getInputData(0);
             let y = this.getInputData(1);
-            let result = Math.pow(x, y);
-            this.setOutputData(0, result);
+            if (x != null && y != null)
+                this.setOutputData(0, Math.pow(x, y));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/pow", MathPowNode);
@@ -260,8 +289,10 @@
         onInputUpdated() {
             let a = this.getInputData(0);
             let b = this.getInputData(1);
-            let result = a + b;
-            this.setOutputData(0, result);
+            if (a != null && b != null)
+                this.setOutputData(0, a + b);
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/plus", MathPlusNode);
@@ -275,8 +306,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.round(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.round(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/round", MathRoundNode);
@@ -290,8 +323,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.sign(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.sign(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/sign", MathSignNode);
@@ -305,8 +340,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.sin(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.sin(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/sin", MathSinNode);
@@ -320,8 +357,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.sqrt(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.sqrt(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/sqrt", MathSqrtNode);
@@ -335,8 +374,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.tan(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.tan(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/tan", MathTanNode);
@@ -350,8 +391,10 @@
         }
         onInputUpdated() {
             let val = this.getInputData(0);
-            let result = Math.trunc(val);
-            this.setOutputData(0, result);
+            if (val != null)
+                this.setOutputData(0, Math.trunc(val));
+            else
+                this.setOutputData(0, null);
         }
     }
     container_1.Container.registerNodeType("math/trunc", MathTruncNode);

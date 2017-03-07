@@ -20,8 +20,11 @@ class MathAbsNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.abs(val);
-        this.setOutputData(0, result);
+
+        if (val != null)
+            this.setOutputData(0, Math.abs(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/abs", MathAbsNode);
@@ -40,8 +43,11 @@ class MathAcosNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.acos(val);
-        this.setOutputData(0, result);
+
+        if (val != null)
+            this.setOutputData(0, Math.acos(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/acos", MathAcosNode);
@@ -60,8 +66,11 @@ class MathAsinNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.asin(val);
-        this.setOutputData(0, result);
+
+        if (val != null)
+            this.setOutputData(0, Math.asin(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/asin", MathAsinNode);
@@ -80,8 +89,11 @@ class MathAtanNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.atan(val);
-        this.setOutputData(0, result);
+
+        if (val != null)
+            this.setOutputData(0, Math.atan(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/atan", MathAtanNode);
@@ -100,8 +112,11 @@ class MathCbrtNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.cbrt(val);
-        this.setOutputData(0, result);
+
+        if (val != null)
+            this.setOutputData(0, Math.cbrt(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/cbrt", MathCbrtNode);
@@ -120,8 +135,10 @@ class MathCeilNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.ceil(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.ceil(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/ceil", MathCeilNode);
@@ -140,13 +157,13 @@ class MathCosNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.cos(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.cos(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/cos", MathCosNode);
-
-
 
 
 class MathDivideNode extends Node {
@@ -164,8 +181,11 @@ class MathDivideNode extends Node {
     onInputUpdated() {
         let a = this.getInputData(0);
         let b = this.getInputData(1);
-        let result = a / b;
-        this.setOutputData(0, result);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a / b);
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/divide", MathDivideNode);
@@ -184,8 +204,10 @@ class MathExpNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.exp(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.exp(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/exp", MathExpNode);
@@ -204,8 +226,10 @@ class MathFloorNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.floor(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.floor(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/floor", MathFloorNode);
@@ -224,14 +248,13 @@ class MathLogarithmNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.log(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.log(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/logarithm", MathLogarithmNode);
-
-
-
 
 
 class MathMinusNode extends Node {
@@ -249,11 +272,15 @@ class MathMinusNode extends Node {
     onInputUpdated() {
         let a = this.getInputData(0);
         let b = this.getInputData(1);
-        let result = a - b;
-        this.setOutputData(0, result);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a - b);
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/minus", MathMinusNode);
+
 
 class MathModulusNode extends Node {
     constructor() {
@@ -270,12 +297,14 @@ class MathModulusNode extends Node {
     onInputUpdated() {
         let a = this.getInputData(0);
         let b = this.getInputData(1);
-        let result = a % b;
-        this.setOutputData(0, result);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a % b);
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/modulus", MathModulusNode);
-
 
 
 class MathMultiplyNode extends Node {
@@ -293,12 +322,14 @@ class MathMultiplyNode extends Node {
     onInputUpdated() {
         let a = this.getInputData(0);
         let b = this.getInputData(1);
-        let result = a - b;
-        this.setOutputData(0, result);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a * b);
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/multiply", MathMultiplyNode);
-
 
 
 class MathPowNode extends Node {
@@ -316,8 +347,11 @@ class MathPowNode extends Node {
     onInputUpdated() {
         let x = this.getInputData(0);
         let y = this.getInputData(1);
-        let result = Math.pow(x, y);
-        this.setOutputData(0, result);
+
+        if (x != null && y != null)
+            this.setOutputData(0, Math.pow(x,y));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/pow", MathPowNode);
@@ -338,8 +372,11 @@ class MathPlusNode extends Node {
     onInputUpdated() {
         let a = this.getInputData(0);
         let b = this.getInputData(1);
-        let result = a + b;
-        this.setOutputData(0, result);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a + b);
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/plus", MathPlusNode);
@@ -358,12 +395,13 @@ class MathRoundNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.round(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.round(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/round", MathRoundNode);
-
 
 
 class MathSignNode extends Node {
@@ -379,12 +417,13 @@ class MathSignNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.sign(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.sign(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/sign", MathSignNode);
-
 
 
 class MathSinNode extends Node {
@@ -400,12 +439,13 @@ class MathSinNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.sin(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.sin(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/sin", MathSinNode);
-
 
 
 class MathSqrtNode extends Node {
@@ -421,12 +461,13 @@ class MathSqrtNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.sqrt(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.sqrt(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/sqrt", MathSqrtNode);
-
 
 
 class MathTanNode extends Node {
@@ -442,12 +483,13 @@ class MathTanNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.tan(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.tan(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/tan", MathTanNode);
-
 
 
 class MathTruncNode extends Node {
@@ -463,8 +505,10 @@ class MathTruncNode extends Node {
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        let result = Math.trunc(val);
-        this.setOutputData(0, result);
+        if (val != null)
+            this.setOutputData(0, Math.trunc(val));
+        else
+            this.setOutputData(0, null);
     }
 }
 Container.registerNodeType("math/trunc", MathTruncNode);

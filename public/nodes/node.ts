@@ -337,6 +337,9 @@ export class Node {
         if (!this.outputs[output_id])
             return;
 
+        if (data == null && this.outputs[output_id].data == null)
+            return;
+
         this.outputs[output_id].updated = true;
 
         if (!this.isRecentlyActive)
@@ -896,6 +899,11 @@ export class Node {
             delete t_node.inputs[link.target_slot].link;
             output.links.splice(i, 1);
 
+            //send null to target node input
+            t_node.inputs[link.target_slot].data = null;
+            t_node.inputs[link.target_slot].updated = true;
+            t_node.isUpdated = true;
+
             if (this.container.db) {
                 let s_t_node = t_node.serialize(true);
                 this.container.db.updateNode(t_node.id, t_node.container.id, {$set: {inputs: s_t_node.inputs}});
@@ -967,6 +975,11 @@ export class Node {
 
         //disconnect input
         delete input.link;
+
+        //send null to target node input
+        input.data = null;
+        input.updated = true;
+        this.isUpdated = true;
 
         if (this.container.db) {
             let s_node = this.serialize(true);
