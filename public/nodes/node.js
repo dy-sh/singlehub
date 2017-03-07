@@ -205,6 +205,8 @@
         setOutputData(output_id, data) {
             if (!this.outputs[output_id])
                 return;
+            if (data === undefined)
+                data = null;
             if (data == null && this.outputs[output_id].data == null)
                 return;
             this.outputs[output_id].updated = true;
