@@ -153,7 +153,7 @@ router.put('/c/:cid/n/:id/position', function (req, res) {
     node.pos = req.body.position;
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id,{$set: {pos: node.pos}});
+        app.db.updateNode(node.id, node.container.id, {$set: {pos: node.pos}});
 
     app.server.editorSocket.io.emit('node-update-position', {
         id: req.params.id,
@@ -176,7 +176,7 @@ router.put('/c/:cid/n/:id/size', function (req, res) {
     node.size = req.body.size;
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {$set:{size: node.size}});
+        app.db.updateNode(node.id, node.container.id, {$set: {size: node.size}});
 
     app.server.editorSocket.io.emit('node-update-size', {
         id: req.params.id,
@@ -231,7 +231,7 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
         node['onSettingsChanged']();
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {$set:{settings: node.settings}});
+        app.db.updateNode(node.id, node.container.id, {$set: {settings: node.settings}});
 
     app.server.editorSocket.io.emit('node-settings', {
         id: req.params.id,
@@ -239,11 +239,12 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
         settings: node.settings
     });
 
-    app.server.dashboardSocket.io.in(req.params.cid).emit('node-settings', {
-        id: req.params.id,
-        cid: req.params.cid,
-        settings: node.settings
-    });
+    if (node.isDashboardNode)
+        app.server.dashboardSocket.io.in(req.params.cid).emit('node-settings', {
+            id: req.params.id,
+            cid: req.params.cid,
+            settings: node.settings
+        });
 
     res.send(`Node settings updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
 });
@@ -367,27 +368,27 @@ router.post('/step', function (req, res) {
 
 
 router.get('/c/:cid/n/:id*', function (req, res) {
-    let cont=Container.containers[req.params.cid];
+    let cont = Container.containers[req.params.cid];
     if (!cont) return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);
 
-    let node=cont.getNodeById(req.params.id);
+    let node = cont.getNodeById(req.params.id);
     if (!node) return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
     if (node['onEditorApiGetRequest'])
-        node['onEditorApiGetRequest'](req,res);
+        node['onEditorApiGetRequest'](req, res);
     else
         return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
 });
 
 router.post('/c/:cid/n/:id*', function (req, res) {
-    let cont=Container.containers[req.params.cid];
+    let cont = Container.containers[req.params.cid];
     if (!cont) return res.status(404).send(`Can't send request to node. Container id [${req.params.cid}] not found.`);
 
-    let node=cont.getNodeById(req.params.id);
+    let node = cont.getNodeById(req.params.id);
     if (!node) return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
     if (node['onEditorApiPostRequest'])
-        node['onEditorApiPostRequest'](req,res);
+        node['onEditorApiPostRequest'](req, res);
     else
         return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
 });

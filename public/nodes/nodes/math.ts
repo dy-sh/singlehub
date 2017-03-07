@@ -231,50 +231,6 @@ class MathLogarithmNode extends Node {
 Container.registerNodeType("math/logarithm", MathLogarithmNode);
 
 
-class MathMaxNode extends Node {
-    constructor() {
-        super();
-
-        this.title = "Max";
-        this.descriprion = "Compares two numbers and return the highest value.";
-
-        this.addInput("x", "number");
-        this.addInput("y", "number");
-        this.addOutput("max(x,y)", "number");
-    }
-
-    onInputUpdated() {
-        let a = this.getInputData(0);
-        let b = this.getInputData(1);
-        let result = Math.max(a, b);
-        this.setOutputData(0, result);
-    }
-}
-Container.registerNodeType("math/max", MathMaxNode);
-
-
-class MathMinNode extends Node {
-    constructor() {
-        super();
-
-        this.title = "Min";
-        this.descriprion = "Compares two numbers and return the lowest value.";
-
-        this.addInput("x", "number");
-        this.addInput("y", "number");
-        this.addOutput("min(x,y)", "number");
-    }
-
-    onInputUpdated() {
-        let a = this.getInputData(0);
-        let b = this.getInputData(1);
-        let result = Math.min(a, b);
-        this.setOutputData(0, result);
-    }
-}
-Container.registerNodeType("math/min", MathMinNode);
-
-
 
 
 

@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../node", "../utils", "../container"], factory);
     }
 })(function (require, exports) {
@@ -55,7 +56,7 @@
         }
         ;
         onGetMessageToEditorSide(data) {
-            if (data.value !== null)
+            if (data.value != null)
                 log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
             if (data.dropped)
                 log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: dropped " + data.dropped + " messages (data rate limitation)");

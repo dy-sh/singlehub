@@ -106,7 +106,7 @@ class GateNode extends Node {
         if (key)
             this.setOutputData(0, this.getInputData(0));
         else if (this.settings["send-null"].value
-            && this.outputs[0].data !== null)
+            && this.outputs[0].data != null)
             this.setOutputData(0, null);
     }
 }

@@ -697,7 +697,7 @@ Container.registerNodeType("numbers/remap", NumbersRemapNode);
 //
 //         onExecute() {
 //             let inc = this.getInputData(0);
-//             if (inc !== null)
+//             if (inc != null)
 //                 this.properties.value += inc;
 //             else
 //                 this.properties.value += this.properties.increment;

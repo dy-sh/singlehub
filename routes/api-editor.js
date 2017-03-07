@@ -191,11 +191,12 @@
             cid: req.params.cid,
             settings: node.settings
         });
-        app_1.app.server.dashboardSocket.io.in(req.params.cid).emit('node-settings', {
-            id: req.params.id,
-            cid: req.params.cid,
-            settings: node.settings
-        });
+        if (node.isDashboardNode)
+            app_1.app.server.dashboardSocket.io.in(req.params.cid).emit('node-settings', {
+                id: req.params.id,
+                cid: req.params.cid,
+                settings: node.settings
+            });
         res.send(`Node settings updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
     });
     router.delete('/nodes/all', function (req, res) {

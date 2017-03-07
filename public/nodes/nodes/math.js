@@ -2,10 +2,11 @@
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../node", "../container"], factory);
     }
 })(function (require, exports) {
@@ -179,40 +180,6 @@
         }
     }
     container_1.Container.registerNodeType("math/logarithm", MathLogarithmNode);
-    class MathMaxNode extends node_1.Node {
-        constructor() {
-            super();
-            this.title = "Max";
-            this.descriprion = "Compares two numbers and return the highest value.";
-            this.addInput("x", "number");
-            this.addInput("y", "number");
-            this.addOutput("max(x,y)", "number");
-        }
-        onInputUpdated() {
-            let a = this.getInputData(0);
-            let b = this.getInputData(1);
-            let result = Math.max(a, b);
-            this.setOutputData(0, result);
-        }
-    }
-    container_1.Container.registerNodeType("math/max", MathMaxNode);
-    class MathMinNode extends node_1.Node {
-        constructor() {
-            super();
-            this.title = "Min";
-            this.descriprion = "Compares two numbers and return the lowest value.";
-            this.addInput("x", "number");
-            this.addInput("y", "number");
-            this.addOutput("min(x,y)", "number");
-        }
-        onInputUpdated() {
-            let a = this.getInputData(0);
-            let b = this.getInputData(1);
-            let result = Math.min(a, b);
-            this.setOutputData(0, result);
-        }
-    }
-    container_1.Container.registerNodeType("math/min", MathMinNode);
     class MathMinusNode extends node_1.Node {
         constructor() {
             super();

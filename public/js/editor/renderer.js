@@ -1,9 +1,10 @@
 ///<reference path='../../../types/my_types.d.ts'/>
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../../nodes/container", "./editor", "../../nodes/utils", "./renderer-themes"], factory);
     }
 })(function (require, exports) {
@@ -446,7 +447,7 @@
                                 let input = n.inputs[i];
                                 let link_pos = this.getConnectionPos(n, true, +i);
                                 if (utils_1.default.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
-                                    if (input.link !== null) {
+                                    if (input.link != null) {
                                         editor_1.editor.socket.sendRemoveLink(input.link.target_node_id, input.link.target_slot, n.id, i);
                                         //n.disconnectInput(i);
                                         //this.dirty_bgcanvas = true;

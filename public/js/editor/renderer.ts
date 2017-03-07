@@ -637,7 +637,7 @@ export class Renderer {
                             let input = n.inputs[i];
                             let link_pos = this.getConnectionPos(n, true, +i);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
-                                if (input.link !== null) {
+                                if (input.link != null) {
                                     editor.socket.sendRemoveLink(
                                         input.link.target_node_id,
                                         input.link.target_slot,

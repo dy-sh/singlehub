@@ -61,7 +61,7 @@ export class ConsoleNode extends Node {
 
     onGetMessageToEditorSide(data) {
 
-        if (data.value !== null)
+        if (data.value != null)
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + data.value);
 
         if (data.dropped)

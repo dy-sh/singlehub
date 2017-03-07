@@ -2,10 +2,11 @@
  * Created by derwish on 11.02.17.
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "./container", "./utils"], factory);
     }
 })(function (require, exports) {
@@ -227,7 +228,7 @@
         isInputConnected(slot) {
             if (!this.inputs)
                 return false;
-            return (this.inputs[slot].link !== null);
+            return (this.inputs[slot].link != null);
         }
         /**
          * Returns info about an input connection (which node, type, etc)

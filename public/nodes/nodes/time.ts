@@ -130,8 +130,8 @@ export class DelayMeterNode extends Node {
             this.lastTime = null;
             this.setOutputData(0, null);
         }
-        if (this.inputs[0].updated && this.inputs[0].data !== null) {
-            if (this.lastTime !== null) {
+        if (this.inputs[0].updated && this.inputs[0].data != null) {
+            if (this.lastTime != null) {
                 let delay = Date.now() - this.lastTime;
                 this.setOutputData(0, delay);
             }

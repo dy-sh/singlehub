@@ -33,15 +33,12 @@ export class ConstantNode extends Node {
         this.addOutput("1", "number");
     }
 
-    // setValue  (v) {
-    //     // if (typeof(v) == "string") v = parseFloat(v);
-    //     this.settings["value"] = v;
-    // }
-
-    onExecute() {
-        let val = this.settings["value"].value;
-        let out_type = this.settings["output-type"].value;
-        this.setOutputData(0, Utils.formatValue(val, out_type));
+    onAdded() {
+        if (this.side==Side.server) {
+            let val = this.settings["value"].value;
+            let out_type = this.settings["output-type"].value;
+            this.setOutputData(0, Utils.formatValue(val, out_type));
+        }
     }
 
 
@@ -70,6 +67,8 @@ export class ConstantNode extends Node {
                 this.setDirtyCanvas(true, true);
             }
         }
+
+        this.setOutputData(0,val);
     }
 }
 Container.registerNodeType("main/constant", ConstantNode);

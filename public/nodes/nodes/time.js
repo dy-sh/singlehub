@@ -3,10 +3,11 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
+    else if (typeof define === "function" && define.amd) {
         define(["require", "exports", "../node", "../container"], factory);
     }
 })(function (require, exports) {
@@ -106,8 +107,8 @@
                 this.lastTime = null;
                 this.setOutputData(0, null);
             }
-            if (this.inputs[0].updated && this.inputs[0].data !== null) {
-                if (this.lastTime !== null) {
+            if (this.inputs[0].updated && this.inputs[0].data != null) {
+                if (this.lastTime != null) {
                     let delay = Date.now() - this.lastTime;
                     this.setOutputData(0, delay);
                 }

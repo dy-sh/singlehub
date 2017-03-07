@@ -229,6 +229,9 @@ export default class Utils {
     }
 
     static formatValue(val: any, type: string): any {
+        if (val === null)
+            return null;
+
         if (type == "number" && typeof val != "number") {
             if (typeof val == "boolean")
                 return val ? 1 : 0;

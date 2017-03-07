@@ -3,15 +3,16 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "express", "../public/nodes/container"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const express = require('express');
+    const express = require("express");
     const container_1 = require("../public/nodes/container");
     let router = express.Router();
     //var config = require('./../config');

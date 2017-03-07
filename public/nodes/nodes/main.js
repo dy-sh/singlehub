@@ -35,14 +35,12 @@
             };
             this.addOutput("1", "number");
         }
-        // setValue  (v) {
-        //     // if (typeof(v) == "string") v = parseFloat(v);
-        //     this.settings["value"] = v;
-        // }
-        onExecute() {
-            let val = this.settings["value"].value;
-            let out_type = this.settings["output-type"].value;
-            this.setOutputData(0, utils_1.default.formatValue(val, out_type));
+        onAdded() {
+            if (this.side == container_1.Side.server) {
+                let val = this.settings["value"].value;
+                let out_type = this.settings["output-type"].value;
+                this.setOutputData(0, utils_1.default.formatValue(val, out_type));
+            }
         }
         onSettingsChanged() {
             //change output type
@@ -65,6 +63,7 @@
                     this.setDirtyCanvas(true, true);
                 }
             }
+            this.setOutputData(0, val);
         }
     }
     exports.ConstantNode = ConstantNode;
