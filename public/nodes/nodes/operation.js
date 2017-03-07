@@ -54,18 +54,51 @@
         }
         onInputUpdated() {
             let old = this.outputs[0].data;
-            if (this.inputs[1].updated && this.inputs[1].data)
+            if (this.inputs[1].updated && this.inputs[1].data == true)
                 this.val++;
-            if (this.inputs[2].updated && this.inputs[2].data)
+            if (this.inputs[2].updated && this.inputs[2].data == true)
                 this.val--;
             if (this.inputs[0].updated)
                 this.val = this.inputs[0].data;
-            if (this.inputs[3].updated && this.inputs[3].data)
+            if (this.inputs[3].updated && this.inputs[3].data == true)
                 this.val = 0;
             if (this.val !== old)
                 this.setOutputData(0, this.val);
         }
     }
     container_1.Container.registerNodeType("operation/counter", CounterNode);
+    class StackNode extends node_1.Node {
+        constructor() {
+            super();
+            this.data = [];
+            this.title = "Stack";
+            this.descriprion = "This node stores all the incoming values, and puts them in a stack. <br/>" +
+                "You can read the values from the stack at any time. <br/>" +
+                "Node can be used as a buffer. <br/>" +
+                "Values are stored in the database and available after restart of the server.";
+            this.addInput("add value");
+            this.addInput("get value", "boolean");
+            this.addInput("clear", "boolean");
+            this.addOutput("value");
+            this.addOutput("count", "number");
+        }
+        onInputUpdated() {
+            if (this.inputs[0].updated && this.inputs[0].data != null) {
+                this.data.push(this.inputs[0].data);
+                this.setOutputData(1, this.data.length);
+            }
+            if (this.inputs[1].updated && this.inputs[1].data == true) {
+                let val = this.data.length > 0 ? this.data.pop() : null;
+                this.setOutputData(0, val);
+                this.setOutputData(1, this.data.length);
+            }
+            if (this.inputs[2].updated && this.inputs[2].data != null) {
+                this.data = [];
+                this.setOutputData(0, null);
+                this.setOutputData(1, 0);
+            }
+        }
+    }
+    container_1.Container.registerNodeType("operation/stack", StackNode);
 });
 //# sourceMappingURL=operation.js.map

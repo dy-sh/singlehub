@@ -194,7 +194,7 @@ class NumbersSumNode extends Node {
     onInputUpdated() {
         let old = this.outputs[0].data;
 
-        if (this.inputs[2].updated && this.inputs[2].data)
+        if (this.inputs[2].updated && this.inputs[2].data==true)
             this.val = 0;
 
         else if (this.inputs[1].updated)
