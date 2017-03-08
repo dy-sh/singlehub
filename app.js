@@ -1,9 +1,10 @@
 (function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./public/js/emitter/emitter", './modules/server/server', './public/nodes/container', 'path'], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./public/js/emitter/emitter", "./modules/server/server", "./public/nodes/container", "path"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -16,10 +17,10 @@
     require('source-map-support').install();
     console.log("----------------------------- MyNodes -----------------------------");
     let config = require('./config.json');
-    const server_1 = require('./modules/server/server');
-    const container_1 = require('./public/nodes/container');
+    const server_1 = require("./modules/server/server");
+    const container_1 = require("./public/nodes/container");
     //add app root dir to global
-    const path = require('path');
+    const path = require("path");
     global.__rootdirname = path.resolve(__dirname);
     const log = require('logplease').create('app', { color: 2 });
     class App extends emitter_1.Emitter {
@@ -101,17 +102,22 @@
                         exports.app.rootContainer.last_node_id = id;
                 });
                 //import nodes
-                db.getNodes(function (err, nodes) {
-                    if (!nodes)
+                db.getNodes(function (err, ser_nodes) {
+                    if (!ser_nodes)
                         return;
-                    for (let n of nodes) {
+                    for (let n of ser_nodes) {
                         let cont = container_1.Container.containers[n.cid];
                         if (!cont)
                             cont = new container_1.Container(container_1.Side.server, n.cid);
                         cont.createNode(n.type, null, n);
                     }
+                    for (let n of ser_nodes) {
+                        let cont = container_1.Container.containers[n.cid];
+                        let node = cont._nodes[n.id];
+                        node.restoreLinks();
+                    }
                     let contCount = container_1.Container.containers ? Object.keys(container_1.Container.containers).length : 0;
-                    log.info("Imported " + contCount + " containers, " + nodes.length + " nodes from database");
+                    log.info("Imported " + contCount + " containers, " + ser_nodes.length + " nodes from database");
                 });
             });
         }

@@ -203,6 +203,7 @@
                         if (!target_node) {
                             //delete link if target node not exist
                             delete input.link;
+                            this.debug(`restore link: delete input [${i}] link`);
                             updated = true;
                         }
                         else {
@@ -219,6 +220,7 @@
                                 input.data = utils_1.default.formatValue(t_out.data, input.type);
                                 input.updated = true;
                                 this.isUpdated = true;
+                                this.debug(`restore link: create input [${i}] link with node [${target_node.id}] output [${input.link.target_slot}}]`);
                                 if (this.container.db) {
                                     let s_t_node = target_node.serialize(true);
                                     this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { outputs: s_t_node.outputs } });
@@ -239,6 +241,7 @@
                             let target_node = this.container._nodes[link.target_node_id];
                             //delete link if target node not exist
                             if (!target_node) {
+                                this.debug(`restore link: delete output [${i}] link`);
                                 output.links.splice(l, 1);
                                 updated = true;
                                 continue;
@@ -246,12 +249,14 @@
                             let t_input = target_node.inputs[link.target_slot];
                             //delete link if target node input not exist
                             if (!t_input) {
+                                this.debug(`restore link: delete output [${i}] link`);
                                 output.links.splice(l, 1);
                                 updated = true;
                                 continue;
                             }
                             //delete link if target node connected to another node
                             if (t_input.link && t_input.link.target_node_id != this.id || t_input.link.target_slot != +i) {
+                                this.debug(`restore link: delete output [${i}] link`);
                                 output.links.splice(l, 1);
                                 updated = true;
                                 continue;
@@ -263,6 +268,7 @@
                                 t_input.data = utils_1.default.formatValue(output.data, t_input.type);
                                 t_input.updated = true;
                                 target_node.isUpdated = true;
+                                this.debug(`restore link: create output [${i}] link with node [${target_node.id}] input [${link.target_slot}}]`);
                                 //update db
                                 if (this.container.db) {
                                     let s_t_node = target_node.serialize(true);

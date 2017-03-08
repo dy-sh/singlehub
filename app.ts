@@ -135,11 +135,11 @@ export class App extends Emitter {
             });
 
             //import nodes
-            db.getNodes(function (err, nodes) {
-                if (!nodes)
+            db.getNodes(function (err, ser_nodes) {
+                if (!ser_nodes)
                     return;
 
-                for (let n of nodes) {
+                for (let n of ser_nodes) {
                     let cont = Container.containers[n.cid];
                     if (!cont)
                         cont = new Container(Side.server, n.cid);
@@ -147,8 +147,14 @@ export class App extends Emitter {
                     cont.createNode(n.type, null, n);
                 }
 
+                for (let n of ser_nodes) {
+                    let cont = Container.containers[n.cid];
+                    let node = cont._nodes[n.id];
+                    node.restoreLinks();
+                }
+
                 let contCount = Container.containers ? Object.keys(Container.containers).length : 0;
-                log.info("Imported " + contCount + " containers, " + nodes.length + " nodes from database");
+                log.info("Imported " + contCount + " containers, " + ser_nodes.length + " nodes from database");
             });
         });
     }
