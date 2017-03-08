@@ -497,7 +497,7 @@ export class Container extends Emitter {
 
         //check node id not exist
         if (this._nodes[id]) {
-            log.error("Can't create node. Node id [" + id + " already exist.");
+            log.error("Can't create node. Node id [" + id + "] already exist.");
             return null;
         }
 

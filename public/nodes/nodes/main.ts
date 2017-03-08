@@ -6,6 +6,8 @@
 import {Node} from "../node";
 import {Container, Side} from "../container";
 import Utils from "../utils";
+import {runInNewContext} from "vm";
+import {type} from "os";
 
 
 //Constant
@@ -166,14 +168,40 @@ export class ContainerNode extends Node {
     }
 
 
-    clone() {
+    clone(): Node {
 
-        let node = this.container.createNode(this.type);
-        let data = this.serialize();
+        let node = <ContainerNode>this.container.createNode(this.type);
+
+        let data = this.serialize(true);
         delete data["id"];
-        delete data["inputs"];
-        delete data["outputs"];
+        data['sub_container'].id = node.sub_container.id;
         node.configure(data);
+
+        node.pos[1] = this.pos[1] + this.size[1] + 25;
+
+        node.restoreLinks();
+
+        if (this.container.db) {
+            let s_node = node.serialize(true);
+            this.container.db.updateNode(node.id, node.container.id, s_node)
+        }
+
+        let new_cont = node.sub_container;
+
+        let nodes = this.sub_container._nodes;
+        for (let id in nodes) {
+            if (nodes[id].type == "main/container") {
+                
+            } else {
+                let s_node = nodes[id].serialize(true);
+                let new_node = new_cont.createNode(s_node.type, null, s_node);
+
+                if (this.container.db) {
+                    this.container.db.addNode(new_node)
+                }
+            }
+        }
+
         return node;
     }
 
@@ -294,8 +322,8 @@ export class ContainerOutputNode extends Node {
     onInputUpdated() {
         let val = this.getInputData(0);
         let cont_node = this.container.container_node;
-        let slot=this.properties['slot'];
-        cont_node.setOutputData(slot,val);
+        let slot = this.properties['slot'];
+        cont_node.setOutputData(slot, val);
     }
 
 

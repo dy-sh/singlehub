@@ -154,7 +154,7 @@ export class App extends Emitter {
                 }
 
                 let contCount = Container.containers ? Object.keys(Container.containers).length : 0;
-                log.info("Imported " + contCount + " containers, " + ser_nodes.length + " nodes from database");
+                log.info("Imported " + (contCount - 1) + " containers, " + ser_nodes.length + " nodes from database");
             });
         });
     }
