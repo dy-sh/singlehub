@@ -22,7 +22,7 @@ export class EditorClientSocket {
 
         this.editor = editor;
 
-        let socket=io('/editor');
+        let socket = io('/editor');
         this.socket = socket;
 
         let that = this;
@@ -229,7 +229,7 @@ export class EditorClientSocket {
 
 
         socket.on('nodes-io-values', function (slots_values) {
-            if(!that.editor.showNodesIOValues)
+            if (!that.editor.showNodesIOValues)
                 return;
 
             let container = Container.containers[slots_values.cid];
@@ -261,6 +261,24 @@ export class EditorClientSocket {
                     node.outputs[slot.outputId].label = slot.data;
                     node.setDirtyCanvas(true, true);
                 }
+            }
+        });
+
+        socket.on('nodes-clone', function (data) {
+            let container = Container.containers[data.cid];
+            if (!container) {
+                log.error(`Can't clone node. Container id [${data.cid}] not found.`);
+                return;
+            }
+            for (let id of data.nodes) {
+                let node = container.getNodeById(id);
+                if (!node) {
+                    log.error(`Can't clone node. Node id [${data.cid}/${id}] not found.`);
+                    return;
+                }
+
+                node.clone();
+
             }
         });
 
@@ -457,14 +475,14 @@ export class EditorClientSocket {
     //---------------------------------------------------
 
 
-    sendCloneNode(node: Node): void {
+    sendCloneNode(ids: Array<number>): void {
+        let that = this;
         $.ajax({
-            url: '/api/editor/nodes/clone',
+            url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/clone",
             type: 'POST',
-            data: {'id': node.id}
-        }).done(function () {
-
-        });
+            contentType: 'application/json',
+            data: JSON.stringify(ids)
+        })
     };
 
 

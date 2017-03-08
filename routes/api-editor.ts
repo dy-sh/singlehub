@@ -250,13 +250,40 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
 });
 
 
-router.delete('/nodes/all', function (req, res) {
 
+/**
+ * Delete nodes
+ */
+router.post('/c/:cid/n/clone', function (req, res) {
+    let container = Container.containers[req.params.cid];
+    if (!container) return res.status(404).send(`Can't clone node. Container id [${req.params.cid}] not found.`);
+
+    let dashboardNodes = [];
+    for (let id of req.body) {
+        let node = container.getNodeById(id);
+        if (!node) return res.status(404).send(`Can't clone node. Node id [${req.params.cid}/${req.params.id}] not found.`);
+
+        if (node.isDashboardNode)
+            dashboardNodes.push(id);
+
+        node.clone();
+    }
+
+    app.server.editorSocket.io.emit('nodes-clone', {
+        nodes: req.body,
+        cid: req.params.cid
+    });
+
+    if (dashboardNodes.length > 0) {
+        app.server.dashboardSocket.io.in(req.params.cid).emit('nodes-clone', {
+            nodes: dashboardNodes,
+            cid: req.params.cid,
+        });
+    }
+
+    res.send(`Nodes cloned: ids ${req.params.cid}/${JSON.stringify(req.body.ids)}`);
 });
 
-router.get('/nodes/description', function (req, res) {
-
-});
 
 //------------------ links ------------------------
 

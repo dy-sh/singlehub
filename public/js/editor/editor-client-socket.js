@@ -3,11 +3,10 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/container"], factory);
     }
 })(function (require, exports) {
@@ -221,6 +220,21 @@
                     }
                 }
             });
+            socket.on('nodes-clone', function (data) {
+                let container = container_1.Container.containers[data.cid];
+                if (!container) {
+                    log.error(`Can't clone node. Container id [${data.cid}] not found.`);
+                    return;
+                }
+                for (let id of data.nodes) {
+                    let node = container.getNodeById(id);
+                    if (!node) {
+                        log.error(`Can't clone node. Node id [${data.cid}/${id}] not found.`);
+                        return;
+                    }
+                    node.clone();
+                }
+            });
             // socket.on('gateway-connected', function () {
             //     noty({text: 'Gateway connected.', type: 'alert', timeout: false});
             // });
@@ -388,12 +402,13 @@
         }
         ;
         //---------------------------------------------------
-        sendCloneNode(node) {
+        sendCloneNode(ids) {
+            let that = this;
             $.ajax({
-                url: '/api/editor/nodes/clone',
+                url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/clone",
                 type: 'POST',
-                data: { 'id': node.id }
-            }).done(function () {
+                contentType: 'application/json',
+                data: JSON.stringify(ids)
             });
         }
         ;

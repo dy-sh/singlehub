@@ -178,11 +178,110 @@
          * @returns {Node}
          */
         clone() {
+            if (this.clonable == false)
+                return;
             let node = this.container.createNode(this.type);
             let data = this.serialize();
             delete data["id"];
             node.configure(data);
+            node.pos[1] = this.pos[1] + this.size[1] + 25;
+            node.restoreLinks();
+            if (this.container.db) {
+                let s_node = node.serialize(true);
+                this.container.db.updateNode(node.id, node.container.id, s_node);
+            }
             return node;
+        }
+        restoreLinks() {
+            let updated = false;
+            //restore input links
+            if (this.getInputsCount() > 0) {
+                for (let i in this.inputs) {
+                    let input = this.inputs[i];
+                    if (input.link) {
+                        let target_node = this.container._nodes[input.link.target_node_id];
+                        if (!target_node) {
+                            //delete link if target node not exist
+                            delete input.link;
+                            updated = true;
+                        }
+                        else {
+                            //connect target node if not connected
+                            let t_link;
+                            let t_out = target_node.outputs[input.link.target_slot];
+                            if (t_out.links)
+                                for (let out_link of t_out.links)
+                                    if (out_link.target_node_id == this.id && out_link.target_slot == +i)
+                                        t_link = out_link;
+                            if (!t_link) {
+                                t_out.links.push({ target_node_id: this.id, target_slot: +i });
+                                //update input value
+                                input.data = utils_1.default.formatValue(t_out.data, input.type);
+                                input.updated = true;
+                                this.isUpdated = true;
+                                if (this.container.db) {
+                                    let s_t_node = target_node.serialize(true);
+                                    this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { outputs: s_t_node.outputs } });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //restore output links
+            if (this.getOutputsCount() > 0) {
+                for (let i in this.outputs) {
+                    let output = this.outputs[i];
+                    if (output.links) {
+                        let l = output.links.length;
+                        while (l--) {
+                            let link = output.links[l];
+                            let target_node = this.container._nodes[link.target_node_id];
+                            //delete link if target node not exist
+                            if (!target_node) {
+                                output.links.splice(l, 1);
+                                updated = true;
+                                continue;
+                            }
+                            let t_input = target_node.inputs[link.target_slot];
+                            //delete link if target node input not exist
+                            if (!t_input) {
+                                output.links.splice(l, 1);
+                                updated = true;
+                                continue;
+                            }
+                            //delete link if target node connected to another node
+                            if (t_input.link && t_input.link.target_node_id != this.id || t_input.link.target_slot != +i) {
+                                output.links.splice(l, 1);
+                                updated = true;
+                                continue;
+                            }
+                            //connect target node if not connected
+                            if (!t_input.link) {
+                                t_input.link = { target_node_id: this.id, target_slot: +i };
+                                //update input value
+                                t_input.data = utils_1.default.formatValue(output.data, t_input.type);
+                                t_input.updated = true;
+                                target_node.isUpdated = true;
+                                //update db
+                                if (this.container.db) {
+                                    let s_t_node = target_node.serialize(true);
+                                    this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { inputs: s_t_node.inputs } });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (updated && this.container.db) {
+                let s_node = this.serialize(true);
+                this.container.db.updateNode(this.id, this.container.id, {
+                    $set: {
+                        inputs: s_node.inputs,
+                        outputs: s_node.outputs
+                    }
+                });
+            }
         }
         /**
          * Serialize and stringify
@@ -565,7 +664,7 @@
          * @param {number} input_id input id of target node
          * @returns {boolean} true if connected successfully
          */
-        connect(output_id, target_node_id, input_id) {
+        connect(output_id, target_node_id, input_id, update_db = true) {
             //get target node
             let target_node = this.container.getNodeById(target_node_id);
             if (!target_node) {
@@ -609,7 +708,7 @@
             input.data = utils_1.default.formatValue(output.data, input.type);
             target_node.isUpdated = true;
             //update db
-            if (this.container.db) {
+            if (update_db && this.container.db) {
                 let s_node = this.serialize(true);
                 let s_t_node = target_node.serialize(true);
                 this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: s_node.outputs } });

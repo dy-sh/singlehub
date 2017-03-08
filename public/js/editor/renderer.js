@@ -1,10 +1,9 @@
 ///<reference path='../../../types/my_types.d.ts'/>
 (function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "../../nodes/container", "./editor", "../../nodes/utils", "./renderer-themes"], factory);
     }
 })(function (require, exports) {
@@ -2185,17 +2184,15 @@
          * On menu node clone
          * @param node
          */
-        onMenuNodeClone(node) {
-            if (node.clonable == false)
-                return;
-            //derwish removed
-            //let newnode = node.clone();
-            //if(!newnode) return;
-            //newnode.pos = [node.pos[0]+10,node.pos[1]+10];
-            //node.container.add(newnode);
-            //node.setDirtyCanvas(true, true);
-            //derwish added
-            editor_1.editor.socket.sendCloneNode(node);
+        onMenuNodeClone(node, e, prev_menu, renderer, first_event) {
+            if (node.id in renderer.selected_nodes) {
+                let ids = [];
+                for (let n in renderer.selected_nodes)
+                    ids.push(n);
+                editor_1.editor.socket.sendCloneNode(ids);
+            }
+            else
+                editor_1.editor.socket.sendCloneNode([node.id]);
         }
         /**
          * Create contextual menu

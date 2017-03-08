@@ -2793,17 +2793,17 @@ export class Renderer {
      * On menu node clone
      * @param node
      */
-    onMenuNodeClone(node: Node): void {
-        if (node.clonable == false) return;
-        //derwish removed
-        //let newnode = node.clone();
-        //if(!newnode) return;
-        //newnode.pos = [node.pos[0]+10,node.pos[1]+10];
-        //node.container.add(newnode);
-        //node.setDirtyCanvas(true, true);
+    onMenuNodeClone(node: Node, e: any, prev_menu: Element, renderer: Renderer, first_event: any): void {
+        if (node.id in renderer.selected_nodes) {
+            let ids = [];
 
-        //derwish added
-        editor.socket.sendCloneNode(node);
+            for (let n in renderer.selected_nodes)
+                ids.push(n);
+
+            editor.socket.sendCloneNode(ids);
+        }
+        else
+            editor.socket.sendCloneNode([node.id]);
     }
 
     /**

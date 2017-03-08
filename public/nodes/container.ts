@@ -864,7 +864,6 @@ export class Container extends Emitter {
                             new_cont_node.inputs[input_node.properties["slot"]].link =
                                 {target_node_id: input.link.target_node_id, target_slot: input.link.target_slot}
 
-                            //reconnect old target node to cont input
                             let t_out_links = old_target.outputs[input.link.target_slot].links;
                             for (let out_link of t_out_links) {
                                 if (out_link.target_node_id == node.id && out_link.target_slot == +i) {

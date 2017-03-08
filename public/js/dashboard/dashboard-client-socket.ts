@@ -134,6 +134,24 @@ export class DashboardClientSocket {
                 // editor.renderer.showNodeActivity(node);
             }
         });
+
+        socket.on('nodes-clone', function (data) {
+            let container = Container.containers[data.cid];
+            if (!container) {
+                log.error(`Can't clone node. Container id [${data.cid}] not found.`);
+                return;
+            }
+            for (let id of data.nodes) {
+                let node = container.getNodeById(id);
+                if (!node) {
+                    log.error(`Can't clone node. Node id [${data.cid}/${id}] not found.`);
+                    return;
+                }
+
+                node.clone();
+
+            }
+        });
     }
 
 
