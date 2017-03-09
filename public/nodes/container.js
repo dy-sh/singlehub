@@ -317,6 +317,23 @@
             }
         }
         /**
+         * Get nodes
+         * @returns {number}
+         */
+        getNodes(includeSubcontainers = false) {
+            let nodes = [];
+            addNodes(this._nodes);
+            function addNodes(_nodes) {
+                for (let n in _nodes) {
+                    nodes.push(_nodes[n]);
+                    if (includeSubcontainers && _nodes[n].sub_container) {
+                        addNodes(_nodes[n].sub_container._nodes);
+                    }
+                }
+            }
+            return nodes;
+        }
+        /**
          * Get nodes count
          * @returns {number}
          */

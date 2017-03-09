@@ -397,7 +397,7 @@ export class Node {
                             continue;
                         }
                         //delete link if target node connected to another node
-                        if (t_input.link && t_input.link.target_node_id != this.id || t_input.link.target_slot != +i) {
+                        if (t_input.link && (t_input.link.target_node_id != this.id || t_input.link.target_slot != +i)) {
                             this.debug(`restore link: delete output [${i}] link`);
                             output.links.splice(l, 1);
                             updated = true;

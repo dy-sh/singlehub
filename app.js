@@ -104,19 +104,26 @@
                 db.getNodes(function (err, ser_nodes) {
                     if (!ser_nodes)
                         return;
+                    let containers = container_1.Container.containers;
+                    let nodesCount = 0;
                     for (let n of ser_nodes) {
-                        let cont = container_1.Container.containers[n.cid];
+                        let cont = containers[n.cid];
                         if (!cont)
                             cont = new container_1.Container(container_1.Side.server, n.cid);
+                        nodesCount++;
                         cont.createNode(n.type, null, n);
                     }
                     for (let n of ser_nodes) {
                         let cont = container_1.Container.containers[n.cid];
                         let node = cont._nodes[n.id];
+                        if (!node)
+                            log.error("Node [" + n.cid + "/" + n.id + "] is not created.");
                         node.restoreLinks();
                     }
-                    let contCount = container_1.Container.containers ? Object.keys(container_1.Container.containers).length : 0;
-                    log.info("Imported " + (contCount - 1) + " containers, " + ser_nodes.length + " nodes from database");
+                    let contCount = Object.keys(containers).length;
+                    if (containers[0])
+                        contCount--;
+                    log.info("Imported " + contCount + " containers, " + nodesCount + " nodes from database");
                 });
             });
         }

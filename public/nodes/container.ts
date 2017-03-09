@@ -453,6 +453,27 @@ export class Container extends Emitter {
         }
     }
 
+    /**
+     * Get nodes
+     * @returns {number}
+     */
+    getNodes(includeSubcontainers = false): Array<Node> {
+        let nodes = [];
+
+        addNodes(this._nodes);
+
+        function addNodes(_nodes) {
+            for (let n in _nodes) {
+                nodes.push(_nodes[n]);
+
+                if (includeSubcontainers && _nodes[n].sub_container) {
+                    addNodes(_nodes[n].sub_container._nodes)
+                }
+            }
+        }
+
+        return nodes;
+    }
 
     /**
      * Get nodes count
@@ -966,7 +987,7 @@ export class Container extends Emitter {
      * @param module
      */
     debug(message: string): void {
-        log.debug("["+this.id + "] " + message);
+        log.debug("[" + this.id + "] " + message);
     }
 
     /**
@@ -975,7 +996,7 @@ export class Container extends Emitter {
      * @param module
      */
     debugWarn(message: string, module?: string): void {
-        log.warn("["+this.id + "] " + message);
+        log.warn("[" + this.id + "] " + message);
     }
 
     /**
@@ -984,7 +1005,7 @@ export class Container extends Emitter {
      * @param module
      */
     debugErr(message: string, module?: string): void {
-        log.error("["+this.id + "] " + message);
+        log.error("[" + this.id + "] " + message);
     }
 }
 

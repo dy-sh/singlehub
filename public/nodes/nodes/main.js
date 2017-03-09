@@ -80,7 +80,6 @@
             this.sub_container = new container_1.Container(this.side);
             this.sub_container_id = this.sub_container.id;
             this.settings["name"].value = "Container " + this.sub_container.id;
-            ;
             this.sub_container.container_node = this;
             this.sub_container.parent_container_id = this.container.id;
             if (this.container.db)
@@ -97,14 +96,15 @@
             delete container_1.Container.containers[this.sub_container.id];
         }
         ;
-        configure(data, from_db = false) {
+        configure(data, from_db = false, configure_sub_cont = true) {
             super.configure(data);
             this.sub_container = container_1.Container.containers[data.sub_container.id];
             if (!this.sub_container)
                 this.sub_container = new container_1.Container(this.side, data.sub_container.id);
             this.sub_container.container_node = this;
             this.sub_container.parent_container_id = this.container.id;
-            this.sub_container.configure(data.sub_container, false);
+            if (configure_sub_cont)
+                this.sub_container.configure(data.sub_container, true);
         }
         serialize(for_db = false) {
             let data = super.serialize(for_db);
@@ -134,44 +134,12 @@
             // if (this.side==Side.server)
         }
         clone() {
-            // let node = <ContainerNode>this.container.createNode(this.type);
-            //
-            // let data = this.serialize(true);
-            // delete data["id"];
-            // data['sub_container'].id = node.sub_container.id;
-            // node.configure(data);
-            //
-            // node.pos[1] = this.pos[1] + this.size[1] + 25;
-            //
-            // node.restoreLinks();
-            //
-            // if (this.container.db) {
-            //     let s_node = node.serialize(true);
-            //     this.container.db.updateNode(node.id, node.container.id, s_node)
-            // }
-            //
-            // let new_cont = node.sub_container;
-            //
-            // let nodes = this.sub_container._nodes;
-            // for (let id in nodes) {
-            //     if (nodes[id].type == "main/container") {
-            //
-            //     } else {
-            //         let s_node = nodes[id].serialize(true);
-            //         let new_node = new_cont.createNode(s_node.type, null, s_node);
-            //
-            //         if (this.container.db) {
-            //             this.container.db.addNode(new_node)
-            //         }
-            //     }
-            // }
-            //
-            let exp = this.exportContainer();
-            console.log(exp);
+            let e = this.serialize();
+            let json = JSON.stringify(e);
+            let exp = JSON.parse(json);
             let node = this.importContainer(exp);
-            console.log(JSON.stringify(node.serialize()));
             node.pos[1] = this.pos[1] + this.size[1] + 25;
-            // node.restoreLinks();
+            node.restoreLinks();
             if (this.container.db) {
                 let s_node = node.serialize(true);
                 this.container.db.updateNode(node.id, node.container.id, {
@@ -184,12 +152,7 @@
             }
             return node;
         }
-        exportContainer() {
-            let s = this.serialize();
-            return JSON.stringify(s);
-        }
-        importContainer(json) {
-            let data = JSON.parse(json);
+        importContainer(data) {
             let new_cont = this.container.createNode(this.type);
             data.cid = this.sub_container.id;
             delete data["id"];
@@ -200,16 +163,26 @@
             function updateNodesCids(nodes, cid) {
                 for (let id in nodes) {
                     nodes[id].cid = cid;
-                    if (nodes[id].type == "main/container") {
+                    //if node is container node
+                    if (nodes[id].sub_container) {
                         nodes[id].sub_container.id = ++lastCid;
                         updateNodesCids(nodes[id].sub_container.serialized_nodes, lastCid);
                     }
                 }
             }
-            new_cont.configure(data);
+            new_cont.configure(data, false, false);
             if (this.container.db) {
+                //update new container
                 let s_node = new_cont.serialize(true);
                 this.container.db.updateNode(new_cont.id, new_cont.container.id, s_node);
+                //add all new nodes
+                let nodes = new_cont.sub_container.getNodes(true);
+                if (nodes && nodes.length > 0)
+                    for (let n of nodes)
+                        this.container.db.addNode(n);
+                //update last container id
+                if (new_cont.sub_container.id != lastCid)
+                    this.container.db.updateLastContainerId(lastCid);
             }
             return new_cont;
         }

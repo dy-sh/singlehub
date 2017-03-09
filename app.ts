@@ -139,22 +139,30 @@ export class App extends Emitter {
                 if (!ser_nodes)
                     return;
 
+                let containers = Container.containers;
+
+                let nodesCount = 0;
+
                 for (let n of ser_nodes) {
-                    let cont = Container.containers[n.cid];
+                    let cont = containers[n.cid];
                     if (!cont)
                         cont = new Container(Side.server, n.cid);
 
+                    nodesCount++;
                     cont.createNode(n.type, null, n);
                 }
 
                 for (let n of ser_nodes) {
                     let cont = Container.containers[n.cid];
                     let node = cont._nodes[n.id];
+                    if (!node)
+                        log.error("Node [" + n.cid + "/" + n.id + "] is not created.");
                     node.restoreLinks();
                 }
 
-                let contCount = Container.containers ? Object.keys(Container.containers).length : 0;
-                log.info("Imported " + (contCount - 1) + " containers, " + ser_nodes.length + " nodes from database");
+                let contCount = Object.keys(containers).length;
+                if (containers[0]) contCount--;
+                log.info("Imported " + contCount + " containers, " + nodesCount + " nodes from database");
             });
         });
     }
