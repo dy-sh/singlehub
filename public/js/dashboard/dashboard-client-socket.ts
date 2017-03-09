@@ -105,7 +105,7 @@ export class DashboardClientSocket {
         socket.on('nodes-move-to-new-container', function (data) {
             //todo remove nodes
             // let container = Container.containers[data.cid];
-            // container.mooveNodesToNewContainer(data.ids, data.pos);
+            // container.moveNodesToNewContainer(data.ids, data.pos);
         });
 
         socket.on('node-message-to-dashboard-side', function (n) {

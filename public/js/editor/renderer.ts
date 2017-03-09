@@ -3125,7 +3125,7 @@ export class Renderer {
         setTimeout(function () {
             node.boxcolor = this.theme.NODE_DEFAULT_BOXCOLOR;
             node.setDirtyCanvas(true, true);
-        }, 100);
+        }, 50);
     }
 }
 

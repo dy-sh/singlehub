@@ -603,7 +603,7 @@
             stack.push(0);
             return stack;
         }
-        mooveNodesToNewContainer(ids, pos) {
+        moveNodesToNewContainer(ids, pos) {
             //prevent move input/output nodes
             let l = ids.length;
             while (l--) {

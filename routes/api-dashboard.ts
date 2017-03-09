@@ -10,32 +10,32 @@ import {Container} from "../public/nodes/container"
 import {Link, LinkInfo} from "../public/nodes/node";
 import {app} from "../app";
 
-
-setInterval(updateActiveNodes, 300);
-
-function updateActiveNodes() {
-    if (!app.rootContainer)
-        return;
-
-
-    for (let c in Container.containers) {
-        let container = Container.containers[c];
-
-        let activeNodesIds = [];
-
-        for (let id in container._nodes) {
-            let node = container._nodes[id];
-            if (node.isRecentlyActive) {
-                node.isRecentlyActive = false;
-                activeNodesIds.push(node.id);
-            }
-        }
-
-        if (activeNodesIds.length > 0)
-            app.server.editorSocket.io.in(""+container.id).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
-
-    }
-}
+//
+// setInterval(updateActiveNodes, 1000);
+//
+// function updateActiveNodes() {
+//     if (!app.rootContainer)
+//         return;
+//
+//
+//     for (let c in Container.containers) {
+//         let container = Container.containers[c];
+//
+//         let activeNodesIds = [];
+//
+//         for (let id in container._nodes) {
+//             let node = container._nodes[id];
+//             if (node.isRecentlyActive) {
+//                 node.isRecentlyActive = false;
+//                 activeNodesIds.push(node.id);
+//             }
+//         }
+//
+//         if (activeNodesIds.length > 0)
+//             app.server.dashboardSocket.io.in(""+container.id).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
+//
+//     }
+// }
 
 
 /**

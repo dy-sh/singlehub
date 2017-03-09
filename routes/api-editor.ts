@@ -11,7 +11,7 @@ import {Link, LinkInfo} from "../public/nodes/node";
 import {app} from "../app";
 
 
-setInterval(updateActiveNodes, 300);
+setInterval(updateActiveNodes, 250);
 
 function updateActiveNodes() {
     if (!app.rootContainer)
@@ -199,7 +199,7 @@ router.put('/c/:cid/n/move/', function (req, res) {
         if (!node) return res.status(404).send(`Can't move nodes. Node id [${req.params.cid}/${req.params.id}] not found.`);
     }
 
-    container.mooveNodesToNewContainer(req.body.ids, req.body.pos);
+    container.moveNodesToNewContainer(req.body.ids, req.body.pos);
 
     app.server.editorSocket.io.emit('nodes-move-to-new-container', {
         ids: req.body.ids,

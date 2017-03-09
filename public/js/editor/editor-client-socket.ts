@@ -153,7 +153,7 @@ export class EditorClientSocket {
                 log.error(`Can't move nodes to container. Container id [${data.cid}] not found.`);
                 return;
             }
-            container.mooveNodesToNewContainer(data.ids, data.pos);
+            container.moveNodesToNewContainer(data.ids, data.pos);
         });
 
         socket.on('node-message-to-editor-side', function (n) {
@@ -216,16 +216,49 @@ export class EditorClientSocket {
         });
 
 
+        let activeNodes = [];
+        let activedNodes = [];
         socket.on('nodes-active', function (data) {
-            let container = Container.containers[data.cid];
-            if (!container) return;
+            console.log(data)
+            // let container = Container.containers[data.cid];
+            // if (!container) return;
             for (let id of data.ids) {
-                let node = container.getNodeById(id);
-                if (!node) continue;
-
-                editor.renderer.showNodeActivity(node);
+                // let node = container.getNodeById(id);
+                // if (!node) continue;
+                //editor.renderer.showNodeActivity(node);
+                activeNodes.push(id);
             }
         });
+
+        //show nodes activity
+        let activityState = false;
+        setInterval(function () {
+            activityState = !activityState;
+
+            if (activityState && activeNodes.length > 0) {
+                let container = editor.renderer.container;
+                for (let id of activeNodes) {
+                    let node = container.getNodeById(id);
+                    if (!node) continue;
+                    // editor.renderer.showNodeActivity(node);
+                    node.boxcolor = editor.renderer.theme.NODE_ACTIVE_BOXCOLOR;
+                    node.setDirtyCanvas(true, true);
+                }
+                activedNodes = activeNodes;
+                activeNodes = [];
+            }
+
+            else if (!activityState && activedNodes.length > 0) {
+                let container = editor.renderer.container;
+                for (let id of activedNodes) {
+                    let node = container.getNodeById(id);
+                    if (!node) continue;
+                    node.boxcolor = editor.renderer.theme.NODE_DEFAULT_BOXCOLOR;
+                    node.setDirtyCanvas(true, true);
+                }
+                activedNodes = [];
+            }
+        }, 125);
 
 
         socket.on('nodes-io-values', function (slots_values) {

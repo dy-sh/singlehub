@@ -7,32 +7,39 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", 'express', "../public/nodes/container", "../app"], factory);
+        define(["require", "exports", 'express', "../public/nodes/container"], factory);
     }
 })(function (require, exports) {
     "use strict";
     const express = require('express');
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
-    const app_1 = require("../app");
-    setInterval(updateActiveNodes, 300);
-    function updateActiveNodes() {
-        if (!app_1.app.rootContainer)
-            return;
-        for (let c in container_1.Container.containers) {
-            let container = container_1.Container.containers[c];
-            let activeNodesIds = [];
-            for (let id in container._nodes) {
-                let node = container._nodes[id];
-                if (node.isRecentlyActive) {
-                    node.isRecentlyActive = false;
-                    activeNodesIds.push(node.id);
-                }
-            }
-            if (activeNodesIds.length > 0)
-                app_1.app.server.editorSocket.io.in("" + container.id).emit('nodes-active', { ids: activeNodesIds, cid: container.id });
-        }
-    }
+    //
+    // setInterval(updateActiveNodes, 1000);
+    //
+    // function updateActiveNodes() {
+    //     if (!app.rootContainer)
+    //         return;
+    //
+    //
+    //     for (let c in Container.containers) {
+    //         let container = Container.containers[c];
+    //
+    //         let activeNodesIds = [];
+    //
+    //         for (let id in container._nodes) {
+    //             let node = container._nodes[id];
+    //             if (node.isRecentlyActive) {
+    //                 node.isRecentlyActive = false;
+    //                 activeNodesIds.push(node.id);
+    //             }
+    //         }
+    //
+    //         if (activeNodesIds.length > 0)
+    //             app.server.dashboardSocket.io.in(""+container.id).emit('nodes-active', {ids: activeNodesIds, cid: container.id});
+    //
+    //     }
+    // }
     /**
      * Get container
      */

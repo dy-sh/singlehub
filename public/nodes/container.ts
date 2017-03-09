@@ -820,7 +820,7 @@ export class Container extends Emitter {
         return stack;
     }
 
-    mooveNodesToNewContainer(ids: Array<number>, pos: [number, number]) {
+    moveNodesToNewContainer(ids: Array<number>, pos: [number, number]) {
 
         //prevent move input/output nodes
         let l = ids.length;

@@ -145,12 +145,18 @@ export class ContainerNode extends Node {
 
     getExtraMenuOptions(renderer) {
         let that = this;
-        return [{
-            content: "Open", callback: function () {
-                renderer.openContainer(that.sub_container, true);
-            }
-        }];
+        return [
+            {content: "Open", callback: function () { renderer.openContainer(that.sub_container, true);}},
+            null, //null for horizontal line
+            { content: 'Show on Dashboard', callback: function () { let win = window.open('/dashboard/c/' + that.id, '_blank'); win.focus(); } },
+            null,
+            { content: 'Export to file', callback: function () { let win = window.open('/NodeEditorAPI/SerializePanelToFile/' + that.id, '_blank'); win.focus(); } },
+            { content: 'Export to script', callback: function () { that.exportPanelToScript(that.id) } },
+            { content: 'Export URL', callback: function () { that.exportPanelURL(that.id) } },
+            null
+        ];
     }
+
 
     onExecute() {
         this.sub_container.runStep();
