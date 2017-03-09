@@ -3,7 +3,7 @@
  */
 
 
-import {Node} from "../node";
+import {Node, SerializedNode} from "../node";
 import {Container, Side} from "../container";
 import Utils from "../utils";
 import {runInNewContext} from "vm";
@@ -128,7 +128,7 @@ export class ContainerNode extends Node {
         this.sub_container.container_node = this;
         this.sub_container.parent_container_id = this.container.id;
 
-        this.sub_container.configure(data.sub_container, true);
+        this.sub_container.configure(data.sub_container, false);
     }
 
     serialize(for_db = false) {
@@ -170,42 +170,99 @@ export class ContainerNode extends Node {
 
     clone(): Node {
 
-        let node = <ContainerNode>this.container.createNode(this.type);
+        // let node = <ContainerNode>this.container.createNode(this.type);
+        //
+        // let data = this.serialize(true);
+        // delete data["id"];
+        // data['sub_container'].id = node.sub_container.id;
+        // node.configure(data);
+        //
+        // node.pos[1] = this.pos[1] + this.size[1] + 25;
+        //
+        // node.restoreLinks();
+        //
+        // if (this.container.db) {
+        //     let s_node = node.serialize(true);
+        //     this.container.db.updateNode(node.id, node.container.id, s_node)
+        // }
+        //
+        // let new_cont = node.sub_container;
+        //
+        // let nodes = this.sub_container._nodes;
+        // for (let id in nodes) {
+        //     if (nodes[id].type == "main/container") {
+        //
+        //     } else {
+        //         let s_node = nodes[id].serialize(true);
+        //         let new_node = new_cont.createNode(s_node.type, null, s_node);
+        //
+        //         if (this.container.db) {
+        //             this.container.db.addNode(new_node)
+        //         }
+        //     }
+        // }
+        //
 
-        let data = this.serialize(true);
-        delete data["id"];
-        data['sub_container'].id = node.sub_container.id;
-        node.configure(data);
+        let exp = this.exportContainer();
+        console.log(exp);
+        let node = this.importContainer(exp);
+        console.log(JSON.stringify(node.serialize()))
 
         node.pos[1] = this.pos[1] + this.size[1] + 25;
-
-        node.restoreLinks();
-
+// node.restoreLinks();
         if (this.container.db) {
             let s_node = node.serialize(true);
-            this.container.db.updateNode(node.id, node.container.id, s_node)
-        }
-
-        let new_cont = node.sub_container;
-
-        let nodes = this.sub_container._nodes;
-        for (let id in nodes) {
-            if (nodes[id].type == "main/container") {
-                
-            } else {
-                let s_node = nodes[id].serialize(true);
-                let new_node = new_cont.createNode(s_node.type, null, s_node);
-
-                if (this.container.db) {
-                    this.container.db.addNode(new_node)
+            this.container.db.updateNode(node.id, node.container.id, {
+                $set: {
+                    pos: s_node.pos,
+                    inputs: s_node.inputs,
+                    outputs: s_node.outputs
                 }
-            }
+            })
         }
 
         return node;
     }
 
 
+    exportContainer(): string {
+        let s = this.serialize();
+        return JSON.stringify(s);
+    }
+
+    importContainer(json: string): ContainerNode {
+        let data: SerializedNode = JSON.parse(json);
+
+        let new_cont = <ContainerNode>this.container.createNode(this.type);
+
+        data.cid = this.sub_container.id;
+        delete data["id"];
+        data['sub_container'].id = new_cont.sub_container.id;
+
+        let nodes = data["sub_container"].serialized_nodes;
+        let lastCid = new_cont.sub_container.id;
+        updateNodesCids(nodes, lastCid);
+
+        function updateNodesCids(nodes, cid) {
+            for (let id in nodes) {
+                nodes[id].cid = cid;
+                if (nodes[id].type == "main/container") {
+                    nodes[id].sub_container.id = ++lastCid;
+                    updateNodesCids(nodes[id].sub_container.serialized_nodes, lastCid);
+                }
+            }
+        }
+
+        new_cont.configure(data);
+
+
+        if (this.container.db) {
+            let s_node = new_cont.serialize(true);
+            this.container.db.updateNode(new_cont.id, new_cont.container.id, s_node)
+        }
+
+        return new_cont;
+    }
 }
 Container.registerNodeType("main/container", ContainerNode);
 
@@ -225,8 +282,6 @@ export class ContainerInputNode extends Node {
 
 
     onCreated() {
-
-
         //add output on container node
         let cont_node = this.container.container_node;
         let id = cont_node.addInput(null, this.properties['type']);

@@ -100,7 +100,7 @@ export class Container extends Emitter {
         Container.containers[this.id] = this;
         this.clear();
 
-        log.debug("Container created [" + this.id + "]");
+        this.debug("Container created");
 
         let rootContainer = Container.containers[0];
         if (rootContainer) {
@@ -353,7 +353,7 @@ export class Container extends Emitter {
         // }
         // catch (err) {
         //     this.errors_in_execution = true;
-        //     log.error("Error during execution: " + err, this);
+        //     this.error("Error during execution: " + err, this);
         //     this.stop();
         //     throw err;
         // }
@@ -389,7 +389,7 @@ export class Container extends Emitter {
 
                     let target_node = this._nodes[link.target_node_id];
                     if (!target_node) {
-                        log.error("Can't transfer data from node " + node.getReadableId() + ". Target node not found");
+                        this.debugErr("Can't transfer data from node " + node.getReadableId() + ". Target node not found");
                         continue;
                     }
 
@@ -479,7 +479,7 @@ export class Container extends Emitter {
         //check class exist
         let node_class = Container.nodes_types[type];
         if (!node_class) {
-            log.error("Can't create node. Node class of type [" + type + "] not registered.");
+            this.debugErr("Can't create node. Node class of type [" + type + "] not registered.");
             return null;
         }
 
@@ -497,7 +497,7 @@ export class Container extends Emitter {
 
         //check node id not exist
         if (this._nodes[id]) {
-            log.error("Can't create node. Node id [" + id + "] already exist.");
+            this.debugErr("Can't create node. Node id [" + id + "] already exist.");
             return null;
         }
 
@@ -535,7 +535,7 @@ export class Container extends Emitter {
 
 
         if (is_new) {
-            log.debug("New node created: " + node.getReadableId());
+            this.debug("New node created: " + node.getReadableId());
 
             if (node.onCreated)
                 node.onCreated();
@@ -570,7 +570,7 @@ export class Container extends Emitter {
         if (typeof node == "number") {
             node = this._nodes[node];
             if (!node)
-                log.error("Can't remove node. Node id [" + node + " not exist.");
+                this.debugErr("Can't remove node. Node id [" + node + " not exist.");
             return null;
         }
 
@@ -618,7 +618,7 @@ export class Container extends Emitter {
         //remove from container
         delete this._nodes[node.id];
 
-        log.debug("Node deleted: " + node.getReadableId());
+        this.debug("Node deleted: " + node.getReadableId());
         node.container = null;
 
 
@@ -958,8 +958,33 @@ export class Container extends Emitter {
                 }
             }
         }
+    }
 
+    /**
+     * Print debug message to console
+     * @param message
+     * @param module
+     */
+    debug(message: string): void {
+        log.debug("["+this.id + "] " + message);
+    }
 
+    /**
+     * Print error message to console
+     * @param message
+     * @param module
+     */
+    debugWarn(message: string, module?: string): void {
+        log.warn("["+this.id + "] " + message);
+    }
+
+    /**
+     * Print error message to console
+     * @param message
+     * @param module
+     */
+    debugErr(message: string, module?: string): void {
+        log.error("["+this.id + "] " + message);
     }
 }
 

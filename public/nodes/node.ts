@@ -224,6 +224,7 @@ export class Node {
 
             else if (typeof(ser_node[key]) == 'object') //object
             {
+                //if node (has configure function)
                 if (this[key] && this[key].configure)
                     this[key].configure(ser_node[key]);
                 else
@@ -1209,6 +1210,15 @@ export class Node {
      */
     debug(message: string): void {
         log.debug(this.getReadableId() + " " + message);
+    }
+
+    /**
+     * Print error message to console
+     * @param message
+     * @param module
+     */
+    debugWarn(message: string, module?: string): void {
+        log.warn(this.getReadableId() + " " + message);
     }
 
     /**
