@@ -28,11 +28,18 @@
                 // });
                 //join client to container room
                 socket.on('room', function (room) {
-                    if (socket.room)
-                        socket.leave(socket.room);
-                    socket.room = room;
-                    socket.join(room);
-                    log.debug("Join to editor room [" + room + "]");
+                    if (socket.room != null) {
+                        socket.leave(socket.room, function () {
+                            socket.room = room;
+                            socket.join(room);
+                            log.debug("Switch editor room to [" + room + "]");
+                        });
+                    }
+                    else {
+                        socket.room = room;
+                        socket.join(room);
+                        log.debug("Join to editor room [" + room + "]");
+                    }
                 });
                 socket.on('node-message-to-server-side', function (n) {
                     let cont = container_1.Container.containers[n.cid];

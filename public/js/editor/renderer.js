@@ -1823,7 +1823,7 @@
                     });
             }
             if (this.getExtraMenuOptions) {
-                let extra = this.getExtraMenuOptions(this);
+                let extra = this.getExtraMenuOptions(this, editor_1.editor);
                 if (extra) {
                     extra.push(null);
                     options = extra.concat(options);
@@ -1849,7 +1849,7 @@
             if (node['getMenuOptions'])
                 options = node['getMenuOptions'](this);
             if (node['getExtraMenuOptions']) {
-                let extra = node['getExtraMenuOptions'](this);
+                let extra = node['getExtraMenuOptions'](this, editor_1.editor);
                 if (extra) {
                     //extra.push(null);
                     options = extra.concat(options);

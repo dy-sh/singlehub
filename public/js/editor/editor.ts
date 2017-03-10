@@ -380,11 +380,10 @@ export class Editor {
         }).modal('setting', 'transition', 'fade up').modal('show');
 
         $.ajax({
-            url: "/api/editor/serialize-container/",
-            type: "POST",
-            data: {id: id},
+            url: "/api/editor/c/" + id,
+            type: "GET",
             success: function (result) {
-                $('#modal-panel-text').html(result);
+                $('#modal-panel-text').html(JSON.stringify(result));
                 $('#modal-panel-text').fadeIn(300);
                 $('#modal-panel-message').hide();
             }
@@ -398,7 +397,7 @@ export class Editor {
             '<div class="field">' +
             'URL:  <input type="text" id="modal-panel-text">' +
             '</div>');
-        let url = $(location).attr('host') + "/api/editor/serialize-container/" + id;
+        let url = $(location).attr('host') + "/api/editor/c/" + id ;
 
         let prefix = 'http://';
         if (url.substr(0, prefix.length) !== prefix) {
@@ -595,7 +594,7 @@ export class Editor {
         $("#dashboard-button").attr("href", '/dashboard/c/' + that.renderer.container.id);
 
         //update split button
-        let split=$("#split-button").attr("href").startsWith("/editor/split/");
+        let split = $("#split-button").attr("href").startsWith("/editor/split/");
         if (split)
             $("#split-button").attr("href", '/editor/split/c/' + that.renderer.container.id);
         else

@@ -219,7 +219,6 @@ export class EditorClientSocket {
         let activeNodes = [];
         let activedNodes = [];
         socket.on('nodes-active', function (data) {
-            console.log(data)
             // let container = Container.containers[data.cid];
             // if (!container) return;
             for (let id of data.ids) {

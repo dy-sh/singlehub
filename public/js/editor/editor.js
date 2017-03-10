@@ -308,11 +308,10 @@
                 }
             }).modal('setting', 'transition', 'fade up').modal('show');
             $.ajax({
-                url: "/api/editor/serialize-container/",
-                type: "POST",
-                data: { id: id },
+                url: "/api/editor/c/" + id,
+                type: "GET",
                 success: function (result) {
-                    $('#modal-panel-text').html(result);
+                    $('#modal-panel-text').html(JSON.stringify(result));
                     $('#modal-panel-text').fadeIn(300);
                     $('#modal-panel-message').hide();
                 }
@@ -323,7 +322,7 @@
             $('#modal-panel-form').html('<div class="field">' +
                 'URL:  <input type="text" id="modal-panel-text">' +
                 '</div>');
-            let url = $(location).attr('host') + "/api/editor/serialize-container/" + id;
+            let url = $(location).attr('host') + "/api/editor/c/" + id;
             let prefix = 'http://';
             if (url.substr(0, prefix.length) !== prefix) {
                 url = prefix + url;

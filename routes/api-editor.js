@@ -15,7 +15,7 @@
     let router = express.Router();
     const container_1 = require("../public/nodes/container");
     const app_1 = require("../app");
-    setInterval(updateActiveNodes, 250);
+    setInterval(updateActiveNodes, 500);
     function updateActiveNodes() {
         if (!app_1.app.rootContainer)
             return;
@@ -50,11 +50,24 @@
         let s = container.serialize();
         res.json(s);
     });
-    router.get('/c/serialize', function (req, res) {
-    });
-    router.get('/c/serialize-file', function (req, res) {
-    });
-    router.post('/c/import', function (req, res) {
+    // router.get('/c/:cid/export', function (req, res) {
+    //     let container = Container.containers[req.params.cid];
+    //     if (!container) return res.status(404).send(`Can't export container. Container id [${req.params.cid}] not found.`);
+    //
+    //     let s = container.serialize();
+    //     res.json(s);
+    //
+    // });
+    router.get('/c/:cid/file', function (req, res) {
+        let container = container_1.Container.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`Can't export container. Container id [${req.params.cid}] not found.`);
+        let s = container.serialize();
+        let text = JSON.stringify(s);
+        let cont_name = container.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        let filename = 'mynodes_' + cont_name + ".json";
+        res.set({ 'Content-Disposition': 'attachment; filename="' + filename + '"' });
+        res.send(text);
     });
     //------------------ nodes ------------------------
     /**

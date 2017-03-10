@@ -258,6 +258,13 @@ export class Container extends Emitter {
         if (!this.renderers)
             this.renderers = [];
         this.renderers.push(renderer);
+
+        //reset active nodes
+        for (let i in renderer.container._nodes) {
+            let node = renderer.container._nodes[i];
+            node.boxcolor = renderer.theme.NODE_DEFAULT_BOXCOLOR;
+            node.setDirtyCanvas(true, true);
+        }
     }
 
     /**

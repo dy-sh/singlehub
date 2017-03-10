@@ -10,6 +10,7 @@ import {runInNewContext} from "vm";
 import {type} from "os";
 
 
+
 //Constant
 export class ConstantNode extends Node {
     constructor() {
@@ -143,22 +144,25 @@ export class ContainerNode extends Node {
     }
 
 
-    getExtraMenuOptions(renderer) {
+    getExtraMenuOptions(renderer, editor) {
         let that = this;
         return [
             {content: "Open", callback: function () { renderer.openContainer(that.sub_container, true);}},
             null, //null for horizontal line
-            { content: 'Show on Dashboard', callback: function () { let win = window.open('/dashboard/c/' + that.id, '_blank'); win.focus(); } },
+            { content: 'Show on Dashboard', callback: function () { let win = window.open('/dashboard/c/' + that.sub_container.id, '_blank'); win.focus(); } },
             null,
-            { content: 'Export to file', callback: function () { let win = window.open('/NodeEditorAPI/SerializePanelToFile/' + that.id, '_blank'); win.focus(); } },
-            { content: 'Export to script', callback: function () { that.exportPanelToScript(that.id) } },
-            { content: 'Export URL', callback: function () { that.exportPanelURL(that.id) } },
+            { content: 'Export to file', callback: function () { let win = window.open('/api/editor/c/' + that.sub_container.id+"/file", '_blank'); win.focus(); } },
+            { content: 'Export to script', callback: function () { editor.exportContainerToScript(that.sub_container.id) } },
+            { content: 'Export URL', callback: function () { editor.exportContainerURL(that.sub_container.id) } },
             null
         ];
     }
 
 
     onExecute() {
+        if (this.isUpdated)
+            this.isRecentlyActive=true;
+
         this.sub_container.runStep();
     }
 
@@ -362,6 +366,7 @@ export class ContainerOutputNode extends Node {
         let val = this.getInputData(0);
         let cont_node = this.container.container_node;
         let slot = this.properties['slot'];
+        this.isRecentlyActive=true;
         cont_node.setOutputData(slot, val);
     }
 

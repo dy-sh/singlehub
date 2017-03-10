@@ -8,7 +8,7 @@
 
 import {Node, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/node"
 import {Container} from "../../nodes/container"
-import {editor} from "./editor";
+import {editor, Editor} from "./editor";
 import Utils from "../../nodes/utils";
 import {RendererTheme} from "./renderer-themes";
 
@@ -22,7 +22,7 @@ interface IenableWebGLCanvas {
 }
 
 interface IgetExtraMenuOptions {
-    (any): any;
+    (renderer: Renderer, editor: Editor)
 }
 
 
@@ -2351,7 +2351,7 @@ export class Renderer {
         }
 
         if (this.getExtraMenuOptions) {
-            let extra = this.getExtraMenuOptions(this);
+            let extra = this.getExtraMenuOptions(this, editor);
             if (extra) {
                 extra.push(null);
                 options = extra.concat(options);
@@ -2385,7 +2385,7 @@ export class Renderer {
 
 
         if (node['getExtraMenuOptions']) {
-            let extra = node['getExtraMenuOptions'](this);
+            let extra = node['getExtraMenuOptions'](this, editor);
             if (extra) {
                 //extra.push(null);
                 options = extra.concat(options);

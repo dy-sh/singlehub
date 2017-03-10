@@ -34,12 +34,17 @@ export class EditorServerSocket {
 
             //join client to container room
             socket.on('room', function (room) {
-                if ((<any>socket).room)
-                    socket.leave((<any>socket).room);
-
-                (<any>socket).room = room;
-                socket.join(room);
-                log.debug("Join to editor room [" + room + "]");
+                if ((<any>socket).room != null) {
+                    socket.leave((<any>socket).room, function () {//it is necessary to waiting for leave room before join only if it's the same room (same id)
+                        (<any>socket).room = room;
+                        socket.join(room);
+                        log.debug("Switch editor room to [" + room + "]");
+                    });
+                } else {
+                    (<any>socket).room = room;
+                    socket.join(room);
+                    log.debug("Join to editor room [" + room + "]");
+                }
             });
 
             socket.on('node-message-to-server-side', function (n) {
@@ -103,7 +108,6 @@ export class EditorServerSocket {
             });
         });
     }
-
 
 
     getNodesIOValues(cid: number): any {

@@ -30,8 +30,10 @@ export class DashboardServerSocket {
 
             //join client to container room
             socket.on('room', function (room) {
-                if ((<any>socket).room)
+                if ((<any>socket).room!=null) {
+                    // log.debug("Leave dashboard room [" + (<any>socket).room + "]");
                     socket.leave((<any>socket).room);
+                }
 
                 (<any>socket).room = room;
                 socket.join(room);

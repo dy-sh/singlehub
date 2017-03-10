@@ -25,8 +25,10 @@
                 // });
                 //join client to container room
                 socket.on('room', function (room) {
-                    if (socket.room)
+                    if (socket.room != null) {
+                        // log.debug("Leave dashboard room [" + (<any>socket).room + "]");
                         socket.leave(socket.room);
+                    }
                     socket.room = room;
                     socket.join(room);
                     log.debug("Join to dashboard room [" + room + "]");
