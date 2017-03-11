@@ -95,5 +95,42 @@
         }
     }
     container_1.Container.registerNodeType("connection/gate", GateNode);
+    class RouterOneToMultipleNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Router 1-multiple";
+            this.descriprion = "This node can be used to link one node with several nodes. <br/>" +
+                "You can change which node will receive messages (using input \"Active Output\"). " +
+                "The other nodes will not receive anything. <br/>" +
+                "You can specify the number of outputs in the node settings.";
+            this.addInput("active output");
+            this.addInput("value");
+            this.addOutput();
+            this.settings["outputs"] = { description: "Outputs count", value: 1, type: "number" };
+        }
+        onInputUpdated() {
+            let active = this.getInputData(0);
+            let val = this.getInputData(1);
+            if (active < 0 || active > this.getOutputsCount()) {
+                this.debugWarn("Defined active output does not exist");
+                return;
+            }
+            this.setOutputData(active, val);
+        }
+        onSettingsChanged() {
+            let outputs = this.settings["outputs"].value;
+            outputs = utils_1.default.clamp(outputs, 1, 1000);
+            this.changeOutputsCount(outputs);
+            //update db
+            if (this.container.db)
+                this.container.db.updateNode(this.id, this.container.id, {
+                    $set: {
+                        inputs: this.inputs,
+                        outputs: this.outputs
+                    }
+                });
+        }
+    }
+    container_1.Container.registerNodeType("connection/router-1-multiple", RouterOneToMultipleNode);
 });
 //# sourceMappingURL=connection.js.map

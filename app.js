@@ -117,8 +117,9 @@
                         let cont = container_1.Container.containers[n.cid];
                         let node = cont._nodes[n.id];
                         if (!node)
-                            log.error("Node [" + n.cid + "/" + n.id + "] is not created.");
-                        node.restoreLinks();
+                            log.error("Node [" + n.cid + "/" + n.id + "] of type [" + n.type + "] is not created.");
+                        else
+                            node.restoreLinks();
                     }
                     let contCount = Object.keys(containers).length;
                     if (containers[0])
