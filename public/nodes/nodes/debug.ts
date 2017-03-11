@@ -134,3 +134,32 @@ export class WatchNode extends Node {
 Container.registerNodeType("debug/watch", WatchNode);
 
 
+
+
+class EventCounterNode extends Node {
+    val = 0;
+
+    constructor() {
+        super();
+
+        this.title = "Event counter";
+        this.descriprion = "This node counts how many events occurred at the \"Value\" input. <br/>" +
+            "Any incoming value, including null, will be taken.";
+
+        this.addInput("value", "number");
+        this.addInput("reset", "boolean");
+        this.addOutput("count", "number");
+    }
+
+    onInputUpdated() {
+        if (this.inputs[1].updated && this.inputs[1].data == true)
+            this.val = 0;
+
+        else if (this.inputs[0].updated)
+            this.val++;
+
+        if (this.val !== this.outputs[0].data)
+            this.setOutputData(0, this.val);
+    }
+}
+Container.registerNodeType("debug/event-counter", EventCounterNode);

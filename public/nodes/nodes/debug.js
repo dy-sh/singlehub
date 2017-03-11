@@ -112,5 +112,26 @@
     }
     exports.WatchNode = WatchNode;
     container_1.Container.registerNodeType("debug/watch", WatchNode);
+    class EventCounterNode extends node_1.Node {
+        constructor() {
+            super();
+            this.val = 0;
+            this.title = "Event counter";
+            this.descriprion = "This node counts how many events occurred at the \"Value\" input. <br/>" +
+                "Any incoming value, including null, will be taken.";
+            this.addInput("value", "number");
+            this.addInput("reset", "boolean");
+            this.addOutput("count", "number");
+        }
+        onInputUpdated() {
+            if (this.inputs[1].updated && this.inputs[1].data == true)
+                this.val = 0;
+            else if (this.inputs[0].updated)
+                this.val++;
+            if (this.val !== this.outputs[0].data)
+                this.setOutputData(0, this.val);
+        }
+    }
+    container_1.Container.registerNodeType("debug/event-counter", EventCounterNode);
 });
 //# sourceMappingURL=debug.js.map
