@@ -308,12 +308,14 @@
          * @param output_id slotId id
          * @param data slotId data
          */
-        setOutputData(output_id, data) {
+        setOutputData(output_id, data, only_if_new = false) {
             if (!this.outputs[output_id])
                 return;
             if (data === undefined)
                 data = null;
             if (data == null && this.outputs[output_id].data == null)
+                return;
+            if (only_if_new && this.outputs[output_id].data == data)
                 return;
             this.outputs[output_id].updated = true;
             if (!this.isRecentlyActive)

@@ -117,5 +117,49 @@
     }
     exports.DelayMeterNode = DelayMeterNode;
     container_1.Container.registerNodeType("time/delay-meter", DelayMeterNode);
+    class ClockNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Clock";
+            this.descriprion = "This is the system clock. <br/>" +
+                "You can enable additional outputs in the node settings";
+            this.addOutput("ms", "number");
+            this.addOutput("sec", "number");
+            this.addOutput("min", "number");
+            this.addOutput("h", "number");
+            this.settings["add_outs"] = { description: "Day, month, year outputs", value: false, type: "boolean" };
+        }
+        onSettingsChanged() {
+            let outputsCount = this.getOutputsCount();
+            if (this.settings["add_outs"].value == true && outputsCount == 4) {
+                this.addOutput("day", "number");
+                this.addOutput("month", "number");
+                this.addOutput("year", "number");
+                if (this.container.db)
+                    this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: this.outputs } });
+            }
+            else if (this.settings["add_outs"].value == false && outputsCount == 7) {
+                this.removeOutput(6);
+                this.removeOutput(5);
+                this.removeOutput(4);
+                if (this.container.db)
+                    this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: this.outputs } });
+            }
+        }
+        onExecute() {
+            let now = new Date();
+            this.setOutputData(0, now.getMilliseconds(), true);
+            this.setOutputData(1, now.getSeconds(), true);
+            this.setOutputData(2, now.getMinutes(), true);
+            this.setOutputData(3, now.getHours(), true);
+            if (this.settings["add_outs"].value) {
+                this.setOutputData(4, now.getDay(), true);
+                this.setOutputData(5, now.getMonth(), true);
+                this.setOutputData(6, now.getFullYear(), true);
+            }
+        }
+    }
+    exports.ClockNode = ClockNode;
+    container_1.Container.registerNodeType("time/clock", ClockNode);
 });
 //# sourceMappingURL=time.js.map

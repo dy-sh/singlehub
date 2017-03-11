@@ -161,7 +161,7 @@
         constructor() {
             super();
             this.counter = -1;
-            this.title = "Event counter";
+            this.title = "Freq divider";
             this.descriprion = "This node divides the frequency. <br/>" +
                 "Input \"Devide by\" specifies the number of clock cycles. <br/>" +
                 "\"Width %\" input specifies the percentage width of the positive portion " +
