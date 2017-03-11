@@ -40,6 +40,7 @@ export class Container extends Emitter {
     static nodes_types: {[type: string]: any} = {};
     static containers: {[id: number]: Container} = {};
     static last_container_id: number = -1;
+    static showDebugOnCreateMessage = true;
 
     parent_container_id?: number;
     container_node: ContainerNode;
@@ -100,7 +101,8 @@ export class Container extends Emitter {
         Container.containers[this.id] = this;
         this.clear();
 
-        this.debug("Container created");
+        if (Container.showDebugOnCreateMessage)
+            this.debug("Container created");
 
         let rootContainer = Container.containers[0];
         if (rootContainer) {

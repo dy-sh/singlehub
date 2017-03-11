@@ -67,7 +67,9 @@
             log.debug("Registered " + types + " nodes types");
         }
         createRootContainer() {
+            container_1.Container.showDebugOnCreateMessage = false;
             this.rootContainer = new container_1.Container(container_1.Side.server);
+            container_1.Container.showDebugOnCreateMessage = true;
             if (this.server.editorSocket)
                 this.rootContainer.server_editor_socket = this.server.editorSocket.io;
             if (this.server.dashboardSocket)
@@ -106,6 +108,7 @@
                         return;
                     let containers = container_1.Container.containers;
                     let nodesCount = 0;
+                    container_1.Container.showDebugOnCreateMessage = false;
                     for (let n of ser_nodes) {
                         let cont = containers[n.cid];
                         if (!cont)
@@ -113,6 +116,7 @@
                         nodesCount++;
                         cont.createNode(n.type, null, n);
                     }
+                    container_1.Container.showDebugOnCreateMessage = true;
                     for (let n of ser_nodes) {
                         let cont = container_1.Container.containers[n.cid];
                         let node = cont._nodes[n.id];

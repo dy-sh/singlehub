@@ -39,7 +39,8 @@
             this.side = side;
             Container.containers[this.id] = this;
             this.clear();
-            this.debug("Container created");
+            if (Container.showDebugOnCreateMessage)
+                this.debug("Container created");
             let rootContainer = Container.containers[0];
             if (rootContainer) {
                 if (rootContainer.server_dashboard_socket)
@@ -806,6 +807,7 @@
     Container.nodes_types = {};
     Container.containers = {};
     Container.last_container_id = -1;
+    Container.showDebugOnCreateMessage = true;
     exports.Container = Container;
 });
 //# sourceMappingURL=container.js.map

@@ -89,7 +89,10 @@ export class App extends Emitter {
     }
 
     createRootContainer() {
+        Container.showDebugOnCreateMessage = false;
         this.rootContainer = new Container(Side.server);
+        Container.showDebugOnCreateMessage = true;
+
         if (this.server.editorSocket)
             this.rootContainer.server_editor_socket = this.server.editorSocket.io;
         if (this.server.dashboardSocket)
@@ -143,6 +146,8 @@ export class App extends Emitter {
 
                 let nodesCount = 0;
 
+                Container.showDebugOnCreateMessage = false;
+
                 for (let n of ser_nodes) {
                     let cont = containers[n.cid];
                     if (!cont)
@@ -151,6 +156,8 @@ export class App extends Emitter {
                     nodesCount++;
                     cont.createNode(n.type, null, n);
                 }
+
+                Container.showDebugOnCreateMessage = true;
 
                 for (let n of ser_nodes) {
                     let cont = Container.containers[n.cid];

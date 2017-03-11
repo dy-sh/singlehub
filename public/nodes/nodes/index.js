@@ -7,7 +7,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./connection", "./debug", "./main", "./math", "./numbers", "./operation", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart"], factory);
+        define(["require", "exports", "./connection", "./debug", "./main", "./math", "./numbers", "./operation", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart", "./protocols/mqtt/subscriber"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -39,5 +39,6 @@
     require("./ui/voice-chrome");
     require("./ui/voice-yandex");
     require("./ui/chart");
+    require("./protocols/mqtt/subscriber");
 });
 //# sourceMappingURL=index.js.map
