@@ -123,7 +123,7 @@ class RouterOneToMultipleNode extends Node {
             "The other nodes will not receive anything. <br/>" +
             "You can specify the number of outputs in the node settings.";
 
-        this.addInput("active output");
+        this.addInput("active output", "number");
         this.addInput("value");
         this.addOutput();
 
@@ -134,12 +134,12 @@ class RouterOneToMultipleNode extends Node {
         let active = this.getInputData(0);
         let val = this.getInputData(1);
 
-        if (active < 0 || active > this.getOutputsCount()) {
+        if (active < 1 || active > this.getOutputsCount() + 1) {
             this.debugWarn("Defined active output does not exist");
             return;
         }
 
-        this.setOutputData(active, val);
+        this.setOutputData(active - 1, val);
     }
 
     onSettingsChanged() {
@@ -152,11 +152,59 @@ class RouterOneToMultipleNode extends Node {
         //update db
         if (this.container.db)
             this.container.db.updateNode(this.id, this.container.id, {
-                $set: {
-                    inputs: this.inputs,
-                    outputs: this.outputs
-                }
+                $set: {outputs: this.outputs}
             });
     }
 }
 Container.registerNodeType("connection/router-1-multiple", RouterOneToMultipleNode);
+
+
+
+
+class RouterMultipleToOneNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Router multiple-1";
+        this.descriprion = "This node can be used to link several nodes with one node. <br/>" +
+            "You can change which node will send messages (using input \"Active Input\"). " +
+            "The rest nodes will be blocked. <br/>" +
+            "In the settings you can specify the number of inputs.";
+
+        this.addInput("active input", "number");
+        this.addInput("input 1");
+        this.addOutput("value");
+
+        this.settings["inputs"] = {description: "Inputs count", value: 1, type: "number"};
+    }
+
+    onInputUpdated() {
+        let active = this.getInputData(0);
+
+        if (active < 1 || active > this.getInputsCount()) {
+            this.debugWarn("Defined active input does not exist");
+            return;
+        }
+
+        let val = this.getInputData(active);
+        this.setOutputData(0, val);
+    }
+
+    onSettingsChanged() {
+        let inputs = this.settings["inputs"].value;
+
+        inputs = Utils.clamp(inputs, 1, 1000);
+
+        this.changeInputsCount(inputs + 1);
+        for (let i = 1; i <= inputs; i++)
+            this.inputs[i].name = "input " + i;
+
+
+        //update db
+        if (this.container.db)
+            this.container.db.updateNode(this.id, this.container.id, {
+                $set: {inputs: this.inputs}
+            });
+    }
+}
+Container.registerNodeType("connection/router-multiple-1", RouterMultipleToOneNode);
