@@ -10,7 +10,6 @@ import {runInNewContext} from "vm";
 import {type} from "os";
 
 
-
 //Constant
 export class ConstantNode extends Node {
     constructor() {
@@ -147,13 +146,35 @@ export class ContainerNode extends Node {
     getExtraMenuOptions(renderer, editor) {
         let that = this;
         return [
-            {content: "Open", callback: function () { renderer.openContainer(that.sub_container, true);}},
+            {
+                content: "Open", callback: function () {
+                renderer.openContainer(that.sub_container, true);
+            }
+            },
             null, //null for horizontal line
-            { content: 'Show on Dashboard', callback: function () { let win = window.open('/dashboard/c/' + that.sub_container.id, '_blank'); win.focus(); } },
+            {
+                content: 'Show on Dashboard', callback: function () {
+                let win = window.open('/dashboard/c/' + that.sub_container.id, '_blank');
+                win.focus();
+            }
+            },
             null,
-            { content: 'Export to file', callback: function () { let win = window.open('/api/editor/c/' + that.sub_container.id+"/file", '_blank'); win.focus(); } },
-            { content: 'Export to script', callback: function () { editor.exportContainerToScript(that.sub_container.id) } },
-            { content: 'Export URL', callback: function () { editor.exportContainerURL(that.sub_container.id) } },
+            {
+                content: 'Export to file', callback: function () {
+                let win = window.open('/api/editor/c/' + that.sub_container.id + "/file", '_blank');
+                win.focus();
+            }
+            },
+            {
+                content: 'Export to script', callback: function () {
+                editor.exportContainerToScript(that.sub_container.id)
+            }
+            },
+            {
+                content: 'Export URL', callback: function () {
+                editor.exportContainerURL(that.sub_container.id)
+            }
+            },
             null
         ];
     }
@@ -161,7 +182,7 @@ export class ContainerNode extends Node {
 
     onExecute() {
         if (this.isUpdated)
-            this.isRecentlyActive=true;
+            this.isRecentlyActive = true;
 
         this.sub_container.runStep();
     }
@@ -182,12 +203,9 @@ export class ContainerNode extends Node {
 
 
     clone(): Node {
-        let e = this.serialize();
-        let json = JSON.stringify(e);
-        let exp = JSON.parse(json);
-        let node = this.importContainer(exp);
-
-        node.pos[1] = this.pos[1] + this.size[1] + 25;
+        let exp = this.serialize();
+        let pos: [number, number] = [this.pos[0], this.pos[1] + this.size[1] + 25];
+        let node = this.container.importContainer(exp, pos);
 
         node.restoreLinks();
 
@@ -195,7 +213,6 @@ export class ContainerNode extends Node {
             let s_node = node.serialize(true);
             this.container.db.updateNode(node.id, node.container.id, {
                 $set: {
-                    pos: s_node.pos,
                     inputs: s_node.inputs,
                     outputs: s_node.outputs
                 }
@@ -206,51 +223,6 @@ export class ContainerNode extends Node {
     }
 
 
-    importContainer(data: SerializedNode): ContainerNode {
-
-        let new_cont = <ContainerNode>this.container.createNode(this.type);
-
-        data.cid = this.sub_container.id;
-        delete data["id"];
-        data['sub_container'].id = new_cont.sub_container.id;
-
-        let nodes = data["sub_container"].serialized_nodes;
-
-        updateNodesCids(nodes, Container.last_container_id);
-
-        function updateNodesCids(nodes, cid) {
-            for (let id in nodes) {
-                nodes[id].cid = cid;
-                //if node is container node
-                if (nodes[id].sub_container) {
-                    nodes[id].sub_container.id = ++Container.last_container_id;
-                    updateNodesCids(nodes[id].sub_container.serialized_nodes, Container.last_container_id);
-                }
-            }
-        }
-
-        Container.last_container_id;
-        new_cont.configure(data, false, false);
-
-
-        if (this.container.db) {
-            //update new container
-            let s_node = new_cont.serialize(true);
-            this.container.db.updateNode(new_cont.id, new_cont.container.id, s_node)
-
-            //add all new nodes
-            let nodes = new_cont.sub_container.getNodes(true);
-            if (nodes && nodes.length > 0)
-                for (let n of nodes)
-                    this.container.db.addNode(n);
-
-            //update last container id
-            if (new_cont.sub_container.id != Container.last_container_id)
-                this.container.db.updateLastContainerId(Container.last_container_id);
-        }
-
-        return new_cont;
-    }
 }
 Container.registerNodeType("main/container", ContainerNode);
 
@@ -366,7 +338,7 @@ export class ContainerOutputNode extends Node {
         let val = this.getInputData(0);
         let cont_node = this.container.container_node;
         let slot = this.properties['slot'];
-        this.isRecentlyActive=true;
+        this.isRecentlyActive = true;
         cont_node.setOutputData(slot, val);
     }
 

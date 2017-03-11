@@ -519,7 +519,12 @@ export class Container extends Emitter {
         else if (serialized_node && serialized_node.id != null)
             id = serialized_node.id;
         else {
-            id = this.last_node_id++;
+            for (let i = 0; i < 1000; i++) {
+                //find free id
+                id = this.last_node_id++;
+                if (!this._nodes[id])
+                    break;
+            }
             is_new = true;
         }
 
@@ -986,6 +991,54 @@ export class Container extends Emitter {
                 }
             }
         }
+    }
+
+
+    importContainer(data: SerializedNode, pos: [number, number]): ContainerNode {
+
+        let new_cont = <ContainerNode>this.createNode("main/container", {pos: pos});
+
+        data.cid = this.id;
+        delete data["id"];
+        delete data["pos"];
+        data['sub_container'].id = new_cont.sub_container.id;
+
+        let nodes = data["sub_container"].serialized_nodes;
+
+        updateNodesCids(nodes, Container.last_container_id);
+
+        function updateNodesCids(nodes, cid) {
+            for (let id in nodes) {
+                nodes[id].cid = cid;
+                //if node is container node
+                if (nodes[id].sub_container) {
+                    nodes[id].sub_container.id = ++Container.last_container_id;
+                    updateNodesCids(nodes[id].sub_container.serialized_nodes, Container.last_container_id);
+                }
+            }
+        }
+
+
+        new_cont.configure(data, false, false);
+
+
+        if (this.db) {
+            //update new container
+            let s_node = new_cont.serialize(true);
+            this.db.updateNode(new_cont.id, new_cont.container.id, s_node)
+
+            //add all new nodes
+            let nodes = new_cont.sub_container.getNodes(true);
+            if (nodes && nodes.length > 0)
+                for (let n of nodes)
+                    this.db.addNode(n);
+
+            //update last container id
+            if (new_cont.sub_container.id != Container.last_container_id)
+                this.db.updateLastContainerId(Container.last_container_id);
+        }
+
+        return new_cont;
     }
 
     /**

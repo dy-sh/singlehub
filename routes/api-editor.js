@@ -50,24 +50,55 @@
         let s = container.serialize();
         res.json(s);
     });
-    // router.get('/c/:cid/export', function (req, res) {
-    //     let container = Container.containers[req.params.cid];
-    //     if (!container) return res.status(404).send(`Can't export container. Container id [${req.params.cid}] not found.`);
-    //
-    //     let s = container.serialize();
-    //     res.json(s);
-    //
-    // });
+    router.get('/c/:cid/export', function (req, res) {
+        let container = container_1.Container.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`Can't export container. Container id [${req.params.cid}] not found.`);
+        let s = container.container_node.serialize();
+        //remove links
+        if (s.inputs)
+            for (let i in s.inputs)
+                if (s.inputs[i].link)
+                    delete s.inputs[i].link;
+        if (s.outputs)
+            for (let i in s.outputs)
+                if (s.outputs[i].links)
+                    delete s.outputs[i].links;
+        res.json(s);
+    });
     router.get('/c/:cid/file', function (req, res) {
         let container = container_1.Container.containers[req.params.cid];
         if (!container)
             return res.status(404).send(`Can't export container. Container id [${req.params.cid}] not found.`);
-        let s = container.serialize();
+        let s = container.container_node.serialize();
+        //remove links
+        if (s.inputs)
+            for (let i in s.inputs)
+                if (s.inputs[i].link)
+                    delete s.inputs[i].link;
+        if (s.outputs)
+            for (let i in s.outputs)
+                if (s.outputs[i].links)
+                    delete s.outputs[i].links;
         let text = JSON.stringify(s);
         let cont_name = container.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
         let filename = 'mynodes_' + cont_name + ".json";
         res.set({ 'Content-Disposition': 'attachment; filename="' + filename + '"' });
         res.send(text);
+    });
+    router.post('/c/:cid/import', function (req, res) {
+        let container = container_1.Container.containers[req.params.cid];
+        if (!container)
+            return res.status(404).send(`Can't export container. Container id [${req.params.cid}] not found.`);
+        let ser_node = JSON.parse(req.body.ser_node);
+        let pos = JSON.parse(req.body.pos);
+        container.importContainer(ser_node, pos);
+        app_1.app.server.editorSocket.io.emit('container-import', {
+            cid: req.params.cid,
+            ser_node: ser_node,
+            pos: pos
+        });
+        res.json("ok");
     });
     //------------------ nodes ------------------------
     /**

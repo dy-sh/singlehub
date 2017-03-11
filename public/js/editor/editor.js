@@ -130,6 +130,7 @@
             });
         }
         importContainerFromFile(position) {
+            let that = this;
             $('#import-panel-title').html("Import Container");
             $('#import-panel-body').show();
             $('#import-panel-message').hide();
@@ -158,15 +159,13 @@
                         $('#import-panel-body').hide();
                         return;
                     }
-                    let filebody = evt.target.result;
+                    let ser_node = evt.target.result;
                     $.ajax({
-                        url: "/api/editor/ImportContainerJson/",
+                        url: "/api/editor/c/" + that.renderer.container.id + "/import",
                         type: "POST",
                         data: {
-                            json: filebody,
-                            x: position[0],
-                            y: position[1],
-                            ownerContainerId: 0
+                            ser_node: ser_node,
+                            pos: JSON.stringify(position)
                         },
                         success: function (result) {
                             if (result) {
@@ -184,6 +183,7 @@
             };
         }
         importContainerFromScript(position) {
+            let that = this;
             $('#modal-panel-submit').show();
             $('#modal-panel-title').html("Import Container");
             $('#modal-panel-form').html('<div class="field">' +
@@ -206,13 +206,11 @@
                 $('#modal-panel-message').fadeIn(300);
                 // $('#import-script-body').hide();
                 $.ajax({
-                    url: "/api/editor/ImportContainerJson/",
+                    url: "/api/editor/c/" + that.renderer.container.id + "/import",
                     type: "POST",
                     data: {
-                        json: $('#modal-panel-text').val(),
-                        x: position[0],
-                        y: position[1],
-                        ownerContainerId: 0
+                        ser_node: $('#modal-panel-text').val(),
+                        pos: JSON.stringify(position)
                     },
                     success: function (result) {
                         if (result) {
@@ -230,6 +228,7 @@
             });
         }
         importContainerFromURL(position) {
+            let that = this;
             $('#modal-panel-submit').show();
             $('#modal-panel-title').html("Import Container");
             $('#modal-panel-form').html('<div class="field">' +
@@ -255,7 +254,7 @@
                 let url = $('#modal-panel-text').val();
                 $.ajax({
                     url: url,
-                    type: "POST",
+                    type: "GET",
                     success: function (result) {
                         script = result;
                         importContainer(script);
@@ -267,15 +266,13 @@
                         $('#modal-panel-message').show();
                     }
                 });
-                function importContainer(script) {
+                function importContainer(ser_node) {
                     $.ajax({
-                        url: "/api/editor/ImportContainerJson/",
+                        url: "/api/editor/c/" + that.renderer.container.id + "/import",
                         type: "POST",
                         data: {
-                            json: script,
-                            x: position[0],
-                            y: position[1],
-                            ownerContainerId: 0
+                            ser_node: JSON.stringify(ser_node),
+                            pos: JSON.stringify(position)
                         },
                         success: function (result) {
                             if (result) {
@@ -308,7 +305,7 @@
                 }
             }).modal('setting', 'transition', 'fade up').modal('show');
             $.ajax({
-                url: "/api/editor/c/" + id,
+                url: "/api/editor/c/" + id + "/export",
                 type: "GET",
                 success: function (result) {
                     $('#modal-panel-text').html(JSON.stringify(result));
@@ -322,7 +319,7 @@
             $('#modal-panel-form').html('<div class="field">' +
                 'URL:  <input type="text" id="modal-panel-text">' +
                 '</div>');
-            let url = $(location).attr('host') + "/api/editor/c/" + id;
+            let url = $(location).attr('host') + "/api/editor/c/" + id + "/export";
             let prefix = 'http://';
             if (url.substr(0, prefix.length) !== prefix) {
                 url = prefix + url;

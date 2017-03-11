@@ -265,6 +265,14 @@
                     node.clone();
                 }
             });
+            socket.on('container-import', function (data) {
+                let container = container_1.Container.containers[data.cid];
+                if (!container) {
+                    log.error(`Can't import container. Container id [${data.cid}] not found.`);
+                    return;
+                }
+                container.importContainer(data.ser_node, data.pos);
+            });
             // socket.on('gateway-connected', function () {
             //     noty({text: 'Gateway connected.', type: 'alert', timeout: false});
             // });
