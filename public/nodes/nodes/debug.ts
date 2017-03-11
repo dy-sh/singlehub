@@ -146,7 +146,7 @@ class EventCounterNode extends Node {
         this.descriprion = "This node counts how many events occurred at the \"Value\" input. <br/>" +
             "Any incoming value, including null, will be taken.";
 
-        this.addInput("value", "number");
+        this.addInput("value");
         this.addInput("reset", "boolean");
         this.addOutput("count", "number");
     }
@@ -163,3 +163,7 @@ class EventCounterNode extends Node {
     }
 }
 Container.registerNodeType("debug/event-counter", EventCounterNode);
+
+
+
+

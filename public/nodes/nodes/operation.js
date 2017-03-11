@@ -157,5 +157,47 @@
         }
     }
     container_1.Container.registerNodeType("operation/crossfade", CrossfadeNode);
+    class FreqDividerNode extends node_1.Node {
+        constructor() {
+            super();
+            this.counter = -1;
+            this.title = "Event counter";
+            this.descriprion = "This node divides the frequency. <br/>" +
+                "Input \"Devide by\" specifies the number of clock cycles. <br/>" +
+                "\"Width %\" input specifies the percentage width of the positive portion " +
+                "of the cycle (if not set it is 50%). <br/>" +
+                "Input \"Trigger\" toggles the clock cycles. <br/><br/>" +
+                "For example, \"Devide by\"=4. The \"Width %\" is not connected (50). <br/>" +
+                "Sending \"1\" constantly to the Trigger input, " +
+                "you will get the following sequence on output: 1100 1100 1100... <br/><br/>" +
+                "Or, for example, \"Devide by\"=10. The \"Width %\"=80. <br/>" +
+                "Switching Trigger you will get: 1111111100 1111111100 1111111100... " +
+                "(80% of 1, 20% of 0).";
+            this.addInput("divide by", "number");
+            this.addInput("trigger", "boolean");
+            this.addInput("width %", "number");
+            this.addInput("reset", "boolean");
+            this.addOutput("count", "number");
+        }
+        onInputUpdated() {
+            if (this.inputs[3].updated && this.inputs[3].data == true) {
+                this.counter = -1;
+                this.setOutputData(0, null);
+            }
+            else if (this.inputs[1].updated && this.inputs[1].data == true) {
+                this.counter++;
+                let divideBy = this.inputs[0].data || 0;
+                let width = 50;
+                if (this.inputs[2].data != null)
+                    width = this.inputs[2].data;
+                if (this.counter >= divideBy)
+                    this.counter = 0;
+                let val = divideBy * (width / 100) > this.counter;
+                if (val != this.outputs[0].data)
+                    this.setOutputData(0, val);
+            }
+        }
+    }
+    container_1.Container.registerNodeType("operation/freq-divider", FreqDividerNode);
 });
 //# sourceMappingURL=operation.js.map
