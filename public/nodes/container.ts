@@ -538,7 +538,7 @@ export class Container extends Emitter {
 
 
         //create
-        let node = new node_class(this, id);
+        let node:Node = new node_class(this, id);
 
         //add node
         this._nodes[id] = node;
@@ -572,8 +572,8 @@ export class Container extends Emitter {
         if (is_new) {
             this.debug("New node created: " + node.getReadableId());
 
-            if (node.onCreated)
-                node.onCreated();
+            if (node['onCreated'])
+                node['onCreated']();
 
             //add to database
             if (this.db) {
@@ -586,8 +586,8 @@ export class Container extends Emitter {
             }
         }
 
-        if (node.onAdded)
-            node.onAdded();
+        if (node['onAdded'])
+            node['onAdded']();
 
         this.setDirtyCanvas(true, true);
 

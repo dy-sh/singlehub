@@ -414,8 +414,8 @@
             node.id = id;
             if (is_new) {
                 this.debug("New node created: " + node.getReadableId());
-                if (node.onCreated)
-                    node.onCreated();
+                if (node['onCreated'])
+                    node['onCreated']();
                 //add to database
                 if (this.db) {
                     this.db.addNode(node);
@@ -425,8 +425,8 @@
                         this.db.updateNode(this.container_node.id, this.container_node.container.id, { $set: { "sub_container.last_node_id": this.container_node.sub_container.last_node_id } });
                 }
             }
-            if (node.onAdded)
-                node.onAdded();
+            if (node['onAdded'])
+                node['onAdded']();
             this.setDirtyCanvas(true, true);
             return node;
         }
