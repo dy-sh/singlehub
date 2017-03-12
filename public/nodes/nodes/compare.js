@@ -32,5 +32,24 @@
         }
     }
     container_1.Container.registerNodeType("compare/and", AndNode);
+    class OrNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "OR";
+            this.descriprion = "This node performs a logical \"OR\" operation. ";
+            this.addInput("a", "boolean");
+            this.addInput("b", "boolean");
+            this.addOutput("a || b", "boolean");
+        }
+        onInputUpdated() {
+            let a = this.getInputData(0);
+            let b = this.getInputData(1);
+            if (a != null && b != null)
+                this.setOutputData(0, a || b);
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("compare/or", OrNode);
 });
 //# sourceMappingURL=compare.js.map
