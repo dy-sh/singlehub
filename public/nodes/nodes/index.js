@@ -7,14 +7,14 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./connection", "./debug", "./main", "./math", "./numbers", "./operation", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart", "./protocols/mqtt/client"], factory);
+        define(["require", "exports", "./compare", "./connection", "./debug", "./main", "./math", "./numbers", "./operation", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart", "./protocols/mqtt/client"], factory);
     }
 })(function (require, exports) {
     "use strict";
     /**
      * Add all new nodes classes here!!!
      */
-    // import "./compare";
+    require("./compare");
     require("./connection");
     require("./debug");
     // import "./filters";

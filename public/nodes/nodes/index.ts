@@ -8,7 +8,7 @@
  * Add all new nodes classes here!!!
  */
 
-// import "./compare";
+import "./compare";
 import "./connection";
 import "./debug";
 // import "./filters";
