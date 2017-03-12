@@ -88,3 +88,30 @@ class EqualNode extends Node {
     }
 }
 Container.registerNodeType("compare/equal", EqualNode);
+
+
+
+
+class NotNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "NOT";
+        this.descriprion = "This node works the opposite of how the Equal node works.";
+
+        this.addInput("a", "boolean");
+        this.addInput("b", "boolean");
+        this.addOutput("a != b", "boolean");
+    }
+
+    onInputUpdated() {
+        let a = this.getInputData(0);
+        let b = this.getInputData(1);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a != b);
+        else
+            this.setOutputData(0, null);
+    }
+}
+Container.registerNodeType("compare/not", NotNode);
