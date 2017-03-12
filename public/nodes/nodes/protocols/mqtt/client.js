@@ -37,10 +37,10 @@
                 value: 1,
                 type: "number"
             };
-            // this.settings["topic"] = {description: "Topic", value: "text", type: "string"};
         }
         onCreated() {
             this.changeTopicsCount(1);
+            this.renameInputsOutputs();
         }
         onAdded() {
             this.topicsCount = this.settings["topics_count"].value;
@@ -71,7 +71,6 @@
                     let topic = this.settings['topic' + i].value;
                     this.client.subscribe(topic);
                 }
-                // this.client.publish('text', '321')
             });
             this.client.on('close', () => {
                 this.setOutputData(0, false);
@@ -115,24 +114,12 @@
         onSettingsChanged() {
             let topics = this.settings["topics_count"].value;
             topics = utils_1.default.clamp(topics, 1, 100);
+            this.settings["topics_count"].value = topics;
             //change topics count
             if (this.topicsCount != topics)
                 this.changeTopicsCount(topics);
             //rename inputs, outputs
-            for (let i = 1; i <= topics; i++) {
-                this.inputs[i].name = "[" + i + "]";
-                let topic = this.settings['topic' + i].value;
-                if (topic.length > 20)
-                    topic = "..." + topic.substr(topic.length - 20, 20);
-                this.outputs[i].name = topic + " | " + i;
-            }
-            if (this.side == container_1.Side.editor) {
-                for (let i = 1; i <= topics; i++) {
-                    this.inputs[i].label = this.inputs[i].name;
-                    this.outputs[i].label = this.outputs[i].name;
-                }
-                this.setDirtyCanvas(true, true);
-            }
+            this.renameInputsOutputs();
             //update db
             if (this.container.db)
                 this.container.db.updateNode(this.id, this.container.id, {
@@ -151,15 +138,10 @@
             //add inputs, outputs
             this.changeInputsCount(target_count + 1);
             this.changeOutputsCount(target_count + 1);
-            //rename inputs, outputs
-            // for (let i = 1; i < this.getInputsCount(); i++)
-            //     this.inputs[i].name = "topic " + i;
-            // for (let i = 1; i < this.getOutputsCount(); i++)
-            //     this.outputs[i].name = "topic " + i;
             //change settings for topics
             if (diff > 0) {
                 for (let i = this.topicsCount + 1; i <= target_count; i++) {
-                    this.settings['topic' + i] = { description: "Topic " + i, value: "text", type: "string" };
+                    this.settings['topic' + i] = { description: "Topic " + i, value: "", type: "string" };
                 }
             }
             else if (diff < 0) {
@@ -168,8 +150,24 @@
             }
             this.topicsCount = target_count;
         }
+        renameInputsOutputs() {
+            for (let i = 1; i <= this.topicsCount; i++) {
+                this.inputs[i].name = "[" + i + "]";
+                let topic = this.settings['topic' + i].value;
+                if (topic.length > 20)
+                    topic = "..." + topic.substr(topic.length - 20, 20);
+                this.outputs[i].name = topic + " | " + i;
+            }
+            if (this.side == container_1.Side.editor) {
+                for (let i = 1; i <= this.topicsCount; i++) {
+                    this.inputs[i].label = this.inputs[i].name;
+                    this.outputs[i].label = this.outputs[i].name;
+                }
+                this.setDirtyCanvas(true, true);
+            }
+        }
     }
     exports.MqttClientNode = MqttClientNode;
     container_1.Container.registerNodeType("protocols/mqtt-client", MqttClientNode);
 });
-//# sourceMappingURL=subscriber.js.map
+//# sourceMappingURL=client.js.map

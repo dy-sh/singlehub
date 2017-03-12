@@ -42,11 +42,11 @@ export class MqttClientNode extends Node {
             type: "number"
         };
 
-        // this.settings["topic"] = {description: "Topic", value: "text", type: "string"};
     }
 
     onCreated() {
         this.changeTopicsCount(1);
+        this.renameInputsOutputs();
     }
 
     onAdded() {
@@ -88,7 +88,6 @@ export class MqttClientNode extends Node {
                 let topic = this.settings['topic' + i].value;
                 this.client.subscribe(topic);
             }
-            // this.client.publish('text', '321')
         });
 
         this.client.on('close', () => {
@@ -144,27 +143,14 @@ export class MqttClientNode extends Node {
 
         let topics = this.settings["topics_count"].value;
         topics = Utils.clamp(topics, 1, 100);
+        this.settings["topics_count"].value = topics;
 
         //change topics count
         if (this.topicsCount != topics)
             this.changeTopicsCount(topics);
 
         //rename inputs, outputs
-        for (let i = 1; i <= topics; i++) {
-            this.inputs[i].name = "[" + i + "]";
-            let topic = this.settings['topic' + i].value;
-            if (topic.length > 20)
-                topic = "..." + topic.substr(topic.length - 20, 20);
-            this.outputs[i].name = topic + " | " + i;
-        }
-
-        if (this.side == Side.editor) {
-            for (let i = 1; i <= topics; i++) {
-                this.inputs[i].label = this.inputs[i].name;
-                this.outputs[i].label = this.outputs[i].name;
-            }
-            this.setDirtyCanvas(true, true);
-        }
+        this.renameInputsOutputs();
 
         //update db
         if (this.container.db)
@@ -190,16 +176,10 @@ export class MqttClientNode extends Node {
         this.changeInputsCount(target_count + 1);
         this.changeOutputsCount(target_count + 1);
 
-        //rename inputs, outputs
-        // for (let i = 1; i < this.getInputsCount(); i++)
-        //     this.inputs[i].name = "topic " + i;
-        // for (let i = 1; i < this.getOutputsCount(); i++)
-        //     this.outputs[i].name = "topic " + i;
-
         //change settings for topics
         if (diff > 0) {
             for (let i = this.topicsCount + 1; i <= target_count; i++) {
-                this.settings['topic' + i] = {description: "Topic " + i, value: "text", type: "string"};
+                this.settings['topic' + i] = {description: "Topic " + i, value: "", type: "string"};
             }
         }
         else if (diff < 0) {
@@ -208,6 +188,24 @@ export class MqttClientNode extends Node {
         }
 
         this.topicsCount = target_count;
+    }
+
+    renameInputsOutputs() {
+        for (let i = 1; i <= this.topicsCount; i++) {
+            this.inputs[i].name = "[" + i + "]";
+            let topic = this.settings['topic' + i].value;
+            if (topic.length > 20)
+                topic = "..." + topic.substr(topic.length - 20, 20);
+            this.outputs[i].name = topic + " | " + i;
+        }
+
+        if (this.side == Side.editor) {
+            for (let i = 1; i <= this.topicsCount; i++) {
+                this.inputs[i].label = this.inputs[i].name;
+                this.outputs[i].label = this.outputs[i].name;
+            }
+            this.setDirtyCanvas(true, true);
+        }
     }
 
 }

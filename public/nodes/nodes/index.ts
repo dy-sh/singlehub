@@ -35,4 +35,4 @@ import "./ui/voice-chrome";
 import "./ui/voice-yandex";
 import "./ui/chart";
 
-import "./protocols/mqtt/subscriber"
+import "./protocols/mqtt/client"
