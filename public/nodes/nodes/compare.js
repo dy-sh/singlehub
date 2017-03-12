@@ -171,5 +171,29 @@
         }
     }
     container_1.Container.registerNodeType("compare/lower", LowerNode);
+    class IsInRangeNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Is in range";
+            this.descriprion = "This node checks whether the value in the specified range. <br/>" +
+                "For example 5.5, will be in range from -1 to 10. <br/>" +
+                "Or 1 will be in range from 0 to 1. <br/>" +
+                "The node accepts numbers and return a logical value.";
+            this.addInput("value", "number");
+            this.addInput("from", "number");
+            this.addInput("to", "number");
+            this.addOutput("in range", "boolean");
+        }
+        onInputUpdated() {
+            let val = this.getInputData(0);
+            let from = this.getInputData(1);
+            let to = this.getInputData(2);
+            if (val != null && from != null && to != true)
+                this.setOutputData(0, val >= from && val <= to);
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("compare/is-in-range", IsInRangeNode);
 });
 //# sourceMappingURL=compare.js.map
