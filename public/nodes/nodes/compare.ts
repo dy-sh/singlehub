@@ -172,3 +172,30 @@ class MinNode extends Node {
 }
 Container.registerNodeType("compare/min", MinNode);
 
+
+
+class GreaterNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Greater";
+        this.descriprion = "This node compares two values and sends \"true\" to the output " +
+            "if the first value is greater than the second, or \"false\" if not. <br/>" +
+            "It can compare only numbers. ";
+
+        this.addInput("a", "number");
+        this.addInput("b", "number");
+        this.addOutput("a > b", "boolean");
+    }
+
+    onInputUpdated() {
+        let a = this.getInputData(0);
+        let b = this.getInputData(1);
+
+        if (a != null && b != null)
+            this.setOutputData(0, a > b);
+        else
+            this.setOutputData(0, null);
+    }
+}
+Container.registerNodeType("compare/greater", GreaterNode);
