@@ -152,5 +152,24 @@
         }
     }
     container_1.Container.registerNodeType("compare/greater", GreaterNode);
+    class LowerNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Lower";
+            this.descriprion = "This node works the opposite of how the Greater node works.";
+            this.addInput("a", "number");
+            this.addInput("b", "number");
+            this.addOutput("a < b", "boolean");
+        }
+        onInputUpdated() {
+            let a = this.getInputData(0);
+            let b = this.getInputData(1);
+            if (a != null && b != null)
+                this.setOutputData(0, a < b);
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("compare/lower", LowerNode);
 });
 //# sourceMappingURL=compare.js.map
