@@ -143,3 +143,32 @@ class MaxNode extends Node {
     }
 }
 Container.registerNodeType("compare/max", MaxNode);
+
+
+
+
+
+class MinNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Min";
+        this.descriprion = "Compares two numbers and return the lowest value.";
+
+        this.addInput("a", "number");
+        this.addInput("b", "number");
+        this.addOutput("min(a,b)", "number");
+    }
+
+    onInputUpdated() {
+        let a = this.getInputData(0);
+        let b = this.getInputData(1);
+
+        if (a != null && b != null)
+            this.setOutputData(0, Math.min(a, b));
+        else
+            this.setOutputData(0, null);
+    }
+}
+Container.registerNodeType("compare/min", MinNode);
+
