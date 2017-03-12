@@ -93,5 +93,24 @@
         }
     }
     container_1.Container.registerNodeType("compare/not", NotNode);
+    class MaxNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Max";
+            this.descriprion = "Compares two numbers and return the highest value.";
+            this.addInput("a", "number");
+            this.addInput("b", "number");
+            this.addOutput("max(a,b)", "number");
+        }
+        onInputUpdated() {
+            let a = this.getInputData(0);
+            let b = this.getInputData(1);
+            if (a != null && b != null)
+                this.setOutputData(0, Math.max(a, b));
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("compare/max", MaxNode);
 });
 //# sourceMappingURL=compare.js.map
