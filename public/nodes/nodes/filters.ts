@@ -101,3 +101,34 @@ class FiltersOnlyLowerNode extends Node {
 }
 Container.registerNodeType("filters/only-lower", FiltersOnlyLowerNode);
 
+
+
+
+class FiltersOnlyEqualNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Only equal";
+        this.descriprion = "This node filters the input values. " +
+            "It transmits the value from input named \"Value\" " +
+            "only if it is equal to \"Sample\".";
+
+        this.addInput("value");
+        this.addInput("sample");
+        this.addOutput("value");
+    }
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        let sample = this.getInputData(1);
+
+        if (val == null || sample == null) {
+            this.setOutputData(0, null);
+            return;
+        }
+
+        if (val == sample)
+            this.setOutputData(0, val);
+    }
+}
+Container.registerNodeType("filters/only-equal", FiltersOnlyEqualNode);
