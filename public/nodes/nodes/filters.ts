@@ -163,3 +163,31 @@ class FiltersOnlyTrueNode extends Node {
 }
 Container.registerNodeType("filters/only-true", FiltersOnlyTrueNode);
 
+
+
+
+class FiltersOnlyFalseNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Only false";
+        this.descriprion = "This node filters the input values. " +
+            "It transmits the value only if it is a \"false\".";
+
+        this.addInput("value", "boolean");
+        this.addOutput("false", "boolean");
+    }
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+
+        if (val == null) {
+            this.setOutputData(0, null);
+            return;
+        }
+
+        if (val == false)
+            this.setOutputData(0, val);
+    }
+}
+Container.registerNodeType("filters/only-false", FiltersOnlyFalseNode);
