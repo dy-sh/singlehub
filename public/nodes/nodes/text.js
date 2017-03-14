@@ -64,5 +64,24 @@
         }
     }
     container_1.Container.registerNodeType("text/ascii-char", TextASCIICharNode);
+    class TextCharAtIndexNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Char at index";
+            this.descriprion = "This node takes the character from a text string at the specified index (position).";
+            this.addInput("text", "string");
+            this.addInput("index", "number");
+            this.addOutput("char", "string");
+        }
+        onInputUpdated() {
+            let text = this.getInputData(0);
+            let index = this.getInputData(1);
+            if (text != null && index != null)
+                this.setOutputData(0, text[index]);
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("text/char-at-index", TextCharAtIndexNode);
 });
 //# sourceMappingURL=text.js.map
