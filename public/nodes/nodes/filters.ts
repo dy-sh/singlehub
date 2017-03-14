@@ -69,3 +69,35 @@ class FiltersOnlyGreaterNode extends Node {
     }
 }
 Container.registerNodeType("filters/only-greater", FiltersOnlyGreaterNode);
+
+
+
+
+class FiltersOnlyLowerNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Only lower";
+        this.descriprion = "This node filters the input values. " +
+            "It passes only those values that are lower than or equal to Treshold.";
+
+        this.addInput("value", "number");
+        this.addInput("treshold", "number");
+        this.addOutput("value", "number");
+    }
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        let treshold = this.getInputData(1);
+
+        if (val == null || treshold == null) {
+            this.setOutputData(0, null);
+            return;
+        }
+
+        if (val < treshold)
+            this.setOutputData(0, val);
+    }
+}
+Container.registerNodeType("filters/only-lower", FiltersOnlyLowerNode);
+
