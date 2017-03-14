@@ -33,8 +33,6 @@ class AndNode extends Node {
 Container.registerNodeType("compare/and", AndNode);
 
 
-
-
 class OrNode extends Node {
     constructor() {
         super();
@@ -58,7 +56,6 @@ class OrNode extends Node {
     }
 }
 Container.registerNodeType("compare/or", OrNode);
-
 
 
 class EqualNode extends Node {
@@ -90,8 +87,6 @@ class EqualNode extends Node {
 Container.registerNodeType("compare/equal", EqualNode);
 
 
-
-
 class NotNode extends Node {
     constructor() {
         super();
@@ -115,9 +110,6 @@ class NotNode extends Node {
     }
 }
 Container.registerNodeType("compare/not", NotNode);
-
-
-
 
 
 class MaxNode extends Node {
@@ -145,9 +137,6 @@ class MaxNode extends Node {
 Container.registerNodeType("compare/max", MaxNode);
 
 
-
-
-
 class MinNode extends Node {
     constructor() {
         super();
@@ -171,7 +160,6 @@ class MinNode extends Node {
     }
 }
 Container.registerNodeType("compare/min", MinNode);
-
 
 
 class GreaterNode extends Node {
@@ -201,9 +189,6 @@ class GreaterNode extends Node {
 Container.registerNodeType("compare/greater", GreaterNode);
 
 
-
-
-
 class LowerNode extends Node {
     constructor() {
         super();
@@ -227,7 +212,6 @@ class LowerNode extends Node {
     }
 }
 Container.registerNodeType("compare/lower", LowerNode);
-
 
 
 class IsInRangeNode extends Node {

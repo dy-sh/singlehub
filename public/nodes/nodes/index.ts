@@ -11,7 +11,7 @@
 import "./compare";
 import "./connection";
 import "./debug";
-// import "./filters";
+import "./filters";
 import "./main";
 import "./math";
 import "./numbers";
