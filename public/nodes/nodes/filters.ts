@@ -40,8 +40,6 @@ class FiltersOnlyFromRangeNode extends Node {
 Container.registerNodeType("filters/only-from-range", FiltersOnlyFromRangeNode);
 
 
-
-
 class FiltersOnlyGreaterNode extends Node {
     constructor() {
         super();
@@ -71,8 +69,6 @@ class FiltersOnlyGreaterNode extends Node {
 Container.registerNodeType("filters/only-greater", FiltersOnlyGreaterNode);
 
 
-
-
 class FiltersOnlyLowerNode extends Node {
     constructor() {
         super();
@@ -100,8 +96,6 @@ class FiltersOnlyLowerNode extends Node {
     }
 }
 Container.registerNodeType("filters/only-lower", FiltersOnlyLowerNode);
-
-
 
 
 class FiltersOnlyEqualNode extends Node {
@@ -134,9 +128,6 @@ class FiltersOnlyEqualNode extends Node {
 Container.registerNodeType("filters/only-equal", FiltersOnlyEqualNode);
 
 
-
-
-
 class FiltersOnlyTrueNode extends Node {
     constructor() {
         super();
@@ -162,8 +153,6 @@ class FiltersOnlyTrueNode extends Node {
     }
 }
 Container.registerNodeType("filters/only-true", FiltersOnlyTrueNode);
-
-
 
 
 class FiltersOnlyFalseNode extends Node {
@@ -193,7 +182,6 @@ class FiltersOnlyFalseNode extends Node {
 Container.registerNodeType("filters/only-false", FiltersOnlyFalseNode);
 
 
-
 class FiltersPreventNullNode extends Node {
     constructor() {
         super();
@@ -214,8 +202,6 @@ class FiltersPreventNullNode extends Node {
     }
 }
 Container.registerNodeType("filters/prevent-null", FiltersPreventNullNode);
-
-
 
 
 class FiltersPreventEqualNode extends Node {
@@ -246,8 +232,6 @@ class FiltersPreventEqualNode extends Node {
     }
 }
 Container.registerNodeType("filters/prevent-equal", FiltersPreventEqualNode);
-
-
 
 
 class FiltersPreventDuplicationNode extends Node {

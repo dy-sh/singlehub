@@ -16,7 +16,7 @@ import "./main";
 import "./math";
 import "./numbers";
 import "./operation";
-// import "./text";
+import "./text";
 import "./time";
 
 import "./ui/label";
