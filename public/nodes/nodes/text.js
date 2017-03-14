@@ -47,5 +47,22 @@
         }
     }
     container_1.Container.registerNodeType("text/ascii-code", TextASCIICodeNode);
+    class TextASCIICharNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "ASCII Code";
+            this.descriprion = "This node generates symbol from the ASCII code.";
+            this.addInput("code", "number");
+            this.addOutput("char", "string");
+        }
+        onInputUpdated() {
+            let val = this.getInputData(0);
+            if (val != null)
+                this.setOutputData(0, String.fromCharCode(val));
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("text/ascii-char", TextASCIICharNode);
 });
 //# sourceMappingURL=text.js.map
