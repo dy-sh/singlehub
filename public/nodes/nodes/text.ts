@@ -29,3 +29,26 @@ class TextStringLengthNode extends Node {
 }
 Container.registerNodeType("text/string-length", TextStringLengthNode);
 
+
+
+class TextASCIICodeNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "ASCII Code";
+        this.descriprion = "This node generates ASCII code from the symbol.";
+
+        this.addInput("char", "string");
+        this.addOutput("code", "number");
+    }
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+
+        if (val != null)
+            this.setOutputData(0, val.charCodeAt(0));
+        else
+            this.setOutputData(0, null);
+    }
+}
+Container.registerNodeType("text/ascii-code", TextASCIICodeNode);
