@@ -132,3 +132,34 @@ class FiltersOnlyEqualNode extends Node {
     }
 }
 Container.registerNodeType("filters/only-equal", FiltersOnlyEqualNode);
+
+
+
+
+
+class FiltersOnlyTrueNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Only true";
+        this.descriprion = "This node filters the input values. " +
+            "It transmits the value only if it is a \"true\".";
+
+        this.addInput("value", "boolean");
+        this.addOutput("true", "boolean");
+    }
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+
+        if (val == null) {
+            this.setOutputData(0, null);
+            return;
+        }
+
+        if (val == true)
+            this.setOutputData(0, val);
+    }
+}
+Container.registerNodeType("filters/only-true", FiltersOnlyTrueNode);
+
