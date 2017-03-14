@@ -30,7 +30,6 @@ class TextStringLengthNode extends Node {
 Container.registerNodeType("text/string-length", TextStringLengthNode);
 
 
-
 class TextASCIICodeNode extends Node {
     constructor() {
         super();
@@ -54,7 +53,6 @@ class TextASCIICodeNode extends Node {
 Container.registerNodeType("text/ascii-code", TextASCIICodeNode);
 
 
-
 class TextASCIICharNode extends Node {
     constructor() {
         super();
@@ -76,9 +74,6 @@ class TextASCIICharNode extends Node {
     }
 }
 Container.registerNodeType("text/ascii-char", TextASCIICharNode);
-
-
-
 
 
 class TextCharAtIndexNode extends Node {
@@ -105,3 +100,30 @@ class TextCharAtIndexNode extends Node {
 }
 Container.registerNodeType("text/char-at-index", TextCharAtIndexNode);
 
+
+class TextCutSubstringNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Cut substring";
+        this.descriprion = "Cuts out a substring from a text string. <br/>" +
+            "You can specify a starting position from which to begin cutting, and length.";
+
+        this.addInput("text", "string");
+        this.addInput("start", "number");
+        this.addInput("length", "number");
+        this.addOutput("text", "string");
+    }
+
+    onInputUpdated() {
+        let text = this.getInputData(0);
+        let start = this.getInputData(1);
+        let length = this.getInputData(2);
+
+        if (text != null && start != null && length != null)
+            this.setOutputData(0, text.substr(start, length));
+        else
+            this.setOutputData(0, null);
+    }
+}
+Container.registerNodeType("text/cut-substring", TextCutSubstringNode);

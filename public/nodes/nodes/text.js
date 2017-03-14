@@ -83,5 +83,27 @@
         }
     }
     container_1.Container.registerNodeType("text/char-at-index", TextCharAtIndexNode);
+    class TextCutSubstringNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Cut substring";
+            this.descriprion = "Cuts out a substring from a text string. <br/>" +
+                "You can specify a starting position from which to begin cutting, and length.";
+            this.addInput("text", "string");
+            this.addInput("start", "number");
+            this.addInput("length", "number");
+            this.addOutput("text", "string");
+        }
+        onInputUpdated() {
+            let text = this.getInputData(0);
+            let start = this.getInputData(1);
+            let length = this.getInputData(2);
+            if (text != null && start != null && length != null)
+                this.setOutputData(0, text.substr(start, length));
+            else
+                this.setOutputData(0, null);
+        }
+    }
+    container_1.Container.registerNodeType("text/cut-substring", TextCutSubstringNode);
 });
 //# sourceMappingURL=text.js.map
