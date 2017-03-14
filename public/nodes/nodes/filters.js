@@ -144,5 +144,21 @@
         }
     }
     container_1.Container.registerNodeType("filters/only-false", FiltersOnlyFalseNode);
+    class FiltersPreventNullNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Prevent null";
+            this.descriprion = "This node filters the input values. " +
+                "It transmits the value only if it is not a null.";
+            this.addInput("value");
+            this.addOutput("value");
+        }
+        onInputUpdated() {
+            let val = this.getInputData(0);
+            if (val != null)
+                this.setOutputData(0, val);
+        }
+    }
+    container_1.Container.registerNodeType("filters/prevent-null", FiltersPreventNullNode);
 });
 //# sourceMappingURL=filters.js.map
