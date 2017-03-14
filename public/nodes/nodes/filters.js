@@ -183,5 +183,24 @@
         }
     }
     container_1.Container.registerNodeType("filters/prevent-equal", FiltersPreventEqualNode);
+    class FiltersPreventDuplicationNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "Prevent duplication";
+            this.descriprion = "This node filters the input values. " +
+                "It transmits the value only if it is not the same " +
+                "that was already sent to the output.";
+            this.addInput("value");
+            this.addOutput("value");
+        }
+        onInputUpdated() {
+            let val = this.getInputData(0);
+            if (this.lastVal == val)
+                return;
+            this.lastVal = val;
+            this.setOutputData(0, val);
+        }
+    }
+    container_1.Container.registerNodeType("filters/prevent-duplication", FiltersPreventDuplicationNode);
 });
 //# sourceMappingURL=filters.js.map
