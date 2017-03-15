@@ -519,9 +519,9 @@
             //change browser url
             let cid = exports.editor.renderer.container.id;
             if (cid == 0)
-                window.history.pushState('Container ' + cid, 'MyNodes', '/editor/');
+                window.history.pushState('Container ' + cid, 'SingeHub', '/editor/');
             else
-                window.history.pushState('Container ' + cid, 'MyNodes', '/editor/c/' + cid);
+                window.history.pushState('Container ' + cid, 'SingeHub', '/editor/c/' + cid);
         }
         getNodes() {
             this.socket.getContainerState();

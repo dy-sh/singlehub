@@ -1,12 +1,12 @@
-MyNodes v4.0
+SingleHub v0.9
 ---------------------
 
 **Common changes:**
 
-- Rewritten on Node.js.
-- Code is written in TypeScript. 
-  But all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
+- Rewritten to Node.js.
+- Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
 - Built-in database is replaced by NeDB.
+- MQTT protocol support.
 
 
 
@@ -23,6 +23,9 @@ MyNodes v4.0
  
  
 **New nodes:**
+
+- **Protocols**:
+  - **MQTT client**. This node allows to connect to MQTT broker, subscribe to events and publish values.
 
 
 - **Debug**:

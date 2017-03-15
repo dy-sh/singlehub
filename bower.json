@@ -1,12 +1,12 @@
 {
-  "name": "mynodes.js",
+  "name": "singlehub",
   "description": "",
   "main": "",
   "authors": [
     "derwish-pro <derwish.pro@gmail.com>"
   ],
   "license": "GPL",
-  "homepage": "https://github.com/derwish-pro/mynodes.js",
+  "homepage": "https://github.com/derwish-pro/singlehub",
   "ignore": [
     "**/.*",
     "node_modules",

@@ -24,7 +24,7 @@ export class MqttClientNode extends Node {
     constructor() {
         super();
         this.title = "MQTT client";
-        this.descriprion = 'This is MQTT node. Turn on the "enable" switch in settings to activate the node. If "connect" input is not connected, the node will be active (if it is enabled in the settings). The node will reconnect to the server if you press "OK" in the settings. The client automatically subscribes to all specified topics. You can send the values (using inputs), and to receive the values from the server (at the outputs). You need to specify the server address in the settings. Additionally you can specify the port, user name and password, if necessary. In case of connection problems, follow the debug messages on the MyNodes server, to determine the cause.';
+        this.descriprion = 'This node allows to connect to MQTT broker, subscribe to events and publish values. Turn on the "enable" switch in settings to activate the node. If "connect" input is not connected, the node will be active (if it is enabled in the settings). The node will reconnect to the server if you press "OK" in the settings. The client automatically subscribes to all specified topics. You can send the values (using inputs), and to receive the values from the server (at the outputs). You need to specify the server address in the settings. Additionally you can specify the port, user name and password, if necessary. In case of connection problems, follow the debug messages on the SingleHub server, to determine the cause.';
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
 

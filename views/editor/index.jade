@@ -12,7 +12,7 @@ html
     head
         meta(charset='utf-8')
         meta(name='viewport', content='width=device-width, initial-scale=1.0')
-        title MyNodes: #{title}
+        title SingleHub: #{title}
         link(href='/libs/animate.css/animate.min.css', rel='stylesheet')
         link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
         link(rel='stylesheet', type='text/css', href='/css/node-editor.css')
@@ -22,7 +22,7 @@ html
         // Header Menu
         .header
             .logo
-                a.ui.black.button(href='/about') MyNodes
+                a.ui.black.button(href='/about') SingleHub
             .rightmenu
                 a#dashboard-button.ui.black.tiny.compact.right.floated.button(href='/dashboard/c/#{container_id}', target='_top') Dashboard
                 if (split)

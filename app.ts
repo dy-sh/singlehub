@@ -7,7 +7,7 @@ import {Emitter} from "./public/js/emitter/emitter";
 //source map for node typescript debug
 require('source-map-support').install();
 
-console.log("----------------------------- MyNodes -----------------------------");
+console.log("----------------------------- SingleHub -----------------------------");
 
 
 let config = require('./config.json');

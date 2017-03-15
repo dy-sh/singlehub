@@ -1,5 +1,7 @@
+
+SingleHub v0.9
+
 Node.js port of MyNodes.NET<br>
-Is in an early stage of development
 
 
 **How to install:**
@@ -10,10 +12,10 @@ Is in an early stage of development
 - install node v7: https://nodejs.org/en/download/
 - install bower: sudo npm install -g bower
 
-**Install MyNodes:**
+**Install SingleHub:**
 
-- git clone https://github.com/derwish-pro/mynodes.js
-- cd mynodes.js
+- git clone https://github.com/derwish-pro/singlehub
+- cd singlehub
 - npm i
 
 

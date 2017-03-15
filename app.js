@@ -14,7 +14,7 @@
      */
     //source map for node typescript debug
     require('source-map-support').install();
-    console.log("----------------------------- MyNodes -----------------------------");
+    console.log("----------------------------- SingleHub -----------------------------");
     let config = require('./config.json');
     const server_1 = require('./modules/server/server');
     const container_1 = require('./public/nodes/container');

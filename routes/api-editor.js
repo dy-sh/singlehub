@@ -82,7 +82,7 @@
                     delete s.outputs[i].links;
         let text = JSON.stringify(s);
         let cont_name = container.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        let filename = 'mynodes_' + cont_name + ".json";
+        let filename = 'shub_' + cont_name + ".json";
         res.set({ 'Content-Disposition': 'attachment; filename="' + filename + '"' });
         res.send(text);
     });
