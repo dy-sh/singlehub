@@ -12,7 +12,7 @@ html,body {
 body {
 	background-color: #1B1C1D;
 	/*color: #EEE;*/
-	font: 14px Tahoma;
+	font: 14px Arial;
 }
 
 a {
@@ -176,7 +176,7 @@ div#main {
 	position: absolute;
 	top: 2px;
 	right: 2px;
-	font-family: "Tahoma";
+	font-family: "Arial";
 	font-size: 14px;
 	color: #AAA;
 	cursor: pointer;
@@ -186,7 +186,7 @@ div#main {
 	position: absolute;
 	top: 2px;
 	right: 15px;
-	font-family: "Tahoma";
+	font-family: "Arial";
 	font-size: 14px;
 	color: #AAA;
 	cursor: pointer;
