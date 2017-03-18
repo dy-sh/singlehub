@@ -37,7 +37,7 @@ export class MqttClientNode extends Node {
         this.settings["password"] = {description: "Password", value: "", type: "string"};
 
         this.settings["topics_count"] = {
-            description: "Topic count (reopen settings if change this)",
+            description: 'Number of topics (click "OK" and reopen settings if change this)',
             value: 1,
             type: "number"
         };
@@ -86,7 +86,8 @@ export class MqttClientNode extends Node {
             //subscribe
             for (let i = 1; i <= this.topicsCount; i++) {
                 let topic = this.settings['topic' + i].value;
-                this.client.subscribe(topic);
+                if (topic && topic != "")
+                    this.client.subscribe(topic);
             }
         });
 

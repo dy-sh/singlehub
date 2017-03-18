@@ -1,7 +1,7 @@
 extends ../../../layout
 
 block styles
-    link(href='/libs/vis/dist/vis.min.css', rel='stylesheet', type="text/css")
+    link(href='/libs/vis/dist/vis.min.css', rel='stylesheet')
 
 
 block content
@@ -48,4 +48,4 @@ block scripts
         var node_id = #{node.id};
         var max_records = #{max_records};
 
-    script(src='/libs/requirejs/require.js' data-main="/nodes/nodes/ui/chart-log-page.js",type="application/javascript")
+    script(src='/libs/requirejs/require.js' data-main="/nodes/nodes/ui/chart-log-page.js")

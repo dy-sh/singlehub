@@ -1,7 +1,7 @@
 extends ../layout
 
 block styles
-    link(href='/libs/vis/dist/vis.min.css', rel='stylesheet', type="text/css")
+    link(href='/libs/vis/dist/vis.min.css', rel='stylesheet')
 
 
 block content
@@ -55,7 +55,7 @@ block scripts
     script(type="text/javascript").
         var container_id = #{container_id};
 
-    script(src='/libs/vis/dist/vis.min.js',type="application/javascript")
+    script(src='/libs/vis/dist/vis.min.js')
     //script(src='/js/mysensors.js')
-    script(src='/libs/requirejs/require.js' data-main="/js/dashboard/dashboard",type="application/javascript")
+    script(src='/libs/requirejs/require.js' data-main="/js/dashboard/dashboard")
 
