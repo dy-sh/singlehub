@@ -1243,7 +1243,10 @@ export class Node {
     }
 
     getReadableId(): string {
-        return `[${this.type}][${this.container.id}/${this.id}]`;
+        if (this.container)
+            return `[${this.type}][${this.container.id}/${this.id}]`;
+        else
+            return `[${this.type}][-/${this.id}]`;
     }
 
     sendMessageToServerSide(mess: any) {

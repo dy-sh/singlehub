@@ -7,6 +7,7 @@ import {Node} from "../../../node";
 import Utils from "../../../utils";
 import {Container, Side} from "../../../container";
 import * as mys from "./types"
+import {ContainerNode} from "../../main";
 
 
 let split, _;
@@ -21,16 +22,16 @@ let BROADCAST_ID = 255;
 let NODE_SELF_SENSOR_ID = 255;
 
 
-export class MySensorsController extends Node {
+export class MySensorsController extends ContainerNode {
     nodes = [];
     isConnected = false;
     port;
     version;
 
-    constructor() {
-        super();
+    constructor(container) {
+        super(container);
         this.title = "MYS Controller";
-        this.descriprion = '';
+        this.descriprion = 'MySensors protocol controller.';
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
 
@@ -51,6 +52,15 @@ export class MySensorsController extends Node {
                 && (this.inputs[0].link == null || this.inputs[0].data == true))
                 this.connectToSerialPort();
         }
+    }
+
+    onRemoved() {
+        if (this.side == Side.server) {
+            if (this.port)
+                this.port.close();
+        }
+
+        super.onRemoved();
     }
 
     onSettingsChanged() {

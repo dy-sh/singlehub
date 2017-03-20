@@ -944,7 +944,10 @@
             log.error(this.getReadableId() + " " + message);
         }
         getReadableId() {
-            return `[${this.type}][${this.container.id}/${this.id}]`;
+            if (this.container)
+                return `[${this.type}][${this.container.id}/${this.id}]`;
+            else
+                return `[${this.type}][-/${this.id}]`;
         }
         sendMessageToServerSide(mess) {
             if (this.side == container_1.Side.server)

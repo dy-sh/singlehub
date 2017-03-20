@@ -7,13 +7,13 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../../node", "../../../container", "./types"], factory);
+        define(["require", "exports", "../../../container", "./types", "../../main"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    const node_1 = require("../../../node");
     const container_1 = require("../../../container");
     const mys = require("./types");
+    const main_1 = require("../../main");
     let split, _;
     if (typeof (window) === 'undefined') {
         split = require("split");
@@ -22,9 +22,9 @@
     let GATEWAY_ID = 0;
     let BROADCAST_ID = 255;
     let NODE_SELF_SENSOR_ID = 255;
-    class MySensorsController extends node_1.Node {
-        constructor() {
-            super();
+    class MySensorsController extends main_1.ContainerNode {
+        constructor(container) {
+            super(container);
             this.nodes = [];
             this.isConnected = false;
             this.getNodeIfExist = function (nodeId) {
@@ -86,7 +86,7 @@
                 this.debugErr('Can`t register new node. There are no available id.');
             };
             this.title = "MYS Controller";
-            this.descriprion = '';
+            this.descriprion = 'MySensors protocol controller.';
             this.addInput("[connect]", "boolean");
             this.addOutput("connected", "boolean");
             this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
@@ -102,6 +102,13 @@
                     && (this.inputs[0].link == null || this.inputs[0].data == true))
                     this.connectToSerialPort();
             }
+        }
+        onRemoved() {
+            if (this.side == container_1.Side.server) {
+                if (this.port)
+                    this.port.close();
+            }
+            super.onRemoved();
         }
         onSettingsChanged() {
             if (this.side == container_1.Side.server) {
