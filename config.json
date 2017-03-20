@@ -1,20 +1,5 @@
 {
 	"firstRun": false,
-	"gateway": {
-		"mysensors": {
-			"serial": {
-				"enable": false,
-				"baudRate": "115200",
-				"port": "COM3"
-			},
-			"ethernet": {
-				"enable": false,
-				"address": "192.168.1.3",
-				"port": "5003"
-			},
-			"enableAutoAssignId": true
-		}
-	},
 	"dataBase": {
 		"enable": true,
 		"useInternalDb": true,

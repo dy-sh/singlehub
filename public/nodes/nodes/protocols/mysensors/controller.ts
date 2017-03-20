@@ -38,7 +38,19 @@ export class MySensorsController extends Node {
         this.settings["enable"] = {description: "Enable", value: false, type: "boolean"};
         this.settings["port"] = {description: "Serial port name", value: "/dev/tty.SLAB_USBtoUART", type: "string"};
         this.settings["baudRate"] = {description: "Baud rate", value: 115200, type: "number"};
+        this.settings["debug"] = {description: "Show debug messages in console", value: false, type: "boolean"};
 
+    }
+
+    onAdded() {
+        if (this.side == Side.server) {
+            this.setOutputData(0, false);
+
+            // connect if "connect" input disconnected or input data==true
+            if (this.settings["enable"].value
+                && (this.inputs[0].link == null || this.inputs[0].data == true))
+                this.connectToSerialPort();
+        }
     }
 
     onSettingsChanged() {
@@ -46,22 +58,23 @@ export class MySensorsController extends Node {
             if (this.port)
                 this.port.close();
 
-            let port = this.settings["port"].value;
-            let baudRate = this.settings["baudRate"].value;
 
             if (this.settings["enable"].value)
-                this.connectToSerialPort(port, baudRate);
+                this.connectToSerialPort();
         }
     }
 
 
-    connectToSerialPort(portName: string, baudRate = 115200) {
+    connectToSerialPort() {
+        let portName = this.settings["port"].value;
+        let baudRate = this.settings["baudRate"].value;
+
         if (!portName) {
             this.debugErr("Port name is not defined!");
             return;
         }
 
-        let that=this;
+        let that = this;
 
         let SerialPort = require("serialport");
         this.port = new SerialPort(portName, {baudRate: baudRate, autoOpen: false});
@@ -76,20 +89,26 @@ export class MySensorsController extends Node {
 
         this.port.on("close", function () {
             that.debugInfo("Port closed");
+            that.isConnected = false;
+            that.setOutputData(0, that.isConnected);
         });
 
         this.port.on("disconnect", function (err) {
             that.debugErr("Port disconnected. " + err);
+            that.isConnected = false;
+            that.setOutputData(0, that.isConnected);
         });
 
         this.port.pipe(split()).on("data", that._readPortData.bind(this));
 
-        this.debugInfo("Connecting to " + portName + " at " + baudRate + " ...");
+        this.debugInfo("Connecting to " + portName + " at " + baudRate + "...");
         this.port.open();
     };
 
 
     _readPortData(data) {
+
+
         let mess = data.split(";");
         if (mess.length < 5) {
             this.debugErr("Can`t parse message: " + data);
@@ -105,11 +124,9 @@ export class MySensorsController extends Node {
             payload: mess[5]
         };
 
-        //log message
-        if (message.messageType == mys.messageType.C_INTERNAL
-            && message.subType == mys.internalDataType.I_LOG_MESSAGE)
-            this.debug("<   " + data);
-        else
+        if (message.messageType != 3
+            || message.subType != 9
+            || this.settings["debug"].value)
             this.debug("<   " + data);
 
         if (message.nodeId == GATEWAY_ID)
@@ -127,7 +144,8 @@ export class MySensorsController extends Node {
 
                     case mys.internalDataType.I_GATEWAY_READY:
                         this.isConnected = true;
-                        this.debugInfo("Gateway connected.");
+                        this.setOutputData(0, this.isConnected);
+                        this.debugInfo("Gateway connected");
                         this.sendGetGatewayVersion();
                         break;
 
@@ -363,7 +381,7 @@ export class MySensorsController extends Node {
 
             this.nodes.push(node);
             this.debug(`Node[${nodeId}] registered.`);
-            this.emit("newNode", node);
+            //       this.emit("newNode", node);
         }
         return node;
     };
@@ -382,7 +400,7 @@ export class MySensorsController extends Node {
 
             node.sensors.push(sensor);
             this.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
-            this.emit("newSensor", sensor);
+            //        this.emit("newSensor", sensor);
         }
 
         return sensor;
