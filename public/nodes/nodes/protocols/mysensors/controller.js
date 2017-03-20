@@ -33,7 +33,7 @@
             this.getNode = function (nodeId) {
                 let node = _.find(this.nodes, { 'id': nodeId });
                 if (!node)
-                    node = this._registerNode(nodeId);
+                    node = this.registerNode(nodeId);
                 return node;
             };
             this.getSensorIfExist = function (nodeId, sensorId) {
@@ -46,10 +46,10 @@
                 let node = this.getNode(nodeId);
                 let sensor = _.find(node.sensors, { 'sensorId': sensorId });
                 if (!sensor)
-                    sensor = this._registerSensor(nodeId, sensorId);
+                    sensor = this.registerSensor(nodeId, sensorId);
                 return sensor;
             };
-            this._registerNode = function (nodeId) {
+            this.registerNode = function (nodeId) {
                 let node = this.getNodeIfExist(nodeId);
                 if (!node) {
                     node = {
@@ -59,11 +59,11 @@
                         lastSeen: Date.now()
                     };
                     this.nodes.push(node);
-                    this.debug(`Node[${nodeId}] registered.`);
+                    this.debug(`Node [${nodeId}] registered`);
                 }
                 return node;
             };
-            this._registerSensor = function (nodeId, sensorId) {
+            this.registerSensor = function (nodeId, sensorId) {
                 let node = this.getNode(nodeId);
                 let sensor = _.find(node.sensors, { 'sensorId': sensorId });
                 if (!sensor) {
@@ -77,7 +77,7 @@
                 }
                 return sensor;
             };
-            this._getNewNodeId = function () {
+            this.getNewNodeId = function () {
                 for (let i = 1; i < 255; i++) {
                     let node = this.getNodeIfExist(i);
                     if (!node)
@@ -170,7 +170,7 @@
             if (message.nodeId == GATEWAY_ID)
                 this._receiveGatewayMessage(message);
             else
-                this._receiveNodeMessage(message);
+                this.receiveNodeMessage(message);
         }
         ;
         _receiveGatewayMessage(message) {
@@ -200,28 +200,28 @@
             });
         }
         ;
-        _receiveNodeMessage(message) {
+        receiveNodeMessage(message) {
             if (message.nodeId != BROADCAST_ID) {
                 let node = this.getNode(message.nodeId);
                 node.lastSeen = Date.now();
             }
             switch (message.messageType) {
                 case mys.messageType.C_PRESENTATION:
-                    this._proceedPresentation(message);
+                    this.proceedPresentation(message);
                     break;
                 case mys.messageType.C_SET:
-                    this._proceedSet(message);
+                    this.proceedSet(message);
                     break;
                 case mys.messageType.C_REQ:
-                    this._proceedReq(message);
+                    this.proceedReq(message);
                     break;
                 case mys.messageType.C_INTERNAL:
-                    this._proceedInternal(message);
+                    this.proceedInternal(message);
                     break;
             }
         }
         ;
-        _proceedPresentation(message) {
+        proceedPresentation(message) {
             if (message.sensorId == NODE_SELF_SENSOR_ID) {
                 if (message.subType == mys.sensorType.S_ARDUINO_NODE ||
                     message.subType == mys.sensorType.S_ARDUINO_REPEATER_NODE) {
@@ -248,7 +248,7 @@
             }
         }
         ;
-        _proceedSet(message) {
+        proceedSet(message) {
             let node = this.getNode(message.nodeId);
             let sensor = this.getSensor(message.nodeId, message.sensorId);
             sensor.state = message.payload;
@@ -261,7 +261,7 @@
             // this.emit("sensorUpdated", sensor, "state");
         }
         ;
-        _proceedReq(message) {
+        proceedReq(message) {
             let sensor = this.getSensorIfExist(message.nodeId, message.sensorId);
             if (!sensor)
                 return;
@@ -275,10 +275,10 @@
             });
         }
         ;
-        _proceedInternal(message) {
+        proceedInternal(message) {
             switch (message.subType) {
                 case (mys.internalDataType.I_ID_REQUEST):
-                    let id = this._getNewNodeId();
+                    let id = this.getNewNodeId();
                     if (!id)
                         return;
                     this.sendMessage({

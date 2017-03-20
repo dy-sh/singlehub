@@ -85,7 +85,7 @@ Gateway.prototype._readPortData = function (data) {
     if (message.nodeId == GATEWAY_ID)
         this._receiveGatewayMessage(message);
     else
-        this._receiveNodeMessage(message);
+        this.receiveNodeMessage(message);
 };
 
 
@@ -129,16 +129,16 @@ Gateway.prototype._receiveNodeMessage = function (message) {
 
     switch (message.messageType) {
         case mys.messageType.C_PRESENTATION:
-            this._proceedPresentation(message);
+            this.proceedPresentation(message);
             break;
         case mys.messageType.C_SET:
-            this._proceedSet(message);
+            this.proceedSet(message);
             break;
         case mys.messageType.C_REQ:
-            this._proceedReq(message);
+            this.proceedReq(message);
             break;
         case mys.messageType.C_INTERNAL:
-            this._proceedInternal(message);
+            this.proceedInternal(message);
             break;
     }
 };
@@ -216,7 +216,7 @@ Gateway.prototype._proceedInternal = function (message) {
     switch (message.subType) {
 
         case (mys.internalDataType.I_ID_REQUEST):
-            var id = this._getNewNodeId();
+            var id = this.getNewNodeId();
             if (!id) return;
             this.sendMessage({
                 nodeId: BROADCAST_ID,
@@ -298,7 +298,7 @@ Gateway.prototype.getNodeIfExist = function (nodeId) {
 
 Gateway.prototype.getNode = function (nodeId) {
     var node = _.find(this.nodes, {'id': nodeId});
-    if (!node) node = this._registerNode(nodeId);
+    if (!node) node = this.registerNode(nodeId);
     return node;
 };
 
@@ -314,7 +314,7 @@ Gateway.prototype.getSensor = function (nodeId, sensorId) {
     var node = this.getNode(nodeId);
 
     var sensor = _.find(node.sensors, {'sensorId': sensorId});
-    if (!sensor) sensor = this._registerSensor(nodeId, sensorId);
+    if (!sensor) sensor = this.registerSensor(nodeId, sensorId);
 
     return sensor;
 };
