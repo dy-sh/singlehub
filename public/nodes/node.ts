@@ -1215,7 +1215,14 @@ export class Node {
         log.debug(this.getReadableId() + " " + message);
     }
 
-
+    /**
+     * Print debug message to console
+     * @param message
+     * @param module
+     */
+    debugInfo(message: string): void {
+        log.info(this.getReadableId() + " " + message);
+    }
 
     /**
      * Print error message to console

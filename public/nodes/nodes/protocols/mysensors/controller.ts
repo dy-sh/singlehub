@@ -56,7 +56,10 @@ export class MySensorsController extends Node {
 
 
     connectToSerialPort(portName: string, baudRate = 115200) {
-        if (!portName) throw Error("portName is not defined!");
+        if (!portName) {
+            this.debugErr("Port name is not defined!");
+            return;
+        }
 
         let that=this;
 
@@ -64,7 +67,7 @@ export class MySensorsController extends Node {
         this.port = new SerialPort(portName, {baudRate: baudRate, autoOpen: false});
 
         this.port.on("open", function () {
-            that.debug("Port connected");
+            that.debugInfo("Port connected");
         });
 
         this.port.on("error", function (err) {
@@ -72,16 +75,16 @@ export class MySensorsController extends Node {
         });
 
         this.port.on("close", function () {
-            that.debug("Port closed");
+            that.debugInfo("Port closed");
         });
 
         this.port.on("disconnect", function (err) {
-            that.debug("Port disconnected. " + err);
+            that.debugErr("Port disconnected. " + err);
         });
 
         this.port.pipe(split()).on("data", that._readPortData.bind(this));
 
-        this.debug("Connecting to " + portName + " at " + baudRate + " ...");
+        this.debugInfo("Connecting to " + portName + " at " + baudRate + " ...");
         this.port.open();
     };
 
@@ -124,7 +127,7 @@ export class MySensorsController extends Node {
 
                     case mys.internalDataType.I_GATEWAY_READY:
                         this.isConnected = true;
-                        this.debug("Gateway connected.");
+                        this.debugInfo("Gateway connected.");
                         this.sendGetGatewayVersion();
                         break;
 

@@ -920,6 +920,14 @@
             log.debug(this.getReadableId() + " " + message);
         }
         /**
+         * Print debug message to console
+         * @param message
+         * @param module
+         */
+        debugInfo(message) {
+            log.info(this.getReadableId() + " " + message);
+        }
+        /**
          * Print error message to console
          * @param message
          * @param module
