@@ -7,7 +7,7 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "./compare", "./connection", "./debug", "./filters", "./main", "./math", "./numbers", "./operation", "./text", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart", "./protocols/mqtt/client"], factory);
+        define(["require", "exports", "./compare", "./connection", "./debug", "./filters", "./main", "./math", "./numbers", "./operation", "./text", "./time", "./ui/label", "./ui/toggle", "./ui/state", "./ui/button", "./ui/switch", "./ui/slider", "./ui/rgb-sliders", "./ui/rgbw-sliders", "./ui/text-box", "./ui/progress", "./ui/log", "./ui/audio", "./ui/voice-chrome", "./ui/voice-yandex", "./ui/chart", "./protocols/mqtt/client", "./protocols/mysensors/controller"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -40,5 +40,6 @@
     require("./ui/voice-yandex");
     require("./ui/chart");
     require("./protocols/mqtt/client");
+    require("./protocols/mysensors/controller");
 });
 //# sourceMappingURL=index.js.map

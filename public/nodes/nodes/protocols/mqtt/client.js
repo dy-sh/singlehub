@@ -14,7 +14,6 @@
     const node_1 = require("../../../node");
     const utils_1 = require("../../../utils");
     const container_1 = require("../../../container");
-    //console logger back and front
     let mqtt;
     if (typeof (window) === 'undefined') {
         mqtt = require('mqtt');

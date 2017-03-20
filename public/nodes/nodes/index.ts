@@ -35,4 +35,5 @@ import "./ui/voice-chrome";
 import "./ui/voice-yandex";
 import "./ui/chart";
 
-import "./protocols/mqtt/client"
+import "./protocols/mqtt/client";
+import "./protocols/mysensors/controller";

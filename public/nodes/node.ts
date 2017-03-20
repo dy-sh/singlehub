@@ -1215,6 +1215,8 @@ export class Node {
         log.debug(this.getReadableId() + " " + message);
     }
 
+
+
     /**
      * Print error message to console
      * @param message

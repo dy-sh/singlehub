@@ -9,9 +9,7 @@ import Utils from "../../../utils";
 import {Container, Side} from "../../../container";
 
 
-//console logger back and front
 let mqtt;
-declare let Logger: any; // tell the ts compiler global variable is defined
 if (typeof (window) === 'undefined') { //for backside only
     mqtt = require('mqtt')
 }

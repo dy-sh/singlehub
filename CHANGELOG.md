@@ -18,7 +18,7 @@ SingleHub v0.9
 - Now you can make loop connections between nodes (A-B-A-B...). It will not cause any problems in the system.
 - Advanced nodes settings (new UI elements).
 - Modified UI. Controls got a little more compact and roomier. 
-  The cursor now responds to the elements of the node. 
+  The cursor now responds to the elements of the node. The font in ubuntu is fixed.
  
  
  

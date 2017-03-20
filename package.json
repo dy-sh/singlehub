@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "bower install",
+    "postinstall": "bower install --allow-root",
     "start": "node app.js",
     "dev": "nodemon app.js",
     "check-updates": "ncu -u && ncu -m bower -u"
