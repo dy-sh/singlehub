@@ -392,6 +392,8 @@ export class MySensorsController extends ContainerNode {
             this.nodes.push(node);
             this.debug(`Node [${nodeId}] registered`);
             //       this.emit("newNode", node);
+
+            this.container.createNode("protocols/mys-node", {mys_id: nodeId});
         }
         return node;
     };
@@ -429,3 +431,17 @@ export class MySensorsController extends ContainerNode {
 
 }
 Container.registerNodeType("protocols/mys-controller", MySensorsController);
+
+
+class MySensorsNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "MYS node";
+        this.descriprion = "MySensors node";
+    }
+
+    onInputUpdated() {
+    }
+}
+Container.registerNodeType("protocols/mys-node", MySensorsNode, false);

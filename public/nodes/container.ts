@@ -129,7 +129,7 @@ export class Container extends Emitter {
      * @param type name of the node and path
      * @param node_class class containing the structure of a node
      */
-    static registerNodeType(type: string, node_class: any): void {
+    static registerNodeType(type: string, node_class: any, show_in_menu = true): void {
 
         if (!(node_class.prototype instanceof Node))
             throw(`Can't register node of type [${type}]. Class must inherit Node base class!`);
@@ -137,6 +137,7 @@ export class Container extends Emitter {
         node_class.type = type;
         node_class.category = type.substr(0, type.lastIndexOf("/"));
         node_class.node_name = type.substr(type.lastIndexOf("/") + 1, type.length);
+        node_class.show_in_menu = show_in_menu;
 
         this.nodes_types[type] = node_class;
 
@@ -538,7 +539,7 @@ export class Container extends Emitter {
 
 
         //create
-        let node:Node = new node_class(this, id);
+        let node: Node = new node_class(this, id);
 
         //add node
         this._nodes[id] = node;

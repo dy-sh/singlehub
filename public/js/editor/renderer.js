@@ -1953,6 +1953,8 @@
                 let node_types = container_1.Container.getNodeTypesInCategory(category);
                 let values = [];
                 for (let i in node_types) {
+                    if (!node_types[i].show_in_menu)
+                        continue;
                     //do ton show container input/output in root container
                     if (editor_1.editor.renderer.container.id == 0) {
                         if (node_types[i].type == "main/input"
@@ -2210,10 +2212,8 @@
                 this.closeAllContextualMenus();
             else {
                 //closing submenus
-                //derwish edit
                 let menus = document.querySelectorAll(".contextualmenu");
                 for (let key in menus) {
-                    // todo ES6
                     if (menus[key].previousSibling == options.from)
                         menus[key].closeMenu();
                 }

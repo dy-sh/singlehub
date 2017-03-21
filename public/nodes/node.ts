@@ -126,8 +126,10 @@ export class Node {
     onSerialize: Function;
     bgImage: HTMLImageElement;
     bgImageUrl: string;
+
     clonable: boolean;
     removable: boolean;
+
     optional_inputs: {};
     optional_outputs: {};
     order: string;

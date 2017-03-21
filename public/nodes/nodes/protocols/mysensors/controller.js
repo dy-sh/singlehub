@@ -7,10 +7,11 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../../../container", "./types", "../../main"], factory);
+        define(["require", "exports", "../../../node", "../../../container", "./types", "../../main"], factory);
     }
 })(function (require, exports) {
     "use strict";
+    const node_1 = require("../../../node");
     const container_1 = require("../../../container");
     const mys = require("./types");
     const main_1 = require("../../main");
@@ -60,6 +61,8 @@
                     };
                     this.nodes.push(node);
                     this.debug(`Node [${nodeId}] registered`);
+                    //       this.emit("newNode", node);
+                    this.container.createNode("protocols/mys-node", { mys_id: nodeId });
                 }
                 return node;
             };
@@ -347,5 +350,15 @@
     }
     exports.MySensorsController = MySensorsController;
     container_1.Container.registerNodeType("protocols/mys-controller", MySensorsController);
+    class MySensorsNode extends node_1.Node {
+        constructor() {
+            super();
+            this.title = "MYS node";
+            this.descriprion = "MySensors node";
+        }
+        onInputUpdated() {
+        }
+    }
+    container_1.Container.registerNodeType("protocols/mys-node", MySensorsNode, false);
 });
 //# sourceMappingURL=controller.js.map
