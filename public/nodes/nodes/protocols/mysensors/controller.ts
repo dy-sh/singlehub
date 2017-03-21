@@ -271,8 +271,8 @@ export class MySensorsController extends ContainerNode {
 
 
     receiveSetMessage(message: I_MYS_Message) {
-        // let node = this.getNode(message.nodeId);
-        // if (!node) this.registerNode(message.nodeId);
+        let node = this.get_MYS_Node(message.nodeId);
+        if (!node) this.register_MYS_Node(message.nodeId);
 
         let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
         if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId);
@@ -289,6 +289,8 @@ export class MySensorsController extends ContainerNode {
         this.debug(`Node[${message.nodeId}] sensor[${message.sensorId}] updated: [${message.payload}]`);
         // this.emit("sensorUpdated", sensor, "state");
 
+        let shub_node = this.get_SHub_Node(node);
+        shub_node.setOutputData(sensor.shub_node_slot, message.payload);
     };
 
 
