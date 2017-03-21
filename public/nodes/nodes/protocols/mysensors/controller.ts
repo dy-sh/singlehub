@@ -283,6 +283,13 @@ export class MySensorsController extends ContainerNode {
         if (sensor.dataType !== message.subType) {
             sensor.dataType = message.subType;
             this.debug(`Node[${message.nodeId}] sensor[${message.sensorId}] data type updated: [${mys.sensorDataTypeKey[message.subType]}]`);
+
+            //db update
+            if (this.container.db)
+                this.container.db.updateNode(node.shub_node_id, node.shub_node_cid, {
+                    $set: {mys_node: node}
+                });
+
             // this.emit("sensorUpdated", sensor, "type");
         }
 
@@ -517,16 +524,28 @@ class MySensorsNode extends Node {
         for (let i in this.inputs) {
             if (this.inputs[i].updated) {
                 let cont = Container.containers[this.mys_contr_node_cid];
+                if (!cont){
+                    this.debugErr("Can't send message. Controller node not found");
+                    return;
+                }
                 let controller = <MySensorsController>cont._nodes[this.mys_contr_node_id];
+                if (!controller){
+                    this.debugErr("Can't send message. Controller node not found");
+                    return;
+                }
 
                 let sensor = this.getSensorInSlot(+i);
+                if (!sensor){
+                    this.debugErr("Can't send message. Sensor not found");
+                    return;
+                }
 
                 controller.send_MYS_Message({
                     nodeId: this.mys_node.id,
                     sensorId: sensor.sensorId,
                     messageType: mys.messageType.C_SET,
                     ack: 0,
-                    subType: sensor.type,
+                    subType: sensor.dataType,
                     payload: this.inputs[i].data
                 })
 
