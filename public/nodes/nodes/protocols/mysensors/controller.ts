@@ -27,7 +27,28 @@ interface IMessage {
     messageType: number,
     ack?: number,
     subType: number,
-    payload?: string|number
+    payload?: string
+}
+
+interface ISensor {
+    nodeId: number,
+    sensorId: number,
+    lastSeen: number
+    type?: number,
+    dataType?: number,
+    state?: string
+}
+
+interface INode {
+    id: number,
+    sensors: ISensor[],
+    registered: number,
+    lastSeen: number,
+    sketchName?: string,
+    sketchVersion?: string,
+    version?: string,
+    isRepeatingNode?: boolean,
+    batteryLevel?: number
 }
 
 
@@ -287,7 +308,7 @@ export class MySensorsController extends ContainerNode {
                     sensorId: BROADCAST_ID,
                     messageType: mys.messageType.C_INTERNAL,
                     subType: mys.internalDataType.I_ID_RESPONSE,
-                    payload: id
+                    payload: "" + id
                 });
                 break;
 
@@ -332,7 +353,7 @@ export class MySensorsController extends ContainerNode {
                     sensorId: message.sensorId,
                     messageType: mys.messageType.C_INTERNAL,
                     subType: mys.internalDataType.I_TIME,
-                    payload: Math.ceil(Date.now() / 1000)
+                    payload: "" + Math.ceil(Date.now() / 1000)
                 });
                 break;
         }
@@ -356,25 +377,25 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    getNodeIfExist(nodeId: number) {
+    getNodeIfExist(nodeId: number): INode {
         return _.find(this.nodes, {'id': nodeId});
     };
 
-    getNode(nodeId: number) {
+    getNode(nodeId: number): INode {
         let node = _.find(this.nodes, {'id': nodeId});
         if (!node) node = this.registerNode(nodeId);
         return node;
     };
 
 
-    getSensorIfExist(nodeId: number, sensorId: number) {
+    getSensorIfExist(nodeId: number, sensorId: number): ISensor {
         let node = this.getNodeIfExist(nodeId);
         if (!node) return;
 
         return _.find(node.sensors, {'id': sensorId});
     };
 
-    getSensor(nodeId: number, sensorId: number) {
+    getSensor(nodeId: number, sensorId: number): ISensor {
         let node = this.getNode(nodeId);
 
         let sensor = _.find(node.sensors, {'sensorId': sensorId});
@@ -384,7 +405,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    registerNode(nodeId: number) {
+    registerNode(nodeId: number): INode {
         let node = this.getNodeIfExist(nodeId);
 
         if (!node) {
@@ -405,10 +426,10 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    registerSensor(nodeId: number, sensorId: number): any {
+    registerSensor(nodeId: number, sensorId: number): ISensor {
         let node = this.getNode(nodeId);
 
-        let sensor = _.find(node.sensors, {'sensorId': sensorId});
+        let sensor: ISensor = _.find(node.sensors, {'sensorId': sensorId});
         if (!sensor) {
             sensor = {
                 nodeId: nodeId,

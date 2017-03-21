@@ -230,7 +230,7 @@
                         sensorId: BROADCAST_ID,
                         messageType: mys.messageType.C_INTERNAL,
                         subType: mys.internalDataType.I_ID_RESPONSE,
-                        payload: id
+                        payload: "" + id
                     });
                     break;
                 case (mys.internalDataType.I_SKETCH_NAME):
@@ -268,7 +268,7 @@
                         sensorId: message.sensorId,
                         messageType: mys.messageType.C_INTERNAL,
                         subType: mys.internalDataType.I_TIME,
-                        payload: Math.ceil(Date.now() / 1000)
+                        payload: "" + Math.ceil(Date.now() / 1000)
                     });
                     break;
             }
