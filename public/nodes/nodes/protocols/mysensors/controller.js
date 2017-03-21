@@ -326,7 +326,7 @@
                 this.nodes.push(node);
                 this.debug(`Node [${nodeId}] registered`);
                 //       this.emit("newNode", node);
-                this.sub_container.createNode("protocols/mys-node", { mys_id: nodeId });
+                this.sub_container.createNode("protocols/mys-node", { mys_id: nodeId, mys_node: node });
             }
             return node;
         }
