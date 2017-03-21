@@ -329,7 +329,10 @@
             this.nodes[nodeId] = node;
             this.debug(`Node [${nodeId}] registered`);
             //       this.emit("newNode", node);
-            let shub_node = this.sub_container.createNode("protocols/mys-node");
+            let shub_node = this.sub_container.createNode("protocols/mys-node", {
+                mys_contr_node_id: this.id,
+                mys_contr_node_cid: this.container.id
+            });
             node.shub_node_id = shub_node.id;
             node.shub_node_cid = shub_node.container.id;
             shub_node['mys_node'] = node;
@@ -362,9 +365,10 @@
             node.sensors[sensorId] = sensor;
             this.debug(`Node[${nodeId}] sensor[${sensorId}] registered`);
             //        this.emit("newSensor", sensor);
+            let s_shub_node = shub_node.serialize(true);
             if (this.container.db)
                 this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                    $set: { mys_node: node, inputs: shub_node.inputs, outputs: shub_node.outputs }
+                    $set: { mys_node: node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
                 });
             return sensor;
         }
@@ -394,6 +398,28 @@
             this.descriprion = "MySensors node";
         }
         onInputUpdated() {
+            for (let i in this.inputs) {
+                if (this.inputs[i].updated) {
+                    let cont = container_1.Container.containers[this.mys_contr_node_cid];
+                    let controller = cont._nodes[this.mys_contr_node_id];
+                    let sensor = this.getSensorInSlot(+i);
+                    controller.send_MYS_Message({
+                        nodeId: this.mys_node.id,
+                        sensorId: sensor.sensorId,
+                        messageType: mys.messageType.C_SET,
+                        ack: 0,
+                        subType: sensor.type,
+                        payload: this.inputs[i].data
+                    });
+                }
+            }
+        }
+        getSensorInSlot(slot) {
+            for (let s in this.mys_node.sensors) {
+                let sensor = this.mys_node.sensors[s];
+                if (sensor.shub_node_slot == slot)
+                    return sensor;
+            }
         }
     }
     container_1.Container.registerNodeType("protocols/mys-node", MySensorsNode, false);
