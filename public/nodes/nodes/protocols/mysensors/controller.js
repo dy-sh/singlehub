@@ -317,21 +317,22 @@
                 this.debugErr("Can't register node [" + nodeId + "]. Already exist");
                 return;
             }
-            let mys_node = {
+            let node = {
                 id: nodeId,
                 sensors: {},
                 registered: Date.now(),
                 lastSeen: Date.now()
             };
-            this.nodes[nodeId] = mys_node;
+            this.nodes[nodeId] = node;
             this.debug(`Node [${nodeId}] registered`);
             //       this.emit("newNode", node);
-            let node = this.sub_container.createNode("protocols/mys-node");
-            mys_node.shub_node_id = node.id;
-            node['mys_node'] = mys_node;
+            let shub_node = this.sub_container.createNode("protocols/mys-node");
+            node.shub_node_id = shub_node.id;
+            node.shub_node_cid = shub_node.container.id;
+            shub_node['mys_node'] = node;
             if (this.container.db)
-                this.container.db.updateNode(node.id, node.container.id, { $set: { mys_node: mys_node } });
-            return mys_node;
+                this.container.db.updateNode(shub_node.id, shub_node.container.id, { $set: { mys_node: node } });
+            return node;
         }
         ;
         register_MYS_Sensor(nodeId, sensorId) {
@@ -343,14 +344,25 @@
                 this.debugErr("Can't register node [" + nodeId + "] sensor [" + sensorId + "]. Already exist");
                 return;
             }
+            let shub_node = this.get_SHub_Node(node);
+            //add input and output
+            let i_id = shub_node.addInput("[sensor " + sensorId + "]");
+            let o_id = shub_node.addOutput("sensor " + sensorId);
+            if (i_id != o_id)
+                throw "SingleHub node has different inputs and outputs slots count!";
             sensor = {
                 nodeId: nodeId,
                 sensorId: sensorId,
-                lastSeen: Date.now()
+                lastSeen: Date.now(),
+                shub_node_slot: i_id
             };
             node.sensors[sensorId] = sensor;
             this.debug(`Node[${nodeId}] sensor[${sensorId}] registered`);
             //        this.emit("newSensor", sensor);
+            if (this.container.db)
+                this.container.db.updateNode(shub_node.id, shub_node.container.id, {
+                    $set: { mys_node: node, inputs: shub_node.inputs, outputs: shub_node.outputs }
+                });
             return sensor;
         }
         ;
@@ -363,6 +375,12 @@
             this.debugErr('Can`t register new node. There are no available id.');
         }
         ;
+        get_SHub_Node(node) {
+            let shub_cont = container_1.Container.containers[node.shub_node_cid];
+            if (!shub_cont)
+                return null;
+            return shub_cont._nodes[node.shub_node_id];
+        }
     }
     exports.MySensorsController = MySensorsController;
     container_1.Container.registerNodeType("protocols/mys-controller", MySensorsController);

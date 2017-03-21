@@ -39,7 +39,6 @@ interface I_MYS_Sensor {
     type?: number,
     dataType?: number,
     state?: string,
-    shub_node_id?: number,
     shub_node_slot?: number
 }
 
@@ -53,7 +52,8 @@ interface I_MYS_Node {
     version?: string,
     isRepeatingNode?: boolean,
     batteryLevel?: number,
-    shub_node_id?: number
+    shub_node_id?: number,
+    shub_node_cid?: number,
 }
 
 
@@ -209,7 +209,7 @@ export class MySensorsController extends ContainerNode {
                 }
         }
     };
-    
+
 
     receive_MYS_Message(message: I_MYS_Message) {
         if (message.nodeId != BROADCAST_ID) {
@@ -410,26 +410,27 @@ export class MySensorsController extends ContainerNode {
             return;
         }
 
-        let mys_node: I_MYS_Node = {
+        let node: I_MYS_Node = {
             id: nodeId,
             sensors: {},
             registered: Date.now(),
             lastSeen: Date.now()
         };
 
-        this.nodes[nodeId] = mys_node;
+        this.nodes[nodeId] = node;
         this.debug(`Node [${nodeId}] registered`);
         //       this.emit("newNode", node);
 
-        let node = this.sub_container.createNode("protocols/mys-node");
+        let shub_node = this.sub_container.createNode("protocols/mys-node");
 
-        mys_node.shub_node_id = node.id;
-        node['mys_node'] = mys_node;
+        node.shub_node_id = shub_node.id;
+        node.shub_node_cid = shub_node.container.id;
+        shub_node['mys_node'] = node;
 
         if (this.container.db)
-            this.container.db.updateNode(node.id, node.container.id, {$set: {mys_node: mys_node}});
+            this.container.db.updateNode(shub_node.id, shub_node.container.id, {$set: {mys_node: node}});
 
-        return mys_node;
+        return node;
     };
 
 
@@ -443,19 +444,33 @@ export class MySensorsController extends ContainerNode {
             return;
         }
 
+        let shub_node = this.get_SHub_Node(node);
+
+        //add input and output
+        let i_id = shub_node.addInput("[sensor " + sensorId + "]");
+        let o_id = shub_node.addOutput("sensor " + sensorId);
+        if (i_id != o_id)
+            throw "SingleHub node has different inputs and outputs slots count!";
+
         sensor = {
             nodeId: nodeId,
             sensorId: sensorId,
-            lastSeen: Date.now()
+            lastSeen: Date.now(),
+            shub_node_slot: i_id
         };
 
         node.sensors[sensorId] = sensor;
+
         this.debug(`Node[${nodeId}] sensor[${sensorId}] registered`);
         //        this.emit("newSensor", sensor);
 
+        if (this.container.db)
+            this.container.db.updateNode(shub_node.id, shub_node.container.id, {
+                $set: {mys_node: node, inputs: shub_node.inputs, outputs: shub_node.outputs}
+            });
+
         return sensor;
     };
-
 
     getNew_MYS_NodeId(): number {
         for (let i = 1; i < 255; i++) {
@@ -466,6 +481,15 @@ export class MySensorsController extends ContainerNode {
 
         this.debugErr('Can`t register new node. There are no available id.');
     };
+
+
+    get_SHub_Node(node: I_MYS_Node): Node {
+        let shub_cont = Container.containers[node.shub_node_cid];
+        if (!shub_cont)
+            return null;
+
+        return shub_cont._nodes[node.shub_node_id];
+    }
 
 }
 Container.registerNodeType("protocols/mys-controller", MySensorsController);
