@@ -28,66 +28,6 @@
             super(container);
             this.nodes = [];
             this.isConnected = false;
-            this.getNodeIfExist = function (nodeId) {
-                return _.find(this.nodes, { 'id': nodeId });
-            };
-            this.getNode = function (nodeId) {
-                let node = _.find(this.nodes, { 'id': nodeId });
-                if (!node)
-                    node = this.registerNode(nodeId);
-                return node;
-            };
-            this.getSensorIfExist = function (nodeId, sensorId) {
-                let node = this.getNodeIfExist(nodeId);
-                if (!node)
-                    return;
-                return _.find(node.sensors, { 'id': sensorId });
-            };
-            this.getSensor = function (nodeId, sensorId) {
-                let node = this.getNode(nodeId);
-                let sensor = _.find(node.sensors, { 'sensorId': sensorId });
-                if (!sensor)
-                    sensor = this.registerSensor(nodeId, sensorId);
-                return sensor;
-            };
-            this.registerNode = function (nodeId) {
-                let node = this.getNodeIfExist(nodeId);
-                if (!node) {
-                    node = {
-                        id: nodeId,
-                        sensors: [],
-                        registered: Date.now(),
-                        lastSeen: Date.now()
-                    };
-                    this.nodes.push(node);
-                    this.debug(`Node [${nodeId}] registered`);
-                    //       this.emit("newNode", node);
-                    this.container.createNode("protocols/mys-node", { mys_id: nodeId });
-                }
-                return node;
-            };
-            this.registerSensor = function (nodeId, sensorId) {
-                let node = this.getNode(nodeId);
-                let sensor = _.find(node.sensors, { 'sensorId': sensorId });
-                if (!sensor) {
-                    sensor = {
-                        nodeId: nodeId,
-                        sensorId: sensorId,
-                        lastSeen: Date.now()
-                    };
-                    node.sensors.push(sensor);
-                    this.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
-                }
-                return sensor;
-            };
-            this.getNewNodeId = function () {
-                for (let i = 1; i < 255; i++) {
-                    let node = this.getNodeIfExist(i);
-                    if (!node)
-                        return i;
-                }
-                this.debugErr('Can`t register new node. There are no available id.');
-            };
             this.title = "MYS Controller";
             this.descriprion = 'MySensors protocol controller.';
             this.addInput("[connect]", "boolean");
@@ -195,12 +135,13 @@
         }
         ;
         sendGetGatewayVersion() {
-            this.sendMessage({
+            let message = {
                 nodeId: GATEWAY_ID,
                 sensorId: BROADCAST_ID,
                 messageType: mys.messageType.C_INTERNAL,
                 subType: mys.internalDataType.I_VERSION
-            });
+            };
+            this.sendMessage(message);
         }
         ;
         receiveNodeMessage(message) {
@@ -345,6 +286,73 @@
             let mess = _.join(arr, ";");
             this.debug("  > " + mess);
             this.port.write(mess + "\n");
+        }
+        ;
+        getNodeIfExist(nodeId) {
+            return _.find(this.nodes, { 'id': nodeId });
+        }
+        ;
+        getNode(nodeId) {
+            let node = _.find(this.nodes, { 'id': nodeId });
+            if (!node)
+                node = this.registerNode(nodeId);
+            return node;
+        }
+        ;
+        getSensorIfExist(nodeId, sensorId) {
+            let node = this.getNodeIfExist(nodeId);
+            if (!node)
+                return;
+            return _.find(node.sensors, { 'id': sensorId });
+        }
+        ;
+        getSensor(nodeId, sensorId) {
+            let node = this.getNode(nodeId);
+            let sensor = _.find(node.sensors, { 'sensorId': sensorId });
+            if (!sensor)
+                sensor = this.registerSensor(nodeId, sensorId);
+            return sensor;
+        }
+        ;
+        registerNode(nodeId) {
+            let node = this.getNodeIfExist(nodeId);
+            if (!node) {
+                node = {
+                    id: nodeId,
+                    sensors: [],
+                    registered: Date.now(),
+                    lastSeen: Date.now()
+                };
+                this.nodes.push(node);
+                this.debug(`Node [${nodeId}] registered`);
+                //       this.emit("newNode", node);
+                this.sub_container.createNode("protocols/mys-node", { mys_id: nodeId });
+            }
+            return node;
+        }
+        ;
+        registerSensor(nodeId, sensorId) {
+            let node = this.getNode(nodeId);
+            let sensor = _.find(node.sensors, { 'sensorId': sensorId });
+            if (!sensor) {
+                sensor = {
+                    nodeId: nodeId,
+                    sensorId: sensorId,
+                    lastSeen: Date.now()
+                };
+                node.sensors.push(sensor);
+                this.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
+            }
+            return sensor;
+        }
+        ;
+        getNewNodeId() {
+            for (let i = 1; i < 255; i++) {
+                let node = this.getNodeIfExist(i);
+                if (!node)
+                    return i;
+            }
+            this.debugErr('Can`t register new node. There are no available id.');
         }
         ;
     }

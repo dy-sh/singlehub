@@ -21,6 +21,15 @@ let GATEWAY_ID = 0;
 let BROADCAST_ID = 255;
 let NODE_SELF_SENSOR_ID = 255;
 
+interface IMessage {
+    nodeId: number,
+    sensorId: number,
+    messageType: number,
+    ack?: number,
+    subType: number,
+    payload?: string|number
+}
+
 
 export class MySensorsController extends ContainerNode {
     nodes = [];
@@ -116,16 +125,14 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    _readPortData(data) {
-
-
+    _readPortData(data: string) {
         let mess = data.split(";");
         if (mess.length < 5) {
             this.debugErr("Can`t parse message: " + data);
             return;
         }
 
-        let message = {
+        let message: IMessage = {
             nodeId: +mess[0],
             sensorId: +mess[1],
             messageType: +mess[2],
@@ -146,7 +153,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    _receiveGatewayMessage(message) {
+    _receiveGatewayMessage(message: IMessage) {
 
         switch (message.messageType) {
             case mys.messageType.C_INTERNAL:
@@ -169,17 +176,16 @@ export class MySensorsController extends ContainerNode {
 
 
     sendGetGatewayVersion() {
-        this.sendMessage({
+        let message: IMessage = {
             nodeId: GATEWAY_ID,
             sensorId: BROADCAST_ID,
             messageType: mys.messageType.C_INTERNAL,
             subType: mys.internalDataType.I_VERSION
-        });
+        };
+        this.sendMessage(message);
     };
 
-    receiveNodeMessage(message) {
-
-
+    receiveNodeMessage(message: IMessage) {
         if (message.nodeId != BROADCAST_ID) {
             let node = this.getNode(message.nodeId);
             node.lastSeen = Date.now();
@@ -202,7 +208,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    proceedPresentation(message) {
+    proceedPresentation(message: IMessage) {
         if (message.sensorId == NODE_SELF_SENSOR_ID) {
             if (message.subType == mys.sensorType.S_ARDUINO_NODE ||
                 message.subType == mys.sensorType.S_ARDUINO_REPEATER_NODE
@@ -235,7 +241,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    proceedSet(message) {
+    proceedSet(message: IMessage) {
         let node = this.getNode(message.nodeId);
         let sensor = this.getSensor(message.nodeId, message.sensorId);
 
@@ -254,7 +260,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    proceedReq(message) {
+    proceedReq(message: IMessage) {
         let sensor = this.getSensorIfExist(message.nodeId, message.sensorId);
         if (!sensor)
             return;
@@ -270,7 +276,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    proceedInternal(message) {
+    proceedInternal(message: IMessage) {
         switch (message.subType) {
 
             case (mys.internalDataType.I_ID_REQUEST):
@@ -333,7 +339,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    sendMessage(message) {
+    sendMessage(message: IMessage) {
         let arr = [
             message.nodeId,
             message.sensorId,
@@ -350,25 +356,25 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    getNodeIfExist = function (nodeId) {
+    getNodeIfExist(nodeId: number) {
         return _.find(this.nodes, {'id': nodeId});
     };
 
-    getNode = function (nodeId) {
+    getNode(nodeId: number) {
         let node = _.find(this.nodes, {'id': nodeId});
         if (!node) node = this.registerNode(nodeId);
         return node;
     };
 
 
-    getSensorIfExist = function (nodeId, sensorId) {
+    getSensorIfExist(nodeId: number, sensorId: number) {
         let node = this.getNodeIfExist(nodeId);
         if (!node) return;
 
         return _.find(node.sensors, {'id': sensorId});
     };
 
-    getSensor = function (nodeId, sensorId) {
+    getSensor(nodeId: number, sensorId: number) {
         let node = this.getNode(nodeId);
 
         let sensor = _.find(node.sensors, {'sensorId': sensorId});
@@ -378,7 +384,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    registerNode = function (nodeId) {
+    registerNode(nodeId: number) {
         let node = this.getNodeIfExist(nodeId);
 
         if (!node) {
@@ -393,13 +399,13 @@ export class MySensorsController extends ContainerNode {
             this.debug(`Node [${nodeId}] registered`);
             //       this.emit("newNode", node);
 
-            this.container.createNode("protocols/mys-node", {mys_id: nodeId});
+            this.sub_container.createNode("protocols/mys-node", {mys_id: nodeId});
         }
         return node;
     };
 
 
-    registerSensor = function (nodeId, sensorId) {
+    registerSensor(nodeId: number, sensorId: number): any {
         let node = this.getNode(nodeId);
 
         let sensor = _.find(node.sensors, {'sensorId': sensorId});
@@ -413,13 +419,15 @@ export class MySensorsController extends ContainerNode {
             node.sensors.push(sensor);
             this.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
             //        this.emit("newSensor", sensor);
+
+
         }
 
         return sensor;
     };
 
 
-    getNewNodeId = function () {
+    getNewNodeId(): number {
         for (let i = 1; i < 255; i++) {
             let node = this.getNodeIfExist(i);
             if (!node)
