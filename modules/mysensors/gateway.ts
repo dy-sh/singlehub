@@ -52,7 +52,7 @@ Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
         log.debug("Port disconnected. " + err);
     });
 
-    this.port.pipe(split()).on("data", this._readPortData.bind(this));
+    this.port.pipe(split()).on("data", this.readPortData.bind(this));
 
     log.debug("Connecting to " + portName + " at " + baudRate + " ...");
     this.port.open();
@@ -83,9 +83,9 @@ Gateway.prototype._readPortData = function (data) {
         log.debugMes("<   " + data);
 
     if (message.nodeId == GATEWAY_ID)
-        this._receiveGatewayMessage(message);
+        this.receiveGatewayMessage(message);
     else
-        this.receiveNodeMessage(message);
+        this.receive_MYS_Message(message);
 };
 
 
@@ -111,7 +111,7 @@ Gateway.prototype._receiveGatewayMessage = function (message) {
 
 
 Gateway.prototype.sendGetGatewayVersion = function () {
-    this.sendMessage({
+    this.send_MYS_Message({
         nodeId: GATEWAY_ID,
         sensorId: BROADCAST_ID,
         messageType: mys.messageType.C_INTERNAL,
@@ -123,22 +123,22 @@ Gateway.prototype._receiveNodeMessage = function (message) {
 
 
     if (message.nodeId != BROADCAST_ID) {
-        var node = this.getNode(message.nodeId);
+        var node = this.get_MYS_Node(message.nodeId);
         node.lastSeen = Date.now();
     }
 
     switch (message.messageType) {
         case mys.messageType.C_PRESENTATION:
-            this.proceedPresentation(message);
+            this.receivePresentMessage(message);
             break;
         case mys.messageType.C_SET:
-            this.proceedSet(message);
+            this.receiveSetMessage(message);
             break;
         case mys.messageType.C_REQ:
-            this.proceedReq(message);
+            this.receiveReqMessage(message);
             break;
         case mys.messageType.C_INTERNAL:
-            this.proceedInternal(message);
+            this.receiveInternalMessage(message);
             break;
     }
 };
@@ -149,7 +149,7 @@ Gateway.prototype._proceedPresentation = function (message) {
         if (message.subType == mys.sensorType.S_ARDUINO_NODE ||
             message.subType == mys.sensorType.S_ARDUINO_REPEATER_NODE
         ) {
-            var node = this.getNode(message.nodeId);
+            var node = this.get_MYS_Node(message.nodeId);
             var isRepeatingNode = message.subType == mys.sensorType.S_ARDUINO_REPEATER_NODE;
             var version = message.payload;
 
@@ -164,13 +164,13 @@ Gateway.prototype._proceedPresentation = function (message) {
 
     }
     else {
-        var sensor = this.getSensor(message.nodeId, message.sensorId);
+        var sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
         if (sensor.type !== message.subType) {
             sensor.type = message.subType;
             sensor.dataType = mys.getDefaultDataType(message.subType);
             log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
             console.log(sensor.dataType);
-            var node = this.getNode(message.nodeId);
+            var node = this.get_MYS_Node(message.nodeId);
             this.emit("sensorUpdated", sensor, "type");
         }
     }
@@ -178,8 +178,8 @@ Gateway.prototype._proceedPresentation = function (message) {
 
 
 Gateway.prototype._proceedSet = function (message) {
-    var node = this.getNode(message.nodeId);
-    var sensor = this.getSensor(message.nodeId, message.sensorId);
+    var node = this.get_MYS_Node(message.nodeId);
+    var sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
 
     sensor.state = message.payload;
     sensor.lastSeen = Date.now();
@@ -201,7 +201,7 @@ Gateway.prototype._proceedReq = function (message) {
     if (!sensor)
         return;
 
-    this.sendMessage({
+    this.send_MYS_Message({
         nodeId: message.nodeId,
         sensorId: message.sensorId,
         messageType: mys.messageType.C_SET,
@@ -216,9 +216,9 @@ Gateway.prototype._proceedInternal = function (message) {
     switch (message.subType) {
 
         case (mys.internalDataType.I_ID_REQUEST):
-            var id = this.getNewNodeId();
+            var id = this.getNew_MYS_NodeId();
             if (!id) return;
-            this.sendMessage({
+            this.send_MYS_Message({
                 nodeId: BROADCAST_ID,
                 sensorId: BROADCAST_ID,
                 messageType: mys.messageType.C_INTERNAL,
@@ -228,7 +228,7 @@ Gateway.prototype._proceedInternal = function (message) {
             break;
 
         case (mys.internalDataType.I_SKETCH_NAME):
-            var node = this.getNode(message.nodeId);
+            var node = this.get_MYS_Node(message.nodeId);
             if (node.sketchName !== message.payload) {
                 node.sketchName = message.payload;
                 log.debug(`Node[${message.nodeId}] sketch name: [${message.payload}]`);
@@ -237,7 +237,7 @@ Gateway.prototype._proceedInternal = function (message) {
             break;
 
         case ( mys.internalDataType.I_SKETCH_VERSION):
-            var node = this.getNode(message.nodeId);
+            var node = this.get_MYS_Node(message.nodeId);
             if (node.sketchVersion !== message.payload) {
                 node.sketchVersion = message.payload;
                 log.debug(`Node[${message.nodeId}] sketch version: [${message.payload}]`);
@@ -246,14 +246,14 @@ Gateway.prototype._proceedInternal = function (message) {
             break;
 
         case ( mys.internalDataType.I_BATTERY_LEVEL):
-            var node = this.getNode(message.nodeId);
+            var node = this.get_MYS_Node(message.nodeId);
             node.batteryLevel = +message.payload;
             log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
             this.emit("nodeUpdated", node, "batteryLevel");
             break;
 
         case ( mys.internalDataType.I_CONFIG):
-            this.sendMessage({
+            this.send_MYS_Message({
                 nodeId: message.nodeId,
                 sensorId: BROADCAST_ID,
                 messageType: mys.messageType.C_INTERNAL,
@@ -263,7 +263,7 @@ Gateway.prototype._proceedInternal = function (message) {
             break;
 
         case ( mys.internalDataType.I_TIME):
-            this.this.sendMessage({
+            this.this.send_MYS_Message({
                 nodeId: message.nodeId,
                 sensorId: message.sensorId,
                 messageType: mys.messageType.C_INTERNAL,
@@ -298,7 +298,7 @@ Gateway.prototype.getNodeIfExist = function (nodeId) {
 
 Gateway.prototype.getNode = function (nodeId) {
     var node = _.find(this.nodes, {'id': nodeId});
-    if (!node) node = this.registerNode(nodeId);
+    if (!node) node = this.register_MYS_Node(nodeId);
     return node;
 };
 
@@ -311,10 +311,10 @@ Gateway.prototype.getSensorIfExist = function (nodeId, sensorId) {
 };
 
 Gateway.prototype.getSensor = function (nodeId, sensorId) {
-    var node = this.getNode(nodeId);
+    var node = this.get_MYS_Node(nodeId);
 
     var sensor = _.find(node.sensors, {'sensorId': sensorId});
-    if (!sensor) sensor = this.registerSensor(nodeId, sensorId);
+    if (!sensor) sensor = this.register_MYS_Sensor(nodeId, sensorId);
 
     return sensor;
 };
@@ -340,7 +340,7 @@ Gateway.prototype._registerNode = function (nodeId) {
 
 
 Gateway.prototype._registerSensor = function (nodeId, sensorId) {
-    var node = this.getNode(nodeId);
+    var node = this.get_MYS_Node(nodeId);
 
     var sensor = _.find(node.sensors, {'sensorId': sensorId});
     if (!sensor) {

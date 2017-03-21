@@ -8,12 +8,14 @@ import Utils from "../../../utils";
 import {Container, Side} from "../../../container";
 import * as mys from "./types"
 import {ContainerNode} from "../../main";
+import {debug} from "util";
 
 
-let split, _;
+let split;
+//let _;
 if (typeof (window) === 'undefined') { //for backside only
     split = require("split");
-    _ = require("lodash");
+    // _ = require("lodash");
 }
 
 
@@ -36,24 +38,27 @@ interface I_MYS_Sensor {
     lastSeen: number
     type?: number,
     dataType?: number,
-    state?: string
+    state?: string,
+    shub_node_id?: number,
+    shub_node_slot?: number
 }
 
 interface I_MYS_Node {
     id: number,
-    sensors: I_MYS_Sensor[],
+    sensors: {[id: number]: I_MYS_Sensor},
     registered: number,
     lastSeen: number,
     sketchName?: string,
     sketchVersion?: string,
     version?: string,
     isRepeatingNode?: boolean,
-    batteryLevel?: number
+    batteryLevel?: number,
+    shub_node_id?: number
 }
 
 
 export class MySensorsController extends ContainerNode {
-    nodes = [];
+    nodes: {[id: number]: I_MYS_Node} = {};
     isConnected = false;
     port;
     version;
@@ -70,6 +75,7 @@ export class MySensorsController extends ContainerNode {
         this.settings["port"] = {description: "Serial port name", value: "/dev/tty.SLAB_USBtoUART", type: "string"};
         this.settings["baudRate"] = {description: "Baud rate", value: 115200, type: "number"};
         this.settings["debug"] = {description: "Show debug messages in console", value: false, type: "boolean"};
+        // this.settings["unknown_nodes"] = {description: "Register unknown nodes (otherwise will register only when presentation)", value: true, type: "boolean"};
 
     }
 
@@ -139,14 +145,14 @@ export class MySensorsController extends ContainerNode {
             that.setOutputData(0, that.isConnected);
         });
 
-        this.port.pipe(split()).on("data", that._readPortData.bind(this));
+        this.port.pipe(split()).on("data", that.readPortData.bind(this));
 
         this.debugInfo("Connecting to " + portName + " at " + baudRate + "...");
         this.port.open();
     };
 
 
-    _readPortData(data: string) {
+    readPortData(data: string) {
         let mess = data.split(";");
         if (mess.length < 5) {
             this.debugErr("Can`t parse message: " + data);
@@ -168,13 +174,13 @@ export class MySensorsController extends ContainerNode {
             this.debug("<   " + data);
 
         if (message.nodeId == GATEWAY_ID)
-            this._receiveGatewayMessage(message);
+            this.receiveGatewayMessage(message);
         else
-            this.receiveNodeMessage(message);
+            this.receive_MYS_Message(message);
     };
 
 
-    _receiveGatewayMessage(message: I_MYS_Message) {
+    receiveGatewayMessage(message: I_MYS_Message) {
 
         switch (message.messageType) {
             case mys.messageType.C_INTERNAL:
@@ -184,7 +190,16 @@ export class MySensorsController extends ContainerNode {
                         this.isConnected = true;
                         this.setOutputData(0, this.isConnected);
                         this.debugInfo("Gateway connected");
-                        this.sendGetGatewayVersion();
+
+                        //send get gateway version
+                        let message: I_MYS_Message = {
+                            nodeId: GATEWAY_ID,
+                            sensorId: BROADCAST_ID,
+                            messageType: mys.messageType.C_INTERNAL,
+                            subType: mys.internalDataType.I_VERSION
+                        };
+                        this.send_MYS_Message(message);
+
                         break;
 
                     case mys.internalDataType.I_VERSION:
@@ -194,47 +209,39 @@ export class MySensorsController extends ContainerNode {
                 }
         }
     };
+    
 
-
-    sendGetGatewayVersion() {
-        let message: I_MYS_Message = {
-            nodeId: GATEWAY_ID,
-            sensorId: BROADCAST_ID,
-            messageType: mys.messageType.C_INTERNAL,
-            subType: mys.internalDataType.I_VERSION
-        };
-        this.sendMessage(message);
-    };
-
-    receiveNodeMessage(message: I_MYS_Message) {
+    receive_MYS_Message(message: I_MYS_Message) {
         if (message.nodeId != BROADCAST_ID) {
-            let node = this.getNode(message.nodeId);
+            let node = this.get_MYS_Node(message.nodeId);
+            if (!node) node = this.register_MYS_Node(message.nodeId);
             node.lastSeen = Date.now();
         }
 
         switch (message.messageType) {
             case mys.messageType.C_PRESENTATION:
-                this.proceedPresentation(message);
+                this.receivePresentMessage(message);
                 break;
             case mys.messageType.C_SET:
-                this.proceedSet(message);
+                this.receiveSetMessage(message);
                 break;
             case mys.messageType.C_REQ:
-                this.proceedReq(message);
+                this.receiveReqMessage(message);
                 break;
             case mys.messageType.C_INTERNAL:
-                this.proceedInternal(message);
+                this.receiveInternalMessage(message);
                 break;
         }
     };
 
 
-    proceedPresentation(message: I_MYS_Message) {
+    receivePresentMessage(message: I_MYS_Message) {
         if (message.sensorId == NODE_SELF_SENSOR_ID) {
             if (message.subType == mys.sensorType.S_ARDUINO_NODE ||
                 message.subType == mys.sensorType.S_ARDUINO_REPEATER_NODE
             ) {
-                let node = this.getNode(message.nodeId);
+                let node = this.get_MYS_Node(message.nodeId);
+                if (!node) node = this.register_MYS_Node(message.nodeId);
                 let isRepeatingNode = message.subType == mys.sensorType.S_ARDUINO_REPEATER_NODE;
                 let version = message.payload;
 
@@ -249,44 +256,48 @@ export class MySensorsController extends ContainerNode {
 
         }
         else {
-            let sensor = this.getSensor(message.nodeId, message.sensorId);
+            let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
+            if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId);
             if (sensor.type !== message.subType) {
                 sensor.type = message.subType;
                 sensor.dataType = mys.getDefaultDataType(message.subType);
                 this.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
-                console.log(sensor.dataType);
-                let node = this.getNode(message.nodeId);
+                let node = this.get_MYS_Node(message.nodeId);
+                if (!node) node = this.register_MYS_Node(message.nodeId);
                 // this.emit("sensorUpdated", sensor, "type");
             }
         }
     };
 
 
-    proceedSet(message: I_MYS_Message) {
-        let node = this.getNode(message.nodeId);
-        let sensor = this.getSensor(message.nodeId, message.sensorId);
+    receiveSetMessage(message: I_MYS_Message) {
+        // let node = this.getNode(message.nodeId);
+        // if (!node) this.registerNode(message.nodeId);
+
+        let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
+        if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId);
 
         sensor.state = message.payload;
         sensor.lastSeen = Date.now();
 
         if (sensor.dataType !== message.subType) {
             sensor.dataType = message.subType;
-            this.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] dataType updated: [${mys.sensorDataTypeKey[message.subType]}]`);
+            this.debug(`Node[${message.nodeId}] sensor[${message.sensorId}] data type updated: [${mys.sensorDataTypeKey[message.subType]}]`);
             // this.emit("sensorUpdated", sensor, "type");
         }
 
-        this.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] updated: [${message.payload}]`);
+        this.debug(`Node[${message.nodeId}] sensor[${message.sensorId}] updated: [${message.payload}]`);
         // this.emit("sensorUpdated", sensor, "state");
 
     };
 
 
-    proceedReq(message: I_MYS_Message) {
-        let sensor = this.getSensorIfExist(message.nodeId, message.sensorId);
+    receiveReqMessage(message: I_MYS_Message) {
+        let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
         if (!sensor)
             return;
 
-        this.sendMessage({
+        this.send_MYS_Message({
             nodeId: message.nodeId,
             sensorId: message.sensorId,
             messageType: mys.messageType.C_SET,
@@ -297,13 +308,13 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    proceedInternal(message: I_MYS_Message) {
+    receiveInternalMessage(message: I_MYS_Message) {
         switch (message.subType) {
 
             case (mys.internalDataType.I_ID_REQUEST):
-                let id = this.getNewNodeId();
+                let id = this.getNew_MYS_NodeId();
                 if (!id) return;
-                this.sendMessage({
+                this.send_MYS_Message({
                     nodeId: BROADCAST_ID,
                     sensorId: BROADCAST_ID,
                     messageType: mys.messageType.C_INTERNAL,
@@ -313,7 +324,8 @@ export class MySensorsController extends ContainerNode {
                 break;
 
             case (mys.internalDataType.I_SKETCH_NAME):
-                let n1 = this.getNode(message.nodeId);
+                let n1 = this.get_MYS_Node(message.nodeId);
+                if (!n1) n1 = this.register_MYS_Node(message.nodeId);
                 if (n1.sketchName !== message.payload) {
                     n1.sketchName = message.payload;
                     this.debug(`Node[${message.nodeId}] sketch name: [${message.payload}]`);
@@ -322,7 +334,8 @@ export class MySensorsController extends ContainerNode {
                 break;
 
             case ( mys.internalDataType.I_SKETCH_VERSION):
-                let n2 = this.getNode(message.nodeId);
+                let n2 = this.get_MYS_Node(message.nodeId);
+                if (!n2) n2 = this.register_MYS_Node(message.nodeId);
                 if (n2.sketchVersion !== message.payload) {
                     n2.sketchVersion = message.payload;
                     this.debug(`Node[${message.nodeId}] sketch version: [${message.payload}]`);
@@ -331,14 +344,15 @@ export class MySensorsController extends ContainerNode {
                 break;
 
             case ( mys.internalDataType.I_BATTERY_LEVEL):
-                let n3 = this.getNode(message.nodeId);
+                let n3 = this.get_MYS_Node(message.nodeId);
+                if (!n3) n3 = this.register_MYS_Node(message.nodeId);
                 n3.batteryLevel = +message.payload;
                 this.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
                 // this.emit("nodeUpdated", n3, "batteryLevel");
                 break;
 
             case ( mys.internalDataType.I_CONFIG):
-                this.sendMessage({
+                this.send_MYS_Message({
                     nodeId: message.nodeId,
                     sensorId: BROADCAST_ID,
                     messageType: mys.messageType.C_INTERNAL,
@@ -348,7 +362,7 @@ export class MySensorsController extends ContainerNode {
                 break;
 
             case ( mys.internalDataType.I_TIME):
-                this.sendMessage({
+                this.send_MYS_Message({
                     nodeId: message.nodeId,
                     sensorId: message.sensorId,
                     messageType: mys.messageType.C_INTERNAL,
@@ -360,7 +374,7 @@ export class MySensorsController extends ContainerNode {
     };
 
 
-    sendMessage(message: I_MYS_Message) {
+    send_MYS_Message(message: I_MYS_Message) {
         let arr = [
             message.nodeId,
             message.sensorId,
@@ -370,87 +384,82 @@ export class MySensorsController extends ContainerNode {
             message.payload
         ];
 
-        let mess = _.join(arr, ";");
+        let mess =
+            arr[0] + ";" + arr[1] + ";" + arr[2] + ";" + arr[3] + ";" + arr[4] + ";" + arr[5] + ";";
 
         this.debug("  > " + mess);
         this.port.write(mess + "\n");
     };
 
 
-    getNodeIfExist(nodeId: number): I_MYS_Node {
-        return _.find(this.nodes, {'id': nodeId});
+    get_MYS_Node(nodeId: number): I_MYS_Node {
+        return this.nodes[nodeId];
     };
 
-    getNode(nodeId: number): I_MYS_Node {
-        let node = _.find(this.nodes, {'id': nodeId});
-        if (!node) node = this.registerNode(nodeId);
-        return node;
+    get_MYS_Sensor(nodeId: number, sensorId: number): I_MYS_Sensor {
+        if (!this.nodes[nodeId])
+            return null;
+
+        return this.nodes[nodeId].sensors[sensorId];
     };
 
 
-    getSensorIfExist(nodeId: number, sensorId: number): I_MYS_Sensor {
-        let node = this.getNodeIfExist(nodeId);
-        if (!node) return;
+    register_MYS_Node(nodeId: number): I_MYS_Node {
+        if (this.nodes[nodeId]) {
+            this.debugErr("Can't register node [" + nodeId + "]. Already exist");
+            return;
+        }
 
-        return _.find(node.sensors, {'id': sensorId});
+        let mys_node: I_MYS_Node = {
+            id: nodeId,
+            sensors: {},
+            registered: Date.now(),
+            lastSeen: Date.now()
+        };
+
+        this.nodes[nodeId] = mys_node;
+        this.debug(`Node [${nodeId}] registered`);
+        //       this.emit("newNode", node);
+
+        let node = this.sub_container.createNode("protocols/mys-node");
+
+        mys_node.shub_node_id = node.id;
+        node['mys_node'] = mys_node;
+
+        if (this.container.db)
+            this.container.db.updateNode(node.id, node.container.id, {$set: {mys_node: mys_node}});
+
+        return mys_node;
     };
 
-    getSensor(nodeId: number, sensorId: number): I_MYS_Sensor {
-        let node = this.getNode(nodeId);
 
-        let sensor = _.find(node.sensors, {'sensorId': sensorId});
-        if (!sensor) sensor = this.registerSensor(nodeId, sensorId);
+    register_MYS_Sensor(nodeId: number, sensorId: number): I_MYS_Sensor {
+        let node = this.get_MYS_Node(nodeId);
+        if (!node) node = this.register_MYS_Node(nodeId);
+
+        let sensor = node.sensors[sensorId];
+        if (sensor) {
+            this.debugErr("Can't register node [" + nodeId + "] sensor [" + sensorId + "]. Already exist");
+            return;
+        }
+
+        sensor = {
+            nodeId: nodeId,
+            sensorId: sensorId,
+            lastSeen: Date.now()
+        };
+
+        node.sensors[sensorId] = sensor;
+        this.debug(`Node[${nodeId}] sensor[${sensorId}] registered`);
+        //        this.emit("newSensor", sensor);
 
         return sensor;
     };
 
 
-    registerNode(nodeId: number): I_MYS_Node {
-        let node = this.getNodeIfExist(nodeId);
-
-        if (!node) {
-            node = {
-                id: nodeId,
-                sensors: [],
-                registered: Date.now(),
-                lastSeen: Date.now()
-            };
-
-            this.nodes.push(node);
-            this.debug(`Node [${nodeId}] registered`);
-            //       this.emit("newNode", node);
-
-            this.sub_container.createNode("protocols/mys-node", {mys_id: nodeId, mys_node: node});
-        }
-        return node;
-    };
-
-
-    registerSensor(nodeId: number, sensorId: number): I_MYS_Sensor {
-        let node = this.getNode(nodeId);
-
-        let sensor: I_MYS_Sensor = _.find(node.sensors, {'sensorId': sensorId});
-        if (!sensor) {
-            sensor = {
-                nodeId: nodeId,
-                sensorId: sensorId,
-                lastSeen: Date.now()
-            };
-
-            node.sensors.push(sensor);
-            this.debug(`Node[${nodeId}] Sensor[${sensorId}] registered.`);
-            //        this.emit("newSensor", sensor);
-
-
-        }
-
-        return sensor;
-    };
-
-
-    getNewNodeId(): number {
+    getNew_MYS_NodeId(): number {
         for (let i = 1; i < 255; i++) {
-            let node = this.getNodeIfExist(i);
+            let node = this.get_MYS_Node(i);
             if (!node)
                 return i;
         }
