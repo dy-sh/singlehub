@@ -432,7 +432,8 @@ export class MySensorsController extends ContainerNode {
 
         let shub_node = this.sub_container.createNode("protocols/mys-node", {
             mys_contr_node_id: this.id,
-            mys_contr_node_cid: this.container.id
+            mys_contr_node_cid: this.container.id,
+            properties: {mys_node_id: nodeId}
         });
 
         node.shub_node_id = shub_node.id;
@@ -440,7 +441,9 @@ export class MySensorsController extends ContainerNode {
         shub_node['mys_node'] = node;
 
         if (this.container.db)
-            this.container.db.updateNode(shub_node.id, shub_node.container.id, {$set: {mys_node: node}});
+            this.container.db.updateNode(shub_node.id, shub_node.container.id, {
+                $set: {mys_node: node}
+            });
 
         return node;
     };
@@ -516,26 +519,27 @@ class MySensorsNode extends Node {
     constructor() {
         super();
 
-        this.title = "MYS node";
+        // this.title = "MYS node";
         this.descriprion = "MySensors node";
     }
+
 
     onInputUpdated() {
         for (let i in this.inputs) {
             if (this.inputs[i].updated) {
                 let cont = Container.containers[this.mys_contr_node_cid];
-                if (!cont){
+                if (!cont) {
                     this.debugErr("Can't send message. Controller node not found");
                     return;
                 }
                 let controller = <MySensorsController>cont._nodes[this.mys_contr_node_id];
-                if (!controller){
+                if (!controller) {
                     this.debugErr("Can't send message. Controller node not found");
                     return;
                 }
 
                 let sensor = this.getSensorInSlot(+i);
-                if (!sensor){
+                if (!sensor) {
                     this.debugErr("Can't send message. Sensor not found");
                     return;
                 }
@@ -551,6 +555,10 @@ class MySensorsNode extends Node {
 
             }
         }
+    }
+
+    onAdded() {
+        this.title = "MYS node " + this.properties['mys_node_id'];
     }
 
     getSensorInSlot(slot: number): I_MYS_Sensor {
