@@ -3,9 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "start": "concurrently \"npm run build\" \"npm run watch\"",
+    "build": "concurrently \"npm run build-ts\" \"npm run copy-static-assets\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"nodemon dist/app.js\"",
+    "serve": "node dist/app.js",
+    "test": "jest --forceExit",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "copy-static-assets": "node copyStaticAssets.js",
     "postinstall": "bower install --allow-root",
-    "start": "node app.js",
-    "dev": "nodemon app.js",
     "check-updates": "ncu -u && ncu -m bower -u"
   },
   "dependencies": {
@@ -42,9 +48,14 @@
     "@types/node": "^7.0.0",
     "@types/serialport": "^4.0.7",
     "@types/serve-favicon": "^2.2.28",
+    "@types/shelljs": "^0.7.2",
     "@types/socket.io": "^1.4.27",
     "@types/socket.io-client": "^1.4.29",
     "@types/vis": "^4.17.3",
-    "nodemon": "^1.11.0"
+    "concurrently": "^3.5.0",
+    "node-sass": "^4.5.3",
+    "nodemon": "^1.11.0",
+    "shelljs": "^0.7.8",
+    "typescript": "^2.4.1"
   }
 }

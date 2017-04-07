@@ -6,10 +6,21 @@
     "noImplicitAny": false,
     "removeComments": false,
     "preserveConstEnums": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "public/js/dashboard-old"
+  "include": [
+    "src/**/*"
   ]
+  // "exclude": [
+  //   "node_modules",
+  //   "public/js/dashboard-old"
+  // ]
 }
