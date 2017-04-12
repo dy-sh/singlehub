@@ -1,3 +1,19 @@
+
+# npm modules
+node_modules
+
+# compiled js code
+dist
+
+# IDE files
+.idea
+.DS_Store
+.vscode
+
+# nedb databases
+*.db
+
+
 # Logs
 logs
 *.log
@@ -20,12 +36,3 @@ coverage
 # node-waf configuration
 .lock-wscript
 
-
-node_modules
-dist
-
-.idea
-.DS_Store
-.vscode
-
-*.db
