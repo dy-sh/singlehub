@@ -201,8 +201,8 @@ router.get('/first-run/hardware', function (req, res, next) {
 });
 
 router.get('/first-run/hardware/none', function (req, res, next) {
-    config.gateway.mysensors.serial.enable = false;
-    config.gateway.mysensors.ethernet.enable = false;
+    // config.gateway.mysensors.serial.enable = false;
+    // config.gateway.mysensors.ethernet.enable = false;
     saveConfig();
     res.redirect("/first-run/complete")
 });
