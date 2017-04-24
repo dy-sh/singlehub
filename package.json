@@ -8,7 +8,7 @@
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"nodemon dist/app.js\"",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
-    "copy-static-assets": "node copyStaticAssets.js",
+    "copy-static-assets": "node bin/copyStaticAssets.js",
     "postinstall": "bower install --allow-root && npm run build",
     "check-updates": "ncu -u && ncu -m bower -u"
   },
