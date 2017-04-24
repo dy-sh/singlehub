@@ -9,6 +9,7 @@
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "copy-static-assets": "node bin/copyStaticAssets.js",
+    "reset": "node bin/resetConfig.js",
     "postinstall": "bower install --allow-root && npm run build",
     "check-updates": "ncu -u && ncu -m bower -u"
   },
