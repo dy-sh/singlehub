@@ -11,7 +11,10 @@ import { app } from "../app";
 let router = express.Router();
 let config = require('../../config.json');
 
+const log = require('logplease').create('app', { color: 2 });
+
 // first run wizard
+
 
 
 // prevent access if already configured (for security)
@@ -203,7 +206,7 @@ router.get('/first-run/hardware', function (req, res, next) {
 router.get('/first-run/hardware/none', function (req, res, next) {
     // config.gateway.mysensors.serial.enable = false;
     // config.gateway.mysensors.ethernet.enable = false;
-    saveConfig();
+    // saveConfig();
     res.redirect("/first-run/complete")
 });
 
@@ -270,12 +273,12 @@ module.exports = router;
 
 
 function saveConfig() {
-    fs.writeFile('../../config.json', JSON.stringify(config, null, '\t'), function (err) {
+    fs.writeFile(__dirname + ' /../../config.json', JSON.stringify(config, null, '\t'), function (err) {
         if (err) {
-            console.log('Error saving config.json.');
-            console.log(err.message);
+            log.error('Error saving config.json.');
+            log.error(err.message);
             return;
         }
-        console.log('Configuration saved to config.json.')
+        log.debug('Configuration saved to config.json.')
     });
 }
