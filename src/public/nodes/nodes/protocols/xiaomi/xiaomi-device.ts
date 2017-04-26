@@ -9,6 +9,10 @@ import Utils from "../../../utils";
 import { Container, Side } from "../../../container";
 
 
+let miio;
+if (typeof (window) === 'undefined') { //for backside only
+    miio = require('miio')
+}
 
 
 export class XiaomiDeviceNode extends Node {
@@ -47,6 +51,15 @@ export class XiaomiDeviceNode extends Node {
 
 
     connectToDevice() {
+        let options: any = { address: this.settings["address"].value };
+
+        miio.device(options).then(device => {
+            console.log(device)
+            // if (device.hasCapability('power')) {
+            //     console.log('power is now', device.power);
+            //     return device.setPower(!device.power);
+            // }
+        }).catch(console.error);
 
 
     }
