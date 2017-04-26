@@ -37,3 +37,4 @@ import "./ui/chart";
 
 import "./protocols/mqtt/client";
 import "./protocols/mysensors/controller";
+import "./protocols/xiaomi/xiaomi-device";

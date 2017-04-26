@@ -3,12 +3,6 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-
-/**
- * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
- * License: http://www.gnu.org/licenses/gpl-3.0.txt
- */
-
 export let messageType =
     {
         C_PRESENTATION: 0,
