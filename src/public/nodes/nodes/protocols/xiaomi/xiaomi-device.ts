@@ -58,6 +58,8 @@ export class XiaomiDeviceNode extends Node {
             //     console.log('power is now', device.power);
             //     return device.setPower(!device.power);
             // }
+            this.device = device;
+
             if (device.hasCapability('power-channels')) {
                 let power = device.property('power');
 
@@ -75,7 +77,14 @@ export class XiaomiDeviceNode extends Node {
                     this.setOutputData(outId, power);
                 }
             }
+
+            //update view
+            if (this.side == Side.editor) {
+                this.setDirtyCanvas(true, true);
+            }
         }).catch(console.error);
+
+
     }
 
     disconnectFromDevice() {
@@ -94,6 +103,19 @@ export class XiaomiDeviceNode extends Node {
                 this.connectToDevice()
         }
 
+        //power input updated
+        if (this.inputs[1].updated) {
+            this.device.setPower(this.inputs[1].data);
+        }
+
+        // for (let id in this.inputs) {
+        //     let i = this.inputs[id];
+        //     if (i.updated) {
+        //         if (i.name.startsWith('[power')) {
+
+        //         }
+        //     }
+        // }
     }
 
     onSettingsChanged() {
