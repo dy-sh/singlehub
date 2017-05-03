@@ -2,7 +2,7 @@
  * Created by derwish on 11.02.17.
  */
 
-import {Container, Side} from "./container";
+import { Container, Side } from "./container";
 import Utils from "./utils";
 
 
@@ -10,9 +10,9 @@ import Utils from "./utils";
 let log;
 declare let Logger: any; // tell the ts compiler global variable is defined
 if (typeof (window) === 'undefined') //for backside only
-    log = require('logplease').create('node', {color: 5});
+    log = require('logplease').create('node', { color: 5 });
 else  //for frontside only
-    log = Logger.create('node', {color: 5});
+    log = Logger.create('node', { color: 5 });
 
 
 export interface IInputInfo {
@@ -74,10 +74,10 @@ export interface SerializedNode {
     pos: [number, number];
     size?: [number, number];
     data?: any;
-    inputs?: {[id: number]: NodeInput};
-    outputs?: {[id: number]: NodeOutput};
+    inputs?: { [id: number]: NodeInput };
+    outputs?: { [id: number]: NodeOutput };
     properties?: any;
-    settings?: {[name: string]: NodeSettings};
+    settings?: { [name: string]: NodeSettings };
     flags?: any;
 }
 
@@ -101,11 +101,11 @@ export class Node {
     type: string;
     category: string;
     side: Side;
-    inputs: {[id: number]: NodeInput};
-    outputs: {[id: number]: NodeOutput};
+    inputs: { [id: number]: NodeInput };
+    outputs: { [id: number]: NodeOutput };
     //   connections: Array<any>;
     properties = {};
-    settings: {[name: string]: NodeSettings} = {};
+    settings: { [name: string]: NodeSettings } = {};
 
     ignore_remove: boolean;
     flags: {
@@ -140,7 +140,7 @@ export class Node {
     isRecentlyActive: boolean;
 
 
-//events
+    //events
 
     // /**
     //  * Invoked when new node created
@@ -224,7 +224,7 @@ export class Node {
             if (ser_node[key] == null)
                 continue;
 
-            else if (typeof(ser_node[key]) == 'object') //object
+            else if (typeof (ser_node[key]) == 'object') //object
             {
                 //if node (has configure function)
                 if (this[key] && this[key].configure)
@@ -353,7 +353,7 @@ export class Node {
                                 if (out_link.target_node_id == this.id && out_link.target_slot == +i)
                                     t_link = out_link;
                         if (!t_link) {
-                            t_out.links.push({target_node_id: this.id, target_slot: +i});
+                            t_out.links.push({ target_node_id: this.id, target_slot: +i });
 
                             //update input value
                             input.data = Utils.formatValue(t_out.data, input.type);
@@ -364,7 +364,7 @@ export class Node {
 
                             if (this.container.db) {
                                 let s_t_node = target_node.serialize(true);
-                                this.container.db.updateNode(target_node.id, target_node.container.id, {$set: {outputs: s_t_node.outputs}});
+                                this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { outputs: s_t_node.outputs } });
                             }
                         }
                     }
@@ -407,7 +407,7 @@ export class Node {
                         }
                         //connect target node if not connected
                         if (!t_input.link) {
-                            t_input.link = {target_node_id: this.id, target_slot: +i};
+                            t_input.link = { target_node_id: this.id, target_slot: +i };
 
                             //update input value
                             t_input.data = Utils.formatValue(output.data, t_input.type);
@@ -419,7 +419,7 @@ export class Node {
                             //update db
                             if (this.container.db) {
                                 let s_t_node = target_node.serialize(true);
-                                this.container.db.updateNode(target_node.id, target_node.container.id, {$set: {inputs: s_t_node.inputs}});
+                                this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { inputs: s_t_node.inputs } });
                             }
                         }
                     }
@@ -556,11 +556,11 @@ export class Node {
 
 
     //todo ES6
-//     triggerOutput(slot, param) {
-//         let n = this.getOutputNode(slot);
-//         if (n && n.onTrigger)
-//             n.onTrigger(param);
-//     }
+    //     triggerOutput(slot, param) {
+    //         let n = this.getOutputNode(slot);
+    //         if (n && n.onTrigger)
+    //             n.onTrigger(param);
+    //     }
 
     /**
      * Add a new output slot to use in this node
@@ -574,7 +574,7 @@ export class Node {
         let id = this.getFreeOutputId();
         name = name || "output " + (id + 1);
 
-        let output: NodeOutput = {name: name, type: type, links: null};
+        let output: NodeOutput = { name: name, type: type, links: null };
         if (extra_info)
             for (let i in extra_info)
                 output[i] = extra_info[i];
@@ -651,7 +651,7 @@ export class Node {
         let id = this.getFreeInputId();
         name = name || "input " + (id + 1);
 
-        let input: NodeInput = {name: name, type: type};
+        let input: NodeInput = { name: name, type: type };
         if (extra_info)
             for (let i in extra_info)
                 input[i] = extra_info[i];
@@ -941,8 +941,8 @@ export class Node {
         if (!output.links)
             output.links = [];
 
-        output.links.push({target_node_id: target_node_id, target_slot: input_id});
-        input.link = {target_node_id: this.id, target_slot: output_id};
+        output.links.push({ target_node_id: target_node_id, target_slot: input_id });
+        input.link = { target_node_id: this.id, target_slot: output_id };
 
         //update input value
         input.updated = true;
@@ -954,8 +954,8 @@ export class Node {
         if (update_db && this.container.db) {
             let s_node = this.serialize(true);
             let s_t_node = target_node.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: s_node.outputs}});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {$set: {inputs: s_t_node.inputs}});
+            this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: s_node.outputs } });
+            this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { inputs: s_t_node.inputs } });
         }
 
         this.setDirtyCanvas(false, true);
@@ -1036,7 +1036,7 @@ export class Node {
 
             if (this.container.db) {
                 let s_t_node = t_node.serialize(true);
-                this.container.db.updateNode(t_node.id, t_node.container.id, {$set: {inputs: s_t_node.inputs}});
+                this.container.db.updateNode(t_node.id, t_node.container.id, { $set: { inputs: s_t_node.inputs } });
             }
 
             this.debug("disconnected from " + t_node.getReadableId());
@@ -1048,7 +1048,7 @@ export class Node {
 
         if (this.container.db) {
             let s_node = this.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: s_node.outputs}});
+            this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: s_node.outputs } });
         }
 
         this.setDirtyCanvas(false, true);
@@ -1114,8 +1114,8 @@ export class Node {
         if (this.container.db) {
             let s_node = this.serialize(true);
             let s_target_node = target_node.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set: {inputs: s_node.inputs}});
-            this.container.db.updateNode(target_node.id, target_node.container.id, {$set: {outputs: s_target_node.outputs}});
+            this.container.db.updateNode(this.id, this.container.id, { $set: { inputs: s_node.inputs } });
+            this.container.db.updateNode(target_node.id, target_node.container.id, { $set: { outputs: s_target_node.outputs } });
         }
 
 
@@ -1152,7 +1152,7 @@ export class Node {
 
         let tokens = action.split("(");
         let func_name = tokens[0];
-        if (typeof(this[func_name]) != "function") {
+        if (typeof (this[func_name]) != "function") {
             this.debugErr("Action not found on node: " + func_name);
             return false;
         }
@@ -1256,11 +1256,11 @@ export class Node {
             log.warn("Node " + this.getReadableId() + " is trying to send message from server side to server side");
         else
             this.container.clinet_socket.emit('node-message-to-server-side',
-                {id: this.id, cid: this.container.id, value: mess});
+                { id: this.id, cid: this.container.id, value: mess });
     }
 
     sendMessageToEditorSide(mess: any) {
-        let m = {id: this.id, cid: this.container.id, value: mess};
+        let m = { id: this.id, cid: this.container.id, value: mess };
 
         if (this.side == Side.editor) {
             log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
@@ -1275,7 +1275,7 @@ export class Node {
     }
 
     sendMessageToDashboardSide(mess: any) {
-        let m = {id: this.id, cid: this.container.id, value: mess};
+        let m = { id: this.id, cid: this.container.id, value: mess };
         if (this.side == Side.dashboard) {
             log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
         }
@@ -1348,7 +1348,7 @@ export class Node {
         }
     }
 
-    private propertiesForUpdateInDbP: {[name: string]: any} = {};
+    private propertiesForUpdateInDbP: { [name: string]: any } = {};
     private updateInDbTimer: any;
     UPDATE_IN_DB_INTERVAL = 5000;
 
@@ -1358,7 +1358,7 @@ export class Node {
                 let saveObj = {};
                 saveObj[prop_name] = value;
                 console.log("saving immediately:" + JSON.stringify(saveObj));
-                this.container.db.updateNode(this.id, this.container.id, {$set: saveObj});
+                this.container.db.updateNode(this.id, this.container.id, { $set: saveObj });
             }
         }
         else {
@@ -1394,7 +1394,7 @@ export class Node {
                 let saveObj = {};
                 saveObj[key] = val;
                 console.log("saving :" + JSON.stringify(saveObj));
-                that.container.db.updateNode(that.id, that.container.id, {$set: saveObj});
+                that.container.db.updateNode(that.id, that.container.id, { $set: saveObj });
             }
         }, this.UPDATE_IN_DB_INTERVAL)
     }

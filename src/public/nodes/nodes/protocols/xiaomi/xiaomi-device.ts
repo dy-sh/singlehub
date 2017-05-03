@@ -24,7 +24,6 @@ export class XiaomiDeviceNode extends Node {
         this.title = "Xiaomi device";
         this.descriprion = 'This node allows to remote control any Xiaomi device.';
         this.addInput("[connect]", "boolean");
-        this.addInput("[power]", "boolean");
         this.addOutput("connected", "boolean");
 
         this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
@@ -59,9 +58,24 @@ export class XiaomiDeviceNode extends Node {
             //     console.log('power is now', device.power);
             //     return device.setPower(!device.power);
             // }
+            if (device.hasCapability('power-channels')) {
+                let power = device.property('power');
+
+                //add inputs/outputs
+                if (Object.keys(power).length > 1) {
+                    for (let key of Object.keys(power)) {
+                        this.addInput(`[power ${key}]`, "boolean");
+                        let outId = this.addOutput(`[${key}]`, "boolean");
+                        this.setOutputData(outId, power[key]);
+                    }
+                }
+                else {
+                    this.addInput(`[power]`, "boolean");
+                    let outId = this.addOutput(`[power]`, "boolean");
+                    this.setOutputData(outId, power);
+                }
+            }
         }).catch(console.error);
-
-
     }
 
     disconnectFromDevice() {
