@@ -54,7 +54,8 @@ export class XiaomiDeviceNode extends Node {
     changeTitle() {
         let t = this.settings["title"].value;
         if (t.length > 15)
-            t = t.substr(0, 10) + "...";
+            t = "..." + t.substring(t.length - 15, t.length);
+        // t = t.substr(0, 10) + "...";
 
         if (t == this.titlePrefix || t == "")
             this.title = this.titlePrefix;
