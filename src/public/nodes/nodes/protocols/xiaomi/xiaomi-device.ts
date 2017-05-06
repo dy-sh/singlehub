@@ -17,21 +17,21 @@ if (typeof (window) === 'undefined') { //for backside only
 
 export class XiaomiDeviceNode extends Node {
 
+    titlePrefix = "Xiaomi";
     device: any;
 
     constructor() {
         super();
-        this.title = "Xiaomi";
+        this.title = this.titlePrefix;
         this.descriprion = 'This node allows to remote control any Xiaomi device.';
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
 
         this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
-
         this.settings["address"] = { description: 'IP address', value: "10.0.0.18", type: "string" };
+        this.settings["title"] = { description: "Title", type: "string", value: "" };
 
-        this.properties['deviceType'] = "";
-
+        this.properties['deviceModel'] = "";
     }
 
     onCreated() {
@@ -39,7 +39,6 @@ export class XiaomiDeviceNode extends Node {
     }
 
     onAdded() {
-
         if (this.side == Side.server) {
             this.setOutputData(0, false);
 
@@ -48,6 +47,21 @@ export class XiaomiDeviceNode extends Node {
                 && (this.inputs[0].link == null || this.inputs[0].data == true))
                 this.connectToDevice();
         }
+
+        this.changeTitle();
+    }
+
+    changeTitle() {
+        let t = this.settings["title"].value;
+        if (t.length > 15)
+            t = t.substr(0, 10) + "...";
+
+        if (t == this.titlePrefix || t == "")
+            this.title = this.titlePrefix;
+        else
+            this.title = this.titlePrefix + ": " + t;
+
+        this.size = this.computeSize();
     }
 
 
@@ -56,14 +70,28 @@ export class XiaomiDeviceNode extends Node {
 
         miio.device(options).then(device => {
             console.log(device)
+
+            this.device = device;
+
+            //connected to new device
+            if (this.properties['deviceModel'] != device.model) {
+                this.properties['deviceModel'] = device.model;
+                this.settings["title"].value = device.model;
+                this.changeTitle();
+
+                //update db
+                if (this.container.db)
+                    this.container.db.updateNode(this.id, this.container.id, {
+                        $set: { properties: this.properties, settings: this.settings }
+                    });
+
+                //update inputs/outputs
+            }
+
             // if (device.hasCapability('power')) {
             //     console.log('power is now', device.power);
             //     return device.setPower(!device.power);
             // }
-            this.device = device;
-
-            this.properties['deviceType'] = device.model;
-            this.title = "xiaomi " + device.model;
 
             // if (device.hasCapability('power-channels')) {
             //     let power = device.property('power');
@@ -87,11 +115,7 @@ export class XiaomiDeviceNode extends Node {
 
             //update view
 
-            //update db
-            if (this.container.db)
-                this.container.db.updateNode(this.id, this.container.id, {
-                    $set: { properties: this.properties }
-                });
+
 
         }).catch(console.error);
 
@@ -131,6 +155,8 @@ export class XiaomiDeviceNode extends Node {
     }
 
     onSettingsChanged() {
+
+        this.changeTitle();
 
         //update db
         if (this.container.db)
