@@ -21,7 +21,7 @@ export class XiaomiDeviceNode extends Node {
 
     constructor() {
         super();
-        this.title = "Xiaomi device";
+        this.title = "Xiaomi";
         this.descriprion = 'This node allows to remote control any Xiaomi device.';
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
@@ -29,6 +29,8 @@ export class XiaomiDeviceNode extends Node {
         this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
 
         this.settings["address"] = { description: 'IP address', value: "10.0.0.18", type: "string" };
+
+        this.properties['deviceType'] = "";
 
     }
 
@@ -44,7 +46,7 @@ export class XiaomiDeviceNode extends Node {
             // connect if "connect" input disconnected or input data==true
             if (this.settings["enable"].value
                 && (this.inputs[0].link == null || this.inputs[0].data == true))
-                this.connectToDevice()
+                this.connectToDevice();
         }
     }
 
@@ -60,28 +62,37 @@ export class XiaomiDeviceNode extends Node {
             // }
             this.device = device;
 
-            if (device.hasCapability('power-channels')) {
-                let power = device.property('power');
+            this.properties['deviceType'] = device.model;
+            this.title = "xiaomi " + device.model;
 
-                //add inputs/outputs
-                if (Object.keys(power).length > 1) {
-                    for (let key of Object.keys(power)) {
-                        this.addInput(`[power ${key}]`, "boolean");
-                        let outId = this.addOutput(`[${key}]`, "boolean");
-                        this.setOutputData(outId, power[key]);
-                    }
-                }
-                else {
-                    this.addInput(`[power]`, "boolean");
-                    let outId = this.addOutput(`[power]`, "boolean");
-                    this.setOutputData(outId, power);
-                }
-            }
+            // if (device.hasCapability('power-channels')) {
+            //     let power = device.property('power');
+
+            //     //add inputs/outputs
+            //     if (Object.keys(power).length > 1) {
+            //         for (let key of Object.keys(power)) {
+            //             this.addInput(`[power ${key}]`, "boolean");
+            //             let outId = this.addOutput(`[${key}]`, "boolean");
+            //             this.setOutputData(outId, power[key]);
+            //         }
+            //     }
+            //     else {
+            //         this.addInput(`[power]`, "boolean");
+            //         let outId = this.addOutput(`[power]`, "boolean");
+            //         this.setOutputData(outId, power);
+            //     }
+            // }
+
+
 
             //update view
-            if (this.side == Side.editor) {
-                this.setDirtyCanvas(true, true);
-            }
+
+            //update db
+            if (this.container.db)
+                this.container.db.updateNode(this.id, this.container.id, {
+                    $set: { properties: this.properties }
+                });
+
         }).catch(console.error);
 
 
@@ -103,8 +114,9 @@ export class XiaomiDeviceNode extends Node {
                 this.connectToDevice()
         }
 
+
         //power input updated
-        if (this.inputs[1].updated) {
+        if (this.device && this.inputs[1].updated) {
             this.device.setPower(this.inputs[1].data);
         }
 
