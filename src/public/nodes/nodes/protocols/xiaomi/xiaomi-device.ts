@@ -19,6 +19,7 @@ export class XiaomiDeviceNode extends Node {
 
     titlePrefix = "Xiaomi";
     device: any;
+    connected = false;
 
     constructor() {
         super();
@@ -35,7 +36,6 @@ export class XiaomiDeviceNode extends Node {
     }
 
     onCreated() {
-
     }
 
     onAdded() {
@@ -63,6 +63,9 @@ export class XiaomiDeviceNode extends Node {
             this.title = this.titlePrefix + ": " + t;
 
         this.size = this.computeSize();
+
+        if (this.side == Side.editor)
+            this.setDirtyCanvas(true, true);
     }
 
 
@@ -80,7 +83,9 @@ export class XiaomiDeviceNode extends Node {
                 this.settings["title"].value = device.model;
 
                 this.changeTitle();
-                this.sendMessageToEditorSide({ title: this.title });
+
+                //update view title
+                this.sendMessageToEditorSide({ title: this.settings["title"].value });
 
                 //update db
                 if (this.container.db)
@@ -116,10 +121,8 @@ export class XiaomiDeviceNode extends Node {
             // }
 
 
-
-            //update view
-
-
+            this.connected = true;
+            this.setOutputData(0, true);
 
         }).catch(console.error);
 
@@ -127,7 +130,9 @@ export class XiaomiDeviceNode extends Node {
     }
 
     disconnectFromDevice() {
-
+        this.connected = false;
+        this.device = null;
+        this.setOutputData(0, false);
     }
 
 
@@ -144,9 +149,9 @@ export class XiaomiDeviceNode extends Node {
 
 
         //power input updated
-        if (this.device && this.inputs[1].updated) {
-            this.device.setPower(this.inputs[1].data);
-        }
+        // if (this.device && this.inputs[1].updated) {
+        //     this.device.setPower(this.inputs[1].data);
+        // }
 
         // for (let id in this.inputs) {
         //     let i = this.inputs[id];
@@ -178,8 +183,8 @@ export class XiaomiDeviceNode extends Node {
 
     onGetMessageToEditorSide(data) {
         if (data.title) {
-            this.title = data.title;
-            this.setDirtyCanvas(true, true);
+            this.settings["title"].value = data.title;
+            this.changeTitle();
         }
     };
 
