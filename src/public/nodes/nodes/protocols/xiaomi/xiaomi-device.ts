@@ -23,7 +23,7 @@ export class XiaomiDeviceNode extends Node {
     constructor() {
         super();
         this.title = this.titlePrefix;
-        this.descriprion = 'This node allows to remote control any Xiaomi device.';
+        this.descriprion = 'This node allows to remote control Xiaomi devices.';
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
 
@@ -78,13 +78,16 @@ export class XiaomiDeviceNode extends Node {
             if (this.properties['deviceModel'] != device.model) {
                 this.properties['deviceModel'] = device.model;
                 this.settings["title"].value = device.model;
+
                 this.changeTitle();
+                this.sendMessageToEditorSide({ title: this.title });
 
                 //update db
                 if (this.container.db)
                     this.container.db.updateNode(this.id, this.container.id, {
                         $set: { properties: this.properties, settings: this.settings }
                     });
+
 
                 //update inputs/outputs
             }
@@ -171,9 +174,14 @@ export class XiaomiDeviceNode extends Node {
             if (this.settings["enable"].value)
                 this.connectToDevice();
         }
-
     }
 
+    onGetMessageToEditorSide(data) {
+        if (data.title) {
+            this.title = data.title;
+            this.setDirtyCanvas(true, true);
+        }
+    };
 
 }
 Container.registerNodeType("protocols/xiaomi-device", XiaomiDeviceNode);
