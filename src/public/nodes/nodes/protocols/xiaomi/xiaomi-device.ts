@@ -17,8 +17,8 @@ if (typeof (window) === 'undefined') { //for backside only
 
 export interface IXiomiDeviceModel {
     onCreate(node: XiaomiDeviceNode): void;
-    onConnect(node: XiaomiDeviceNode): void;
-    onDisconnect(node: XiaomiDeviceNode): void;
+    onConnected(node: XiaomiDeviceNode): void;
+    onDisconnected(node: XiaomiDeviceNode): void;
 }
 
 export class XiaomiDeviceNode extends Node {
@@ -85,6 +85,13 @@ export class XiaomiDeviceNode extends Node {
 
             this.device = device;
 
+            //load device model library
+            if (Models[device.model])
+                this.model = new Models[device.model];
+            else
+                this.debugWarn("Xiaomi device model " + device.model + " is not supported yet. Please, contact developer of singlehub.")
+
+
             //connected to new device
             if (this.properties['deviceModel'] != device.model) {
                 this.properties['deviceModel'] = device.model;
@@ -105,15 +112,14 @@ export class XiaomiDeviceNode extends Node {
                 this.changeInputsCount(1);
                 this.changeOutputsCount(1);
 
-                //load device library
-                if (Models[device.model]) {
-                    this.model = new Models[device.model];
+                //call model event
+                if (this.model)
                     this.model.onCreate(this);
-                }
-                else {
-                    this.debugWarn("Xiaomi device model " + device.model + " is not supported yet. Please, contact developer of singlehub.")
-                }
             }
+
+            //call model event
+            if (this.model)
+                this.model.onConnected(this);
 
             // if (device.hasCapability('power')) {
             //     console.log('power is now', device.power);
@@ -146,9 +152,14 @@ export class XiaomiDeviceNode extends Node {
     }
 
     disconnectFromDevice() {
+        this.model = null;
         this.connected = false;
         this.device = null;
         this.setOutputData(0, false);
+
+        //call model event
+        if (this.model)
+            this.model.onDisconnected(this);
     }
 
 
