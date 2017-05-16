@@ -8,18 +8,25 @@ import { Node } from "../../../node";
 import Utils from "../../../utils";
 import { Container, Side } from "../../../container";
 
+import Models from './xiaomi-models';
 
 let miio;
 if (typeof (window) === 'undefined') { //for backside only
     miio = require('miio')
 }
 
+export interface IXiomiDeviceModel {
+    onCreate(node: XiaomiDeviceNode): void;
+    onConnect(node: XiaomiDeviceNode): void;
+    onDisconnect(node: XiaomiDeviceNode): void;
+}
 
 export class XiaomiDeviceNode extends Node {
 
     titlePrefix = "Xiaomi";
     device: any;
     connected = false;
+    model: IXiomiDeviceModel;
 
     constructor() {
         super();
@@ -73,7 +80,8 @@ export class XiaomiDeviceNode extends Node {
         let options: any = { address: this.settings["address"].value };
 
         miio.device(options).then(device => {
-            console.log(device)
+            // console.log(device)
+            console.log("connected")
 
             this.device = device;
 
@@ -93,8 +101,18 @@ export class XiaomiDeviceNode extends Node {
                         $set: { properties: this.properties, settings: this.settings }
                     });
 
+                //remove old inputs
+                this.changeInputsCount(1);
+                this.changeOutputsCount(1);
 
-                //update inputs/outputs
+                //load device library
+                if (Models[device.model]) {
+                    this.model = new Models[device.model];
+                    this.model.onCreate(this);
+                }
+                else {
+                    this.debugWarn("Xiaomi device model " + device.model + " is not supported yet. Please, contact developer of singlehub.")
+                }
             }
 
             // if (device.hasCapability('power')) {
@@ -125,8 +143,6 @@ export class XiaomiDeviceNode extends Node {
             this.setOutputData(0, true);
 
         }).catch(console.error);
-
-
     }
 
     disconnectFromDevice() {
@@ -187,6 +203,8 @@ export class XiaomiDeviceNode extends Node {
             this.changeTitle();
         }
     };
+
+
 
 }
 Container.registerNodeType("protocols/xiaomi-device", XiaomiDeviceNode);
