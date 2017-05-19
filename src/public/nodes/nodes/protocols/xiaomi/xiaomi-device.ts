@@ -16,15 +16,18 @@ if (typeof (window) === 'undefined') { //for backside only
 }
 
 export interface IXiomiDeviceModel {
+    //called on server and editor side
     onCreate(node: XiaomiDeviceNode): void;
     onConnected?(node: XiaomiDeviceNode): void;
     onDisconnected?(node: XiaomiDeviceNode): void;
+
+    //called on server side only
     onInputUpdated?(node: XiaomiDeviceNode): void;
 }
 
 export class XiaomiDeviceNode extends Node {
 
-    titlePrefix = "Xiaomi";
+    titlePrefix = "Xiaomi1";
     device: any;
     connected = false;
     model: IXiomiDeviceModel;
@@ -61,11 +64,11 @@ export class XiaomiDeviceNode extends Node {
 
     changeTitle() {
         let t = this.settings["title"].value;
-        if (t.length > 15)
+        if (t && t.length > 15)
             t = "..." + t.substring(t.length - 15, t.length);
         // t = t.substr(0, 10) + "...";
 
-        if (t == this.titlePrefix || t == "")
+        if (t == this.titlePrefix || t == "" || t == null)
             this.title = this.titlePrefix;
         else
             this.title = this.titlePrefix + ": " + t;
@@ -81,75 +84,80 @@ export class XiaomiDeviceNode extends Node {
         let options: any = { address: this.settings["address"].value };
 
         miio.device(options).then(device => {
-            console.log(device)
+            // console.log(device)
 
             this.device = device;
 
-            //load device model library
-            if (Models[device.model])
-                this.model = new Models[device.model];
-            else
-                this.debugWarn("Xiaomi device model " + device.model + " is not supported yet. Please, contact developer of singlehub.")
-
-
-            //connected to new device
+            //call onConnected events on server and editor side
             if (this.properties['deviceModel'] != device.model) {
-                this.properties['deviceModel'] = device.model;
-                this.settings["title"].value = device.model;
-
-                this.changeTitle();
-
-                //update view title
-                this.sendMessageToEditorSide({ title: this.settings["title"].value });
-
-                //update db
-                if (this.container.db)
-                    this.container.db.updateNode(this.id, this.container.id, {
-                        $set: { properties: this.properties, settings: this.settings }
-                    });
-
-                //remove old inputs
-                this.changeInputsCount(1);
-                this.changeOutputsCount(1);
-
-                //call model event
-                if (this.model)
-                    this.model.onCreate(this);
+                this.onFirstTimeConnected(device.model);
+                this.sendMessageToEditorSide({ onFirstTimeConnected: this.device.model });
             }
-
-            //call model event
-            if (this.model && this.model.onConnected)
-                this.model.onConnected(this);
-
-            // if (device.hasCapability('power')) {
-            //     console.log('power is now', device.power);
-            //     return device.setPower(!device.power);
-            // }
-
-            // if (device.hasCapability('power-channels')) {
-            //     let power = device.property('power');
-
-            //     //add inputs/outputs
-            //     if (Object.keys(power).length > 1) {
-            //         for (let key of Object.keys(power)) {
-            //             this.addInput(`[power ${key}]`, "boolean");
-            //             let outId = this.addOutput(`[${key}]`, "boolean");
-            //             this.setOutputData(outId, power[key]);
-            //         }
-            //     }
-            //     else {
-            //         this.addInput(`[power]`, "boolean");
-            //         let outId = this.addOutput(`[power]`, "boolean");
-            //         this.setOutputData(outId, power);
-            //     }
-            // }
-
+            else {
+                this.onConnected(device.model);
+                this.sendMessageToEditorSide({ onConnected: this.device.model });
+            }
 
             this.connected = true;
             this.setOutputData(0, true);
 
         }).catch(console.error);
     }
+
+    onGetMessageToEditorSide(data) {
+        if (data["onFirstTimeConnected"])
+            this.onFirstTimeConnected(data["onFirstTimeConnected"]);
+
+        if (data["onConnected"])
+            this.onConnected(data["onConnected"]);
+
+        if (data["onDisconnected"] && this.model && this.model.onDisconnected)
+            this.model.onDisconnected(this);
+    };
+
+    onConnected(deviceModel: string) {
+        //load device model library
+        if (Models[deviceModel])
+            this.model = new Models[deviceModel];
+        else
+            this.debugWarn("Xiaomi device model " + deviceModel + " is not supported yet. Please, contact developer of singlehub.")
+
+        //call model event
+        if (this.model && this.model.onConnected)
+            this.model.onConnected(this);
+    }
+
+    onFirstTimeConnected(deviceModel: string) {
+        //load device model library
+        if (Models[deviceModel])
+            this.model = new Models[deviceModel];
+        else
+            this.debugWarn("Xiaomi device model " + deviceModel + " is not supported yet. Please, contact developer of singlehub.")
+
+        //remove old inputs
+        this.changeInputsCount(1);
+        this.changeOutputsCount(1);
+
+        this.properties['deviceModel'] = deviceModel;
+
+        //change title
+        this.settings["title"].value = deviceModel;
+        this.changeTitle();
+
+        //call model event
+        if (this.model)
+            this.model.onCreate(this);
+
+        //update db
+        if (this.container.db)
+            this.container.db.updateNode(this.id, this.container.id, {
+                $set: { properties: this.properties, settings: this.settings, inputs: this.inputs, outputs: this.outputs }
+            });
+
+        if (this.side == Side.editor)
+            this.setDirtyCanvas(true, true)
+    }
+
 
     disconnectFromDevice() {
         this.model = null;
@@ -160,6 +168,8 @@ export class XiaomiDeviceNode extends Node {
         //call model event
         if (this.model && this.model.onDisconnected)
             this.model.onDisconnected(this);
+
+        this.sendMessageToEditorSide({ onDisconnected: "" });
     }
 
 
@@ -197,12 +207,7 @@ export class XiaomiDeviceNode extends Node {
         }
     }
 
-    onGetMessageToEditorSide(data) {
-        if (data.title) {
-            this.settings["title"].value = data.title;
-            this.changeTitle();
-        }
-    };
+
 
 
 

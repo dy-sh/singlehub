@@ -4,12 +4,6 @@ export default class PowerPlug implements IXiomiDeviceModel {
     onCreate(node: XiaomiDeviceNode): void {
         node.addInput("power", "boolean");
         node.addOutput("power", "boolean");
-
-        //update db
-        if (node.container.db)
-            node.container.db.updateNode(node.id, node.container.id, {
-                $set: { inputs: node.inputs, outputs: node.outputs }
-            });
     }
 
     onInputUpdated(node: XiaomiDeviceNode): void {
