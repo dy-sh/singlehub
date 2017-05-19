@@ -81,7 +81,7 @@ export class XiaomiDeviceNode extends Node {
         let options: any = { address: this.settings["address"].value };
 
         miio.device(options).then(device => {
-            // console.log(device)
+            console.log(device)
 
             this.device = device;
 
