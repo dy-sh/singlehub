@@ -19,6 +19,7 @@ export interface IXiomiDeviceModel {
     onCreate(node: XiaomiDeviceNode): void;
     onConnected?(node: XiaomiDeviceNode): void;
     onDisconnected?(node: XiaomiDeviceNode): void;
+    onInputUpdated?(node: XiaomiDeviceNode): void;
 }
 
 export class XiaomiDeviceNode extends Node {
@@ -81,7 +82,6 @@ export class XiaomiDeviceNode extends Node {
 
         miio.device(options).then(device => {
             // console.log(device)
-            console.log("connected")
 
             this.device = device;
 
@@ -174,20 +174,9 @@ export class XiaomiDeviceNode extends Node {
                 this.connectToDevice()
         }
 
-
-        //power input updated
-        // if (this.device && this.inputs[1].updated) {
-        //     this.device.setPower(this.inputs[1].data);
-        // }
-
-        // for (let id in this.inputs) {
-        //     let i = this.inputs[id];
-        //     if (i.updated) {
-        //         if (i.name.startsWith('[power')) {
-
-        //         }
-        //     }
-        // }
+        //call model event
+        if (this.model && this.model.onInputUpdated)
+            this.model.onInputUpdated(this);
     }
 
     onSettingsChanged() {
