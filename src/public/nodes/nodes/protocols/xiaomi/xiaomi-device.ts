@@ -17,8 +17,8 @@ if (typeof (window) === 'undefined') { //for backside only
 
 export interface IXiomiDeviceModel {
     onCreate(node: XiaomiDeviceNode): void;
-    onConnected(node: XiaomiDeviceNode): void;
-    onDisconnected(node: XiaomiDeviceNode): void;
+    onConnected?(node: XiaomiDeviceNode): void;
+    onDisconnected?(node: XiaomiDeviceNode): void;
 }
 
 export class XiaomiDeviceNode extends Node {
@@ -118,7 +118,7 @@ export class XiaomiDeviceNode extends Node {
             }
 
             //call model event
-            if (this.model)
+            if (this.model && this.model.onConnected)
                 this.model.onConnected(this);
 
             // if (device.hasCapability('power')) {
@@ -158,7 +158,7 @@ export class XiaomiDeviceNode extends Node {
         this.setOutputData(0, false);
 
         //call model event
-        if (this.model)
+        if (this.model && this.model.onDisconnected)
             this.model.onDisconnected(this);
     }
 
