@@ -20,5 +20,7 @@ export default class PowerPlug implements IXiomiDeviceModel {
             if (e.property == "powerChannel0")
                 node.setOutputData(1, e.value);
         });
+
+        node.setOutputData(1, node.device.power("0"));
     }
 };

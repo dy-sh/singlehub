@@ -27,7 +27,7 @@ export interface IXiomiDeviceModel {
 
 export class XiaomiDeviceNode extends Node {
 
-    titlePrefix = "Xiaomi1";
+    titlePrefix = "Xiaomi";
     device: any;
     connected = false;
     model: IXiomiDeviceModel;
