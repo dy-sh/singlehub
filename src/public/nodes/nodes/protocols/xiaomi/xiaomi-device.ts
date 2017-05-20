@@ -160,16 +160,17 @@ export class XiaomiDeviceNode extends Node {
 
 
     disconnectFromDevice() {
-        this.model = null;
-        this.connected = false;
-        this.device = null;
-        this.setOutputData(0, false);
 
         //call model event
         if (this.model && this.model.onDisconnected)
             this.model.onDisconnected(this);
 
         this.sendMessageToEditorSide({ onDisconnected: "" });
+
+        this.model = null;
+        this.connected = false;
+        this.device = null;
+        this.setOutputData(0, false);
     }
 
 

@@ -1,4 +1,5 @@
 import { IXiomiDeviceModel, XiaomiDeviceNode } from '../xiaomi-device';
+import { Side } from "../../../../container";
 
 export default class PowerPlug implements IXiomiDeviceModel {
     onCreate(node: XiaomiDeviceNode): void {
@@ -14,13 +15,21 @@ export default class PowerPlug implements IXiomiDeviceModel {
     }
 
     onConnected(node: XiaomiDeviceNode) {
-        node.device.on('propertyChanged', e => {
+        if (node.side == Side.server) {
+            node.device.on('propertyChanged', e => {
 
-            //update output
-            if (e.property == "powerChannel0")
-                node.setOutputData(1, e.value);
-        });
+                //update output
+                if (e.property == "powerChannel0")
+                    node.setOutputData(1, e.value);
+            });
 
-        node.setOutputData(1, node.device.power("0"));
+            node.setOutputData(1, node.device.power("0"));
+        }
+    }
+
+    onDisconnected(node: XiaomiDeviceNode) {
+        if (node.side == Side.server) {
+            node.setOutputData(1, null);
+        }
     }
 };
