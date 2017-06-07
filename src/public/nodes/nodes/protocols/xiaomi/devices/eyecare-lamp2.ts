@@ -14,4 +14,22 @@ export default class EyecareLamp2 implements IXiomiDeviceModel {
         }
     }
 
+    onConnected(node: XiaomiDeviceNode) {
+        if (node.side == Side.server) {
+            node.device.on('propertyChanged', e => {
+                console.log(e)
+                //update output
+                if (e.property == "power")
+                    node.setOutputData(1, e.value);
+            });
+
+            node.setOutputData(1, node.device.power());
+        }
+    }
+
+    onDisconnected(node: XiaomiDeviceNode) {
+        if (node.side == Side.server) {
+            node.setOutputData(1, null);
+        }
+    }
 };
