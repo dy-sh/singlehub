@@ -34,7 +34,14 @@ export default class EyecareLamp2 implements IXiomiDeviceModel {
                     node.setOutputData(1, e.value);
             });
 
-            node.setOutputData(1, node.device._properties.power);
+            node.device.on('propertyChanged', e => {
+                //update output
+                if (e.property == "brightness")
+                    node.setOutputData(2, e.value);
+            });
+
+            node.setOutputData(1, node.device.property('power'));
+            node.setOutputData(2, node.device.property('brightness'));
         }
     }
 
