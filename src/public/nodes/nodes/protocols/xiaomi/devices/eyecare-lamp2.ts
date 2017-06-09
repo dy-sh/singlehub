@@ -29,13 +29,9 @@ export default class EyecareLamp2 implements IXiomiDeviceModel {
     onConnected(node: XiaomiDeviceNode) {
         if (node.side == Side.server) {
             node.device.on('propertyChanged', e => {
-                //update output
                 if (e.property == "power")
                     node.setOutputData(1, e.value);
-            });
 
-            node.device.on('propertyChanged', e => {
-                //update output
                 if (e.property == "brightness")
                     node.setOutputData(2, e.value);
             });
@@ -48,6 +44,7 @@ export default class EyecareLamp2 implements IXiomiDeviceModel {
     onDisconnected(node: XiaomiDeviceNode) {
         if (node.side == Side.server) {
             node.setOutputData(1, null);
+            node.setOutputData(2, null);
         }
     }
 };
