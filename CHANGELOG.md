@@ -1,4 +1,4 @@
-SingleHub v0.9
+SingleHub v0.9.1
 ---------------------
 
 **Common changes:**
@@ -7,6 +7,7 @@ SingleHub v0.9
 - Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
 - Built-in database is replaced by NeDB.
 - MQTT protocol support.
+- Xiaomi devices support: Smart Socket Plug 2, Eyecare Lamp 2 (If your device is not listed, write to me and I will add it).
 
 
 
