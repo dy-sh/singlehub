@@ -4,8 +4,8 @@
  */
 
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 import Utils from "../utils";
 
 
@@ -261,3 +261,79 @@ class FiltersPreventDuplicationNode extends Node {
     }
 }
 Container.registerNodeType("filters/prevent-duplication", FiltersPreventDuplicationNode);
+
+
+
+
+class FiltersReduceEventsNode extends Node {
+    lastTime: number;
+    lastValue: any;
+    waitingToSend: boolean;
+
+    constructor() {
+        super();
+
+        this.title = "Reduce Events";
+        this.descriprion = "This node reduces the number of transmitted values. <br/><br/>" +
+            "When the value on the input is changed, " +
+            "the node sends it to the output and stops " +
+            "receiving at a specified time interval. <br/>" +
+            "The values that come at this time are simply ignored, " +
+            "but the last value will be stored. <br/>" +
+            "When the interval passes, the last value is sent to the output. " +
+            "This reduces the number of events, if they are sent too often, but" +
+            "ensures that the node will always send the last actual value. <br/><br/>" +
+            "You can disable the sending of the last value in the settings of the node. " +
+            "This may be necessary if you do not want to receive messages late, " +
+            "but then it is not guaranteed that the nodes connected to this node " +
+            "will have the last actual value.";
+
+        this.addInput("value");
+        this.addInput("interval", "number");
+        this.addOutput("value");
+
+        this.settings["sendlast"] = { description: "Store and send last value", value: true, type: "boolean" };
+        this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
+
+        this.lastTime = Date.now();
+    }
+
+    onInputUpdated() {
+        let interval = this.getInterval();
+
+        if (this.inputs[0].updated) {
+            if ((Date.now() - this.lastTime) >= interval) {
+                this.lastTime = Date.now();
+                this.setOutputData(0, this.inputs[0].data)
+            } else {
+                if (this.settings["sendlast"].value == true) {
+                    this.lastValue = this.inputs[0].data;
+                    this.waitingToSend = true;
+                }
+            }
+        }
+    }
+
+    onExecute() {
+        if (!this.waitingToSend)
+            return;
+
+        let interval = this.getInterval();
+
+        if ((Date.now() - this.lastTime) < interval)
+            return;
+
+        this.lastTime = Date.now();
+        this.setOutputData(0, this.lastValue)
+        this.waitingToSend = false;
+    }
+
+    private getInterval(): number {
+        let interval = this.getInputData(1);
+        if (interval == null)
+            interval = this.settings["interval"].value;
+
+        return interval;
+    }
+}
+Container.registerNodeType("filters/reduce-events", FiltersReduceEventsNode);

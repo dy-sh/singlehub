@@ -4,8 +4,8 @@
  */
 
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 import Utils from "../utils";
 
 
@@ -29,8 +29,8 @@ export class TickerNode extends Node {
         this.addOutput("tick", "boolean");
 
 
-        this.settings["interval"] = {description: "Interval", value: 1000, type: "number"};
-        this.settings["false"] = {description: "Generate False", value: true, type: "boolean"};
+        this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
+        this.settings["false"] = { description: "Generate False", value: true, type: "boolean" };
 
     }
 
@@ -78,10 +78,10 @@ export class DelayNode extends Node {
             "will be sent to the output after a specified time interval.";
 
         this.addInput("value");
-        this.addInput("interval", "boolean");
+        this.addInput("interval", "number");
         this.addOutput("value");
 
-        this.settings["interval"] = {description: "Interval", value: 1000, type: "number"};
+        this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
     }
 
     onInputUpdated() {
@@ -156,7 +156,7 @@ export class ClockNode extends Node {
         this.addOutput("min", "number");
         this.addOutput("h", "number");
 
-        this.settings["add_outs"] = {description: "Day, month, year outputs", value: false, type: "boolean"};
+        this.settings["add_outs"] = { description: "Day, month, year outputs", value: false, type: "boolean" };
     }
 
     onSettingsChanged() {
@@ -166,14 +166,14 @@ export class ClockNode extends Node {
             this.addOutput("month", "number");
             this.addOutput("year", "number");
             if (this.container.db)
-                this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: this.outputs}});
+                this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: this.outputs } });
         }
         else if (this.settings["add_outs"].value == false && outputsCount == 7) {
             this.removeOutput(6);
             this.removeOutput(5);
             this.removeOutput(4);
             if (this.container.db)
-                this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: this.outputs}});
+                this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: this.outputs } });
         }
     }
 
