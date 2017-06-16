@@ -199,6 +199,7 @@ Container.registerNodeType("time/clock", ClockNode);
 
 export class TimeFrequencyMeterNode extends Node {
     count = 0;
+    countWas = 0;
 
     constructor() {
         super();
@@ -211,7 +212,10 @@ export class TimeFrequencyMeterNode extends Node {
         // this.setOutputData(1, 0);
 
         setInterval(() => {
-            this.setOutputData(0, this.count);
+            if (this.count != this.countWas) {
+                this.setOutputData(0, this.count);
+            }
+            this.countWas = this.count;
             this.count = 0;
         }, 1000);
     }
