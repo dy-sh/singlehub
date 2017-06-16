@@ -273,7 +273,7 @@ class FiltersReduceEventsNode extends Node {
     constructor() {
         super();
 
-        this.title = "Reduce Events";
+        this.title = "Reduce events";
         this.descriprion = "This node reduces the number of transmitted values. <br/><br/>" +
             "When the value on the input is changed, " +
             "the node sends it to the output and stops " +
@@ -299,9 +299,9 @@ class FiltersReduceEventsNode extends Node {
     }
 
     onInputUpdated() {
-        let interval = this.getInterval();
-
         if (this.inputs[0].updated) {
+            let interval = this.getInterval();
+
             if ((Date.now() - this.lastTime) >= interval) {
                 this.lastTime = Date.now();
                 this.setOutputData(0, this.inputs[0].data)

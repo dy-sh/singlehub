@@ -196,3 +196,28 @@ export class ClockNode extends Node {
 }
 Container.registerNodeType("time/clock", ClockNode);
 
+
+export class TimeFrequencyMeterNode extends Node {
+    count = 0;
+
+    constructor() {
+        super();
+        this.title = "Frequency meter";
+        this.descriprion = "This node measures the rate at which events arrive at the input. <br/>" +
+            "Any value including null will be taken.";
+
+        this.addInput("value");
+        this.addOutput("Events/sec", "number", { data: 0 });
+        // this.setOutputData(1, 0);
+
+        setInterval(() => {
+            this.setOutputData(0, this.count);
+            this.count = 0;
+        }, 1000);
+    }
+
+    onInputUpdated() {
+        this.count++;
+    }
+}
+Container.registerNodeType("time/frequency-meter", TimeFrequencyMeterNode);
