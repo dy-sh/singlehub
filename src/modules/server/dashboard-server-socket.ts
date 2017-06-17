@@ -4,12 +4,12 @@
  */
 
 
-import {Container} from "../../public/nodes/container";
-import {app, App} from "../../app";
+import { Container } from "../../public/nodes/container";
+import { app, App } from "../../app";
 import Namespace = SocketIO.Namespace;
 
 
-const log = require('logplease').create('server', {color: 3});
+const log = require('logplease').create('server', { color: 3 });
 
 
 export class DashboardServerSocket {
@@ -30,7 +30,7 @@ export class DashboardServerSocket {
 
             //join client to container room
             socket.on('room', function (room) {
-                if ((<any>socket).room!=null) {
+                if ((<any>socket).room != null) {
                     // log.debug("Leave dashboard room [" + (<any>socket).room + "]");
                     socket.leave((<any>socket).room);
                 }
@@ -50,6 +50,11 @@ export class DashboardServerSocket {
                 let node = cont.getNodeById(n.id);
                 if (!node) {
                     log.error("Can't send node message to server-side. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                    return;
+                }
+
+                if (!node['onGetMessageToServerSide']) {
+                    log.error("Can't send node message to server-side. Node " + node.getReadableId + "dont have onGetMessageToServerSide method!");
                     return;
                 }
 
