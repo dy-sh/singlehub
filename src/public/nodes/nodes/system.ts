@@ -86,6 +86,8 @@ export class SystemFileNode extends Node {
         //read
         if (this.inputs[2].updated && this.inputs[2].data) {
             let fileName = this.getInputData(0);
+            if (fileName == null)
+                return this.debugWarn("Cant read file. File name is not defined");
 
             fs.readFile(fileName, (err, buff) => {
                 if (err) return this.debugErr(err);
@@ -99,6 +101,9 @@ export class SystemFileNode extends Node {
         //write
         if (this.inputs[3].updated && this.inputs[3].data) {
             let fileName = this.getInputData(0);
+            if (fileName == null)
+                return this.debugWarn("Cant write file. File name is not defined");
+
             let text = this.getInputData(1);
 
             fs.writeFile(fileName, text, (err) => {
@@ -111,6 +116,8 @@ export class SystemFileNode extends Node {
         //clear
         if (this.inputs[4].updated && this.inputs[4].data) {
             let fileName = this.getInputData(0);
+            if (fileName == null)
+                return this.debugWarn("Cant write file. File name is not defined");
 
             fs.writeFile(fileName, "", (err) => {
                 if (err) return this.debugErr(err);
