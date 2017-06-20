@@ -7,9 +7,10 @@ import { Node } from "../node";
 import { Container, Side } from "../container";
 import Utils from "../utils";
 
-let exec;
+let exec, fs;
 if (typeof (window) === 'undefined') { //for backside only
     exec = require('child_process').exec;
+    fs = require('fs');
 }
 
 
@@ -56,3 +57,68 @@ export class SystemExecuteNode extends Node {
     };
 }
 Container.registerNodeType("system/execute", SystemExecuteNode);
+
+
+
+export class SystemFileNode extends Node {
+
+    constructor() {
+        super();
+        this.title = "File";
+        this.descriprion = "This node can read and write any file on the disk. <br/>" +
+            "Send the file name to the input named File Name. The path can be omitted. <br/>" +
+            "With logic inputs named Read, Write, Clear you can perform the requested operation. <br/>" +
+            "The input named Text set a text value to be written to the file. <br/>" +
+            "The contents of the file will be sent to the output.";
+
+        this.addInput("file name", "string");
+        this.addInput("text", "string");
+        this.addInput("read", "boolean");
+        this.addInput("write", "boolean");
+        this.addInput("clear", "boolean");
+
+        this.addOutput("text", "string");
+
+        // options.ProtectedAccess = true;
+    }
+
+    onInputUpdated() {
+        //read
+        if (this.inputs[2].updated && this.inputs[2].data) {
+            let fileName = this.getInputData(0);
+
+            fs.readFile(fileName, (err, text) => {
+                if (err) return this.debugErr(err);
+
+                this.setOutputData(0, text);
+            });
+        }
+
+        //write
+        if (this.inputs[3].updated && this.inputs[3].data) {
+            let fileName = this.getInputData(0);
+            let text = this.getInputData(1);
+
+            fs.writeFile(fileName, text, (err) => {
+                if (err) return this.debugErr(err);
+
+                this.debugInfo("The file " + fileName + " was saved!");
+            });
+        }
+
+        //clear
+        if (this.inputs[4].updated && this.inputs[4].data) {
+            let fileName = this.getInputData(0);
+
+            fs.writeFile(fileName, "", (err) => {
+                if (err) return this.debugErr(err);
+
+                this.debugInfo("The file " + fileName + " was saved!");
+            });
+
+        }
+
+
+    };
+}
+Container.registerNodeType("system/file", SystemFileNode);

@@ -54,7 +54,7 @@ export class DashboardServerSocket {
                 }
 
                 if (!node['onGetMessageToServerSide']) {
-                    log.error("Can't send node message to server-side. Node " + node.getReadableId + "dont have onGetMessageToServerSide method!");
+                    log.error("Can't send node message to server-side. Node " + node.getReadableId() + "dont have onGetMessageToServerSide method!");
                     return;
                 }
 
