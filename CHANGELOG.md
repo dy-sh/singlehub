@@ -1,4 +1,4 @@
-SingleHub v0.9.1
+SingleHub v0.9
 ---------------------
 
 **Common changes:**
@@ -62,7 +62,11 @@ SingleHub v0.9.1
    
 - **Numbers**:
   - **Random**. Now you can set the number of digits after the decimal point.
-      
+
+- **System**:
+  - **Execute**. This node is now cross-platform.
+
+    
   
   
 **Other changes:**
