@@ -87,8 +87,10 @@ export class SystemFileNode extends Node {
         if (this.inputs[2].updated && this.inputs[2].data) {
             let fileName = this.getInputData(0);
 
-            fs.readFile(fileName, (err, text) => {
+            fs.readFile(fileName, (err, buff) => {
                 if (err) return this.debugErr(err);
+
+                let text = buff.toString('utf8');
 
                 this.setOutputData(0, text);
             });
