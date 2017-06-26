@@ -5,7 +5,7 @@
 
 
 import { Node } from "../node";
-import { Container } from "../container";
+import { Container, Side } from "../container";
 import Utils from "../utils";
 import { setOptions } from "serialport";
 
@@ -298,10 +298,11 @@ class OperationLinearShaperNode extends Node {
 
     onSettingsChanged() {
         let inputs = this.settings["inputs"].value;
-
         inputs = Utils.clamp(inputs, 1, 1000);
-
         this.changeInputsCount(inputs);
+
+        if (this.side == Side.editor)
+            this.updateInputsLabels();
 
         //update db
         if (this.container.db)
@@ -320,10 +321,8 @@ class OperationLinearShaperNode extends Node {
         this.inputs[1].name = "0";
         for (let i = 1; i < count; i++) {
             let point = 100.0 / (count - 1) * i;
-            this.inputs[i + 1].name = "" + point.toFixed(2).replace(/[.,]00$/, "");;
+            this.inputs[i + 1].name = "" + point.toFixed(2).replace(/[.,]00$/, "");
         }
-
-        //send updated names to editor
     }
 
     onInputUpdated() {
