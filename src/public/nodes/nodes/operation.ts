@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 import Utils from "../utils";
-import {setOptions} from "serialport";
+import { setOptions } from "serialport";
 
 
 class AnyToTrueNode extends Node {
@@ -22,7 +22,7 @@ class AnyToTrueNode extends Node {
         this.addInput("value");
         this.addOutput("true", "boolean");
 
-        this.settings["false"] = {description: "Generate False", value: true, type: "boolean"};
+        this.settings["false"] = { description: "Generate False", value: true, type: "boolean" };
     }
 
     onInputUpdated() {
@@ -261,3 +261,98 @@ class FreqDividerNode extends Node {
     }
 }
 Container.registerNodeType("operation/freq-divider", FreqDividerNode);
+
+
+
+class OperationLinearShaperNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Linear shaper";
+        this.descriprion = "With this node you can set conditional curve. " +
+            "The curve represents, how will change value on the output. " +
+            "The Input named \"Value\" takes a value from 0 to 100. " +
+            "This is a relative position on the curve. " +
+            "You can create any number of points " +
+            "on the curve in the settings of the node. " +
+            "By default, there are three points: 0,50,100. " +
+            "Each point corresponds to its input. " +
+            "The value on input determines what value will be on output, " +
+            "when the position will be at this point. <br/><br/>" +
+            "For example, input 0=10, input 50=0, input 100=10. <br/>" +
+            "Now if \"Value\" is 0, the output will be 10. <br/>" +
+            "If \"Value\" is 50, the output will be 0.  <br/>" +
+            "If \"Value\" is 100, the output will be 10. <br/>" +
+            "Intermediate values between 0-100 " +
+            "will be intermediate values between 10-50-10. <br/><br/>" +
+            "Thus you can have a smooth change values as you need.";
+
+
+        this.addInput("value", "number");
+        this.addOutput("value");
+
+        this.changeInputsCount(3);
+
+        this.settings["inputs"] = { description: "Inputs count", value: 1, type: "number" };
+    }
+
+    onSettingsChanged() {
+        let inputs = this.settings["inputs"].value;
+
+        inputs = Utils.clamp(inputs, 1, 1000);
+
+        this.changeInputsCount(inputs);
+
+        //update db
+        if (this.container.db)
+            this.container.db.updateNode(this.id, this.container.id, {
+                $set: {
+                    inputs: this.inputs,
+                    outputs: this.outputs
+                }
+            });
+    }
+
+    changeInputsCount(count) {
+        super.changeInputsCount(count + 1, "number");
+
+        //rename inputs
+        this.inputs[1].name = "0";
+        for (let i = 1; i < count; i++) {
+            let point = 100.0 / (count - 1) * i;
+            this.inputs[i + 1].name = "" + point.toFixed(2).replace(/[.,]00$/, "");;
+        }
+
+        //send updated names to editor
+    }
+
+    onInputUpdated() {
+        let position = Utils.clamp(+this.getInputData(0), 0, 100); //50 82 10
+
+        let pointsCount = this.getInputsCount() - 1; //4
+
+        let stepSize = 100.0 / (pointsCount - 1); //33.3
+        let stepIndex = (position / stepSize) + 1; //1.51 2.46 0.30
+        let positionInStep = stepIndex - Math.floor(stepIndex);//0.51 0.46 0.30
+        let startValue = (Math.floor(stepIndex) - 1) * stepSize; //33.3 66.6 0
+        let endValue = startValue + stepSize; //66.6 100 33.3
+
+        let s = this.getInputData(Math.floor(stepIndex));
+        if (s != null)
+            startValue = s;
+
+        if (position >= 100) {
+            this.setOutputData(0, startValue);
+            return;
+        }
+
+        let e = this.getInputData(Math.floor(stepIndex) + 1);
+        if (e != null)
+            endValue = e;
+
+        let result = Utils.remap(positionInStep, 0, 1, startValue, endValue);
+        this.setOutputData(0, result);
+    }
+}
+Container.registerNodeType("operation/linear-shaper", OperationLinearShaperNode);
+
