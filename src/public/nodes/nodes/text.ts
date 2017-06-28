@@ -3,8 +3,8 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 import Utils from "../utils";
 
 
@@ -127,3 +127,68 @@ class TextCutSubstringNode extends Node {
     }
 }
 Container.registerNodeType("text/cut-substring", TextCutSubstringNode);
+
+
+
+
+class TextSplitStringsNode extends Node {
+    currentIndex = 0;
+
+    constructor() {
+        super();
+
+        this.title = "Split strings";
+        this.descriprion = "This node splits the text into several strings using the separator. <br/>" +
+            "Send \"1\" to \"Start\" to begin the separation. The incoming string is stored. " +
+            "Next send \"1\" to \"Next\" to get the next line. <br/>" +
+            "The result strings are sequentially sent to the output named \"Text\". " +
+            "The output named \"Left\" reports how many strings are left.";
+
+        this.addInput("text", "string");
+        this.addInput("separator", "string");
+        this.addInput("start", "boolean");
+        this.addInput("next", "boolean");
+        this.addInput("reset", "boolean");
+        this.addOutput("text", "string");
+        this.addOutput("left", "number");
+
+        this.setOutputData(1, 0);
+    }
+
+    onInputUpdated() {
+        if (this.inputs[2].updated && this.inputs[2].data) {
+            this.currentIndex = 0;
+            this.splitNext();
+        }
+
+        if (this.inputs[3].updated && this.inputs[3].data)
+            this.splitNext();
+
+        if (this.inputs[4].updated && this.inputs[4].data)
+            this.reset();
+    }
+
+    splitNext() {
+        let text = this.getInputData(0);
+        let separator = this.getInputData(1);
+        if (text == null || separator == null)
+            return;
+
+        let splittedText = text.split(separator);
+        if (this.currentIndex >= splittedText.length)
+            return;
+
+        this.setOutputData(0, splittedText[this.currentIndex]);
+        this.setOutputData(1, splittedText.length - this.currentIndex - 1);
+
+        this.currentIndex++;
+    }
+
+
+    reset() {
+        this.currentIndex = 0;
+        this.setOutputData(0, null);
+        this.setOutputData(1, 0);
+    }
+}
+Container.registerNodeType("text/split-strings", TextSplitStringsNode);
