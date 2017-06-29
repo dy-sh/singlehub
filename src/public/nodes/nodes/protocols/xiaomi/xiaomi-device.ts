@@ -35,13 +35,26 @@ export class XiaomiDeviceNode extends Node {
     constructor() {
         super();
         this.title = this.titlePrefix;
-        this.descriprion = 'This node allows to remote control Xiaomi devices.';
+        this.descriprion = 'This node allows to remote control Xiaomi devices. <br><br>' +
+            'In the node settings you need to specify the IP address of the device. <br><br>' +
+            'The device type will be determined automatically. ' +
+            'The corresponding control pins will be created for each type of device. <br><br>' +
+            'You can specify Update Interval in the node settings. ' +
+            'The program will send messages to the device ' +
+            'no more often than specified in this setting. ' +
+            'This ensures that the device will not be flooded with a large number of messages. ' +
+            'Too many messages will be discarded and will not be sent, ' +
+            'but the device will always have the current state, ' +
+            'because The last message will be sent in any case. ' +
+            'The recommended setting is 500 ms, but you can try less.';
+
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
 
         this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
         this.settings["address"] = { description: 'IP address', value: "10.0.0.18", type: "string" };
         this.settings["title"] = { description: "Title", type: "string", value: "" };
+        this.settings["update-interval"] = { description: "Update interval", type: "number", value: 500 };
 
         this.properties['deviceModel'] = "";
     }
