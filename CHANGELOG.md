@@ -27,6 +27,7 @@ SingleHub v0.9
 
 - **Protocols**:
   - **MQTT client**. This node allows to connect to MQTT broker, subscribe to events and publish values.
+  - **Xiaomi device**. This node allows to conntrol Xiaomi devices.
 
 
 - **Debug**:
