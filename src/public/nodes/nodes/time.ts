@@ -255,6 +255,7 @@ export class TimeFadeNode extends Node {
         this.setOutputData(1, false);
 
         this.settings["update"] = { description: "Output Update Interval", type: "number", value: 50 };
+        this.settings["reset-on-stop"] = { description: "Reset on Stop", type: "boolean", value: false };
 
     }
 
@@ -267,6 +268,10 @@ export class TimeFadeNode extends Node {
                 this.setOutputData(0, this.inputs[0].data)
                 this.startTime = Date.now();
                 this.lastTime = 0;
+            }
+            else {
+                if (this.settings["reset-on-stop"].value)
+                    this.setOutputData(0, this.getInputData(0))
             }
         }
     }
