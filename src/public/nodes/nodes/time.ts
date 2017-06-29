@@ -230,6 +230,7 @@ Container.registerNodeType("time/frequency-meter", TimeFrequencyMeterNode);
 
 export class TimeFadeNode extends Node {
     startTime: number;
+    lastTime: number;
     enabled = false;
 
     constructor() {
@@ -238,7 +239,10 @@ export class TimeFadeNode extends Node {
         this.descriprion = "This node makes a smooth transition from one value to another. <br/>" +
             "You can specify the time interval for which the value must change. <br/>" +
             "The output is named \"Enabled\" sends \"1\" " +
-            "when the node is in the active state (makes the transition).";
+            "when the node is in the active state (makes the transition). <br/>" +
+            "In the settings of the node you can increase the refresh rate " +
+            "to make the transition more smoother. " +
+            "Or, reduce the refresh rate to reduce CPU load.";
 
         this.addInput("from value", "number");
         this.addInput("to value", "number");
@@ -249,6 +253,9 @@ export class TimeFadeNode extends Node {
         this.addOutput("enabled", "boolean");
 
         this.setOutputData(1, false);
+
+        this.settings["update"] = { description: "Output Update Interval", type: "number", value: 50 };
+
     }
 
     onInputUpdated() {
@@ -259,6 +266,7 @@ export class TimeFadeNode extends Node {
             if (this.enabled) {
                 this.setOutputData(0, this.inputs[0].data)
                 this.startTime = Date.now();
+                this.lastTime = 0;
             }
         }
     }
@@ -266,6 +274,10 @@ export class TimeFadeNode extends Node {
     onExecute() {
         if (!this.enabled)
             return;
+
+        if (Date.now() - this.lastTime < this.settings["update"].value)
+            return;
+        this.lastTime = Date.now();
 
         let from = this.getInputData(0);
         let to = this.getInputData(1);
@@ -275,6 +287,8 @@ export class TimeFadeNode extends Node {
             return;
 
         let elapsed = Date.now() - this.startTime;
+
+
 
         if (elapsed >= interval) {
             this.setOutputData(0, to);
