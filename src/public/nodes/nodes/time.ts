@@ -225,3 +225,66 @@ export class TimeFrequencyMeterNode extends Node {
     }
 }
 Container.registerNodeType("time/frequency-meter", TimeFrequencyMeterNode);
+
+
+
+export class TimeFadeNode extends Node {
+    startTime: number;
+    enabled = false;
+
+    constructor() {
+        super();
+        this.title = "Fade";
+        this.descriprion = "This node makes a smooth transition from one value to another. <br/>" +
+            "You can specify the time interval for which the value must change. <br/>" +
+            "The output is named \"Enabled\" sends \"1\" " +
+            "when the node is in the active state (makes the transition).";
+
+        this.addInput("from value", "number");
+        this.addInput("to value", "number");
+        this.addInput("[interval]", "number");
+        this.addInput("start/stop", "boolean");
+
+        this.addOutput("value");
+        this.addOutput("enabled", "boolean");
+
+        this.setOutputData(1, false);
+    }
+
+    onInputUpdated() {
+        if (this.inputs[3].updated) {
+            this.enabled = this.inputs[3].data;
+            this.setOutputData(1, this.enabled);
+            //start
+            if (this.enabled) {
+                this.setOutputData(0, this.inputs[0].data)
+                this.startTime = Date.now();
+            }
+        }
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let from = this.getInputData(0);
+        let to = this.getInputData(1);
+        let interval = this.getInputData(2) || 1000;
+
+        if (from == null || to == null)
+            return;
+
+        let elapsed = Date.now() - this.startTime;
+
+        if (elapsed >= interval) {
+            this.setOutputData(0, to);
+            this.setOutputData(1, false);
+            this.enabled = false;
+        } else {
+            console.log(from + " " + to + " " + elapsed);
+            let val = Utils.remap(this.startTime + elapsed, this.startTime, this.startTime + interval, from, to);
+            this.setOutputData(0, val);
+        }
+    }
+}
+Container.registerNodeType("time/fade", TimeFadeNode);
