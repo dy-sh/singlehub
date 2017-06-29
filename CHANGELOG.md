@@ -67,6 +67,9 @@ SingleHub v0.9
 - **System**:
   - **Execute**. This node is now cross-platform.
 
+- **Time**:
+  - **Fade**. More node settings.
+
     
   
   
