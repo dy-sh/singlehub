@@ -243,8 +243,8 @@ export class TimeFadeNode extends Node {
             "to make the transition more smoother. " +
             "Or, reduce the refresh rate to reduce CPU load.";
 
-        this.addInput("from value", "number");
-        this.addInput("to value", "number");
+        this.addInput("[from value]", "number");
+        this.addInput("[to value]", "number");
         this.addInput("[interval]", "number");
         this.addInput("start/stop", "boolean");
 
@@ -288,8 +288,8 @@ export class TimeFadeNode extends Node {
         if (!this.enabled)
             return;
 
-        let from = this.getInputData(0);
-        let to = this.getInputData(1);
+        let from = this.getInputData(0) || 0;
+        let to = this.getInputData(1) || 100;
         let interval = this.getInputData(2) || 1000;
 
         if (from == null || to == null)
