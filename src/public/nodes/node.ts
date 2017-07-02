@@ -140,6 +140,9 @@ export class Node {
     isRecentlyActive: boolean;
 
 
+    updateInputsInterval?: number;
+    updateInputsLastTime?: number;
+
     //events
 
     // /**

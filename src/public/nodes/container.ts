@@ -3,22 +3,22 @@
  */
 
 
-import {Node, SerializedNode} from "./node";
-import {Renderer} from "../js/editor/renderer";
-import {ContainerNode} from "./nodes/main"
-import {Database} from "../interfaces/database";
+import { Node, SerializedNode } from "./node";
+import { Renderer } from "../js/editor/renderer";
+import { ContainerNode } from "./nodes/main"
+import { Database } from "../interfaces/database";
 import Utils from "./utils";
 import Namespace = SocketIO.Namespace;
-import {Emitter} from '../js/emitter/emitter'
+import { Emitter } from '../js/emitter/emitter'
 
 
 //console logger back and front
 let log;
 declare let Logger: any; // tell the ts compiler global variable is defined
 if (typeof (window) === 'undefined') //for backside only
-    log = require('logplease').create('container', {color: 5});
+    log = require('logplease').create('container', { color: 5 });
 else  //for frontside only
-    log = Logger.create('container', {color: 5});
+    log = Logger.create('container', { color: 5 });
 
 
 export interface SerializedContainer {
@@ -29,7 +29,7 @@ export interface SerializedContainer {
     serialized_nodes?: Array<SerializedNode>;
 }
 
-export enum Side{
+export enum Side {
     server,
     editor,
     dashboard
@@ -37,8 +37,8 @@ export enum Side{
 
 
 export class Container extends Emitter {
-    static nodes_types: {[type: string]: any} = {};
-    static containers: {[id: number]: Container} = {};
+    static nodes_types: { [type: string]: any } = {};
+    static containers: { [id: number]: Container } = {};
     static last_container_id: number = -1;
     static showDebugOnCreateMessage = true;
 
@@ -51,7 +51,7 @@ export class Container extends Emitter {
 
     db: Database;
 
-    _nodes: {[id: number]: Node} = {};
+    _nodes: { [id: number]: Node } = {};
 
     id: number;
     name: string;
@@ -71,7 +71,7 @@ export class Container extends Emitter {
     fixedtime_lapse: number;
     elapsed_time: number;
     starttime: number;
-    execution_timer_id: number|any;
+    execution_timer_id: number | any;
     errors_in_execution: boolean;
 
     onStopEvent: Function;
@@ -132,7 +132,7 @@ export class Container extends Emitter {
     static registerNodeType(type: string, node_class: any, show_in_menu = true): void {
 
         if (!(node_class.prototype instanceof Node))
-            throw(`Can't register node of type [${type}]. Class must inherit Node base class!`);
+            throw (`Can't register node of type [${type}]. Class must inherit Node base class!`);
 
         node_class.type = type;
         node_class.category = type.substr(0, type.lastIndexOf("/"));
@@ -178,7 +178,7 @@ export class Container extends Emitter {
      * @returns {Array} array with all the names of the categories
      */
     static getNodeTypesCategories(): Array<any> {
-        let categories = {"": 1};
+        let categories = { "": 1 };
         for (let i in this.nodes_types)
             if (this.nodes_types[i].category)
                 categories[this.nodes_types[i].category] = 1;
@@ -188,7 +188,7 @@ export class Container extends Emitter {
         return result;
     };
 
-//used to know which types of connections support this container (some containers do not allow certain types)
+    //used to know which types of connections support this container (some containers do not allow certain types)
     getSupportedTypes(): Array<string> {
         return this.supported_types;
     }
@@ -333,20 +333,34 @@ export class Container extends Emitter {
 
             this.transferDataBetweenNodes();
 
+            let now = Date.now();
+
             for (let id in this._nodes) {
                 let node = this._nodes[id];
                 if (node['onExecute'])
                     node['onExecute']();
 
+
                 if (node.isUpdated) {
-                    if (node['onInputUpdated'])
-                        node['onInputUpdated']();
 
-                    node.isUpdated = false;
+                    if (!node.updateInputsInterval
+                        || node.updateInputsInterval && !node.updateInputsLastTime
+                        || node.updateInputsLastTime && now - node.updateInputsLastTime >= node.updateInputsInterval) {
+                        if (node['onInputUpdated'])
+                            node['onInputUpdated']();
 
-                    for (let i in node.inputs)
-                        if (node.inputs[i].updated)
-                            node.inputs[i].updated = false;
+                        console.log(node.title + " " + node.updateInputsInterval + " " + node.updateInputsLastTime)
+
+
+                        node.isUpdated = false;
+
+                        for (let i in node.inputs)
+                            if (node.inputs[i].updated)
+                                node.inputs[i].updated = false;
+
+                        if (node.updateInputsInterval)
+                            node.updateInputsLastTime = now;
+                    }
                 }
             }
 
@@ -409,7 +423,6 @@ export class Container extends Emitter {
 
                     target_node.isUpdated = true;
                     target_input.updated = true;
-
                 }
             }
         }
@@ -583,7 +596,7 @@ export class Container extends Emitter {
                 if (this.id == 0)
                     this.db.updateLastRootNodeId(this.last_node_id);
                 else
-                    this.db.updateNode(this.container_node.id, this.container_node.container.id, {$set: {"sub_container.last_node_id": this.container_node.sub_container.last_node_id}});
+                    this.db.updateNode(this.container_node.id, this.container_node.container.id, { $set: { "sub_container.last_node_id": this.container_node.sub_container.last_node_id } });
             }
         }
 
@@ -600,7 +613,7 @@ export class Container extends Emitter {
      * Removes a node from the container
      * @param node the instance of the node or node id
      */
-    remove(node: Node|number): void {
+    remove(node: Node | number): void {
 
         //if id provided, get node
         if (typeof node == "number") {
@@ -849,12 +862,12 @@ export class Container extends Emitter {
             return;
 
         //create new container
-        let new_cont_node: ContainerNode = <any>this.createNode("main/container", {pos: pos});
+        let new_cont_node: ContainerNode = <any>this.createNode("main/container", { pos: pos });
 
         let new_cont = new_cont_node.sub_container;
         new_cont.last_node_id = this.last_node_id;
         if (this.db)
-            this.db.updateNode(new_cont_node.id, this.id, {$set: {"sub_container.last_node_id": new_cont_node.sub_container.last_node_id}})
+            this.db.updateNode(new_cont_node.id, this.id, { $set: { "sub_container.last_node_id": new_cont_node.sub_container.last_node_id } })
 
 
         // move nodes
@@ -885,7 +898,7 @@ export class Container extends Emitter {
                             //create input node
                             let input_node = new_cont.createNode("main/input");
                             input_node.pos = Utils.cloneObject(old_target.pos);
-                            input_node.outputs[0].links = [{target_node_id: node.id, target_slot: +i}];
+                            input_node.outputs[0].links = [{ target_node_id: node.id, target_slot: +i }];
 
                             //find input new pos (for prevent overlapping with the same input)
                             for (let n in new_cont._nodes) {
@@ -898,7 +911,7 @@ export class Container extends Emitter {
 
                             //connect new cont input to old target
                             new_cont_node.inputs[input_node.properties["slot"]].link =
-                                {target_node_id: input.link.target_node_id, target_slot: input.link.target_slot}
+                                { target_node_id: input.link.target_node_id, target_slot: input.link.target_slot }
 
                             let t_out_links = old_target.outputs[input.link.target_slot].links;
                             for (let out_link of t_out_links) {
@@ -916,10 +929,10 @@ export class Container extends Emitter {
                                 let s_old_target = old_target.serialize(true);
                                 let s_node = node.serialize(true);
                                 let s_input_node = input_node.serialize(true);
-                                this.db.updateNode(input_node.id, new_cont.id, {$set: {pos: s_input_node.pos}});
-                                this.db.updateNode(input_node.id, new_cont.id, {$set: {outputs: s_input_node.outputs}});
-                                this.db.updateNode(old_target.id, this.id, {$set: {outputs: s_old_target.outputs}});
-                                this.db.updateNode(node.id, new_cont.id, {$set: {inputs: s_node.inputs}});
+                                this.db.updateNode(input_node.id, new_cont.id, { $set: { pos: s_input_node.pos } });
+                                this.db.updateNode(input_node.id, new_cont.id, { $set: { outputs: s_input_node.outputs } });
+                                this.db.updateNode(old_target.id, this.id, { $set: { outputs: s_old_target.outputs } });
+                                this.db.updateNode(node.id, new_cont.id, { $set: { inputs: s_node.inputs } });
                             }
                         }
                     }
@@ -944,7 +957,7 @@ export class Container extends Emitter {
                                 //create output node
                                 let output_node = new_cont.createNode("main/output");
                                 output_node.pos = Utils.cloneObject(old_target.pos);
-                                output_node.inputs[0].link = {target_node_id: node.id, target_slot: +o};
+                                output_node.inputs[0].link = { target_node_id: node.id, target_slot: +o };
 
 
                                 //find input new pos (for prevent overlapping with the same input)
@@ -977,10 +990,10 @@ export class Container extends Emitter {
                                     let s_old_target = old_target.serialize(true);
                                     let s_node = node.serialize(true);
                                     let s_output_node = output_node.serialize(true);
-                                    this.db.updateNode(output_node.id, new_cont.id, {$set: {pos: s_output_node.pos}});
-                                    this.db.updateNode(output_node.id, new_cont.id, {$set: {inputs: s_output_node.inputs}});
-                                    this.db.updateNode(old_target.id, this.id, {$set: {inputs: s_old_target.inputs}});
-                                    this.db.updateNode(node.id, new_cont.id, {$set: {outputs: s_node.outputs}});
+                                    this.db.updateNode(output_node.id, new_cont.id, { $set: { pos: s_output_node.pos } });
+                                    this.db.updateNode(output_node.id, new_cont.id, { $set: { inputs: s_output_node.inputs } });
+                                    this.db.updateNode(old_target.id, this.id, { $set: { inputs: s_old_target.inputs } });
+                                    this.db.updateNode(node.id, new_cont.id, { $set: { outputs: s_node.outputs } });
                                 }
                             }
                         }
@@ -989,8 +1002,8 @@ export class Container extends Emitter {
 
                 if (this.db) {
                     let s_new_cont_node = new_cont_node.serialize(true);
-                    this.db.updateNode(new_cont_node.id, this.id, {$set: {inputs: s_new_cont_node.inputs}});
-                    this.db.updateNode(new_cont_node.id, this.id, {$set: {outputs: s_new_cont_node.outputs}});
+                    this.db.updateNode(new_cont_node.id, this.id, { $set: { inputs: s_new_cont_node.inputs } });
+                    this.db.updateNode(new_cont_node.id, this.id, { $set: { outputs: s_new_cont_node.outputs } });
                 }
             }
         }
@@ -999,7 +1012,7 @@ export class Container extends Emitter {
 
     importContainer(data: SerializedNode, pos: [number, number]): ContainerNode {
 
-        let new_cont = <ContainerNode>this.createNode("main/container", {pos: pos});
+        let new_cont = <ContainerNode>this.createNode("main/container", { pos: pos });
 
         data.cid = this.id;
         delete data["id"];
