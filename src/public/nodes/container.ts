@@ -337,12 +337,20 @@ export class Container extends Emitter {
 
             for (let id in this._nodes) {
                 let node = this._nodes[id];
-                if (node['onExecute'])
-                    node['onExecute']();
+
+                if (!node.executeInterval
+                    || node.executeInterval && !node.executeLastTime
+                    || node.executeLastTime && now - node.executeLastTime >= node.executeInterval) {
+
+                    if (node['onExecute'])
+                        node['onExecute']();
+
+                    if (node.executeInterval)
+                        node.executeLastTime = now;
+                }
 
 
                 if (node.isUpdated) {
-
                     if (!node.updateInputsInterval
                         || node.updateInputsInterval && !node.updateInputsLastTime
                         || node.updateInputsLastTime && now - node.updateInputsLastTime >= node.updateInputsInterval) {

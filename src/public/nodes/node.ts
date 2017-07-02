@@ -144,6 +144,10 @@ export class Node {
     updateInputsInterval?: number;
     updateInputsLastTime?: number;
 
+    //you can set this setting for prevent execute flooding!
+    executeInterval?: number;
+    executeLastTime?: number;
+
     //events
 
     // /**
