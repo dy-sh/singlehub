@@ -140,6 +140,7 @@ export class Node {
     isRecentlyActive: boolean;
 
 
+    //you can set this setting for prevent input flooding!
     updateInputsInterval?: number;
     updateInputsLastTime?: number;
 

@@ -346,11 +346,9 @@ export class Container extends Emitter {
                     if (!node.updateInputsInterval
                         || node.updateInputsInterval && !node.updateInputsLastTime
                         || node.updateInputsLastTime && now - node.updateInputsLastTime >= node.updateInputsInterval) {
+
                         if (node['onInputUpdated'])
                             node['onInputUpdated']();
-
-                        console.log(node.title + " " + node.updateInputsInterval + " " + node.updateInputsLastTime)
-
 
                         node.isUpdated = false;
 
