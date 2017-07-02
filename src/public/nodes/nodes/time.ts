@@ -230,7 +230,6 @@ Container.registerNodeType("time/frequency-meter", TimeFrequencyMeterNode);
 
 export class TimeFadeNode extends Node {
     startTime: number;
-    lastTime: number;
     enabled = false;
 
     constructor() {
@@ -254,9 +253,18 @@ export class TimeFadeNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update"] = { description: "Output Update Interval", type: "number", value: 50 };
+        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
         this.settings["reset-on-stop"] = { description: "Reset on Stop", type: "boolean", value: false };
+    }
 
+    onAdded() {
+        this.executeInterval = this.settings["update-interval"].value;
+        this.updateInputsInterval = this.executeInterval;
+    }
+
+    onSettingsChanged() {
+        this.executeInterval = this.settings["update-interval"].value;
+        this.updateInputsInterval = this.executeInterval;
     }
 
     onInputUpdated() {
@@ -267,7 +275,7 @@ export class TimeFadeNode extends Node {
             if (this.enabled) {
                 this.setOutputData(0, this.inputs[0].data)
                 this.startTime = Date.now();
-                this.lastTime = 0;
+                this.executeLastTime = 0;
             }
             else {
                 if (this.settings["reset-on-stop"].value)
@@ -280,10 +288,6 @@ export class TimeFadeNode extends Node {
         if (!this.enabled)
             return;
 
-        if (Date.now() - this.lastTime < this.settings["update"].value)
-            return;
-        this.lastTime = Date.now();
-
         let from = this.getInputData(0);
         let to = this.getInputData(1);
         let interval = this.getInputData(2) || 1000;
@@ -293,14 +297,11 @@ export class TimeFadeNode extends Node {
 
         let elapsed = Date.now() - this.startTime;
 
-
-
         if (elapsed >= interval) {
             this.setOutputData(0, to);
             this.setOutputData(1, false);
             this.enabled = false;
         } else {
-            console.log(from + " " + to + " " + elapsed);
             let val = Utils.remap(this.startTime + elapsed, this.startTime, this.startTime + interval, from, to);
             this.setOutputData(0, val);
         }
