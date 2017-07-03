@@ -258,13 +258,13 @@ export class TimeFadeNode extends Node {
     }
 
     onAdded() {
-        this.executeInterval = this.settings["update-interval"].value;
-        this.updateInputsInterval = this.executeInterval;
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
     onSettingsChanged() {
-        this.executeInterval = this.settings["update-interval"].value;
-        this.updateInputsInterval = this.executeInterval;
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
     onInputUpdated() {

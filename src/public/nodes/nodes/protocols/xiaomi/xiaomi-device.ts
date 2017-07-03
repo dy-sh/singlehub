@@ -74,7 +74,7 @@ export class XiaomiDeviceNode extends Node {
 
         this.changeTitle();
 
-        this.updateInputsInterval = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.settings["update-interval"].value;
     }
 
     changeTitle() {
@@ -209,7 +209,7 @@ export class XiaomiDeviceNode extends Node {
 
         this.changeTitle();
 
-        this.updateInputsInterval = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.settings["update-interval"].value;
 
         //update db
         if (this.container.db)

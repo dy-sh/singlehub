@@ -338,22 +338,22 @@ export class Container extends Emitter {
             for (let id in this._nodes) {
                 let node = this._nodes[id];
 
-                if (!node.executeInterval
-                    || node.executeInterval && !node.executeLastTime
-                    || node.executeLastTime && now - node.executeLastTime >= node.executeInterval) {
+                if (!node.EXECUTE_INTERVAL
+                    || node.EXECUTE_INTERVAL && !node.executeLastTime
+                    || node.executeLastTime && now - node.executeLastTime >= node.EXECUTE_INTERVAL) {
 
                     if (node['onExecute'])
                         node['onExecute']();
 
-                    if (node.executeInterval)
+                    if (node.EXECUTE_INTERVAL)
                         node.executeLastTime = now;
                 }
 
 
                 if (node.isUpdated) {
-                    if (!node.updateInputsInterval
-                        || node.updateInputsInterval && !node.updateInputsLastTime
-                        || node.updateInputsLastTime && now - node.updateInputsLastTime >= node.updateInputsInterval) {
+                    if (!node.UPDATE_INPUTS_INTERVAL
+                        || node.UPDATE_INPUTS_INTERVAL && !node.updateInputsLastTime
+                        || node.updateInputsLastTime && now - node.updateInputsLastTime >= node.UPDATE_INPUTS_INTERVAL) {
 
                         if (node['onInputUpdated'])
                             node['onInputUpdated']();
@@ -364,7 +364,7 @@ export class Container extends Emitter {
                             if (node.inputs[i].updated)
                                 node.inputs[i].updated = false;
 
-                        if (node.updateInputsInterval)
+                        if (node.UPDATE_INPUTS_INTERVAL)
                             node.updateInputsLastTime = now;
                     }
                 }
