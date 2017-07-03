@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -19,9 +19,6 @@ let template =
 
 
 export class UiLabelNode extends UiNode {
-    UPDATE_INTERVAL = 100;
-
-    dataUpdated = false;
 
     constructor() {
         super("Label", template);
@@ -30,17 +27,16 @@ export class UiLabelNode extends UiNode {
         this.properties['value'] = '-';
 
         this.addInput("input");
+
+        this.UPDATE_INPUTS_INTERVAL = 100;
     }
 
 
     onAdded() {
         super.onAdded();
 
-        if (this.side == Side.server)
-            this.startSendingToDashboard();
-
         if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({value: this.properties['value']})
+            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
     }
 
@@ -48,20 +44,11 @@ export class UiLabelNode extends UiNode {
         this.properties['value'] = Utils.formatAndTrimValue(this.getInputData(0));
         if (this.properties['value'] == "")
             this.properties['value'] = "-";
-        this.dataUpdated = true;
+
         this.isRecentlyActive = true;
+
+        this.sendMessageToDashboardSide({ value: this.properties['value'] });
     };
-
-    startSendingToDashboard() {
-        let that = this;
-        setInterval(function () {
-            if (that.dataUpdated) {
-                that.dataUpdated = false;
-                that.sendMessageToDashboardSide({value: that.properties['value']});
-            }
-        }, this.UPDATE_INTERVAL);
-    }
-
 
     onGetMessageToDashboardSide(data) {
         $('#labelValue-' + this.id).html(data.value);
