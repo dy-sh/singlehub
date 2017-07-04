@@ -16,6 +16,7 @@ import "./main";
 import "./math";
 import "./numbers";
 import "./operation";
+import "./rgb";
 import "./system";
 import "./text";
 import "./time";

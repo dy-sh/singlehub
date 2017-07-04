@@ -11,7 +11,6 @@ import Utils from "../utils";
 
 export class TickerNode extends Node {
 
-
     lastTime: number;
 
     constructor() {
