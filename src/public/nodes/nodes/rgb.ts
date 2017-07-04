@@ -39,3 +39,45 @@ export class RgbNumbersToRgbNode extends Node {
     }
 }
 Container.registerNodeType("rgb/numbers-to-rgb", RgbNumbersToRgbNode);
+
+
+
+export class RgbRgbToNumbersNode extends Node {
+    constructor() {
+        super();
+        this.title = "RGB to numbers";
+        this.descriprion = "This node converts RGB color to three numbers. <br/>" +
+            "For example: \"#FFAA00\" will be converted to 255, 170, 0. <br/>" +
+            "Node takes color with a # sign at the beginning or without it.";
+
+        this.addInput("rgb", "string");
+        this.addOutput("r", "number");
+        this.addOutput("g", "number");
+        this.addOutput("b", "number");
+    }
+
+    onInputUpdated() {
+        var rgb = this.inputs[0].data;
+
+        if (rgb == null) {
+            this.setOutputData(0, null);
+            this.setOutputData(1, null);
+            this.setOutputData(2, null);
+            return;
+        }
+
+        var arr;
+        try {
+            arr = Utils.hex2num(rgb);
+        }
+        catch (e) {
+            this.debugWarn("Can't convert \"" + rgb + "\" to numbers");
+            arr = [null, null, null];
+        }
+
+        this.setOutputData(0, arr[0]);
+        this.setOutputData(1, arr[1]);
+        this.setOutputData(2, arr[2]);
+    }
+}
+Container.registerNodeType("rgb/rgb-to-numbers", RgbRgbToNumbersNode);

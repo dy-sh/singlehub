@@ -150,7 +150,7 @@ export default class Utils {
         if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
         hex = hex.toUpperCase();
         let hex_alphabets = "0123456789ABCDEF";
-        let value: [number, number, number];
+        let value: [number, number, number] = [0, 0, 0];
         let k = 0;
         let int1, int2;
         for (let i = 0; i < 6; i += 2) {
@@ -277,13 +277,13 @@ export default class Utils {
      * @returns {number}
      */
     static getTime(): number {
-        return (typeof(performance) != "undefined") ? performance.now() : Date.now();
+        return (typeof (performance) != "undefined") ? performance.now() : Date.now();
     };
 
 
     static toFixedNumber(value, digits) {
         let pow = Math.pow(10, digits);
-        return +( Math.round(value * pow) / pow );
+        return +(Math.round(value * pow) / pow);
     }
 
     static clamp = function (value: number, min: number, max: number): number {
