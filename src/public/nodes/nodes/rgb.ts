@@ -74,7 +74,7 @@ export class RgbNumbersToRgbwNode extends Node {
         this.setOutputData(0, rgbw);
     }
 }
-Container.registerNodeType("rgb/numbers-to-rgbw", RgbNumbersToRgbNode);
+Container.registerNodeType("rgb/numbers-to-rgbw", RgbNumbersToRgbwNode);
 
 
 
@@ -105,7 +105,7 @@ export class RgbRgbToNumbersNode extends Node {
 
         var arr;
         try {
-            arr = Utils.hex2num(rgb);
+            arr = Utils.rgbHexToNums(rgb);
         }
         catch (e) {
             this.debugWarn("Can't convert \"" + rgb + "\" to numbers");
@@ -118,3 +118,49 @@ export class RgbRgbToNumbersNode extends Node {
     }
 }
 Container.registerNodeType("rgb/rgb-to-numbers", RgbRgbToNumbersNode);
+
+
+
+
+export class RgbRgbwToNumbersNode extends Node {
+    constructor() {
+        super();
+        this.title = "RGBW to numbers";
+        this.descriprion = "This node converts RGBW color to four numbers. <br/>" +
+            "For example: \"FFAA00FF\" will be converted to 255, 170, 0, 255. <br/>" +
+            "Node takes color with a # sign at the beginning or without it.";
+
+        this.addInput("rgbw", "string");
+        this.addOutput("r", "number");
+        this.addOutput("g", "number");
+        this.addOutput("b", "number");
+        this.addOutput("w", "number");
+    }
+
+    onInputUpdated() {
+        var rgbw = this.inputs[0].data;
+
+        if (rgbw == null) {
+            this.setOutputData(0, null);
+            this.setOutputData(1, null);
+            this.setOutputData(2, null);
+            this.setOutputData(3, null);
+            return;
+        }
+
+        var arr;
+        try {
+            arr = Utils.rgbwHexToNums(rgbw);
+        }
+        catch (e) {
+            this.debugWarn("Can't convert \"" + rgbw + "\" to numbers");
+            arr = [null, null, null, null];
+        }
+
+        this.setOutputData(0, arr[0]);
+        this.setOutputData(1, arr[1]);
+        this.setOutputData(2, arr[2]);
+        this.setOutputData(3, arr[3]);
+    }
+}
+Container.registerNodeType("rgb/rgbw-to-numbers", RgbRgbwToNumbersNode);

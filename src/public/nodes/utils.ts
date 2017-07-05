@@ -146,7 +146,7 @@ export default class Utils {
      * @param hex
      * @returns {[number,number,number]}
      */
-    static hex2num(hex: string): [number, number, number] {
+    static rgbHexToNums(hex: string): [number, number, number] {
         if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
         hex = hex.toUpperCase();
         let hex_alphabets = "0123456789ABCDEF";
@@ -154,6 +154,29 @@ export default class Utils {
         let k = 0;
         let int1, int2;
         for (let i = 0; i < 6; i += 2) {
+            int1 = hex_alphabets.indexOf(hex.charAt(i));
+            int2 = hex_alphabets.indexOf(hex.charAt(i + 1));
+            value[k] = (int1 * 16) + int2;
+            k++;
+        }
+        return value;
+    }
+
+    /**
+    * Convert a hex value to its decimal value - the inputted hex must be in the
+    * format of a hex triplet - the kind we use for HTML colours. The function
+    * will return an array with four values.
+    * @param hex
+    * @returns {[number,number,number,number]}
+    */
+    static rgbwHexToNums(hex: string): [number, number, number, number] {
+        if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
+        hex = hex.toUpperCase();
+        let hex_alphabets = "0123456789ABCDEF";
+        let value: [number, number, number, number] = [0, 0, 0, 0];
+        let k = 0;
+        let int1, int2;
+        for (let i = 0; i < 8; i += 2) {
             int1 = hex_alphabets.indexOf(hex.charAt(i));
             int2 = hex_alphabets.indexOf(hex.charAt(i + 1));
             value[k] = (int1 * 16) + int2;
