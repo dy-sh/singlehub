@@ -42,6 +42,43 @@ Container.registerNodeType("rgb/numbers-to-rgb", RgbNumbersToRgbNode);
 
 
 
+export class RgbNumbersToRgbwNode extends Node {
+    constructor() {
+        super();
+        this.title = "Numbers to RGBW";
+        this.descriprion = "This node converts four numbers to RGBW color. <br/>" +
+            "For example: 255, 170, 0, 255 will be converted to \"#FFAA00FF\".";
+
+        this.addInput("r", "number");
+        this.addInput("g", "number");
+        this.addInput("b", "number");
+        this.addInput("w", "number");
+        this.addOutput("rgbw", "string");
+    }
+
+    onInputUpdated() {
+        var r = this.inputs[0].data;
+        var g = this.inputs[1].data;
+        var b = this.inputs[2].data;
+        var w = this.inputs[3].data;
+
+        if (r == null || g == null || b == null || w == null)
+            return this.setOutputData(0, null);
+
+        r = Utils.clamp(r, 0, 255);
+        g = Utils.clamp(g, 0, 255);
+        b = Utils.clamp(b, 0, 255);
+        w = Utils.clamp(w, 0, 255);
+
+        var rgbw = Utils.numsToRgbwHex([r, g, b, w]);
+        this.setOutputData(0, rgbw);
+    }
+}
+Container.registerNodeType("rgb/numbers-to-rgbw", RgbNumbersToRgbNode);
+
+
+
+
 export class RgbRgbToNumbersNode extends Node {
     constructor() {
         super();
