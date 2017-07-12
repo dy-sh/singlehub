@@ -198,6 +198,10 @@ export default class Utils {
     */
     static rgbwHexToNums(hex: string): [number, number, number, number] {
         if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
+
+        if (hex.length != 8)
+            throw "Cant convert RGBW value. Bad HEX!";
+
         hex = hex.toUpperCase();
         let hex_alphabets = "0123456789ABCDEF";
         let value: [number, number, number, number] = [0, 0, 0, 0];
@@ -206,6 +210,10 @@ export default class Utils {
         for (let i = 0; i < 8; i += 2) {
             int1 = hex_alphabets.indexOf(hex.charAt(i));
             int2 = hex_alphabets.indexOf(hex.charAt(i + 1));
+
+            if (int1 < 0 || int2 < 0)
+                throw "Cant convert RGBW value. Bad HEX!";
+
             value[k] = (int1 * 16) + int2;
             k++;
         }
