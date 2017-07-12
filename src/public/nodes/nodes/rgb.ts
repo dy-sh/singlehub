@@ -176,8 +176,8 @@ export class RgbRandomRgbNode extends Node {
             "You can set the minimum and maximum color.";
 
         this.addInput("generate", "boolean");
-        this.addInput("min", "string");
-        this.addInput("max", "string");
+        this.addInput("min rgb", "string");
+        this.addInput("max rgb", "string");
         this.addOutput("rgb", "string");
     }
 
@@ -191,7 +191,7 @@ export class RgbRandomRgbNode extends Node {
                 minArr = Utils.rgbHexToNums(min);
             }
             catch (e) {
-                this.debugWarn("Can't convert \"" + min + "\" to numbers");
+                this.debugWarn("Can't convert \"" + min + "\" to RGB");
                 return this.setOutputData(0, null);
             }
             console.log(minArr);
@@ -199,7 +199,7 @@ export class RgbRandomRgbNode extends Node {
                 maxArr = Utils.rgbHexToNums(max);
             }
             catch (e) {
-                this.debugWarn("Can't convert \"" + max + "\" to numbers");
+                this.debugWarn("Can't convert \"" + max + "\" to RGB");
                 return this.setOutputData(0, null);
             }
 
@@ -214,4 +214,56 @@ export class RgbRandomRgbNode extends Node {
     }
 }
 Container.registerNodeType("rgb/random-rgb", RgbRandomRgbNode);
+
+
+
+
+
+export class RgbRandomRgbwNode extends Node {
+    constructor() {
+        super();
+        this.title = "Random RGBW";
+        this.descriprion = "This node generates random RGBW color. <br/>" +
+            "To generate color, send \"1\" to \"Generate\" input. <br/>" +
+            "You can set the minimum and maximum color.";
+
+        this.addInput("generate", "boolean");
+        this.addInput("min rgbw", "string");
+        this.addInput("max rgbw", "string");
+        this.addOutput("rgbw", "string");
+    }
+
+    onInputUpdated() {
+        if (this.inputs[0].updated && this.inputs[0].data) {
+            let min = this.inputs[1].data || "00000000";
+            let max = this.inputs[2].data || "FFFFFFFF";
+
+            let minArr, maxArr, resArr: [number, number, number, number] = [0, 0, 0, 0];
+            try {
+                minArr = Utils.rgbwHexToNums(min);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert \"" + min + "\" to RGBW");
+                return this.setOutputData(0, null);
+            }
+            console.log(minArr);
+            try {
+                maxArr = Utils.rgbwHexToNums(max);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert \"" + max + "\" to RGBW");
+                return this.setOutputData(0, null);
+            }
+
+            for (let i = 0; i < 4; i++) {
+                resArr[i] = Utils.getRandomInt(minArr[i], maxArr[i]);
+            }
+
+            let rgbw = Utils.numsToRgbwHex(resArr);
+
+            this.setOutputData(0, rgbw);
+        }
+    }
+}
+Container.registerNodeType("rgb/random-rgbw", RgbRandomRgbwNode);
 
