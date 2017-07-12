@@ -38,6 +38,25 @@ export default class Utils {
     }
 
 
+
+    /**
+     * Returns a random number between min (inclusive) and max (exclusive)
+     */
+    static getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+
+    /**
+     * Returns a random integer between min (inclusive) and max (inclusive)
+     * Using Math.round() will give you a non-uniform distribution!
+     */
+    static getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+
+
     /**
      * Compare objects
      * @param a
@@ -148,6 +167,10 @@ export default class Utils {
      */
     static rgbHexToNums(hex: string): [number, number, number] {
         if (hex.charAt(0) == "#") hex = hex.slice(1); //Remove the '#' char - if there is one.
+
+        if (hex.length != 6)
+            throw "Cant convert RGB value. Bad HEX!";
+
         hex = hex.toUpperCase();
         let hex_alphabets = "0123456789ABCDEF";
         let value: [number, number, number] = [0, 0, 0];
@@ -156,6 +179,10 @@ export default class Utils {
         for (let i = 0; i < 6; i += 2) {
             int1 = hex_alphabets.indexOf(hex.charAt(i));
             int2 = hex_alphabets.indexOf(hex.charAt(i + 1));
+
+            if (int1 < 0 || int2 < 0)
+                throw "Cant convert RGB value. Bad HEX!";
+
             value[k] = (int1 * 16) + int2;
             k++;
         }
