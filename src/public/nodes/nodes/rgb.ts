@@ -325,3 +325,61 @@ export class RgbRgbRemapNode extends Node {
     }
 }
 Container.registerNodeType("rgb/rgb-remap", RgbRgbRemapNode);
+
+
+
+export class RgbRgbwRemapNode extends Node {
+    constructor() {
+        super();
+        this.title = "RGBW Remap";
+        this.descriprion = "This node works the same way as Numbers/Remap, " +
+            "but accepts and outputs RGBW color. <br/>" +
+            "Using this node, you can change the white color temperature (remap min 00000000 - max AABBCCFF). " +
+            "Or, for example, exclude red color (remap min 00000000 - max 00FFFFFF).";
+
+
+        this.addInput("rgbw value", "string");
+        this.addInput("rgbw in-min", "string");
+        this.addInput("rgbw in-max", "string");
+        this.addInput("rgbw out-min", "string");
+        this.addInput("rgbw out-max", "string");
+        this.addOutput("rgbw", "string");
+    }
+
+    onInputUpdated() {
+        {
+            let val = this.getInputData(0);
+            let inMin = this.getInputData(1);
+            let inMax = this.getInputData(2);
+            let outMin = this.getInputData(3);
+            let outMax = this.getInputData(4);
+
+            if (val == null || inMin == null || inMax == null || outMin == null || outMax == null)
+                return this.setOutputData(0, null);
+
+            let valArr, inMinArr, inMaxArr, outMinArr, outMaxArr, resArr
+                : [number, number, number, number] = [0, 0, 0, 0];
+
+            try {
+                valArr = Utils.rgbwHexToNums(val);
+                inMinArr = Utils.rgbwHexToNums(inMin);
+                inMaxArr = Utils.rgbwHexToNums(inMax);
+                outMinArr = Utils.rgbwHexToNums(outMin);
+                outMaxArr = Utils.rgbwHexToNums(outMax);
+
+                for (let i = 0; i < 4; i++) {
+                    resArr[i] = Utils.remap(valArr[i], inMinArr[i], inMaxArr[i], outMinArr[i], outMaxArr[i]);
+                }
+
+                let rgb = Utils.numsToRgbwHex(resArr);
+
+                this.setOutputData(0, rgb);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert input value to RGBW");
+                return this.setOutputData(0, null);
+            }
+        }
+    }
+}
+Container.registerNodeType("rgb/rgbw-remap", RgbRgbwRemapNode);
