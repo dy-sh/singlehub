@@ -194,7 +194,7 @@ export class RgbRandomRgbNode extends Node {
                 this.debugWarn("Can't convert \"" + min + "\" to RGB");
                 return this.setOutputData(0, null);
             }
-            console.log(minArr);
+
             try {
                 maxArr = Utils.rgbHexToNums(max);
             }
@@ -246,7 +246,7 @@ export class RgbRandomRgbwNode extends Node {
                 this.debugWarn("Can't convert \"" + min + "\" to RGBW");
                 return this.setOutputData(0, null);
             }
-            console.log(minArr);
+
             try {
                 maxArr = Utils.rgbwHexToNums(max);
             }
@@ -267,3 +267,61 @@ export class RgbRandomRgbwNode extends Node {
 }
 Container.registerNodeType("rgb/random-rgbw", RgbRandomRgbwNode);
 
+
+
+
+export class RgbRgbRemapNode extends Node {
+    constructor() {
+        super();
+        this.title = "RGB Remap";
+        this.descriprion = "This node works the same way as Numbers/Remap, " +
+            "but accepts and outputs RGB color. <br/>" +
+            "Using this node, you can change the white color temperature (remap min 000000 - max AABBCC). " +
+            "Or, for example, exclude red color (remap min 000000 - max 00FFFF).";
+
+
+        this.addInput("rgb value", "string");
+        this.addInput("rgb in-min", "string");
+        this.addInput("rgb in-max", "string");
+        this.addInput("rgb out-min", "string");
+        this.addInput("rgb out-max", "string");
+        this.addOutput("rgb", "string");
+    }
+
+    onInputUpdated() {
+        {
+            let val = this.getInputData(0);
+            let inMin = this.getInputData(1);
+            let inMax = this.getInputData(2);
+            let outMin = this.getInputData(3);
+            let outMax = this.getInputData(4);
+
+            if (val == null || inMin == null || inMax == null || outMin == null || outMax == null)
+                return this.setOutputData(0, null);
+
+            let valArr, inMinArr, inMaxArr, outMinArr, outMaxArr, resArr
+                : [number, number, number] = [0, 0, 0];
+
+            try {
+                valArr = Utils.rgbHexToNums(val);
+                inMinArr = Utils.rgbHexToNums(inMin);
+                inMaxArr = Utils.rgbHexToNums(inMax);
+                outMinArr = Utils.rgbHexToNums(outMin);
+                outMaxArr = Utils.rgbHexToNums(outMax);
+
+                for (let i = 0; i < 3; i++) {
+                    resArr[i] = Utils.remap(valArr[i], inMinArr[i], inMaxArr[i], outMinArr[i], outMaxArr[i]);
+                }
+
+                let rgb = Utils.numsToRgbHex(resArr);
+
+                this.setOutputData(0, rgb);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert input value to RGB");
+                return this.setOutputData(0, null);
+            }
+        }
+    }
+}
+Container.registerNodeType("rgb/rgb-remap", RgbRgbRemapNode);
