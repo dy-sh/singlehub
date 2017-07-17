@@ -438,3 +438,59 @@ export class RgbCrossfadeRgbNode extends Node {
     }
 }
 Container.registerNodeType("rgb/crossfade-rgb", RgbCrossfadeRgbNode);
+
+
+
+
+export class RgbCrossfadeRgbwNode extends Node {
+    constructor() {
+        super();
+        this.title = "Crossfade RGBW";
+        this.descriprion = "This node makes the crossfade between two RGBW colors. <br/>" +
+            "\"Crossfade\" input takes a value from 0 to 100. <br/>" +
+            "If Crossfade is 0, the output will be equal to A. <br/>" +
+            "If Crossfade is 100, then the output is equal to B. <br/>" +
+            "The intermediate value between 0 and 100 will give " +
+            "intermediate number between A and B.<br/><br/> " +
+            "Defaul A value is 00000000, B is FFFFFFFF.";
+
+        this.addInput("crossfade", "number");
+        this.addInput("a", "string");
+        this.addInput("b", "string");
+        this.addOutput("rgbw", "string");
+    }
+
+    onInputUpdated() {
+        {
+            let val = this.getInputData(0);
+            let a = this.getInputData(1) || "00000000";
+            let b = this.getInputData(2) || "FFFFFFFF";
+
+
+            if (val == null)
+                return this.setOutputData(0, null);
+
+            let aArr, bArr, resArr
+                : [number, number, number, number] = [0, 0, 0, 0];
+
+            try {
+                val = Utils.clamp(val, 0, 100);
+                aArr = Utils.rgbwHexToNums(a);
+                bArr = Utils.rgbwHexToNums(b);
+
+                for (let i = 0; i < 4; i++) {
+                    resArr[i] = Utils.remap(val, 0, 100, aArr[i], bArr[i]);
+                }
+
+                let rgbw = Utils.numsToRgbwHex(resArr);
+
+                this.setOutputData(0, rgbw);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert input value to RGBW");
+                return this.setOutputData(0, null);
+            }
+        }
+    }
+}
+Container.registerNodeType("rgb/crossfade-rgbw", RgbCrossfadeRgbwNode);
