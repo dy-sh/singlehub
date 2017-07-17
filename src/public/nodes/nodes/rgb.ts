@@ -395,7 +395,8 @@ export class RgbCrossfadeRgbNode extends Node {
             "If Crossfade is 0, the output will be equal to A. <br/>" +
             "If Crossfade is 100, then the output is equal to B. <br/>" +
             "The intermediate value between 0 and 100 will give " +
-            "intermediate number between A and B. ";
+            "intermediate number between A and B.<br/><br/> " +
+            "Defaul A value is 000000, B is FFFFFF.";
 
         this.addInput("crossfade", "number");
         this.addInput("a", "string");
@@ -406,11 +407,11 @@ export class RgbCrossfadeRgbNode extends Node {
     onInputUpdated() {
         {
             let val = this.getInputData(0);
-            let a = this.getInputData(1);
-            let b = this.getInputData(2);
+            let a = this.getInputData(1) || "000000";
+            let b = this.getInputData(2) || "FFFFFF";
 
 
-            if (val == null || a == null || b == null)
+            if (val == null)
                 return this.setOutputData(0, null);
 
             let aArr, bArr, resArr
