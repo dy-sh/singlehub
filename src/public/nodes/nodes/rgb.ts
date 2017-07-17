@@ -383,3 +383,57 @@ export class RgbRgbwRemapNode extends Node {
     }
 }
 Container.registerNodeType("rgb/rgbw-remap", RgbRgbwRemapNode);
+
+
+
+export class RgbCrossfadeRgbNode extends Node {
+    constructor() {
+        super();
+        this.title = "Crossfade RGB";
+        this.descriprion = "This node makes the crossfade between two RGB colors. <br/>" +
+            "\"Crossfade\" input takes a value from 0 to 100. <br/>" +
+            "If Crossfade is 0, the output will be equal to A. <br/>" +
+            "If Crossfade is 100, then the output is equal to B. <br/>" +
+            "The intermediate value between 0 and 100 will give " +
+            "intermediate number between A and B. ";
+
+        this.addInput("crossfade", "number");
+        this.addInput("a", "string");
+        this.addInput("b", "string");
+        this.addOutput("rgb", "string");
+    }
+
+    onInputUpdated() {
+        {
+            let val = this.getInputData(0);
+            let a = this.getInputData(1);
+            let b = this.getInputData(2);
+
+
+            if (val == null || a == null || b == null)
+                return this.setOutputData(0, null);
+
+            let aArr, bArr, resArr
+                : [number, number, number] = [0, 0, 0];
+
+            try {
+                val = Utils.clamp(val, 0, 100);
+                aArr = Utils.rgbHexToNums(a);
+                bArr = Utils.rgbHexToNums(b);
+
+                for (let i = 0; i < 3; i++) {
+                    resArr[i] = Utils.remap(val, 0, 100, aArr[i], bArr[i]);
+                }
+
+                let rgb = Utils.numsToRgbHex(resArr);
+
+                this.setOutputData(0, rgb);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert input value to RGB");
+                return this.setOutputData(0, null);
+            }
+        }
+    }
+}
+Container.registerNodeType("rgb/crossfade-rgb", RgbCrossfadeRgbNode);
