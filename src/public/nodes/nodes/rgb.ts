@@ -504,7 +504,7 @@ export class RgbFadeRgbNode extends Node {
 
     constructor() {
         super();
-        this.title = "Crossfade RGB";
+        this.title = "Fade RGB";
         this.descriprion = "This node makes a smooth transition from one RGB color to another. <br/>" +
             "You can specify the time interval for which color must change. <br/>" +
             "The output is named \"Enabled\" sends \"1\" " +
@@ -518,7 +518,7 @@ export class RgbFadeRgbNode extends Node {
         this.addInput("[interval]", "number");
         this.addInput("start/stop", "boolean");
 
-        this.addOutput("value");
+        this.addOutput("rgb");
         this.addOutput("enabled", "boolean");
 
         this.setOutputData(1, false);
@@ -594,4 +594,104 @@ export class RgbFadeRgbNode extends Node {
     }
 }
 Container.registerNodeType("rgb/fade-rgb", RgbFadeRgbNode);
+
+
+
+
+export class RgbFadeRgbwNode extends Node {
+    startTime: number;
+    enabled = false;
+
+    constructor() {
+        super();
+        this.title = "Fade RGBW";
+        this.descriprion = "This node makes a smooth transition from one RGWB color to another. <br/>" +
+            "You can specify the time interval for which color must change. <br/>" +
+            "The output is named \"Enabled\" sends \"1\" " +
+            "when the node is in the active state (makes the transition). <br/>" +
+            "In the settings of the node you can increase the refresh rate " +
+            "to make the transition more smoother. " +
+            "Or, reduce the refresh rate to reduce CPU load and preven output flood.";
+
+        this.addInput("[from rgbw]", "string");
+        this.addInput("[to rgbw]", "string");
+        this.addInput("[interval]", "number");
+        this.addInput("start/stop", "boolean");
+
+        this.addOutput("rgbw");
+        this.addOutput("enabled", "boolean");
+
+        this.setOutputData(1, false);
+
+        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
+        this.settings["reset-on-stop"] = { description: "Reset on Stop", type: "boolean", value: false };
+
+    }
+
+    onAdded() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onSettingsChanged() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onInputUpdated() {
+        if (this.inputs[3].updated) {
+            this.enabled = this.inputs[3].data;
+            this.setOutputData(1, this.enabled);
+            //start
+            if (this.enabled) {
+                this.setOutputData(0, this.inputs[0].data)
+                this.startTime = Date.now();
+                this.executeLastTime = 0;
+            }
+            else {
+                if (this.settings["reset-on-stop"].value)
+                    this.setOutputData(0, this.getInputData(0))
+            }
+        }
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let from = this.getInputData(0) || "#00000000";
+        let to = this.getInputData(1) || "#FFFFFFFF";
+        let interval = this.getInputData(2) || 1000;
+
+        let elapsed = Date.now() - this.startTime;
+
+        if (elapsed >= interval) {
+            this.setOutputData(0, to);
+            this.setOutputData(1, false);
+            this.enabled = false;
+        } else {
+
+            let aArr, bArr, resArr
+                : [number, number, number, number] = [0, 0, 0, 0];
+
+            try {
+                aArr = Utils.rgbHexToNums(from);
+                bArr = Utils.rgbHexToNums(to);
+
+                for (let i = 0; i < 4; i++) {
+                    resArr[i] = Utils.remap(this.startTime + elapsed, this.startTime, this.startTime + interval, aArr[i], bArr[i]);
+                }
+
+                let res = Utils.numsToRgbHex(resArr);
+
+                this.setOutputData(0, res);
+            }
+            catch (e) {
+                this.debugWarn("Can't convert input value to RGBW");
+                return this.setOutputData(0, null);
+            }
+        }
+    }
+}
+Container.registerNodeType("rgb/fade-rgbw", RgbFadeRgbWNode);
 
