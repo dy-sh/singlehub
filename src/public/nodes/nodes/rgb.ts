@@ -228,8 +228,8 @@ export class RgbRandomRgbwNode extends Node {
             "You can set the minimum and maximum color.";
 
         this.addInput("generate", "boolean");
-        this.addInput("min rgbw", "string");
-        this.addInput("max rgbw", "string");
+        this.addInput("[min rgbw]", "string");
+        this.addInput("[max rgbw]", "string");
         this.addOutput("rgbw", "string");
     }
 
