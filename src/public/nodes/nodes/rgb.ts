@@ -452,11 +452,11 @@ export class RgbCrossfadeRgbwNode extends Node {
             "If Crossfade is 100, then the output is equal to B. <br/>" +
             "The intermediate value between 0 and 100 will give " +
             "intermediate number between A and B. <br/>" +
-            "Defaul A value is 00000000, B is FFFFFFFF.";
+            "Default A value is #00000000, B is #FFFFFFFF.";
 
         this.addInput("crossfade", "number");
-        this.addInput("a", "string");
-        this.addInput("b", "string");
+        this.addInput("[a]", "string");
+        this.addInput("[b]", "string");
         this.addOutput("rgbw", "string");
     }
 
@@ -693,5 +693,5 @@ export class RgbFadeRgbwNode extends Node {
         }
     }
 }
-Container.registerNodeType("rgb/fade-rgbw", RgbFadeRgbWNode);
+Container.registerNodeType("rgb/fade-rgbw", RgbFadeRgbwNode);
 
