@@ -511,7 +511,8 @@ export class RgbFadeRgbNode extends Node {
             "when the node is in the active state (makes the transition). <br/>" +
             "In the settings of the node you can increase the refresh rate " +
             "to make the transition more smoother. " +
-            "Or, reduce the refresh rate to reduce CPU load and preven output flood.";
+            "Or, reduce the refresh rate to reduce CPU load and preven output flood.<br/>" +
+            "Default From value is #000000, To is #FFFFFF, Interval is 1000.";
 
         this.addInput("[from rgb]", "string");
         this.addInput("[to rgb]", "string");
@@ -611,7 +612,8 @@ export class RgbFadeRgbwNode extends Node {
             "when the node is in the active state (makes the transition). <br/>" +
             "In the settings of the node you can increase the refresh rate " +
             "to make the transition more smoother. " +
-            "Or, reduce the refresh rate to reduce CPU load and preven output flood.";
+            "Or, reduce the refresh rate to reduce CPU load and preven output flood.<br/>" +
+            "Default From value is #00000000, To is #FFFFFFFF, Interval is 1000.";
 
         this.addInput("[from rgbw]", "string");
         this.addInput("[to rgbw]", "string");
