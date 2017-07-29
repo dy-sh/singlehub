@@ -738,7 +738,7 @@ export class RgbSmoothRgbNode extends Node {
         this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
         this.settings["start-value"] = { description: "Default value at start", type: "string", value: "#000000" };
         this.settings["stop-on-disc"] = { description: "Stop when input color is null (disconnected)", type: "boolean", value: false };
-        // this.settings["reset-on-disc"] = { description: "Reset and send null when input color is null", type: "boolean", value: false };
+        this.settings["null-on-disc"] = { description: "Send null when input color is null (disconnected)", type: "boolean", value: false };
     }
 
     onAdded() {
@@ -760,7 +760,9 @@ export class RgbSmoothRgbNode extends Node {
             else {
                 if (this.settings["stop-on-disc"].value)
                     this.stop();
-                // this.setOutputData(0, this.getInputData(0))
+
+                if (this.settings["null-on-disc"].value)
+                    this.setOutputData(0, null);
             }
         }
         else {
