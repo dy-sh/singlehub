@@ -825,3 +825,129 @@ export class RgbSmoothRgbNode extends Node {
 Container.registerNodeType("rgb/smooth-rgb", RgbSmoothRgbNode);
 
 
+
+
+
+
+
+export class RgbSmoothRgbwNode extends Node {
+    startTime: number;
+    enabled = false;
+    from: string;
+    to: string;
+
+    constructor() {
+        super();
+        this.title = "Smooth RGBW";
+        this.descriprion = "This node makes a smooth transition of the RGBW color. <br/>" +
+            "It avoids abrupt changes of the color on the output. <br/><br/>" +
+
+            "The input named \"Interval\" specifies the time " +
+            "for which the color should change completely. <br/><br/>" +
+
+            "The output is named \"Enabled\" sends \"1\" " +
+            "when the node is in the active state (makes the transition). <br/><br/>" +
+
+            "In the settings of the node you can increase the refresh rate " +
+            "to make the transition more smoother. " +
+            "Or, reduce the refresh rate to reduce CPU load.<br/><br/>" +
+
+            "Default  Interval is 1000.";
+
+        this.addInput("rgbw", "string");
+        this.addInput("[interval]", "number");
+
+        this.addOutput("rgbw", "string");
+        this.addOutput("enabled", "boolean");
+
+        this.setOutputData(1, false);
+
+        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
+        this.settings["start-value"] = { description: "Default value at start", type: "string", value: "#00000000" };
+        this.settings["stop-on-disc"] = { description: "Stop when input color is null (disconnected)", type: "boolean", value: false };
+        this.settings["null-on-disc"] = { description: "Send null when input color is null (disconnected)", type: "boolean", value: false };
+    }
+
+    onAdded() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onSettingsChanged() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onInputUpdated() {
+        if (this.inputs[0].updated) {
+
+            if (this.inputs[0].data != null) {
+                this.start();
+            }
+            else {
+                if (this.settings["stop-on-disc"].value)
+                    this.stop();
+
+                if (this.settings["null-on-disc"].value)
+                    this.setOutputData(0, null);
+            }
+        }
+        else {
+
+        }
+    }
+
+
+    start() {
+        this.to = this.inputs[0].data;
+        if (this.to.charAt(0) != "#") this.to = "#" + this.to;
+        this.from = this.outputs[0].data || this.settings["start-value"].value || "#00000000";
+        this.startTime = Date.now();
+        this.executeLastTime = 0;
+        this.setOutputData(1, true);
+        this.enabled = true;
+    }
+
+    stop() {
+        this.setOutputData(1, false);
+        this.enabled = false;
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let interval = this.getInputData(1) || 1000;
+
+        let elapsed = Date.now() - this.startTime;
+        console.log(elapsed)
+        if (elapsed >= interval) {
+            this.setOutputData(0, this.to);
+            this.stop();
+            return;
+        }
+
+        let aArr, bArr, resArr
+            : [number, number, number, number] = [0, 0, 0, 0];
+
+        try {
+            aArr = Utils.rgbwHexToNums(this.from);
+            bArr = Utils.rgbwHexToNums(this.to);
+
+            for (let i = 0; i < 4; i++) {
+                resArr[i] = Utils.remap(this.startTime + elapsed, this.startTime, this.startTime + interval, aArr[i], bArr[i]);
+            }
+
+            let res = Utils.numsToRgbwHex(resArr);
+
+            this.setOutputData(0, res);
+        }
+        catch (e) {
+            this.debugWarn("Can't convert input value to RGBW");
+            this.stop();
+            return this.setOutputData(0, null);
+        }
+    }
+}
+Container.registerNodeType("rgb/smooth-rgbw", RgbSmoothRgbwNode);
+
