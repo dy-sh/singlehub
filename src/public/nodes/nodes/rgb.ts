@@ -725,7 +725,7 @@ export class RgbSmoothRgbNode extends Node {
             "to make the transition more smoother. " +
             "Or, reduce the refresh rate to reduce CPU load.<br/><br/>" +
 
-            "Default  Interval is 1000.";
+            "Default Interval is 1000.";
 
         this.addInput("rgb", "string");
         this.addInput("[interval]", "number");

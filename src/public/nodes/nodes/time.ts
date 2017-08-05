@@ -23,7 +23,8 @@ export class TickerNode extends Node {
             "node will generate a sequence like 101010... " +
             "If disabled, the output will be 111111...";
 
-        this.addInput("interval", "number");
+
+        this.addInput("[interval]", "number");
         this.addInput("enable", "boolean");
         this.addOutput("tick", "boolean");
 
@@ -77,7 +78,7 @@ export class DelayNode extends Node {
             "will be sent to the output after a specified time interval.";
 
         this.addInput("value");
-        this.addInput("interval", "number");
+        this.addInput("[interval]", "number");
         this.addOutput("value");
 
         this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
@@ -120,7 +121,7 @@ export class DelayMeterNode extends Node {
             "Any value sent to the input (excluding null) will be accepted.";
 
         this.addInput("value");
-        this.addInput("reset", "boolean");
+        this.addInput("[reset]", "boolean");
         this.addOutput("ms", "number");
     }
 
