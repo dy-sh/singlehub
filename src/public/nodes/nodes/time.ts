@@ -363,7 +363,6 @@ export class TimeIntervalTimerNode extends Node {
             else
                 this.stop();
         }
-
     }
 
     start() {
@@ -411,3 +410,110 @@ export class TimeIntervalTimerNode extends Node {
     }
 }
 Container.registerNodeType("time/interval-timer", TimeIntervalTimerNode);
+
+
+
+
+export class TimeIteratorNode extends Node {
+
+    enabled: boolean;
+    lastTime: number;
+    count = 1;
+
+    constructor() {
+        super();
+        this.title = "Iterator";
+        this.descriprion = "This node generates a logical \"1\" specified number " +
+            "of times with specified time interval. <br/>" +
+            "You can set the time interval and activate the timer, " +
+            "giving \"1\" to the input named \"Start\". <br/>" +
+            "The timer will send \"1\" to the output named \"Trigger\" " +
+            "as many times as specified by the input named \"Enents Count\". <br/>" +
+            "The output named \"Enabled\" sends \"1\" " +
+            "when the timer is in the active state, and switches to \"0\" " +
+            "when the timer has finished to work. <br/>" +
+            "If \"Generate False\" option is enabled in the settings of the node, " +
+            "node will generate a sequence like 101010... " +
+            "If disabled, the output will be 111111...";
+
+
+        this.addInput("[interval]", "number");
+        this.addInput("enents count", "number");
+        this.addInput("start", "boolean");
+        this.addInput("[stop]", "boolean");
+        this.addOutput("tick", "boolean");
+        this.addOutput("enabled", "boolean");
+        this.addOutput("count", "number");
+
+
+        this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
+        this.settings["false"] = { description: "Generate False", value: true, type: "boolean" };
+
+    }
+
+
+    onInputUpdated() {
+        if (this.inputs[2].updated && this.inputs[2].data)
+            this.start();
+
+        if (this.inputs[3].updated && this.inputs[3].data)
+            this.stop();
+    }
+
+
+    start() {
+        this.enabled = true;
+        this.setOutputData(0, true)
+        this.setOutputData(1, true);
+        this.count = 1;
+        this.setOutputData(2, this.count);
+        this.executeLastTime = 0;
+        this.lastTime = Date.now();
+    }
+
+    stop() {
+        this.enabled = false;
+        this.setOutputData(1, false);
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let now = Date.now();
+        if (!this.lastTime)
+            this.lastTime = now;
+
+        let interval = this.getInputData(0);
+        if (interval == null)
+            interval = this.settings["interval"].value;
+
+        let val = this.outputs[0].data;
+
+
+        if (this.settings["false"].value) {
+            if (val && now - this.lastTime >= interval / 2) {
+                this.setOutputData(0, false);
+                this.count++;
+                return;
+            }
+        }
+
+        if (now - this.lastTime >= interval) {
+            let needCount = this.inputs[1].data || 1;
+            if (this.count >= needCount) {
+                this.stop();
+                return;
+            }
+
+            this.lastTime = now;
+            this.setOutputData(0, true);
+            this.setOutputData(2, this.count);
+
+            if (!this.settings["false"].value) {
+                this.count++;
+            }
+        }
+    }
+}
+Container.registerNodeType("time/iterator", TimeIteratorNode);
