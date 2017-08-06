@@ -462,13 +462,19 @@ export class TimeIteratorNode extends Node {
 
 
     start() {
-        this.enabled = true;
-        this.setOutputData(0, true)
-        this.setOutputData(1, true);
-        this.count = 1;
-        this.setOutputData(2, this.count);
-        this.executeLastTime = 0;
-        this.lastTime = Date.now();
+        let needCount = this.inputs[1].data || 0;
+        if (needCount != 0) {
+            this.enabled = true;
+            this.setOutputData(0, true)
+            this.setOutputData(1, true);
+            this.count = 1;
+            this.setOutputData(2, this.count);
+            this.executeLastTime = 0;
+            this.lastTime = Date.now();
+        }
+
+        if (needCount == 1 && !this.settings["false"].value)
+            this.stop();
     }
 
     stop() {
@@ -494,24 +500,26 @@ export class TimeIteratorNode extends Node {
         if (this.settings["false"].value) {
             if (val && now - this.lastTime >= interval / 2) {
                 this.setOutputData(0, false);
-                this.count++;
+
+                let needCount = this.inputs[1].data || 0;
+                if (this.count >= needCount)
+                    this.stop();
+
                 return;
             }
         }
 
         if (now - this.lastTime >= interval) {
-            let needCount = this.inputs[1].data || 1;
-            if (this.count >= needCount) {
-                this.stop();
-                return;
-            }
-
             this.lastTime = now;
             this.setOutputData(0, true);
+
+            this.count++;
             this.setOutputData(2, this.count);
 
             if (!this.settings["false"].value) {
-                this.count++;
+                let needCount = this.inputs[1].data || 0;
+                if (this.count >= needCount)
+                    this.stop();
             }
         }
     }
