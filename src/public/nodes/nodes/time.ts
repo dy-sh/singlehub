@@ -308,3 +308,106 @@ export class TimeFadeNode extends Node {
     }
 }
 Container.registerNodeType("time/fade", TimeFadeNode);
+
+
+
+
+export class TimeIntervalTimerNode extends Node {
+    startTime: number;
+    enabled = false;
+
+    constructor() {
+        super();
+        this.title = "Interval Timer";
+        this.descriprion = "This node represents a timer. <br/>" +
+            "You can set the time interval and activate the timer, " +
+            "giving \"1\" to the input named \"Start/Stop\". <br/>" +
+            "After specified time interval, the output named \"Elapsed\" sends \"1\". <br/>" +
+            "The output named \"Enabled\" sends \"1\" " +
+            "when the timer is in the active state. <br/>" +
+            "The output named \"Progress\" sends " +
+            "the current state of the timer in percentage " +
+            "(what percentage of the time interval has expired). ";
+
+        this.addInput("[interval]", "number");
+        this.addInput("start/stop", "number");
+
+        this.addOutput("elapsed", "boolean");
+        this.addOutput("enabled", "boolean");
+        this.addOutput("progress", "number");
+
+        this.setOutputData(0, false);
+        this.setOutputData(1, false);
+        this.setOutputData(2, 0);
+
+        this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
+        this.settings["update-interval"] = { description: "Update Interval", type: "number", value: 50 };
+        this.settings["elapsed-true-at-stop"] = { description: "Set elapsed to true at early stop", type: "boolean", value: false };
+        this.settings["progress-100-at-stop"] = { description: "Set progress to 100 at early stop", type: "boolean", value: false };
+    }
+
+    onAdded() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onSettingsChanged() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onInputUpdated() {
+        if (this.inputs[1].updated) {
+            if (this.inputs[1].data)
+                this.start();
+            else
+                this.stop();
+        }
+
+    }
+
+    start() {
+        this.enabled = true;
+        this.setOutputData(0, false, true)
+        this.setOutputData(1, true);
+        this.setOutputData(2, 0);
+        this.startTime = Date.now();
+        this.executeLastTime = 0;
+    }
+
+    stop() {
+        this.enabled = false;
+
+        if (this.settings["elapsed-true-at-stop"].value)
+            this.setOutputData(0, true, true)
+
+        this.setOutputData(1, false, true);
+
+        if (this.settings["progress-100-at-stop"].value)
+            this.setOutputData(2, 100, true);
+
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let interval = this.getInputData(0);
+        if (interval == null)
+            interval = this.settings["interval"].value;
+
+        let elapsed = Date.now() - this.startTime;
+
+        let progress = Utils.remap(this.startTime + elapsed, this.startTime, this.startTime + interval, 0, 100);
+        if (progress > 100)
+            progress = 100;
+        this.setOutputData(2, progress, true);
+
+        if (elapsed >= interval) {
+            this.setOutputData(0, true);
+            this.stop();
+        }
+
+    }
+}
+Container.registerNodeType("time/interval-timer", TimeIntervalTimerNode);
