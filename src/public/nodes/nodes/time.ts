@@ -525,3 +525,109 @@ export class TimeIteratorNode extends Node {
     }
 }
 Container.registerNodeType("time/iterator", TimeIteratorNode);
+
+
+
+
+export class TimeSmoothByTimeNode extends Node {
+    startTime: number;
+    enabled = false;
+    from: number;
+    to: number;
+
+    constructor() {
+        super();
+        this.title = "Smooth by Time";
+        this.descriprion = "This node makes a smooth transition of values. <br/>" +
+            "It avoids abrupt changes of the value on the output. <br/><br/>" +
+
+            "The input named \"Interval\" specifies the time " +
+            "for which the output should change completely. <br/><br/>" +
+
+            "For example, you set the interval to 1000 MS. <br/>" +
+            "Send \"10\" to the input. The node gradually changes the output value, " +
+            "and after 1000 MS it will be equal to \"10\". <br/>" +
+            "Then you send \"20\", and after 1000 MS a value " +
+            "of the output will be 20, but between 10 and 20 will " +
+            "be 11,12,13,14,15,16,17,18,19. <br/><br/>" +
+
+            "In the settings of the node you can increase the refresh rate " +
+            "to make the transition more smoother. " +
+            "Or, reduce the refresh rate to reduce CPU load.";
+
+        this.addInput("value", "string");
+        this.addInput("[interval]", "number");
+
+        this.addOutput("value", "string");
+        this.addOutput("enabled", "boolean");
+
+        this.setOutputData(1, false);
+
+        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
+        this.settings["start-value"] = { description: "Default value at start", type: "number", value: 0 };
+        this.settings["stop-on-disc"] = { description: "Stop when input value is null (disconnected)", type: "boolean", value: false };
+        this.settings["null-on-disc"] = { description: "Send null when input value is null (disconnected)", type: "boolean", value: false };
+    }
+
+    onAdded() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onSettingsChanged() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onInputUpdated() {
+        if (this.inputs[0].updated) {
+            if (this.inputs[0].data != null) {
+                this.start();
+            }
+            else {
+                if (this.settings["stop-on-disc"].value)
+                    this.stop();
+
+                if (this.settings["null-on-disc"].value)
+                    this.setOutputData(0, null);
+            }
+        }
+    }
+
+
+    start() {
+        this.to = +this.inputs[0].data;
+        this.from = +this.outputs[0].data || +this.settings["start-value"].value || 0;
+        this.startTime = Date.now();
+        this.executeLastTime = 0;
+        this.setOutputData(1, true);
+        this.enabled = true;
+    }
+
+    stop() {
+        this.setOutputData(1, false);
+        this.enabled = false;
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let interval = this.getInputData(1) || 1000;
+
+        let elapsed = Date.now() - this.startTime;
+
+        if (elapsed >= interval) {
+            this.setOutputData(0, this.to);
+            this.stop();
+            return;
+        }
+
+        let res = Utils.remap(this.startTime + elapsed, this.startTime, this.startTime + interval, this.from, this.to);
+
+        this.setOutputData(0, res);
+    }
+}
+Container.registerNodeType("time/smooth-by-time", TimeSmoothByTimeNode);
+
+
