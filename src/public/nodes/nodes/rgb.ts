@@ -753,7 +753,6 @@ export class RgbSmoothRgbNode extends Node {
 
     onInputUpdated() {
         if (this.inputs[0].updated) {
-
             if (this.inputs[0].data != null) {
                 this.start();
             }
@@ -764,9 +763,6 @@ export class RgbSmoothRgbNode extends Node {
                 if (this.settings["null-on-disc"].value)
                     this.setOutputData(0, null);
             }
-        }
-        else {
-
         }
     }
 
@@ -793,7 +789,7 @@ export class RgbSmoothRgbNode extends Node {
         let interval = this.getInputData(1) || 1000;
 
         let elapsed = Date.now() - this.startTime;
-        console.log(elapsed)
+
         if (elapsed >= interval) {
             this.setOutputData(0, this.to);
             this.stop();
@@ -880,7 +876,6 @@ export class RgbSmoothRgbwNode extends Node {
 
     onInputUpdated() {
         if (this.inputs[0].updated) {
-
             if (this.inputs[0].data != null) {
                 this.start();
             }
@@ -891,9 +886,6 @@ export class RgbSmoothRgbwNode extends Node {
                 if (this.settings["null-on-disc"].value)
                     this.setOutputData(0, null);
             }
-        }
-        else {
-
         }
     }
 
@@ -920,7 +912,7 @@ export class RgbSmoothRgbwNode extends Node {
         let interval = this.getInputData(1) || 1000;
 
         let elapsed = Date.now() - this.startTime;
-        console.log(elapsed)
+
         if (elapsed >= interval) {
             this.setOutputData(0, this.to);
             this.stop();
