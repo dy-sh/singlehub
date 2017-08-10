@@ -631,3 +631,120 @@ export class TimeSmoothByTimeNode extends Node {
 Container.registerNodeType("time/smooth-by-time", TimeSmoothByTimeNode);
 
 
+
+
+
+
+
+export class TimeSmoothByRangeNode extends Node {
+    lastTime: number;
+    enabled = false;
+    to: number;
+
+    constructor() {
+        super();
+        this.title = "Smooth by Range";
+        this.descriprion = "This node makes a smooth transition of values. <br/>" +
+            "It avoids abrupt changes of the value on the output. <br/><br/>" +
+
+            "The input named \"Max/s\" sets the limit range at which " +
+            "the output can change in 1 second. <br/><br/>" +
+
+            "For example, you set the Max/s to \"5\". <br/>" +
+            "Send \"10\" to the input. The node gradually changes the output value to 10. <br/>" +
+            "Then you send \"20\", and after 2 seconds a value " +
+            "of the output will be 20, but between 10 and 20 will " +
+            "be 11,12,13,14,15,16,17,18,19. <br/><br/>" +
+
+            "In the settings of the node you can increase the refresh rate " +
+            "to make the transition more smoother. " +
+            "Or, reduce the refresh rate to reduce CPU load.";
+
+        this.addInput("value", "string");
+        this.addInput("max/s", "number");
+
+        this.addOutput("value", "string");
+        this.addOutput("enabled", "boolean");
+
+        this.setOutputData(1, false);
+
+        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
+        this.settings["start-value"] = { description: "Default value at start", type: "number", value: 0 };
+        this.settings["stop-on-disc"] = { description: "Stop when input value is null (disconnected)", type: "boolean", value: false };
+        this.settings["null-on-disc"] = { description: "Send null when input value is null (disconnected)", type: "boolean", value: false };
+    }
+
+    onAdded() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onSettingsChanged() {
+        this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
+        this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
+    }
+
+    onInputUpdated() {
+        if (this.inputs[0].updated) {
+            if (this.inputs[0].data != null) {
+                this.start();
+            }
+            else {
+                if (this.settings["stop-on-disc"].value)
+                    this.stop();
+
+                if (this.settings["null-on-disc"].value)
+                    this.setOutputData(0, null);
+            }
+        }
+    }
+
+
+    start() {
+        this.to = +this.inputs[0].data;
+        this.lastTime = Date.now();
+        this.executeLastTime = 0;
+        this.setOutputData(1, true);
+        this.enabled = true;
+    }
+
+    stop() {
+        this.setOutputData(1, false);
+        this.enabled = false;
+    }
+
+    onExecute() {
+        if (!this.enabled)
+            return;
+
+        let range = this.getInputData(1);
+        if (range == null) {
+            this.stop();
+            return;
+        }
+
+
+        let elapsed = Date.now() - this.lastTime;
+        this.lastTime = Date.now();
+        let val = this.outputs[0].data || 0;
+
+        if (this.to >= val) {
+            val += Utils.remap(elapsed, 0, 1000, 0, range);
+
+            if (val >= this.to)
+                val = this.to;
+        }
+        else {
+            val -= Utils.remap(elapsed, 0, 1000, 0, range);
+
+            if (val <= this.to)
+                val = this.to;
+        }
+
+        this.setOutputData(0, val);
+
+        if (val == this.to)
+            this.stop();
+    }
+}
+Container.registerNodeType("time/smooth-by-range", TimeSmoothByRangeNode);
