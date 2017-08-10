@@ -2,6 +2,7 @@
 SingleHub v0.9
 
 Node.js port of MyNodes.NET<br>
+To be aware of all the changes, look at the [changelog](https://github.com/derwish-pro/singlehub/blob/master/CHANGELOG.md).
 
 
 **How to install:**
@@ -9,7 +10,7 @@ Node.js port of MyNodes.NET<br>
 
 **Install requirements:**
 
-- install node v7: https://nodejs.org/en/download/
+- install node v8: [https://nodejs.org/en/download/](https://nodejs.org/en/download/)
 - install bower: sudo npm install -g bower
 
 **Install SingleHub:**
@@ -23,4 +24,10 @@ Node.js port of MyNodes.NET<br>
 -------------------
 
 - npm start
-- open in browser: http://localhost:1312
+- open in browser: [http://localhost:1312](http://localhost:1312)
+
+
+**How to develop:**
+-------------------
+
+- npm run watch
