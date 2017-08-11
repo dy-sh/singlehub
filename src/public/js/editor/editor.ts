@@ -4,11 +4,11 @@
  */
 
 
-import {Node} from "../../nodes/node"
-import {Container, Side} from "../../nodes/container"
-import {Renderer} from "./renderer"
-import {EditorClientSocket} from "./editor-client-socket";
-import {themes, RendererTheme} from "./renderer-themes"
+import { Node } from "../../nodes/node"
+import { Container, Side } from "../../nodes/container"
+import { Renderer } from "./renderer"
+import { EditorClientSocket } from "./editor-client-socket";
+import { themes, RendererTheme } from "./renderer-themes"
 import Utils from "../../nodes/utils";
 
 import "../../nodes/nodes/index";
@@ -27,6 +27,7 @@ export class Editor {
 
 
     constructor() {
+
         (<any>window).editor = this;
 
         //fill container
@@ -70,9 +71,9 @@ export class Editor {
         if (parent)
             parent.appendChild(root);
 
+
         renderer.resize();
         //renderer.draw(true,true);
-
         this.addFullscreenButton();
         this.addPlayButton();
         this.addStepButton();
@@ -178,7 +179,7 @@ export class Editor {
         uploadFile.replaceWith(uploadFile = uploadFile.clone(true));
 
         (<any>$('#import-panel')).modal({
-            dimmerSettings: {opacity: 0.3}
+            dimmerSettings: { opacity: 0.3 }
         }).modal('setting', 'transition', 'fade up').modal('show');
 
         document.forms['uploadForm'].elements['uploadFile'].onchange = function (evt) {
@@ -243,7 +244,7 @@ export class Editor {
 
 
         (<any>$('#modal-panel')).modal({
-            dimmerSettings: {opacity: 0.3},
+            dimmerSettings: { opacity: 0.3 },
             onHidden: function () {
                 $('#modal-panel-submit').hide();
                 $('#modal-panel-message').hide();
@@ -283,7 +284,7 @@ export class Editor {
     }
 
     importContainerFromURL(position: [number, number]): void {
-        let that=this;
+        let that = this;
         $('#modal-panel-submit').show();
 
         $('#modal-panel-title').html("Import Container");
@@ -294,7 +295,7 @@ export class Editor {
 
 
         (<any>$('#modal-panel')).modal({
-            dimmerSettings: {opacity: 0.3},
+            dimmerSettings: { opacity: 0.3 },
             onHidden: function () {
                 $('#modal-panel-submit').hide();
                 $('#modal-panel-message').hide();
@@ -370,7 +371,7 @@ export class Editor {
 
 
         (<any>$('#modal-panel')).modal({
-            dimmerSettings: {opacity: 0.3},
+            dimmerSettings: { opacity: 0.3 },
             onHidden: function () {
                 $('#modal-panel-message').hide();
             }
@@ -405,7 +406,7 @@ export class Editor {
 
 
         (<any>$('#modal-panel')).modal({
-            dimmerSettings: {opacity: 0.3},
+            dimmerSettings: { opacity: 0.3 },
             onHidden: function () {
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
@@ -425,7 +426,7 @@ export class Editor {
         );
 
         (<any>$('#modal-panel')).modal({
-            dimmerSettings: {opacity: 0.3},
+            dimmerSettings: { opacity: 0.3 },
             onHidden: function () {
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
@@ -444,16 +445,16 @@ export class Editor {
         for (let s in node.settings) {
 
             if (!node.settings[s].type || node.settings[s].type == "string") {
-                body.append(textSettingTemplate({settings: node.settings[s], key: s}));
+                body.append(textSettingTemplate({ settings: node.settings[s], key: s }));
                 continue;
             }
 
             switch (node.settings[s].type) {
                 case "number":
-                    body.append(numberSettingTemplate({settings: node.settings[s], key: s}));
+                    body.append(numberSettingTemplate({ settings: node.settings[s], key: s }));
                     break;
                 case "boolean":
-                    body.append(checkboxSettingTemplate({settings: node.settings[s], key: s}));
+                    body.append(checkboxSettingTemplate({ settings: node.settings[s], key: s }));
                     if (node.settings[s].value)
                         $('#node-setting-' + s).prop('checked', true);
                     break;
@@ -463,7 +464,7 @@ export class Editor {
                     for (let el of settings.config.elements)
                         if (el.key == settings.value)
                             el.selected = true;
-                    body.append(dropdownSettingTemplate({settings: settings, key: s}));
+                    body.append(dropdownSettingTemplate({ settings: settings, key: s }));
                     (<any>$('.ui.dropdown')).dropdown();
                     break;
             }
@@ -472,7 +473,7 @@ export class Editor {
 
         //modal panel
         (<any>$('#node-settings-panel')).modal({
-            dimmerSettings: {opacity: 0.3},
+            dimmerSettings: { opacity: 0.3 },
             onApprove: function () {
 
                 //get settings from form
@@ -480,19 +481,19 @@ export class Editor {
                 for (let s in node.settings) {
 
                     if (!node.settings[s].type || node.settings[s].type == "string") {
-                        data.push({key: s, value: $('#node-setting-' + s).val()});
+                        data.push({ key: s, value: $('#node-setting-' + s).val() });
                         continue;
                     }
 
                     switch (node.settings[s].type) {
                         case "number":
-                            data.push({key: s, value: +$('#node-setting-' + s).val()});
+                            data.push({ key: s, value: +$('#node-setting-' + s).val() });
                             break;
                         case "boolean":
-                            data.push({key: s, value: $('#node-setting-' + s).prop('checked')});
+                            data.push({ key: s, value: $('#node-setting-' + s).prop('checked') });
                             break;
                         case "dropdown":
-                            data.push({key: s, value: $('#node-setting-' + s).val()});
+                            data.push({ key: s, value: $('#node-setting-' + s).val() });
                             break;
                     }
                 }

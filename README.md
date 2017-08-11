@@ -1,7 +1,8 @@
 
 SingleHub v0.9
 
-Node.js port of MyNodes.NET<br>
+Home automation controller with node-based visual programming (Node.js port of MyNodes.NET).
+
 To be aware of all the changes, look at the [changelog](https://github.com/derwish-pro/singlehub/blob/master/CHANGELOG.md).
 
 

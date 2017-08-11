@@ -6,11 +6,11 @@
  */
 
 
-import {Node, NodeOutput, IInputInfo, IOutputInfo} from "../../nodes/node"
-import {Container} from "../../nodes/container"
-import {editor, Editor} from "./editor";
+import { Node, NodeOutput, IInputInfo, IOutputInfo } from "../../nodes/node"
+import { Container } from "../../nodes/container"
+import { editor, Editor } from "./editor";
 import Utils from "../../nodes/utils";
-import {RendererTheme} from "./renderer-themes";
+import { RendererTheme } from "./renderer-themes";
 
 
 interface IgetMenuOptions {
@@ -37,7 +37,7 @@ export class Renderer {
     fps: number;
     scale: number;
     offset: [number, number];
-    selected_nodes: {[id: number]: Node};
+    selected_nodes: { [id: number]: Node };
     node_dragged: Node;
     node_over: Node;
     node_capturing_input: Node;
@@ -72,7 +72,7 @@ export class Renderer {
     _containers_stack: Array<Container>;
     canvas: HTMLCanvasElement;
     bgcanvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D |null;
+    ctx: CanvasRenderingContext2D | null;
     _mousemove_callback: EventListenerOrEventListenerObject;
     _mouseup_callback: EventListenerOrEventListenerObject;
     _events_binded: boolean;
@@ -1377,7 +1377,7 @@ export class Renderer {
      */
     convertCanvasToOffset(pos: [number, number]): [number, number] {
         return [(pos[0] + this.offset[0]) * this.scale,
-            (pos[1] + this.offset[1]) * this.scale];
+        (pos[1] + this.offset[1]) * this.scale];
     }
 
     /**
@@ -2314,12 +2314,12 @@ export class Renderer {
         if (this.getMenuOptions)
             options = this.getMenuOptions();
         else {
-            options.push({content: "Add", is_menu: true, callback: this.onMenuAdd});
+            options.push({ content: "Add", is_menu: true, callback: this.onMenuAdd });
             options.push(null);
 
             //{content:"Collapse All", callback: NodeEditorCanvas.onMenuCollapseAll }
 
-            options.push({content: "Import", is_menu: true, callback: this.onMenuImport});
+            options.push({ content: "Import", is_menu: true, callback: this.onMenuImport });
             options.push(null);
 
             options.push({
@@ -2393,7 +2393,7 @@ export class Renderer {
         }
 
         if (node.clonable !== false)
-            options.push({content: "Clone", callback: this.onMenuNodeClone});
+            options.push({ content: "Clone", callback: this.onMenuNodeClone });
 
 
         options.push({
@@ -2402,15 +2402,15 @@ export class Renderer {
             }
         });
 
-        options.push({content: "Collapse", callback: this.onMenuNodeCollapse});
+        options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
 
         // if (Object.keys(this.selected_nodes).length>1) {
         if (node.removable !== false)
-            options.push({content: "Move to container", callback: this.onMenuNodeMoveToContainer});
+            options.push({ content: "Move to container", callback: this.onMenuNodeMoveToContainer });
         // }
 
         if (node.removable !== false)
-            options.push({content: "Remove", callback: this.onMenuNodeRemove});
+            options.push({ content: "Remove", callback: this.onMenuNodeRemove });
 
 
         if (node['onGetInputs']) {
@@ -2438,10 +2438,10 @@ export class Renderer {
         let win = this.getCanvasWindow();
 
         let menu_info = null;
-        let options = {event: event, callback: inner_option_clicked};
+        let options = { event: event, callback: inner_option_clicked };
 
         //check if mouse is in input
-        let slot: IInputInfo|IOutputInfo = null;
+        let slot: IInputInfo | IOutputInfo = null;
         if (node)
             slot = this.getSlotInPosition(node, event.canvasX, event.canvasY);
 
@@ -2509,9 +2509,9 @@ export class Renderer {
         let entries = {};
         for (let i in values)
             if (values[i])
-                entries[i] = {value: values[i], content: values[i], is_menu: true};
+                entries[i] = { value: values[i], content: values[i], is_menu: true };
 
-        let menu = canvas.createContextualMenu(entries, {event: e, callback: inner_clicked, from: prev_menu}, window);
+        let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
 
         function inner_clicked(v, e) {
             let category = v.value;
@@ -2528,10 +2528,10 @@ export class Renderer {
                         continue;
                 }
 
-                values.push({content: node_types[i].node_name, value: node_types[i].type});
+                values.push({ content: node_types[i].node_name, value: node_types[i].type });
             }
 
-            canvas.createContextualMenu(values, {event: e, callback: inner_create, from: menu}, window);
+            canvas.createContextualMenu(values, { event: e, callback: inner_create, from: menu }, window);
             return false;
         }
 
@@ -2561,11 +2561,11 @@ export class Renderer {
 
         let entries = {};
 
-        entries[0] = {value: "Container from file", content: "Container from file", is_menu: false};
-        entries[1] = {value: "Container from script", content: "Container from script", is_menu: false};
-        entries[2] = {value: "Container from URL", content: "Container from URL", is_menu: false};
+        entries[0] = { value: "Container from file", content: "Container from file", is_menu: false };
+        entries[1] = { value: "Container from script", content: "Container from script", is_menu: false };
+        entries[2] = { value: "Container from URL", content: "Container from URL", is_menu: false };
 
-        let menu = canvas.createContextualMenu(entries, {event: e, callback: inner_clicked, from: prev_menu}, window);
+        let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
 
         function inner_clicked(v, e) {
             if (v.value == "Container from file") {
@@ -2631,9 +2631,9 @@ export class Renderer {
                 let label = entry[0];
                 if (entry[2] && entry[2].label)
                     label = entry[2].label;
-                entries.push({content: label, value: entry});
+                entries.push({ content: label, value: entry });
             }
-            let menu = this.createContextualMenu(entries, {event: e, callback: inner_clicked, from: prev_menu});
+            let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
         }
 
         function inner_clicked(v) {
@@ -2666,10 +2666,10 @@ export class Renderer {
                 let label = entry[0];
                 if (entry[2] && entry[2].label)
                     label = entry[2].label;
-                entries.push({content: label, value: entry});
+                entries.push({ content: label, value: entry });
             }
             if (entries.length) {
-                let menu = this.createContextualMenu(entries, {event: e, callback: inner_clicked, from: prev_menu});
+                let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
             }
         }
 
@@ -2683,8 +2683,8 @@ export class Renderer {
             {
                 let entries = [];
                 for (let i in value)
-                    entries.push({content: i, value: value[i]});
-                this.createContextualMenu(entries, {event: e, callback: inner_clicked, from: prev_menu});
+                    entries.push({ content: i, value: value[i] });
+                this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
                 return false;
             }
             else
@@ -2721,7 +2721,7 @@ export class Renderer {
             };
             values.push(value);
         }
-        this.createContextualMenu(values, {event: e, callback: inner_clicked, from: prev_menu});
+        this.createContextualMenu(values, { event: e, callback: inner_clicked, from: prev_menu });
 
         function inner_clicked(v) {
             if (!node) return;
@@ -2743,7 +2743,7 @@ export class Renderer {
      * @returns {boolean}
      */
     onMenuNodeShapes(node: Node, e: any): boolean {
-        this.createContextualMenu(["box", "round"], {event: e, callback: inner_clicked});
+        this.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
 
         function inner_clicked(v) {
             if (!node) return;
@@ -3068,14 +3068,14 @@ export class Renderer {
      * @param y
      * @returns {IInputInfo|IOutputInfo} if found the object contains { input|output: slot object, slot: number, link_pos: [x,y] }
      */
-    getSlotInPosition(node: Node, x: number, y: number): IInputInfo|IOutputInfo {
+    getSlotInPosition(node: Node, x: number, y: number): IInputInfo | IOutputInfo {
         //search for inputs
         if (node.inputs)
             for (let i in node.inputs) {
                 let input = node.inputs[i];
                 let link_pos = this.getConnectionPos(node, true, +i);
                 if (Utils.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-                    return {input: input, slot: +i, link_pos: link_pos, locked: input.locked};
+                    return { input: input, slot: +i, link_pos: link_pos, locked: input.locked };
             }
 
         if (node.outputs)
@@ -3083,7 +3083,7 @@ export class Renderer {
                 let output = node.outputs[o];
                 let link_pos = this.getConnectionPos(node, false, +o);
                 if (Utils.isInsideRectangle(x, y, link_pos[0] - 10, link_pos[1] - 5, 20, 10))
-                    return {output: output, slot: +o, link_pos: link_pos, locked: output.locked};
+                    return { output: output, slot: +o, link_pos: link_pos, locked: output.locked };
             }
 
         return null;
@@ -3116,7 +3116,7 @@ export class Renderer {
 
     localToScreen(node, x, y, canvas): [number, number] {
         return [(x + node.pos[0]) * canvas.scale + canvas.offset[0],
-            (y + node.pos[1]) * canvas.scale + canvas.offset[1]];
+        (y + node.pos[1]) * canvas.scale + canvas.offset[1]];
     }
 
 

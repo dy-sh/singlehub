@@ -16,7 +16,7 @@ html
         link(href='/libs/animate.css/animate.min.css', rel='stylesheet')
         link(href='/libs/semantic/dist/semantic.min.css', rel='stylesheet')
         link(href='/css/node-editor.css',rel='stylesheet')
-        link(href="/css/editor-theme#{theme}.css",rel='stylesheet' )
+        link(href="/css/editor-theme#{theme}.css",rel='stylesheet')
 
     body
         // Header Menu
@@ -53,7 +53,7 @@ html
                     .fields
                         .field
                             | File:
-                            input#uploadFile(type='file', name='uploadFile')
+                            input#uploadFile(name='uploadFile', type='file')
             #import-panel-message.content
             .actions
                 .ui.cancel.button Cancel
@@ -122,6 +122,6 @@ script(src='/libs/handlebars/handlebars.min.js')
 script(src='/libs/semantic/dist/semantic.min.js')
 script(src='/libs/socket.io-client/dist/socket.io.js')
 script(src='/js/libs/logplease.min.js')
-script(src='/libs/requirejs/require.js' data-main="/js/editor/editor")
+script(data-main="/js/editor/editor" src='/libs/requirejs/require.js')
 //script(src='/js/node-editor/node-editor-theme#{theme}.js')
 
