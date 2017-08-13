@@ -70,10 +70,14 @@ SingleHub v0.9
 - **Time**:
   - **Fade**. More node settings.
 
-    
+- **Connection**:
+  - **Local Transmitter/Receiver**. Now you can set the number of inputs/outputs.
+  - **Remote Transmitter/Receiver**. Now you can set the number of inputs/outputs.
   
+- **Opearion**:
+  - **Flip-Flop**. Reset on disconnect settings.
   
-**Other changes:**
+**For developers:**
 - Very comfortable color output debugging information to the console. 
   You can filter messages by importance: debug/info/warnings/errors.
   This also applies to the client part (in the debug panel of the browser).

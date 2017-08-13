@@ -699,7 +699,7 @@ export class Container extends Emitter {
      * @param type the name of the node type
      * @returns a list with all the nodes of this type
      */
-    getNodesByType(type: string): Array<Node> {
+    getNodesByType(type: string, includeSubcontainers = false): Array<Node> {
         type = type.toLowerCase();
         let r = [];
 
@@ -707,6 +707,16 @@ export class Container extends Emitter {
             let node = this._nodes[id];
             if (node.type.toLowerCase() == type)
                 r.push(node);
+        }
+
+        if (includeSubcontainers) {
+            for (let id in this._nodes) {
+                let node = this._nodes[id];
+                if (node.type == "main/container") {
+                    let nodes = (<ContainerNode>node).sub_container.getNodesByType(type, true);
+                    nodes.forEach(n => r.push(n));
+                }
+            }
         }
 
         return r;

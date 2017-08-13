@@ -206,6 +206,81 @@ class CrossfadeNode extends Node {
 Container.registerNodeType("operation/crossfade", CrossfadeNode);
 
 
+
+class OperationTriggerNode extends Node {
+
+
+    constructor() {
+        super();
+
+        this.title = "Trigger";
+        this.descriprion = "If the input \"Set\" comes \"true\", the node sends \"true\" to the output. <br>" +
+            "If the input \"Reset\" comes \"true\", the node sends \"false\" to the output.";
+
+        this.addInput("set", "boolean");
+        this.addInput("reset", "boolean");
+        this.addOutput("value", "boolean");
+    }
+
+    onInputUpdated() {
+        if (this.inputs[0].updated && this.inputs[0].data == true)
+            this.setOutputData(0, true);
+
+        if (this.inputs[1].updated && this.inputs[1].data == true)
+            this.setOutputData(0, false);
+    }
+}
+Container.registerNodeType("operation/trigger", OperationTriggerNode);
+
+
+
+
+class OperationFlipflopNode extends Node {
+    flop = false;
+    state = false;
+    last_val;
+
+    constructor() {
+        super();
+
+        this.title = "Flip-Flop";
+        this.descriprion = "This node divides the frequency by 2. <br/>" +
+            "For example, if you send to the input of the following sequence: " +
+            "1010 1010, the output is 1100 1100.";
+
+        this.addInput("value", "boolean");
+        this.addOutput("value", "boolean");
+
+        this.settings["reset-on-disc"] = { description: "Reset on disconnected or input is null", type: "boolean", value: false };
+    }
+
+    onInputUpdated() {
+        let val = this.inputs[0].data;
+        if (this.last_val == val)
+            return;
+
+        if (val == null) {
+            if (this.settings["reset-on-disc"].value) {
+                this.last_val = val;
+                this.setOutputData(0, null, true);
+                this.flop = false;
+                this.state = false;
+            }
+        } else {
+            this.last_val = val;
+            this.flop = !this.flop;
+            if (this.flop)
+                this.state = !this.state;
+
+            this.setOutputData(0, this.state, true);
+        }
+    }
+}
+Container.registerNodeType("operation/flip-flop", OperationFlipflopNode);
+
+
+
+
 class FreqDividerNode extends Node {
     counter = -1;
 

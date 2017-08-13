@@ -6,9 +6,9 @@
 import * as express from 'express';
 let router = express.Router();
 
-import {Container} from "../public/nodes/container"
-import {Link, LinkInfo, SerializedNode} from "../public/nodes/node";
-import {app} from "../app";
+import { Container } from "../public/nodes/container"
+import { Link, LinkInfo, SerializedNode } from "../public/nodes/node";
+import { app } from "../app";
 
 
 setInterval(updateActiveNodes, 500);
@@ -66,9 +66,9 @@ router.get('/c/:cid/export', function (req, res) {
     let s = container.container_node.serialize();
     //remove links
     if (s.inputs)
-    for (let i in s.inputs)
-        if (s.inputs[i].link)
-            delete s.inputs[i].link;
+        for (let i in s.inputs)
+            if (s.inputs[i].link)
+                delete s.inputs[i].link;
     if (s.outputs)
         for (let i in s.outputs)
             if (s.outputs[i].links)
@@ -96,7 +96,7 @@ router.get('/c/:cid/file', function (req, res) {
     let text = JSON.stringify(s);
     let cont_name = container.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     let filename = 'shub_' + cont_name + ".json";
-    res.set({'Content-Disposition': 'attachment; filename="' + filename + '"'});
+    res.set({ 'Content-Disposition': 'attachment; filename="' + filename + '"' });
     res.send(text);
 
 });
@@ -130,7 +130,7 @@ router.post('/c/:cid/n/', function (req, res) {
     let container = Container.containers[req.params.cid];
     if (!container) return res.status(404).send(`Can't create node. Container id [${req.params.cid}] not found.`);
 
-    let node = container.createNode(req.body.type, {pos: req.body.position});
+    let node = container.createNode(req.body.type, { pos: req.body.position });
 
     if (!node) return res.status(404).send(`Can't create node. Node type [${req.body.type}] not found.`);
 
@@ -201,7 +201,7 @@ router.put('/c/:cid/n/:id/position', function (req, res) {
     node.pos = req.body.position;
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {$set: {pos: node.pos}});
+        app.db.updateNode(node.id, node.container.id, { $set: { pos: node.pos } });
 
     app.server.editorSocket.io.emit('node-update-position', {
         id: req.params.id,
@@ -224,7 +224,7 @@ router.put('/c/:cid/n/:id/size', function (req, res) {
     node.size = req.body.size;
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {$set: {size: node.size}});
+        app.db.updateNode(node.id, node.container.id, { $set: { size: node.size } });
 
     app.server.editorSocket.io.emit('node-update-size', {
         id: req.params.id,
@@ -279,7 +279,7 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
         node['onSettingsChanged']();
 
     if (app.db)
-        app.db.updateNode(node.id, node.container.id, {$set: {settings: node.settings}});
+        app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
 
     app.server.editorSocket.io.emit('node-settings', {
         id: req.params.id,
@@ -465,6 +465,28 @@ router.post('/c/:cid/n/:id*', function (req, res) {
         node['onEditorApiPostRequest'](req, res);
     else
         return res.status(404).send(`Can't send request to node. Node id [${req.params.cid}/${req.params.id}] does not accept requests.`);
+});
+
+router.post('/c/:cid/n-type', function (req, res) {
+    let cont = Container.containers[req.params.cid];
+    if (!cont) return res.status(404).send(`Can't receive request to node. Container id [${req.params.cid}] not found.`);
+
+    let type = req.body.type;
+    if (!type) return res.status(404).send(`Can't receive request to node. Node type is not defined.`);
+
+    let includeSubcontainers = req.body.subcontainers == true;
+    let nodes = cont.getNodesByType(type, includeSubcontainers);
+    if (nodes.length == 0) return res.status(404).send(`Can't receive request to node. Node type [${type}] not found in container [${req.params.cid}].`);
+
+    nodes.forEach(node => {
+        if (node['onEditorApiPostRequest'])
+            node['onEditorApiPostRequest'](req, res);
+        else
+            return res.status(404).send(`Can't receive request to node. Node type [${type}] does not accept requests.`);
+    });
+
+    if (!res.headersSent)
+        res.status(400).send(`No node has processed the request.`);
 });
 
 module.exports = router;
