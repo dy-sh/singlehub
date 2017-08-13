@@ -213,6 +213,67 @@ Container.registerNodeType("connection/router-multiple-1", RouterMultipleToOneNo
 
 
 
+class ConnectionLocalTransmitterNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Local Transmitter";
+        this.descriprion = "This node works in conjunction with Local Receiver, " +
+            "and provides a connection of nodes without a graphical wires. <br/>" +
+            "You can use this nodes to connect nodes that are far away " +
+            "from each other (for example on different panels) and you don't " +
+            "want to drag the \"wire\" so far. <br/>" +
+            "Set the same channel on transmitter and receiver to link them. " +
+            "If you do not specify a channel, it will use channel 0 by default. <br/>" +
+            "You can also use this node for broadcast. <br/>" +
+            "For example, you want a lot nodes on different panels " +
+            "heard the message from one node. " +
+            "Use a lot of receivers configured on the same channel. <br/>" +
+            "Or, you want to one node received messages " +
+            "on input from different nodes. " +
+            "Use many transmitters on the same channel. ";
+
+        this.addInput();
+
+        this.settings["channel"] = { description: "Channel", value: 1, type: "number" };
+        this.settings["inputs"] = { description: "Inputs count", value: 1, type: "number" };
+    }
+
+    onInputUpdated() {
+        for (let i in this.inputs) {
+            if (this.inputs[i].updated) {
+                let val = this.inputs[i].data;
+                let receivers = Container.containers[0].getNodesByType("connection/local-receiver");
+                receivers.forEach(receiver => {
+                    if (receiver.settings["channel"].value == this.settings["channel"].value)
+                        receiver.setOutputData(+i, val);
+                });
+            }
+        }
+    }
+
+    onSettingsChanged() {
+        let inputs = this.settings["inputs"].value;
+
+        inputs = Utils.clamp(inputs, 1, 1000);
+
+        this.changeInputsCount(inputs);
+        // for (let i = 0; i <= inputs; i++)
+        //     this.inputs[i].name = "input " + i + 1;
+
+
+        //update db
+        if (this.container.db)
+            this.container.db.updateNode(this.id, this.container.id, {
+                $set: { inputs: this.inputs }
+            });
+    }
+}
+Container.registerNodeType("connection/local-transmitter", ConnectionLocalTransmitterNode);
+
+
+
+
 
 class ConnectionLocalReceiverNode extends Node {
     constructor() {
