@@ -4,9 +4,9 @@
  */
 
 
-import {Node} from "../node";
+import { Node } from "../node";
 import Utils from "../utils";
-import {Container} from "../container";
+import { Container } from "../container";
 
 
 let hubDesc = "This node sends a value from any of its inputs to all its outputs. <br/>" +
@@ -46,8 +46,8 @@ class HubNode extends Node {
         this.addInput();
         this.addOutput();
 
-        this.settings["inputs"] = {description: "Inputs count", value: 1, type: "number"};
-        this.settings["outputs"] = {description: "Outputs count", value: 1, type: "number"};
+        this.settings["inputs"] = { description: "Inputs count", value: 1, type: "number" };
+        this.settings["outputs"] = { description: "Outputs count", value: 1, type: "number" };
     }
 
     onInputUpdated() {
@@ -97,7 +97,7 @@ class GateNode extends Node {
         this.addInput("key");
         this.addOutput("value");
 
-        this.settings["send-null"] = {description: "Send null when closed", value: false, type: "boolean"};
+        this.settings["send-null"] = { description: "Send null when closed", value: false, type: "boolean" };
     }
 
     onInputUpdated() {
@@ -127,7 +127,7 @@ class RouterOneToMultipleNode extends Node {
         this.addInput("value");
         this.addOutput();
 
-        this.settings["outputs"] = {description: "Outputs count", value: 1, type: "number"};
+        this.settings["outputs"] = { description: "Outputs count", value: 1, type: "number" };
     }
 
     onInputUpdated() {
@@ -152,7 +152,7 @@ class RouterOneToMultipleNode extends Node {
         //update db
         if (this.container.db)
             this.container.db.updateNode(this.id, this.container.id, {
-                $set: {outputs: this.outputs}
+                $set: { outputs: this.outputs }
             });
     }
 }
@@ -175,7 +175,7 @@ class RouterMultipleToOneNode extends Node {
         this.addInput("input 1");
         this.addOutput("value");
 
-        this.settings["inputs"] = {description: "Inputs count", value: 1, type: "number"};
+        this.settings["inputs"] = { description: "Inputs count", value: 1, type: "number" };
     }
 
     onInputUpdated() {
@@ -203,8 +203,48 @@ class RouterMultipleToOneNode extends Node {
         //update db
         if (this.container.db)
             this.container.db.updateNode(this.id, this.container.id, {
-                $set: {inputs: this.inputs}
+                $set: { inputs: this.inputs }
             });
     }
 }
 Container.registerNodeType("connection/router-multiple-1", RouterMultipleToOneNode);
+
+
+
+
+
+
+class ConnectionLocalReceiverNode extends Node {
+    constructor() {
+        super();
+
+        this.title = "Local Receiver";
+        this.descriprion = "This node works in conjunction with Local Trasmitter, " +
+            "and provides a connection of nodes without a graphical wires. <br/>" +
+            "Read the description to Local Trasmitter to understand how it works.";
+
+        this.addOutput();
+
+        this.settings["channel"] = { description: "Channel", value: 1, type: "number" };
+        this.settings["outputs"] = { description: "Outputs count", value: 1, type: "number" };
+    }
+
+
+
+    onSettingsChanged() {
+        let outputs = this.settings["outputs"].value;
+
+        outputs = Utils.clamp(outputs, 1, 1000);
+
+        this.changeOutputsCount(outputs);
+
+        //update db
+        if (this.container.db)
+            this.container.db.updateNode(this.id, this.container.id, {
+                $set: { outputs: this.outputs }
+            });
+    }
+}
+Container.registerNodeType("connection/local-receiver", ConnectionLocalReceiverNode);
+
+
