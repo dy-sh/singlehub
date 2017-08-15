@@ -141,7 +141,7 @@ export class Container extends Emitter {
 
         this.nodes_types[type] = node_class;
 
-        log.debug("Node registered: " + type);
+        // log.debug("Node registered: " + type);
     };
 
 

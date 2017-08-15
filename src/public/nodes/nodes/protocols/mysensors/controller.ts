@@ -3,12 +3,12 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Node} from "../../../node";
+import { Node } from "../../../node";
 import Utils from "../../../utils";
-import {Container, Side} from "../../../container";
+import { Container, Side } from "../../../container";
 import * as mys from "./types"
-import {ContainerNode} from "../../main";
-import {debug} from "util";
+import { ContainerNode } from "../../main";
+import { debug } from "util";
 
 
 let split;
@@ -44,7 +44,7 @@ interface I_MYS_Sensor {
 
 interface I_MYS_Node {
     id: number,
-    sensors: {[id: number]: I_MYS_Sensor},
+    sensors: { [id: number]: I_MYS_Sensor },
     registered: number,
     lastSeen: number,
     sketchName?: string,
@@ -58,7 +58,7 @@ interface I_MYS_Node {
 
 
 export class MySensorsController extends ContainerNode {
-    nodes: {[id: number]: I_MYS_Node} = {};
+    nodes: { [id: number]: I_MYS_Node } = {};
     isConnected = false;
     port;
     version;
@@ -71,10 +71,10 @@ export class MySensorsController extends ContainerNode {
         this.addOutput("connected", "boolean");
 
 
-        this.settings["enable"] = {description: "Enable", value: false, type: "boolean"};
-        this.settings["port"] = {description: "Serial port name", value: "/dev/tty.SLAB_USBtoUART", type: "string"};
-        this.settings["baudRate"] = {description: "Baud rate", value: 115200, type: "number"};
-        this.settings["debug"] = {description: "Show debug messages in console", value: false, type: "boolean"};
+        this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
+        this.settings["port"] = { description: "Serial port name", value: "/dev/tty.SLAB_USBtoUART", type: "string" };
+        this.settings["baudRate"] = { description: "Baud rate", value: 115200, type: "number" };
+        this.settings["debug"] = { description: "Show debug messages in console", value: false, type: "boolean" };
         // this.settings["unknown_nodes"] = {description: "Register unknown nodes (otherwise will register only when presentation)", value: true, type: "boolean"};
 
     }
@@ -123,7 +123,7 @@ export class MySensorsController extends ContainerNode {
         let that = this;
 
         let SerialPort = require("serialport");
-        this.port = new SerialPort(portName, {baudRate: baudRate, autoOpen: false});
+        this.port = new SerialPort(portName, { baudRate: baudRate, autoOpen: false });
 
         this.port.on("open", function () {
             that.debugInfo("Port connected");
@@ -145,7 +145,15 @@ export class MySensorsController extends ContainerNode {
             that.setOutputData(0, that.isConnected);
         });
 
-        this.port.pipe(split()).on("data", that.readPortData.bind(this));
+        // this.port.pipe(split()).on("data", that.readPortData.bind(this));
+
+        // this.port.on('data', function (data) {
+        //     console.log('Data:', data);
+        // });
+
+        const Readline = SerialPort.parsers.Readline;
+        const parser = this.port.pipe(new Readline({ delimiter: '\n' }));
+        parser.on('data', this.readPortData.bind(this));
 
         this.debugInfo("Connecting to " + portName + " at " + baudRate + "...");
         this.port.open();
@@ -153,11 +161,15 @@ export class MySensorsController extends ContainerNode {
 
 
     readPortData(data: string) {
+
+
         let mess = data.split(";");
         if (mess.length < 5) {
             this.debugErr("Can`t parse message: " + data);
             return;
         }
+
+
 
         let message: I_MYS_Message = {
             nodeId: +mess[0],
@@ -173,41 +185,41 @@ export class MySensorsController extends ContainerNode {
             || this.settings["debug"].value)
             this.debug("<   " + data);
 
-        if (message.nodeId == GATEWAY_ID)
-            this.receiveGatewayMessage(message);
-        else
-            this.receive_MYS_Message(message);
+        try {
+            if (message.nodeId == GATEWAY_ID)
+                this.receiveGatewayMessage(message);
+            else
+                this.receive_MYS_Message(message);
+        } catch (e) {
+            console.log(e);
+        }
     };
 
 
     receiveGatewayMessage(message: I_MYS_Message) {
 
-        switch (message.messageType) {
-            case mys.messageType.C_INTERNAL:
-                switch (message.subType) {
+        if (message.messageType == mys.messageType.C_INTERNAL) {
+            if (message.subType == mys.internalDataType.I_GATEWAY_READY) {
+                this.isConnected = true;
+                this.setOutputData(0, this.isConnected);
+                this.debugInfo("Gateway connected");
 
-                    case mys.internalDataType.I_GATEWAY_READY:
-                        this.isConnected = true;
-                        this.setOutputData(0, this.isConnected);
-                        this.debugInfo("Gateway connected");
+                //send get gateway version
+                let message: I_MYS_Message = {
+                    nodeId: GATEWAY_ID,
+                    sensorId: BROADCAST_ID,
+                    messageType: mys.messageType.C_INTERNAL,
+                    subType: mys.internalDataType.I_VERSION
+                };
+                this.send_MYS_Message(message);
+            }
 
-                        //send get gateway version
-                        let message: I_MYS_Message = {
-                            nodeId: GATEWAY_ID,
-                            sensorId: BROADCAST_ID,
-                            messageType: mys.messageType.C_INTERNAL,
-                            subType: mys.internalDataType.I_VERSION
-                        };
-                        this.send_MYS_Message(message);
-
-                        break;
-
-                    case mys.internalDataType.I_VERSION:
-                        this.version = message.payload;
-                        this.debug("Gateway version: " + message.payload);
-                        break;
-                }
+            else if (message.subType == mys.internalDataType.I_VERSION) {
+                this.version = message.payload;
+                this.debug("Gateway version: " + message.payload);
+            }
         }
+
     };
 
 
@@ -287,7 +299,7 @@ export class MySensorsController extends ContainerNode {
             //db update
             if (this.container.db)
                 this.container.db.updateNode(node.shub_node_id, node.shub_node_cid, {
-                    $set: {mys_node: node}
+                    $set: { mys_node: node }
                 });
 
             // this.emit("sensorUpdated", sensor, "type");
@@ -342,7 +354,7 @@ export class MySensorsController extends ContainerNode {
                 }
                 break;
 
-            case ( mys.internalDataType.I_SKETCH_VERSION):
+            case (mys.internalDataType.I_SKETCH_VERSION):
                 let n2 = this.get_MYS_Node(message.nodeId);
                 if (!n2) n2 = this.register_MYS_Node(message.nodeId);
                 if (n2.sketchVersion !== message.payload) {
@@ -352,7 +364,7 @@ export class MySensorsController extends ContainerNode {
                 }
                 break;
 
-            case ( mys.internalDataType.I_BATTERY_LEVEL):
+            case (mys.internalDataType.I_BATTERY_LEVEL):
                 let n3 = this.get_MYS_Node(message.nodeId);
                 if (!n3) n3 = this.register_MYS_Node(message.nodeId);
                 n3.batteryLevel = +message.payload;
@@ -360,7 +372,7 @@ export class MySensorsController extends ContainerNode {
                 // this.emit("nodeUpdated", n3, "batteryLevel");
                 break;
 
-            case ( mys.internalDataType.I_CONFIG):
+            case (mys.internalDataType.I_CONFIG):
                 this.send_MYS_Message({
                     nodeId: message.nodeId,
                     sensorId: BROADCAST_ID,
@@ -370,7 +382,7 @@ export class MySensorsController extends ContainerNode {
                 });
                 break;
 
-            case ( mys.internalDataType.I_TIME):
+            case (mys.internalDataType.I_TIME):
                 this.send_MYS_Message({
                     nodeId: message.nodeId,
                     sensorId: message.sensorId,
@@ -433,7 +445,7 @@ export class MySensorsController extends ContainerNode {
         let shub_node = this.sub_container.createNode("protocols/mys-node", {
             mys_contr_node_id: this.id,
             mys_contr_node_cid: this.container.id,
-            properties: {mys_node_id: nodeId}
+            properties: { mys_node_id: nodeId }
         });
 
         node.shub_node_id = shub_node.id;
@@ -442,7 +454,7 @@ export class MySensorsController extends ContainerNode {
 
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                $set: {mys_node: node}
+                $set: { mys_node: node }
             });
 
         return node;
@@ -482,7 +494,7 @@ export class MySensorsController extends ContainerNode {
         let s_shub_node = shub_node.serialize(true);
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                $set: {mys_node: node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs}
+                $set: { mys_node: node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
             });
 
         return sensor;
