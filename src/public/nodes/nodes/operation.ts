@@ -223,10 +223,10 @@ class OperationTriggerNode extends Node {
     }
 
     onInputUpdated() {
-        if (this.inputs[0].updated && this.inputs[0].data == true)
+        if (this.inputs[0].data == true && this.inputs[1].data != true)
             this.setOutputData(0, true);
 
-        if (this.inputs[1].updated && this.inputs[1].data == true)
+        if (this.inputs[1].data == true)
             this.setOutputData(0, false);
     }
 }
