@@ -29,6 +29,8 @@ SingleHub v0.9
   - **MQTT client**. This node allows to connect to MQTT broker, subscribe to events and publish values.
   - **Xiaomi device**. This node allows to conntrol Xiaomi devices.
 
+- **Opearion**:
+  - **Trigger**. If the input "Set" comes "true", the node sends "true" to the output.  If the input "Reset" comes "true", the node sends "false" to the output. The "Set" input is blocked when "Reset" is true.
 
 - **Debug**:
   - **Watcher**. Displays the value of the input as input label.
