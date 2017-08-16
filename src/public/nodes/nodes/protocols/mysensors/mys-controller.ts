@@ -13,11 +13,12 @@ import { I_MYS_Node, I_MYS_Message, I_MYS_Sensor } from "./mys-types";
 import { MySensorsNode } from "./mys-node";
 
 
-let split;
+let split, app;
 //let _;
 if (typeof (window) === 'undefined') { //for backside only
     split = require("split");
     // _ = require("lodash");
+    app = require("../../../../../app.js");
 }
 
 
@@ -447,6 +448,14 @@ export class MySensorsControllerNode extends ContainerNode {
         //     this.container.db.updateNode(this.id, this.container.id, {
         //         $set: { nodes: this.nodes }
         //     });
+
+        //send message to client side
+        app.app.server.editorSocket.io.emit('node-create', {
+            id: shub_node.id,
+            cid: shub_node.container.id,
+            type: shub_node.type,
+            pos: shub_node.pos
+        });
 
         return node;
     };
