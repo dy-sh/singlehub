@@ -479,6 +479,9 @@ export class MySensorsControllerNode extends ContainerNode {
         if (i_id != o_id)
             throw "SingleHub node has different inputs and outputs slots count!";
 
+        //send to eitor side for add io
+        shub_node.sendMessageToEditorSide({ registerSensor: { sensorId: sensorId } });
+
         sensor = {
             nodeId: nodeId,
             sensorId: sensorId,
