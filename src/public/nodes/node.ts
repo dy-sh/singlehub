@@ -164,6 +164,12 @@ export class Node {
     //  * Invoked when node removed from container
     //  */
     // onRemoved
+
+    // /**
+    //  * Invoked when db readed and all nodes added to containers (after all nodes onAdded invoked)
+    //  */
+    // onDbReaded
+
     //
     //
     // onDrawBackground

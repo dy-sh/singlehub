@@ -60,6 +60,12 @@ export class MySensorsNode extends Node {
         this.title = "MYS node " + this.properties['mys_node_id'];
     }
 
+    onDbReaded() {
+        //add this MYS_Node to controller node
+        this.getControllerNode().nodes[this.mys_node.id] = this.mys_node;
+        this.debug(`Node [${this.mys_node.id}] added`);
+    }
+
     onRemoved() {
         let controller = this.getControllerNode();
         controller.remove_MYS_Node(this.mys_node.id, false);

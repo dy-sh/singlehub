@@ -169,6 +169,17 @@ export class App extends Emitter {
                         node.restoreLinks();
                 }
 
+                //call nodes events
+                for (let cid in Container.containers) {
+                    let container = Container.containers[cid];
+                    for (let id in container._nodes) {
+                        let node = container._nodes[id];
+                        if (node['onDbReaded'])
+                            node['onDbReaded']();
+                    }
+                }
+
+
                 let contCount = Object.keys(containers).length;
                 if (containers[0]) contCount--;
                 log.info("Imported " + contCount + " containers, " + nodesCount + " nodes from database");

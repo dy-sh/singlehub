@@ -189,6 +189,12 @@ export class MySensorsControllerNode extends ContainerNode {
             else if (message.subType == mys.internalDataType.I_VERSION) {
                 this.version = message.payload;
                 this.debug("Gateway version: " + message.payload);
+
+                //db update
+                if (this.container.db)
+                    this.container.db.updateNode(this.id, this.container.id, {
+                        $set: { version: this.version }
+                    });
             }
         }
 
@@ -396,6 +402,11 @@ export class MySensorsControllerNode extends ContainerNode {
         return this.nodes[nodeId].sensors[sensorId];
     };
 
+    // add_MYS_Node(node: I_MYS_Node) {
+    //     this.nodes[node.id] = node;
+    //     this.debug(`Node [${node.id}] added`);
+    // };
+
 
     register_MYS_Node(nodeId: number): I_MYS_Node {
         if (this.nodes[nodeId]) {
@@ -424,10 +435,18 @@ export class MySensorsControllerNode extends ContainerNode {
         node.shub_node_cid = shub_node.container.id;
         shub_node['mys_node'] = node;
 
+        //db update
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
                 $set: { mys_node: node, mys_contr_node_id: this.id, mys_contr_node_cid: this.container.id }
             });
+
+
+        // //db update
+        // if (this.container.db)
+        //     this.container.db.updateNode(this.id, this.container.id, {
+        //         $set: { nodes: this.nodes }
+        //     });
 
         return node;
     };
@@ -493,11 +512,14 @@ export class MySensorsControllerNode extends ContainerNode {
 
     remove_MYS_Sensor(nodeId: number, sensorId: number) {
         let node = this.get_MYS_Node(nodeId);
-        if (!node) node = this.register_MYS_Node(nodeId);
+        if (!node) {
+            this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Node does not exist");
+            return;
+        }
 
         let sensor = node.sensors[sensorId];
         if (sensor) {
-            this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Does not exist");
+            this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Sensor does not exist");
             return;
         }
 
@@ -536,6 +558,5 @@ export class MySensorsControllerNode extends ContainerNode {
 
         return <MySensorsNode>shub_cont._nodes[node.shub_node_id];
     }
-
 }
 Container.registerNodeType("protocols/mys-controller", MySensorsControllerNode);
