@@ -148,13 +148,14 @@ export class MySensorsController extends ContainerNode {
         });
 
         this.port.on("close", () => {
-            this.debugInfo("Port closed");
+
+            this.debugInfo(this.isConnected ? "Port closed. Gatewey disconnected." : "Port closed");
             this.isConnected = false;
             this.setOutputData(0, this.isConnected);
         });
 
         this.port.on("disconnect", (err) => {
-            this.debugErr("Port disconnected. " + err);
+            this.debugInfo(this.isConnected ? "Port disconnected. Gatewey disconnected." : "Port disconnected");
             this.isConnected = false;
             this.setOutputData(0, this.isConnected);
         });
