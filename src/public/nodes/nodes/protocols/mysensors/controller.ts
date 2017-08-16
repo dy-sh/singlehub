@@ -57,7 +57,7 @@ interface I_MYS_Node {
 }
 
 
-export class MySensorsController extends ContainerNode {
+export class MySensorsControllerNode extends ContainerNode {
     nodes: { [id: number]: I_MYS_Node } = {};
     isConnected = false;
     port;
@@ -148,7 +148,6 @@ export class MySensorsController extends ContainerNode {
         });
 
         this.port.on("close", () => {
-
             this.debugInfo(this.isConnected ? "Port closed. Gatewey disconnected." : "Port closed");
             this.isConnected = false;
             this.setOutputData(0, this.isConnected);
@@ -170,15 +169,11 @@ export class MySensorsController extends ContainerNode {
 
 
     readPortData(data: string) {
-
-
         let mess = data.split(";");
         if (mess.length < 5) {
             this.debugErr("Can`t parse message: " + data);
             return;
         }
-
-
 
         let message: I_MYS_Message = {
             nodeId: +mess[0],
@@ -206,7 +201,6 @@ export class MySensorsController extends ContainerNode {
 
 
     receiveGatewayMessage(message: I_MYS_Message) {
-
         if (message.messageType == mys.messageType.C_INTERNAL) {
             if (message.subType == mys.internalDataType.I_GATEWAY_READY) {
                 this.isConnected = true;
@@ -509,6 +503,26 @@ export class MySensorsController extends ContainerNode {
         return sensor;
     };
 
+
+    remove_MYS_Node(nodeId: number, remove_SHUB_Node = true) {
+        let node = this.nodes[nodeId];
+        if (!node) {
+            this.debugErr("Can't remove node [" + nodeId + "]. Does not exist");
+            return;
+        }
+
+        if (remove_SHUB_Node) {
+            let shub_node = this.get_SHub_Node(node);
+            this.sub_container.remove(shub_node);
+        }
+
+        delete this.nodes[nodeId];
+
+        this.debug(`Node [${nodeId}] removed`);
+    };
+
+
+
     getNew_MYS_NodeId(): number {
         for (let i = 1; i < 255; i++) {
             let node = this.get_MYS_Node(i);
@@ -529,7 +543,7 @@ export class MySensorsController extends ContainerNode {
     }
 
 }
-Container.registerNodeType("protocols/mys-controller", MySensorsController);
+Container.registerNodeType("protocols/mys-controller", MySensorsControllerNode);
 
 
 class MySensorsNode extends Node {
@@ -548,14 +562,9 @@ class MySensorsNode extends Node {
     onInputUpdated() {
         for (let i in this.inputs) {
             if (this.inputs[i].updated) {
-                let cont = Container.containers[this.mys_contr_node_cid];
-                if (!cont) {
-                    this.debugErr("Can't send message. Controller node not found");
-                    return;
-                }
-                let controller = <MySensorsController>cont._nodes[this.mys_contr_node_id];
+                let controller = this.getControllerNode();
                 if (!controller) {
-                    this.debugErr("Can't send message. Controller node not found");
+                    this.debugErr("Can't send message. Controller not found");
                     return;
                 }
 
@@ -578,8 +587,20 @@ class MySensorsNode extends Node {
         }
     }
 
+    getControllerNode(): MySensorsControllerNode {
+        let cont = Container.containers[this.mys_contr_node_cid];
+        if (cont) {
+            return <MySensorsControllerNode>cont._nodes[this.mys_contr_node_id];
+        }
+    }
+
     onAdded() {
         this.title = "MYS node " + this.properties['mys_node_id'];
+    }
+
+    onRemoved() {
+        let controller = this.getControllerNode();
+        controller.remove_MYS_Node(this.mys_node.id);
     }
 
     getSensorInSlot(slot: number): I_MYS_Sensor {
