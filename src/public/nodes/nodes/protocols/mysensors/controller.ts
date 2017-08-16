@@ -522,6 +522,32 @@ export class MySensorsControllerNode extends ContainerNode {
     };
 
 
+    remove_MYS_Sensor(nodeId: number, sensorId: number) {
+        let node = this.get_MYS_Node(nodeId);
+        if (!node) node = this.register_MYS_Node(nodeId);
+
+        let sensor = node.sensors[sensorId];
+        if (sensor) {
+            this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Does not exist");
+            return;
+        }
+
+        let shub_node = this.get_SHub_Node(node);
+
+        //remove input and output
+        shub_node.removeInput(sensor.shub_node_slot);
+        shub_node.removeOutput(sensor.shub_node_slot);
+
+        this.debug(`Node[${nodeId}] sensor[${sensorId}] removed`);
+
+        let s_shub_node = shub_node.serialize(true);
+        if (this.container.db)
+            this.container.db.updateNode(shub_node.id, shub_node.container.id, {
+                $set: { mys_node: node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
+            });
+    };
+
+
 
     getNew_MYS_NodeId(): number {
         for (let i = 1; i < 255; i++) {
