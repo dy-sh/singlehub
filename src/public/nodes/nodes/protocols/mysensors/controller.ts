@@ -101,15 +101,30 @@ export class MySensorsController extends ContainerNode {
 
     onSettingsChanged() {
         if (this.side == Side.server) {
-            if (this.port)
-                this.port.close();
+            this.disconnectFromGateway();
 
-
-            if (this.settings["enable"].value)
-                this.connectToSerialPort();
+            if (this.settings["enable"].value && this.inputs[0].data != false)
+                this.connetToGateway();
         }
     }
 
+    onInputUpdated() {
+        if (this.inputs[0].updated && this.settings["enable"].value) {
+            if (this.inputs[0].data != false)
+                this.connetToGateway();
+            else
+                this.disconnectFromGateway();
+        }
+    }
+
+    connetToGateway() {
+        this.connectToSerialPort();
+    }
+
+    disconnectFromGateway() {
+        if (this.port)
+            this.port.close();
+    }
 
     connectToSerialPort() {
         let portName = this.settings["port"].value;
