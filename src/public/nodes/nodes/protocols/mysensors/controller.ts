@@ -135,40 +135,33 @@ export class MySensorsController extends ContainerNode {
             return;
         }
 
-        let that = this;
 
         let SerialPort = require("serialport");
         this.port = new SerialPort(portName, { baudRate: baudRate, autoOpen: false });
 
-        this.port.on("open", function () {
-            that.debugInfo("Port connected");
+        this.port.on("open", () => {
+            this.debugInfo("Port connected");
         });
 
-        this.port.on("error", function (err) {
-            that.debugErr(err);
+        this.port.on("error", (err) => {
+            this.debugErr(err);
         });
 
-        this.port.on("close", function () {
-            that.debugInfo("Port closed");
-            that.isConnected = false;
-            that.setOutputData(0, that.isConnected);
+        this.port.on("close", () => {
+            this.debugInfo("Port closed");
+            this.isConnected = false;
+            this.setOutputData(0, this.isConnected);
         });
 
-        this.port.on("disconnect", function (err) {
-            that.debugErr("Port disconnected. " + err);
-            that.isConnected = false;
-            that.setOutputData(0, that.isConnected);
+        this.port.on("disconnect", (err) => {
+            this.debugErr("Port disconnected. " + err);
+            this.isConnected = false;
+            this.setOutputData(0, this.isConnected);
         });
-
-        // this.port.pipe(split()).on("data", that.readPortData.bind(this));
-
-        // this.port.on('data', function (data) {
-        //     console.log('Data:', data);
-        // });
 
         const Readline = SerialPort.parsers.Readline;
         const parser = this.port.pipe(new Readline({ delimiter: '\n' }));
-        parser.on('data', this.readPortData.bind(this));
+        parser.on('data', (data) => this.readPortData(data));
 
         this.debugInfo("Connecting to " + portName + " at " + baudRate + "...");
         this.port.open();
