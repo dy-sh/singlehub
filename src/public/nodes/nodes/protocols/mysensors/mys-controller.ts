@@ -6,9 +6,11 @@
 import { Node } from "../../../node";
 import Utils from "../../../utils";
 import { Container, Side } from "../../../container";
-import * as mys from "./types"
+import * as mys from "./mys-types"
 import { ContainerNode } from "../../main";
 import { debug } from "util";
+import { I_MYS_Node, I_MYS_Message, I_MYS_Sensor } from "./mys-types";
+import { MySensorsNode } from "./mys-node";
 
 
 let split;
@@ -22,39 +24,6 @@ if (typeof (window) === 'undefined') { //for backside only
 let GATEWAY_ID = 0;
 let BROADCAST_ID = 255;
 let NODE_SELF_SENSOR_ID = 255;
-
-interface I_MYS_Message {
-    nodeId: number,
-    sensorId: number,
-    messageType: number,
-    ack?: number,
-    subType: number,
-    payload?: string
-}
-
-interface I_MYS_Sensor {
-    nodeId: number,
-    sensorId: number,
-    lastSeen: number
-    type?: number,
-    dataType?: number,
-    state?: string,
-    shub_node_slot?: number
-}
-
-interface I_MYS_Node {
-    id: number,
-    sensors: { [id: number]: I_MYS_Sensor },
-    registered: number,
-    lastSeen: number,
-    sketchName?: string,
-    sketchVersion?: string,
-    version?: string,
-    isRepeatingNode?: boolean,
-    batteryLevel?: number,
-    shub_node_id?: number,
-    shub_node_cid?: number
-}
 
 
 export class MySensorsControllerNode extends ContainerNode {
@@ -457,7 +426,7 @@ export class MySensorsControllerNode extends ContainerNode {
 
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                $set: { mys_node: node }
+                $set: { mys_node: node, mys_contr_node_id: this.id, mys_contr_node_cid: this.container.id }
             });
 
         return node;
@@ -560,81 +529,13 @@ export class MySensorsControllerNode extends ContainerNode {
     };
 
 
-    get_SHub_Node(node: I_MYS_Node): Node {
+    get_SHub_Node(node: I_MYS_Node): MySensorsNode {
         let shub_cont = Container.containers[node.shub_node_cid];
         if (!shub_cont)
             return null;
 
-        return shub_cont._nodes[node.shub_node_id];
+        return <MySensorsNode>shub_cont._nodes[node.shub_node_id];
     }
 
 }
 Container.registerNodeType("protocols/mys-controller", MySensorsControllerNode);
-
-
-class MySensorsNode extends Node {
-    mys_node: I_MYS_Node;
-    mys_contr_node_id: number;
-    mys_contr_node_cid: number;
-
-    constructor() {
-        super();
-
-        // this.title = "MYS node";
-        this.descriprion = "MySensors node";
-    }
-
-
-    onInputUpdated() {
-        for (let i in this.inputs) {
-            if (this.inputs[i].updated) {
-                let controller = this.getControllerNode();
-                if (!controller) {
-                    this.debugErr("Can't send message. Controller not found");
-                    return;
-                }
-
-                let sensor = this.getSensorInSlot(+i);
-                if (!sensor) {
-                    this.debugErr("Can't send message. Sensor not found");
-                    return;
-                }
-
-                controller.send_MYS_Message({
-                    nodeId: this.mys_node.id,
-                    sensorId: sensor.sensorId,
-                    messageType: mys.messageType.C_SET,
-                    ack: 0,
-                    subType: sensor.dataType,
-                    payload: this.inputs[i].data
-                })
-
-            }
-        }
-    }
-
-    getControllerNode(): MySensorsControllerNode {
-        let cont = Container.containers[this.mys_contr_node_cid];
-        if (cont) {
-            return <MySensorsControllerNode>cont._nodes[this.mys_contr_node_id];
-        }
-    }
-
-    onAdded() {
-        this.title = "MYS node " + this.properties['mys_node_id'];
-    }
-
-    onRemoved() {
-        let controller = this.getControllerNode();
-        controller.remove_MYS_Node(this.mys_node.id);
-    }
-
-    getSensorInSlot(slot: number): I_MYS_Sensor {
-        for (let s in this.mys_node.sensors) {
-            let sensor = this.mys_node.sensors[s];
-            if (sensor.shub_node_slot == slot)
-                return sensor;
-        }
-    }
-}
-Container.registerNodeType("protocols/mys-node", MySensorsNode, false);

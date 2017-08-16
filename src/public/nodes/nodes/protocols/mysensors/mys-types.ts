@@ -3,6 +3,42 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
+
+
+export interface I_MYS_Message {
+    nodeId: number,
+    sensorId: number,
+    messageType: number,
+    ack?: number,
+    subType: number,
+    payload?: string
+}
+
+export interface I_MYS_Sensor {
+    nodeId: number,
+    sensorId: number,
+    lastSeen: number
+    type?: number,
+    dataType?: number,
+    state?: string,
+    shub_node_slot?: number
+}
+
+export interface I_MYS_Node {
+    id: number,
+    sensors: { [id: number]: I_MYS_Sensor },
+    registered: number,
+    lastSeen: number,
+    sketchName?: string,
+    sketchVersion?: string,
+    version?: string,
+    isRepeatingNode?: boolean,
+    batteryLevel?: number,
+    shub_node_id?: number,
+    shub_node_cid?: number
+}
+
+
 export let messageType =
     {
         C_PRESENTATION: 0,
