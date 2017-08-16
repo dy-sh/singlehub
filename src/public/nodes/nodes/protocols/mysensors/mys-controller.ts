@@ -558,5 +558,6 @@ export class MySensorsControllerNode extends ContainerNode {
 
         return <MySensorsNode>shub_cont._nodes[node.shub_node_id];
     }
+
 }
 Container.registerNodeType("protocols/mys-controller", MySensorsControllerNode);
