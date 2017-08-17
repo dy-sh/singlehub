@@ -10,7 +10,6 @@ export let themes: Array<RendererTheme> = [];
 export class RendererTheme {
 
     START_POS = 50;
-    FREE_SPACE_UNDER = 30;
 
     NODE_TITLE_HEIGHT = 16;
     NODE_SLOT_HEIGHT = 15;
@@ -50,15 +49,15 @@ export class RendererTheme {
         2: "#AAA"
     };
     NEW_LINK_COLOR = "#CCC";
-    LINK_TYPE_COLORS = {0: "#AAC", 1: "#AAC", 2: "#AAC"};
+    LINK_TYPE_COLORS = { 0: "#AAC", 1: "#AAC", 2: "#AAC" };
 
     LINK_COLORS = ["#AAC", "#ACA", "#CAA"];
 
     NODE_COLORS = {
-        "red": {color: "#FAA", bgcolor: "#A44"},
-        "green": {color: "#AFA", bgcolor: "#4A4"},
-        "blue": {color: "#AAF", bgcolor: "#44A"},
-        "white": {color: "#FFF", bgcolor: "#AAA"}
+        "red": { color: "#FAA", bgcolor: "#A44" },
+        "green": { color: "#AFA", bgcolor: "#4A4" },
+        "blue": { color: "#AAF", bgcolor: "#44A" },
+        "white": { color: "#FFF", bgcolor: "#AAA" }
     };
 }
 
@@ -96,8 +95,8 @@ theme0.SELECTION_WIDTH = 2;
 theme0.RENDER_CONNECTION_ARROWS = false;
 theme0.CONNECTIONS_WIDTH = 3;
 theme0.CONNECTIONS_SHADOW = 1;
-theme0.DATATYPE_COLOR = {0: "#EEE", 1: "#9AE", 2: "#EB8"};
-theme0.LINK_TYPE_COLORS = {0: "#EEE", 1: "#9AE", 2: "#EB8"};
+theme0.DATATYPE_COLOR = { 0: "#EEE", 1: "#9AE", 2: "#EB8" };
+theme0.LINK_TYPE_COLORS = { 0: "#EEE", 1: "#9AE", 2: "#EB8" };
 
 
 // --------------  THEME 1 -----------
@@ -133,8 +132,8 @@ theme1.SELECTION_WIDTH = 2;
 theme1.RENDER_CONNECTION_ARROWS = false;
 theme1.CONNECTIONS_WIDTH = 2;
 theme1.CONNECTIONS_SHADOW = 1;
-theme1.DATATYPE_COLOR = {0: "#AAA", 1: "#9AB", 2: "#BA9"};
-theme1.LINK_TYPE_COLORS = {0: "#AAA", 1: "#9AB", 2: "#BA9"};
+theme1.DATATYPE_COLOR = { 0: "#AAA", 1: "#9AB", 2: "#BA9" };
+theme1.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#9AB", 2: "#BA9" };
 
 
 // --------------  THEME 2 -----------
@@ -171,8 +170,8 @@ theme2.SELECTION_WIDTH = 2;
 theme2.RENDER_CONNECTION_ARROWS = false;
 theme2.CONNECTIONS_WIDTH = 2;
 theme2.CONNECTIONS_SHADOW = 1;
-theme2.DATATYPE_COLOR = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
-theme2.LINK_TYPE_COLORS = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
+theme2.DATATYPE_COLOR = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
+theme2.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
 
 
 // --------------  THEME 3 -----------
@@ -209,8 +208,8 @@ theme3.SELECTION_WIDTH = 2;
 theme3.RENDER_CONNECTION_ARROWS = false;
 theme3.CONNECTIONS_WIDTH = 2;
 theme3.CONNECTIONS_SHADOW = 1;
-theme3.DATATYPE_COLOR = {0: "#666", 1: "#666", 2: "#666"};
-theme3.LINK_TYPE_COLORS = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
+theme3.DATATYPE_COLOR = { 0: "#666", 1: "#666", 2: "#666" };
+theme3.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
 
 
 // --------------  THEME 4 -----------
@@ -247,8 +246,8 @@ theme4.SELECTION_WIDTH = 2;
 theme4.RENDER_CONNECTION_ARROWS = false;
 theme4.CONNECTIONS_WIDTH = 2;
 theme4.CONNECTIONS_SHADOW = 1;
-theme4.DATATYPE_COLOR = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
-theme4.LINK_TYPE_COLORS = {0: "#AAA", 1: "#AAA", 2: "#AAA"};
+theme4.DATATYPE_COLOR = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
+theme4.LINK_TYPE_COLORS = { 0: "#AAA", 1: "#AAA", 2: "#AAA" };
 
 
 // --------------  THEME 5 -----------
@@ -285,8 +284,8 @@ theme5.SELECTION_WIDTH = 2;
 theme5.RENDER_CONNECTION_ARROWS = false;
 theme5.CONNECTIONS_WIDTH = 3;
 theme5.CONNECTIONS_SHADOW = 1;
-theme5.DATATYPE_COLOR = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
-theme5.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
+theme5.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
+theme5.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
 
 
 // --------------  THEME 6 -----------
@@ -324,8 +323,8 @@ theme6.SELECTION_WIDTH = 3;
 theme6.RENDER_CONNECTION_ARROWS = false;
 theme6.CONNECTIONS_WIDTH = 2;
 theme6.CONNECTIONS_SHADOW = 2;
-theme6.DATATYPE_COLOR = {0: "#FFF", 1: "#9AF", 2: "#FB8"};
-theme6.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AF", 2: "#FB8"};
+theme6.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AF", 2: "#FB8" };
+theme6.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AF", 2: "#FB8" };
 
 
 // --------------  THEME 7 -----------
@@ -362,8 +361,8 @@ theme7.SELECTION_WIDTH = 2;
 theme7.RENDER_CONNECTION_ARROWS = false;
 theme7.CONNECTIONS_WIDTH = 3;
 theme7.CONNECTIONS_SHADOW = 1;
-theme7.DATATYPE_COLOR = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
-theme7.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
+theme7.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
+theme7.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
 
 
 // --------------  THEME 8 -----------
@@ -400,5 +399,5 @@ theme8.SELECTION_WIDTH = 2;
 theme8.RENDER_CONNECTION_ARROWS = false;
 theme8.CONNECTIONS_WIDTH = 3;
 theme8.CONNECTIONS_SHADOW = 1;
-theme8.DATATYPE_COLOR = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
-theme8.LINK_TYPE_COLORS = {0: "#FFF", 1: "#9AC", 2: "#FB8"};
+theme8.DATATYPE_COLOR = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };
+theme8.LINK_TYPE_COLORS = { 0: "#FFF", 1: "#9AC", 2: "#FB8" };

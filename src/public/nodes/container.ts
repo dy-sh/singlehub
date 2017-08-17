@@ -484,7 +484,6 @@ export class Container extends Emitter {
 
     /**
      * Get nodes
-     * @returns {number}
      */
     getNodes(includeSubcontainers = false): Array<Node> {
         let nodes = [];
@@ -1074,6 +1073,48 @@ export class Container extends Emitter {
     }
 
 
+
+
+
+    // calculateNodeMinHeight(node: Node): number {
+
+    //     let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
+    //     if (slotsMax == 0)
+    //         slotsMax = 1;
+
+    //     let height = Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
+
+    //     return height + 5;
+    // }
+
+
+    findFreeSpaceForNode(nodePosition: [number, number], nodeSize: [number, number]): [number, number] {
+
+        //vertical bounds for search free pace 
+        let leftBound = nodePosition[0] - 10;
+        let rightBound = nodePosition[0] + nodeSize[0] + 10;
+
+        //get nodes in bounds
+        let nodes = this.getNodes().filter((n) => {
+            // return n.pos[0] < rightBound && n.pos[0] + n.size[0] > rightBound //crossing rignt bound
+            //     || n.pos[0] < leftBound && n.pos[0] + n.size[0] > leftBound //crossing left bound
+            //     || n.pos[0] > leftBound && n.pos[0] + n.size[0] < rightBound; //inside bounds
+
+            return n.pos[0] + n.size[0] > leftBound && n.pos[0] < rightBound //left or right side inside bound
+        });
+
+        console.log(nodes);
+
+        //find lowermost node
+        let maxY = nodePosition[1];
+        nodes.forEach(n => {
+            let y = n.pos[1] + n.size[1];
+            if (y > maxY) maxY = y;
+        });
+
+        return [nodePosition[0], maxY + 30];
+
+    }
 
 
     /**

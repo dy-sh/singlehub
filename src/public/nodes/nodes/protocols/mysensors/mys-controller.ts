@@ -429,7 +429,8 @@ export class MySensorsControllerNode extends ContainerNode {
         let shub_node = this.sub_container.createNode("protocols/mys-node", {
             mys_contr_node_id: this.id,
             mys_contr_node_cid: this.container.id,
-            properties: { mys_node_id: nodeId }
+            properties: { mys_node_id: nodeId },
+            pos: this.sub_container.findFreeSpaceForNode([50, 50], [180, 100])
         });
 
         node.shub_node_id = shub_node.id;

@@ -605,56 +605,7 @@ export class EditorClientSocket {
     };
 
 
-    //
-    //
-    // calculateNodeMinHeight(node: Node): number {
-    //
-    //     let slotsMax = (node.outputs.length > node.inputs.length) ? node.outputs.length : node.inputs.length;
-    //     if (slotsMax == 0)
-    //         slotsMax = 1;
-    //
-    //     let height = Nodes.options.NODE_SLOT_HEIGHT * slotsMax;
-    //
-    //     return height + 5;
-    // }
-    //
-    //
-    // findFreeSpaceY(node: Node): number {
-    //
-    //
-    //     let nodes = this.container._nodes;
-    //
-    //
-    //     node.pos = [0, 0];
-    //
-    //     let result = Nodes.options.START_POS;
-    //
-    //
-    //     for (let i = 0; i < nodes.length; i++) {
-    //         let needFromY = result;
-    //         let needToY = result + node.size[1];
-    //
-    //         if (node.id == nodes[i].id)
-    //             continue;
-    //
-    //         if (!nodes[i].pos)
-    //             continue;
-    //
-    //         if (nodes[i].pos[0] > Nodes.options.NODE_WIDTH + 20 + Nodes.options.START_POS)
-    //             continue;
-    //
-    //         let occupyFromY = nodes[i].pos[1] - Nodes.options.FREE_SPACE_UNDER;
-    //         let occupyToY = nodes[i].pos[1] + nodes[i].size[1];
-    //
-    //         if (occupyFromY <= needToY && occupyToY >= needFromY) {
-    //             result = occupyToY + Nodes.options.FREE_SPACE_UNDER;
-    //             i = -1;
-    //         }
-    //     }
-    //
-    //     return result;
-    //
-    // }
+
     sendGetSlotsValues() {
         this.socket.emit("get-nodes-io-values", this.editor.renderer.container.id);
     }
