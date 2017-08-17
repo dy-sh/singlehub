@@ -99,7 +99,7 @@ class GateNode extends Node {
             "then the node will send null to the output when the transmission is locked.";
 
         this.addInput("value");
-        this.addInput("key");
+        this.addInput("key", "boolean");
         this.addOutput("value");
 
         this.settings["send-null"] = { description: "Send null when closed", value: false, type: "boolean" };
