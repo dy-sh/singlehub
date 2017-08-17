@@ -3,28 +3,28 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Container} from "../../nodes/container";
-import {dashboard} from "./dashboard";
-import {editor} from "../editor/editor";
+import { Container } from "../../nodes/container";
+import { dashboard } from "./dashboard";
+import { editor } from "../editor/editor";
 
 
 
 //console logger
 declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', {color: 3});
+let log = Logger.create('client', { color: 3 });
 
 export class DashboardClientSocket {
 
     socket: SocketIOClient.Socket;
 
-    container_id:number;
+    container_id: number;
     reconnecting: boolean;
 
     constructor(container_id: number) {
         let socket = io('/dashboard');
         this.socket = socket;
 
-        this.container_id=container_id;
+        this.container_id = container_id;
 
         let that = this;
 
@@ -33,7 +33,7 @@ export class DashboardClientSocket {
             that.sendJoinContainerRoom(that.container_id);
 
             if (this.reconnecting) {
-                noty({text: 'Connection is restored.', type: 'alert'});
+                noty({ text: 'Connection is restored.', type: 'alert' });
                 //waiting while server initialized and read db
                 setTimeout(function () {
                     $("#panelsContainer").empty();
@@ -47,7 +47,7 @@ export class DashboardClientSocket {
         socket.on('disconnect', function () {
             log.debug("Disconnected from socket");
             $("#panelsContainer").fadeOut(300);
-            noty({text: 'Connection is lost!', type: 'error'});
+            noty({ text: 'Connection is lost!', type: 'error' });
             that.reconnecting = true;
         });
 
@@ -164,9 +164,9 @@ export class DashboardClientSocket {
 
 
     getContainer(callback?: Function): void {
-        let that=this;
+        let that = this;
         $.ajax({
-            url: "/api/dashboard/c/" +that.container_id,
+            url: "/api/dashboard/c/" + that.container_id,
             success: function (c) {
                 let cont = Container.containers[that.container_id];
                 cont.configure(c, false);
@@ -179,7 +179,7 @@ export class DashboardClientSocket {
     }
 
     getContainerState(): void {
-        let that=this;
+        let that = this;
         $.ajax({
             url: "/api/editor/state",
             success: function (state) {

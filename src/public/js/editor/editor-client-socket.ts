@@ -71,7 +71,11 @@ export class EditorClientSocket {
                 log.error(`Can't create node. Container id [${n.cid}] not found.`);
                 return;
             }
-            let node = container.createNode(n.type, { pos: n.pos });
+            let prop = { pos: n.pos };
+            if (n.properties)
+                prop['properties'] = n.properties;
+
+            let node = container.createNode(n.type, prop);
         });
 
 

@@ -10,7 +10,7 @@ import * as mys from "./mys-types"
 import { ContainerNode } from "../../main";
 import { debug } from "util";
 import { I_MYS_Node, I_MYS_Message, I_MYS_Sensor } from "./mys-types";
-import { MySensorsNode } from "./mys-node";
+import { MySensorsNode, I_MYS_Node_Properties } from "./mys-node";
 
 
 let split, app;
@@ -278,7 +278,7 @@ export class MySensorsControllerNode extends ContainerNode {
             //db update
             if (this.container.db)
                 this.container.db.updateNode(node.shub_node_id, node.shub_node_cid, {
-                    $set: { mys_node: node }
+                    $set: { "properties.mys_node": node }
                 });
 
             // this.emit("sensorUpdated", sensor, "type");
@@ -431,10 +431,15 @@ export class MySensorsControllerNode extends ContainerNode {
         this.debug(`Node [${nodeId}] registered`);
         //       this.emit("newNode", node);
 
-        let shub_node = this.sub_container.createNode("protocols/mys-node", {
+        let properties: I_MYS_Node_Properties = {
+            mys_node_id: nodeId,
             mys_contr_node_id: this.id,
             mys_contr_node_cid: this.container.id,
-            properties: { mys_node_id: nodeId },
+            mys_node: node
+        };
+
+        let shub_node = this.sub_container.createNode("protocols/mys-node", {
+            properties: properties,
             pos: this.sub_container.findFreeSpaceForNode([50, 50], [180, 100])
         });
 
@@ -445,7 +450,7 @@ export class MySensorsControllerNode extends ContainerNode {
         //db update
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                $set: { mys_node: node, mys_contr_node_id: this.id, mys_contr_node_cid: this.container.id }
+                $set: { "properties.mys_node": node }
             });
 
 
@@ -460,7 +465,8 @@ export class MySensorsControllerNode extends ContainerNode {
             id: shub_node.id,
             cid: shub_node.container.id,
             type: shub_node.type,
-            pos: shub_node.pos
+            pos: shub_node.pos,
+            properties: { mys_node_id: nodeId }
         });
 
         return node;
@@ -504,7 +510,7 @@ export class MySensorsControllerNode extends ContainerNode {
         let s_shub_node = shub_node.serialize(true);
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                $set: { mys_node: node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
+                $set: { "properties.mys_node": node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
             });
 
         return sensor;
@@ -557,7 +563,7 @@ export class MySensorsControllerNode extends ContainerNode {
         let s_shub_node = shub_node.serialize(true);
         if (this.container.db)
             this.container.db.updateNode(shub_node.id, shub_node.container.id, {
-                $set: { mys_node: node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
+                $set: { "properties.mys_node": node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
             });
     };
 

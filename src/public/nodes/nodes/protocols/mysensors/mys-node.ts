@@ -8,10 +8,15 @@ import { I_MYS_Node, I_MYS_Sensor } from "./mys-types";
 import { MySensorsControllerNode } from "./mys-controller";
 
 
+export interface I_MYS_Node_Properties {
+    mys_node_id: number,
+    mys_contr_node_id: number,
+    mys_contr_node_cid: number,
+    mys_node: I_MYS_Node
+}
+
 export class MySensorsNode extends Node {
-    mys_node: I_MYS_Node;
-    mys_contr_node_id: number;
-    mys_contr_node_cid: number;
+    properties: I_MYS_Node_Properties;
 
     constructor() {
         super();
@@ -49,7 +54,7 @@ export class MySensorsNode extends Node {
                     val = val ? 1 : 0;
 
                 controller.send_MYS_Message({
-                    nodeId: this.mys_node.id,
+                    nodeId: this.properties.mys_node.id,
                     sensorId: sensor.sensorId,
                     messageType: mys.messageType.C_SET,
                     ack: 0,
@@ -62,32 +67,33 @@ export class MySensorsNode extends Node {
     }
 
     getControllerNode(): MySensorsControllerNode {
-        let cont = Container.containers[this.mys_contr_node_cid];
+        let cont = Container.containers[this.properties.mys_contr_node_cid];
         if (cont) {
-            return <MySensorsControllerNode>cont._nodes[this.mys_contr_node_id];
+            return <MySensorsControllerNode>cont._nodes[this.properties.mys_contr_node_id];
         }
     }
 
     onAdded() {
-        this.title = "MYS node " + this.properties['mys_node_id'];
+        this.title = "MYS node " + this.properties.mys_node_id;
     }
 
     onDbReaded() {
         //add this MYS_Node to controller node
-        this.getControllerNode().nodes[this.mys_node.id] = this.mys_node;
-        this.debug(`Node [${this.mys_node.id}] restored`);
+        this.getControllerNode()
+            .nodes[this.properties.mys_node.id] = this.properties.mys_node;
+        this.debug(`Node [${this.properties.mys_node.id}] restored`);
     }
 
     onRemoved() {
         if (this.side == Side.server) {
             let controller = this.getControllerNode();
-            controller.remove_MYS_Node(this.mys_node.id, false);
+            controller.remove_MYS_Node(this.properties.mys_node.id, false);
         }
     }
 
     getSensorInSlot(slot: number): I_MYS_Sensor {
-        for (let s in this.mys_node.sensors) {
-            let sensor = this.mys_node.sensors[s];
+        for (let s in this.properties.mys_node.sensors) {
+            let sensor = this.properties.mys_node.sensors[s];
             if (sensor.shub_node_slot == slot)
                 return sensor;
         }
