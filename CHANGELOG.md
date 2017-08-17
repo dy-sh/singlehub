@@ -82,6 +82,10 @@ SingleHub v0.9
   
 - **Opearion**:
   - **Flip-Flop**. Reset on disconnect settings.
+
+- **Compare**:
+  - **AND**. You can specify the number of inputs in the node settings.
+  - **OR**. You can specify the number of inputs in the node settings. 
   
 **For developers:**
 - Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
