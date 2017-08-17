@@ -3,12 +3,14 @@ SingleHub v0.9
 
 **Common changes:**
 
-- Rewritten to Node.js.
-- Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
-- Built-in database is replaced by NeDB.
+- Rewritten from ASP.NET to Node.js.
+
+
+**Hardware:**
+
 - MQTT protocol support.
 - Xiaomi devices support: Smart Socket Plug 2, Eyecare Lamp 2, Yeelight, Power Strip (If your device is not listed, write to me and I will add it).
-
+- MySensors: Now you can use multiple MySensors serial\ethernet gateways at the same time. Each gateway is a separate container. Nodes that the gateway detected are automatically added to the container.
 
 
 **Node editor:**
@@ -28,6 +30,8 @@ SingleHub v0.9
 - **Protocols**:
   - **MQTT client**. This node allows to connect to MQTT broker, subscribe to events and publish values.
   - **Xiaomi device**. This node allows to conntrol Xiaomi devices.
+  - **MYS Controller Serial**. This node allows to connect to MySensors serial-gateway.
+  - **MYS Controller Ethernet**. This node allows to connect to MySensors ethernet-gateway.
 
 - **Opearion**:
   - **Trigger**. If the input "Set" comes "true", the node sends "true" to the output.  If the input "Reset" comes "true", the node sends "false" to the output. The "Set" input is blocked when "Reset" is true.
@@ -80,6 +84,8 @@ SingleHub v0.9
   - **Flip-Flop**. Reset on disconnect settings.
   
 **For developers:**
+- Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
+- Built-in database is replaced by NeDB. 
 - Very comfortable color output debugging information to the console. 
   You can filter messages by importance: debug/info/warnings/errors.
   This also applies to the client part (in the debug panel of the browser).
