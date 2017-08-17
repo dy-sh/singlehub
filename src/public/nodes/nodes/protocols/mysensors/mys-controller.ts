@@ -479,8 +479,9 @@ export class MySensorsControllerNode extends ContainerNode {
         if (i_id != o_id)
             throw "SingleHub node has different inputs and outputs slots count!";
 
-        //send to eitor side for add io
-        shub_node.sendMessageToEditorSide({ registerSensor: { sensorId: sensorId } });
+        //send to eitor side for add input\output
+        shub_node.sendAddInputToEditorSide("[sensor " + sensorId + "]");
+        shub_node.sendAddOutputToEditorSide("sensor " + sensorId);
 
         sensor = {
             nodeId: nodeId,
@@ -540,6 +541,10 @@ export class MySensorsControllerNode extends ContainerNode {
         //remove input and output
         shub_node.removeInput(sensor.shub_node_slot);
         shub_node.removeOutput(sensor.shub_node_slot);
+
+        //send to eitor side for remove input\output
+        shub_node.sendRemoveInputToEditorSide(sensor.shub_node_slot);
+        shub_node.sendRemoveOutputToEditorSide(sensor.shub_node_slot);
 
         this.debug(`Node[${nodeId}] sensor[${sensorId}] removed`);
 

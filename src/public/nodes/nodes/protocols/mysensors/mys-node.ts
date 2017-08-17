@@ -80,12 +80,5 @@ export class MySensorsNode extends Node {
                 return sensor;
         }
     }
-
-    onGetMessageToEditorSide(data) {
-        if (data.registerSensor) {
-            this.addInput("[sensor " + data.registerSensor.sensorId + "]");
-            this.addOutput("sensor " + data.registerSensor.sensorId);
-        }
-    }
 }
 Container.registerNodeType("protocols/mys-node", MySensorsNode, false);
