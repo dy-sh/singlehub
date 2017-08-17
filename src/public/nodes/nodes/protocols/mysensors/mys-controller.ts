@@ -388,7 +388,12 @@ export class MySensorsControllerNode extends ContainerNode {
             arr[0] + ";" + arr[1] + ";" + arr[2] + ";" + arr[3] + ";" + arr[4] + ";" + arr[5] + ";";
 
         this.debug("  > " + mess);
-        this.port.write(mess + "\n");
+        try {
+            this.port.write(mess + "\n");
+        }
+        catch (e) {
+            console.log(e);
+        }
     };
 
 

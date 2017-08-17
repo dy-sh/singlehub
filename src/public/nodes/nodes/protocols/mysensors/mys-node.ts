@@ -18,6 +18,9 @@ export class MySensorsNode extends Node {
 
         // this.title = "MYS node";
         this.descriprion = "MySensors node";
+        this.settings["send-true"] = {
+            description: "Send 1/0 instead of true/false", value: true, type: "boolean"
+        };
     }
 
 
@@ -36,13 +39,22 @@ export class MySensorsNode extends Node {
                     return;
                 }
 
+                if (!controller.isConnected)
+                    return;
+
+                let val = this.inputs[i].data;
+
+                //conver boolean
+                if (typeof val == "boolean" && this.settings["send-true"].value)
+                    val = val ? 1 : 0;
+
                 controller.send_MYS_Message({
                     nodeId: this.mys_node.id,
                     sensorId: sensor.sensorId,
                     messageType: mys.messageType.C_SET,
                     ack: 0,
                     subType: sensor.dataType,
-                    payload: this.inputs[i].data
+                    payload: val
                 })
 
             }
