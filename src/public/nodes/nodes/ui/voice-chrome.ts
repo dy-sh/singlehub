@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -22,10 +22,16 @@ export class UiVoiceChromeNode extends UiNode {
     constructor() {
         super("Voice Chrome", template);
 
-        this.descriprion = "";
+        this.descriprion = "This is a UI node. It can generate speech from the incoming text. <br/>" +
+            "As the TTS engine is used built-in Google Chrome TTS, " +
+            "so this node will work in this browser only. <br/>" +
+            "You'll hear the voice if you have opened the panel on the dashboard, " +
+            "in which there is this node. <br>" +
+            // "If pin Play is connected, then it will trigger the generation of the voice. " +
+            // "If it is not connected, the message will be played as soon as the text has come to the Text input."
 
-        this.addInput("text", "string");
-        this.addInput("play", "boolean");
+            this.addInput("text", "string");
+        // this.addInput("[play]", "boolean");
     }
 
 
@@ -34,17 +40,16 @@ export class UiVoiceChromeNode extends UiNode {
     }
 
     onInputUpdated() {
+        // if (this.getInputData(1) != false) {
         let text = this.getInputData(0);
-        let play = this.getInputData(1) == true;
-        this.sendMessageToDashboardSide({text: text, play: play})
+        this.sendMessageToDashboardSide({ text: text })
         this.isRecentlyActive = true;
+        // }
     };
 
     onGetMessageToDashboardSide(data) {
-        if (data.play) {
-            let msg = new SpeechSynthesisUtterance(data.text);
-            (<any>window).speechSynthesis.speak(msg);
-        }
+        let msg = new SpeechSynthesisUtterance(data.text);
+        (<any>window).speechSynthesis.speak(msg);
     };
 }
 
