@@ -286,10 +286,14 @@ class FiltersReduceEventsNode extends Node {
             "You can disable the sending of the last value in the settings of the node. " +
             "This may be necessary if you do not want to receive messages late, " +
             "but then it is not guaranteed that the nodes connected to this node " +
-            "will have the last actual value.";
+            "will have the last actual value.<br>" +
+            "If you activate reset pin, the node will reset the timer " +
+            "and send the last value, if it is enabled in the settings. ";
+
 
         this.addInput("value");
-        this.addInput("interval", "number");
+        this.addInput("[interval]", "number");
+        this.addInput("[reset]", "boolean");
         this.addOutput("value");
 
         this.settings["sendlast"] = { description: "Store and send last value", value: true, type: "boolean" };
@@ -299,6 +303,9 @@ class FiltersReduceEventsNode extends Node {
     }
 
     onInputUpdated() {
+        if (this.inputs[2].updated && this.inputs[2].data) {
+            this.lastTime = 0;
+        }
         if (this.inputs[0].updated) {
             let interval = this.getInterval();
 

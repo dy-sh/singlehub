@@ -87,6 +87,11 @@ SingleHub v0.9
   - **AND**. You can specify the number of inputs in the node settings.
   - **OR**. You can specify the number of inputs in the node settings. 
   
+- **Filters**:
+  - **Reduce events**. Reset pin.
+
+
+
 **For developers:**
 - Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
 - Built-in database is replaced by NeDB. 
