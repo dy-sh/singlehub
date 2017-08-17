@@ -55,6 +55,9 @@ SingleHub v0.9
   - **Sign**. Returns the sign of the x, indicating whether x is positive, negative or zero.   
   - **Trunc**. Returns the integral part of the number x, removing any fractional digits.   
   
+- **Filters**:
+  - **Reduce Duplicates**. This node reduces the number of duplicated transmitted values.
+
 
 **Changed nodes:**
 
