@@ -1404,7 +1404,11 @@ export class Renderer {
             if (this.live_mode && !node['onDrawBackground'] && !node['onDrawForeground'])
                 continue;
 
-            if (!Utils.overlapBounding(this.visible_area, this.getBounding(node)))
+            let bounding = this.getBounding(node)
+            if (!bounding)
+                continue;
+
+            if (!Utils.overlapBounding(this.visible_area, bounding))
                 continue; //out of the visible area
 
             visible_nodes.push(node);
@@ -3035,6 +3039,9 @@ export class Renderer {
      */
 
     getBounding(node: Node): [number, number, number, number] {
+        if (!node.size || !node.pos)
+            return;
+
         return [node.pos[0] - 4, node.pos[1] - this.theme.NODE_TITLE_HEIGHT, node.pos[0] + node.size[0] + 4, node.pos[1] + node.size[1] + this.theme.NODE_TITLE_HEIGHT];
     }
 
