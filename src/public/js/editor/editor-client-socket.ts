@@ -3,13 +3,13 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Node, Link, LinkInfo} from "../../nodes/node"
-import {Container} from "../../nodes/container";
-import {Editor} from "./editor";
+import { Node, Link, LinkInfo } from "../../nodes/node"
+import { Container } from "../../nodes/container";
+import { Editor } from "./editor";
 
 //console logger
 declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', {color: 3});
+let log = Logger.create('client', { color: 3 });
 
 export class EditorClientSocket {
 
@@ -71,7 +71,7 @@ export class EditorClientSocket {
                 log.error(`Can't create node. Container id [${n.cid}] not found.`);
                 return;
             }
-            let node = container.createNode(n.type, {pos: n.pos});
+            let node = container.createNode(n.type, { pos: n.pos });
         });
 
 
@@ -94,6 +94,67 @@ export class EditorClientSocket {
                 //     (<any>window).location = "/editor/";
                 // }
             }
+        });
+
+
+        socket.on('node-add-input', function (n) {
+            let container = Container.containers[n.cid];
+            if (!container) {
+                log.error(`Can't update node. Container id [${n.cid}] not found.`);
+                return;
+            }
+            let node = container.getNodeById(n.id);
+            if (!node) {
+                log.error(`Can't update node. Node id [${n.cid}/${n.id}] not found.`);
+                return;
+            }
+            node.addInput(n.input.name, n.input.type, n.input.extra_info);
+            node.setDirtyCanvas(true, true);
+        });
+
+        socket.on('node-add-output', function (n) {
+            let container = Container.containers[n.cid];
+            if (!container) {
+                log.error(`Can't update node. Container id [${n.cid}] not found.`);
+                return;
+            }
+            let node = container.getNodeById(n.id);
+            if (!node) {
+                log.error(`Can't update node. Node id [${n.cid}/${n.id}] not found.`);
+                return;
+            }
+            node.addOutput(n.output.name, n.output.type, n.output.extra_info);
+            node.setDirtyCanvas(true, true);
+        });
+
+        socket.on('node-remove-input', function (n) {
+            let container = Container.containers[n.cid];
+            if (!container) {
+                log.error(`Can't update node. Container id [${n.cid}] not found.`);
+                return;
+            }
+            let node = container.getNodeById(n.id);
+            if (!node) {
+                log.error(`Can't update node. Node id [${n.cid}/${n.id}] not found.`);
+                return;
+            }
+            node.removeInput(n.input);
+            node.setDirtyCanvas(true, true);
+        });
+
+        socket.on('node-remove-output', function (n) {
+            let container = Container.containers[n.cid];
+            if (!container) {
+                log.error(`Can't update node. Container id [${n.cid}] not found.`);
+                return;
+            }
+            let node = container.getNodeById(n.id);
+            if (!node) {
+                log.error(`Can't update node. Node id [${n.cid}/${n.id}] not found.`);
+                return;
+            }
+            node.removeOutput(n.output);
+            node.setDirtyCanvas(true, true);
         });
 
         socket.on('node-update-position', function (n) {
@@ -154,6 +215,21 @@ export class EditorClientSocket {
                 return;
             }
             container.moveNodesToNewContainer(data.ids, data.pos);
+        });
+
+        socket.on('node-message-to-editor-side', function (n) {
+            let container = Container.containers[n.cid];
+            if (!container) {
+                log.error(`Can't send node message. Container id [${n.cid}] not found.`);
+                return;
+            }
+            let node = container.getNodeById(n.id);
+            if (!node) {
+                log.error(`Can't send node message. Node id [${n.cid}/${n.id}] not found.`);
+                return;
+            }
+            if (node['onGetMessageToEditorSide'])
+                node['onGetMessageToEditorSide'](n.value);
         });
 
         socket.on('node-message-to-editor-side', function (n) {
@@ -343,7 +419,7 @@ export class EditorClientSocket {
                 $.ajax({
                     url: '/api/editor',
                     type: 'POST',
-                    data: {json: gr.toString()}
+                    data: { json: gr.toString() }
                 }).done(function () {
 
                 });
@@ -395,7 +471,7 @@ export class EditorClientSocket {
 
     sendCreateNode(type: string, position: [number, number]): void {
         let that = this;
-        let json = JSON.stringify({type: type, position: position, container: that.editor.renderer.container.id});
+        let json = JSON.stringify({ type: type, position: position, container: that.editor.renderer.container.id });
         $.ajax({
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/",
             contentType: 'application/json',
@@ -430,7 +506,7 @@ export class EditorClientSocket {
             url: "/api/editor/c/" + that.editor.renderer.container.id + "/n/move/",
             type: 'PUT',
             contentType: 'application/json',
-            data: JSON.stringify({ids: ids, pos: pos})
+            data: JSON.stringify({ ids: ids, pos: pos })
         })
     };
 
@@ -440,7 +516,7 @@ export class EditorClientSocket {
             url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/position`,
             contentType: 'application/json',
             type: 'PUT',
-            data: JSON.stringify({position: node.pos})
+            data: JSON.stringify({ position: node.pos })
         })
     };
 
@@ -450,7 +526,7 @@ export class EditorClientSocket {
             url: `/api/editor/c/${that.editor.renderer.container.id}/n/${node.id}/size`,
             contentType: 'application/json',
             type: 'PUT',
-            data: JSON.stringify({size: node.size})
+            data: JSON.stringify({ size: node.size })
         })
     };
 

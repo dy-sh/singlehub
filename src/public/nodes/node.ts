@@ -1288,6 +1288,90 @@ export class Node {
         }
     }
 
+    sendAddInputToEditorSide(name?: string, type?: string, extra_info?: any) {
+        let m = {
+            id: this.id,
+            cid: this.container.id,
+            input: {
+                name: name,
+                type: type,
+                extra_info: extra_info
+            }
+        };
+
+        if (this.side == Side.editor) {
+            log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
+        }
+        else if (this.side == Side.server) {
+            let socket = this.container.server_editor_socket;
+            socket.in("" + this.container.id).emit("node-add-input", m);
+        }
+        else {
+            this.container.clinet_socket.emit('node-add-input', m);
+        }
+    }
+
+    sendAddOutputToEditorSide(name?: string, type?: string, extra_info?: any) {
+        let m = {
+            id: this.id,
+            cid: this.container.id,
+            output: {
+                name: name,
+                type: type,
+                extra_info: extra_info
+            }
+        };
+
+        if (this.side == Side.editor) {
+            log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
+        }
+        else if (this.side == Side.server) {
+            let socket = this.container.server_editor_socket;
+            socket.in("" + this.container.id).emit('node-add-output', m);
+        }
+        else {
+            this.container.clinet_socket.emit('node-add-output', m);
+        }
+    }
+
+    sendRemoveInputToEditorSide(id: number) {
+        let m = {
+            id: this.id,
+            cid: this.container.id,
+            input: id,
+        };
+
+        if (this.side == Side.editor) {
+            log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
+        }
+        else if (this.side == Side.server) {
+            let socket = this.container.server_editor_socket;
+            socket.in("" + this.container.id).emit('node-remove-input', m);
+        }
+        else {
+            this.container.clinet_socket.emit('node-remove-input', m);
+        }
+    }
+
+    sendRemoveOutputToEditorSide(id: number) {
+        let m = {
+            id: this.id,
+            cid: this.container.id,
+            output: id,
+        };
+
+        if (this.side == Side.editor) {
+            log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
+        }
+        else if (this.side == Side.server) {
+            let socket = this.container.server_editor_socket;
+            socket.in("" + this.container.id).emit('node-remove-output', m);
+        }
+        else {
+            this.container.clinet_socket.emit('node-remove-output', m);
+        }
+    }
+
     sendMessageToDashboardSide(mess: any) {
         let m = { id: this.id, cid: this.container.id, value: mess };
         if (this.side == Side.dashboard) {
