@@ -50,6 +50,8 @@ export class MySensorsControllerNode extends ContainerNode {
     }
 
     onAdded() {
+        super.onAdded();
+
         if (this.side == Side.server) {
             this.setOutputData(0, false);
 
@@ -58,6 +60,16 @@ export class MySensorsControllerNode extends ContainerNode {
                 && (this.inputs[0].link == null || this.inputs[0].data == true))
                 this.connectToSerialPort();
         }
+    }
+
+    changeTitle() {
+        this.title = "MYS: " + this.settings["name"].value;
+        this.size = this.computeSize();
+        this.sub_container.name = this.title;
+
+        // if (this.container.db)
+        //     this.container.db.updateNode(this.id,this.container.id,{$set:{}})
+        // if (this.side==Side.server)
     }
 
     onRemoved() {
@@ -70,6 +82,9 @@ export class MySensorsControllerNode extends ContainerNode {
     }
 
     onSettingsChanged() {
+        super.onSettingsChanged();
+
+
         if (this.side == Side.server) {
             this.disconnectFromGateway();
 
