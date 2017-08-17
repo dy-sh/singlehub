@@ -3,8 +3,8 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 import Utils from "../utils";
 
 
@@ -15,19 +15,37 @@ class AndNode extends Node {
         this.title = "AND";
         this.descriprion = "This node performs a logical \"AND\" operation. ";
 
-        this.addInput("a", "boolean");
-        this.addInput("b", "boolean");
-        this.addOutput("a && b", "boolean");
+        this.addInput("input 1", "boolean");
+        this.addInput("input 2", "boolean");
+        this.addOutput("AND", "boolean");
+
+        this.settings["inputs"] = { description: "Inputs count", value: 2, type: "number" };
     }
 
     onInputUpdated() {
-        let a = this.getInputData(0);
-        let b = this.getInputData(1);
+        for (var i = 0; i < this.getInputsCount(); i++) {
+            if (this.inputs[i].data == null) {
+                this.setOutputData(0, null);
+                return;
+            }
+        }
+        for (var i = 0; i < this.getInputsCount(); i++) {
+            if (this.inputs[i].data == false) {
+                this.setOutputData(0, false);
+                return;
+            }
+        }
+        this.setOutputData(0, true);
+    }
 
-        if (a != null && b != null)
-            this.setOutputData(0, a && b);
-        else
-            this.setOutputData(0, null);
+    onSettingsChanged() {
+        let inputs = this.settings["inputs"].value;
+        inputs = Utils.clamp(inputs, 2, 1000);
+        this.changeInputsCount(inputs, "boolean");
+
+        //update db
+        if (this.container.db)
+            this.container.db.updateNode(this.id, this.container.id, { $set: { inputs: this.inputs } });
     }
 }
 Container.registerNodeType("compare/and", AndNode);
