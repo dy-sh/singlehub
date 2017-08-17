@@ -10,7 +10,7 @@ SingleHub v0.9
 
 - MQTT protocol support.
 - Xiaomi devices support: Smart Socket Plug 2, Eyecare Lamp 2, Yeelight, Power Strip (If your device is not listed, write to me and I will add it).
-- MySensors: Now you can use multiple MySensors serial\ethernet gateways at the same time. Each gateway is a separate container. Nodes that the gateway detected are automatically added to the container.
+- MySensors: Now you can use multiple MySensors serial\ethernet gateways at the same time. Each gateway is a separate container. Nodes that the gateway detected are automatically added to the container. MySensors  nodes now have a setting to send 1/0 instead of true/false or not. 
 
 
 **Node editor:**
