@@ -13,12 +13,13 @@ import { I_MYS_Node, I_MYS_Message, I_MYS_Sensor } from "./mys-types";
 import { MySensorsNode, I_MYS_Node_Properties } from "./mys-node";
 
 
-let split, app;
+let split;
+// let app;
 //let _;
 if (typeof (window) === 'undefined') { //for backside only
     split = require("split");
     // _ = require("lodash");
-    app = require("../../../../../app.js");
+    // app = require("../../../../../app.js");
 }
 
 
@@ -88,7 +89,7 @@ export class MySensorsControllerNode extends ContainerNode {
         if (this.side == Side.server) {
             if (!this.settings["enable"].value)
                 this.disconnectFromGateway();
-            else if (this.inputs[0].data != false && !this.port || this.port.path != this.settings["port"].value || this.port.baudRate != this.settings["baudRate"].value) {
+            else if (this.inputs[0].data != false && (!this.isConnected || !this.port || this.port.path != this.settings["port"].value || this.port.baudRate != this.settings["baudRate"].value)) {
                 this.disconnectFromGateway();
                 this.connetToGateway();
             }
@@ -478,7 +479,7 @@ export class MySensorsControllerNode extends ContainerNode {
         //     });
 
         //send message to client side
-        app.app.server.editorSocket.io.emit('node-create', {
+        this.container.server_editor_socket.emit('node-create', {
             id: shub_node.id,
             cid: shub_node.container.id,
             type: shub_node.type,

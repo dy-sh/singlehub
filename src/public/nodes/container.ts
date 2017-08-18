@@ -580,7 +580,7 @@ export class Container extends Emitter {
         }
 
         if (!node.title) node.title = node.type;
-        if ((!properties || !properties.properties)
+        if ((!properties || !properties.properties || !properties.properties.size)
             && (!serialized_node || !serialized_node.size))
             node.size = node.computeSize();
 

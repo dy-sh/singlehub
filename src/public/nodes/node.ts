@@ -1273,7 +1273,7 @@ export class Node {
                 { id: this.id, cid: this.container.id, value: mess });
     }
 
-    sendMessageToEditorSide(mess: any) {
+    sendMessageToEditorSide(mess: any, onlyConnectedUsers = true) {
         let m = { id: this.id, cid: this.container.id, value: mess };
 
         if (this.side == Side.editor) {
@@ -1281,7 +1281,11 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket = this.container.server_editor_socket;
-            socket.in("" + this.container.id).emit('node-message-to-editor-side', m);
+
+            if (onlyConnectedUsers)
+                socket.in("" + this.container.id).emit('node-message-to-editor-side', m);
+            else
+                socket.emit('node-message-to-editor-side', m);
         }
         else {
             this.container.clinet_socket.emit('node-message-to-editor-side', m);
@@ -1304,7 +1308,7 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket = this.container.server_editor_socket;
-            socket.in("" + this.container.id).emit("node-add-input", m);
+            socket.emit("node-add-input", m);
         }
         else {
             this.container.clinet_socket.emit('node-add-input', m);
@@ -1327,7 +1331,7 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket = this.container.server_editor_socket;
-            socket.in("" + this.container.id).emit('node-add-output', m);
+            socket.emit('node-add-output', m);
         }
         else {
             this.container.clinet_socket.emit('node-add-output', m);
@@ -1346,7 +1350,7 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket = this.container.server_editor_socket;
-            socket.in("" + this.container.id).emit('node-remove-input', m);
+            socket.emit('node-remove-input', m);
         }
         else {
             this.container.clinet_socket.emit('node-remove-input', m);
@@ -1365,7 +1369,7 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket = this.container.server_editor_socket;
-            socket.in("" + this.container.id).emit('node-remove-output', m);
+            socket.emit('node-remove-output', m);
         }
         else {
             this.container.clinet_socket.emit('node-remove-output', m);
