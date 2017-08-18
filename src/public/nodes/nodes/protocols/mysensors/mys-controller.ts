@@ -86,10 +86,12 @@ export class MySensorsControllerNode extends ContainerNode {
 
 
         if (this.side == Side.server) {
-            this.disconnectFromGateway();
-
-            if (this.settings["enable"].value && this.inputs[0].data != false)
+            if (!this.settings["enable"].value)
+                this.disconnectFromGateway();
+            else if (this.inputs[0].data != false && !this.port || this.port.path != this.settings["port"].value || this.port.baudRate != this.settings["baudRate"].value) {
+                this.disconnectFromGateway();
                 this.connetToGateway();
+            }
         }
     }
 
