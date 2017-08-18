@@ -37,7 +37,12 @@ export class MySensorsControllerNode extends ContainerNode {
     constructor(container) {
         super(container);
         this.title = "MYS Controller";
-        this.descriprion = 'MySensors protocol controller.';
+        this.descriprion = "MySensors protocol serial-gateway controller.<br><br>" +
+            "You can use multiple MySensors serial/ethernet gateways at the same time. " +
+            "Each gateway is a separate container. Nodes that the gateway detected are automatically added to the container.<br>" +
+            "Click \"Open\" on this node to enter inside container and you will see registered MySensors nodes.<br><br>" +
+            "To connect to the gateway, set port name and baud-rate in the node settings and check \"Enable\" checkbox (master switch). " +
+            "Input pin \"Enable\" is optional and will not work if node is not enabled in the settings (using Enable checkbox).";
         this.addInput("[connect]", "boolean");
         this.addOutput("connected", "boolean");
 
