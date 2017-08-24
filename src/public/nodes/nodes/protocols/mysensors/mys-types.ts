@@ -4,7 +4,6 @@
  */
 
 
-
 export interface I_MYS_Message {
     nodeId: number,
     sensorId: number,
@@ -56,14 +55,11 @@ export let messageTypeKey = [
     "C_INTERNAL",
     "C_STREAM"
 ];
-
-
-
 export let sensorType = {
     S_DOOR: 0,
     S_MOTION: 1,
     S_SMOKE: 2,
-    S_LIGHT: 3,
+    S_BINARY: 3,
     S_DIMMER: 4,
     S_COVER: 5,
     S_TEMP: 6,
@@ -95,16 +91,18 @@ export let sensorType = {
     S_WATER_LEAK: 32,
     S_SOUND: 33,
     S_VIBRATION: 34,
-    S_MOISTUR: 35
+    S_MOISTURE: 35,
+    S_INFO: 36,
+    S_GAS: 37,
+    S_GPS: 38,
+    S_WATER_QUALITY: 39
 };
-
 
 
 export let sensorTypeKey = [
     "S_DOOR",
     "S_MOTION",
     "S_SMOKE",
-    "S_LIGHT",
     "S_BINARY",
     "S_DIMMER",
     "S_COVER",
@@ -137,7 +135,11 @@ export let sensorTypeKey = [
     "S_WATER_LEAK",
     "S_SOUND",
     "S_VIBRATION",
-    "S_MOISTURE"
+    "S_MOISTURE",
+    "S_INFO",
+    "S_GAS",
+    "S_GPS",
+    "S_WATER_QUALITY"
 ];
 
 
@@ -146,7 +148,6 @@ export let sensorSimpleType = {
     "Door": 0,
     "Motion": 1,
     "Smoke": 2,
-    //  S_LIGHT": 3,
     "Binary": 3,
     "Dimmer": 4,
     "Cover": 5,
@@ -179,7 +180,11 @@ export let sensorSimpleType = {
     "Water leak": 32,
     "Sound": 33,
     "Vibration": 34,
-    "Moisture": 35
+    "Moisture": 35,
+    "Info": 36,
+    "Gas": 37,
+    "GPS": 38,
+    "Water quality": 39,
 };
 
 
@@ -187,8 +192,8 @@ export let sensorSimpleType = {
 export let sensorDataType = {
     V_TEMP: 0,
     V_HUM: 1,
-    V_LIGHT: 2,
-    V_DIMMER: 3,
+    V_STATUS: 2,
+    V_PERCENTAGE: 3,
     V_PRESSURE: 4,
     V_FORECAST: 5,
     V_RAIN: 6,
@@ -206,8 +211,8 @@ export let sensorDataType = {
     V_KWH: 18,
     V_SCENE_ON: 19,
     V_SCENE_OFF: 20,
-    V_HEATER: 21,
-    V_HEATER_SW: 22,
+    V_HVAC_FLOW_STATE: 21,
+    V_HVAC_SPEED: 22,
     V_LIGHT_LEVEL: 23,
     V_VAR1: 24,
     V_VAR2: 25,
@@ -231,7 +236,17 @@ export let sensorDataType = {
     V_UNIT_PREFIX: 43,
     V_HVAC_SETPOINT_COOL: 44,
     V_HVAC_SETPOINT_HEAT: 45,
-    V_HVAC_FLOW_MOD: 46
+    V_HVAC_FLOW_MODE: 46,
+    V_TEXT: 47,
+    V_CUSTOM: 48,
+    V_POSITION: 49,
+    V_IR_RECORD: 50,
+    V_PH: 51,
+    V_ORP: 52,
+    V_EC: 53,
+    V_VAR: 54,
+    V_VA: 55,
+    V_POWER_FACTOR: 56
 };
 
 
@@ -283,7 +298,17 @@ export let sensorDataTypeKey = [
     "V_UNIT_PREFIX",
     "V_HVAC_SETPOINT_COOL",
     "V_HVAC_SETPOINT_HEAT",
-    "V_HVAC_FLOW_MODE"
+    "V_HVAC_FLOW_MODE",
+    "V_TEXT",
+    "V_CUSTOM",
+    "V_POSITION",
+    "V_IR_RECORD",
+    "V_PH",
+    "V_ORP",
+    "V_EC",
+    "V_VAR",
+    "V_VA",
+    "V_POWER_FACTOR"
 ];
 
 
@@ -296,17 +321,28 @@ export let internalDataType = {
     I_ID_RESPONSE: 4,
     I_INCLUSION_MODE: 5,
     I_CONFIG: 6,
-    I_PING: 7,
-    I_PING_ACK: 8,
+    I_FIND_PARENT: 7,
+    I_FIND_PARENT_RESPONSE: 8,
     I_LOG_MESSAGE: 9,
     I_CHILDREN: 10,
     I_SKETCH_NAME: 11,
     I_SKETCH_VERSION: 12,
     I_REBOOT: 13,
     I_GATEWAY_READY: 14,
-    I_REQUEST_SIGNING: 15,
-    I_GET_NONCE: 16,
-    I_GET_NONCE_RESPONSE: 17
+    I_SIGNING_PRESENTATION: 15,
+    I_NONCE_REQUEST: 16,
+    I_NONCE_RESPONSE: 17,
+    I_HEARTBEAT_REQUEST: 18,
+    I_PRESENTATION: 19,
+    I_DISCOVER_REQUEST: 20,
+    I_DISCOVER_RESPONSE: 21,
+    I_HEARTBEAT_RESPONSE: 22,
+    I_LOCKED: 23,
+    I_PING: 24,
+    I_PONG: 25,
+    I_REGISTRATION_REQUEST: 26,
+    I_REGISTRATION_RESPONSE: 27,
+    I_DEBUG: 28,
 };
 
 
@@ -327,9 +363,20 @@ export let internalDataTypeKey = [
     "I_SKETCH_VERSION",
     "I_REBOOT",
     "I_GATEWAY_READY",
-    "I_REQUEST_SIGNING",
-    "I_GET_NONCE",
-    "I_GET_NONCE_RESPONSE"
+    "I_SIGNING_PRESENTATION",
+    "I_NONCE_REQUEST",
+    "I_NONCE_RESPONSE",
+    "I_HEARTBEAT_REQUEST",
+    "I_PRESENTATION",
+    "I_DISCOVER_REQUEST",
+    "I_DISCOVER_RESPONSE",
+    "I_HEARTBEAT_RESPONSE",
+    "I_LOCKED",
+    "I_PING",
+    "I_PONG",
+    "I_REGISTRATION_REQUEST",
+    "I_REGISTRATION_RESPONSE",
+    "I_DEBUG"
 ];
 
 
@@ -364,12 +411,12 @@ export function getDefaultDataType(sensor_type) {
             return sensorDataType.V_TRIPPED;
         case sensorType.S_SMOKE:
             return sensorDataType.V_TRIPPED;
-        // case sensorType.S_BINARY:
-        // 	return sensorDataType.V_STATUS;
+        case sensorType.S_BINARY:
+            return sensorDataType.V_STATUS;
         case sensorType.S_DIMMER:
-            return sensorDataType.V_DIMMER;
-        // case sensorType.S_COVER:
-        // 	return sensorDataType.V_PERCENTAGE;
+            return sensorDataType.V_PERCENTAGE;
+        case sensorType.S_COVER:
+            return sensorDataType.V_PERCENTAGE;
         case sensorType.S_TEMP:
             return sensorDataType.V_TEMP;
         case sensorType.S_HUM:
@@ -420,16 +467,24 @@ export function getDefaultDataType(sensor_type) {
             return sensorDataType.V_HVAC_SETPOINT_HEAT;
         case sensorType.S_MULTIMETER:
             return sensorDataType.V_VOLTAGE;
-        // case sensorType.S_SPRINKLER:
-        // 	return sensorDataType.V_STATUS;
+        case sensorType.S_SPRINKLER:
+            return sensorDataType.V_STATUS;
         case sensorType.S_WATER_LEAK:
             return sensorDataType.V_TRIPPED;
         case sensorType.S_SOUND:
             return sensorDataType.V_LEVEL;
         case sensorType.S_VIBRATION:
             return sensorDataType.V_LEVEL;
-        // case sensorType.S_MOISTURE:
-        // 	return sensorDataType.V_LEVEL;
+        case sensorType.S_MOISTURE:
+            return sensorDataType.V_LEVEL;
+        case sensorType.S_INFO:
+            return sensorDataType.V_TEXT;
+        case sensorType.S_GAS:
+            return sensorDataType.V_FLOW;
+        case sensorType.S_GPS:
+            return sensorDataType.V_POSITION;
+        case sensorType.S_WATER_QUALITY:
+            return sensorDataType.V_TEMP;
     }
 }
 

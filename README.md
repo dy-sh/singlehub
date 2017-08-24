@@ -14,8 +14,9 @@ To be aware of all the changes, look at the [changelog](https://github.com/derwi
 -------------------
 
 **Install requirements:**
-- install Git: https://git-scm.com/downloads
+- install Git: [https://git-scm.com/downloads](https://git-scm.com/downloads)
 - install Node.js v8.4 or higher: [https://nodejs.org/en/download/](https://nodejs.org/en/download/)
+- reboot
 
 
 **Install SingleHub:**
