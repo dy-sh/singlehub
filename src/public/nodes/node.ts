@@ -88,6 +88,11 @@ export interface NodeSettings {
     config?: any;
 }
 
+export interface ContextMenuOption {
+    title: string;
+    onClick: Function;
+}
+
 
 export class Node {
 
@@ -106,6 +111,7 @@ export class Node {
     //   connections: Array<any>;
     properties = {};
     settings: { [name: string]: NodeSettings } = {};
+    contextMenu: { [name: string]: ContextMenuOption } = {};
 
     ignore_remove: boolean;
     flags: {

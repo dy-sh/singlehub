@@ -26,6 +26,12 @@ export class MySensorsNode extends Node {
         this.settings["send-true"] = {
             description: "Send 1/0 instead of true/false", value: true, type: "boolean"
         };
+
+        this.contextMenu["configure"] = { title: "Configure", onClick: this.showConfigure }
+    }
+
+    showConfigure() {
+
     }
 
 
@@ -99,4 +105,4 @@ export class MySensorsNode extends Node {
         }
     }
 }
-Container.registerNodeType("protocols/mys-node", MySensorsNode, false);
+Container.registerNodeType("protocols/mys-node", MySensorsNode);
