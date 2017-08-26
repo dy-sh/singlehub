@@ -16,11 +16,10 @@ import { Renderer } from "../../../../js/editor/renderer";
 // </div>
 
 let nodeConfigureTemplate = `
-
     <div class="ui small modal" id="node-panel-modal">
       <div class="header" id="node-panel-title"></div>
       <div class="content">
-        <div class="ui form" id="node-panel-body">
+        <div class="ui form" id="node-panel-form">
             <div class="field">
                 Sketch: <span id="node-panel-sketch"></span>
             </div>
@@ -35,6 +34,8 @@ let nodeConfigureTemplate = `
       </div>
     </div>
 `;
+
+
 
 export interface I_MYS_Node_Properties {
     mys_node_id: number,
@@ -76,6 +77,25 @@ export class MySensorsNode extends Node {
 
         //sketch
         $("#node-panel-sketch").html(mys_node.sketchName + " " + mys_node.sketchVersion);
+
+        let form = $('#node-panel-form');
+
+
+        //sensors
+        let sensorConfigureTemplate = `
+  <div class="fields">
+    <div class="three wide field">
+       <label>Sensor ID</label>
+       <input type="text" id="node-panel-sonsor-id1" name="node-panel-sonsor-id1" value="1" readonly=""> 
+    </div>
+    <div class="seven wide field">
+       <label>Type</label>
+       <input type="text" id="node-panel-sonsor-type1" name="node-panel-sonsor-type1" value="TYPE"> 
+    </div>
+  </div>  
+`;
+
+        form.append(sensorConfigureTemplate);
 
         //modal panel
         (<any>$('#node-panel-modal')).modal({
