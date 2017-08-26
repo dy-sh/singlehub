@@ -22,6 +22,9 @@ let nodeConfigureTemplate = `
       <div class="content">
         <div class="ui form" id="node-panel-body">
             <div class="field">
+                Sketch: <span id="node-panel-sketch"></span>
+            </div>
+             <div class="field">
                 Last seen: <span id="node-panel-lastseen"></span>
             </div>
         </div>
@@ -64,9 +67,15 @@ export class MySensorsNode extends Node {
         body.empty();
 
         body.append(nodeConfigureTemplate);
+        //title
         $('#node-panel-title').html("MySensors Node " + node.properties.mys_node_id);
+
+        //last seen
         let lastSeen = moment(mys_node.lastSeen).format("DD/MM/YYYY HH:mm:ss");
         $("#node-panel-lastseen").html(lastSeen);
+
+        //sketch
+        $("#node-panel-sketch").html(mys_node.sketchName + " " + mys_node.sketchVersion);
 
         //modal panel
         (<any>$('#node-panel-modal')).modal({
