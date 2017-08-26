@@ -16,7 +16,7 @@ export interface I_MYS_Message {
 export interface I_MYS_Sensor {
     nodeId: number,
     sensorId: number,
-    lastSeen: number
+    lastSeen?: number
     type?: number,
     dataType?: number,
     state?: string,

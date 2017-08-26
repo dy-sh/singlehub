@@ -47,6 +47,8 @@ export interface I_MYS_Node_Properties {
 export class MySensorsNode extends Node {
     properties: I_MYS_Node_Properties;
 
+    private slots: number;
+
     constructor() {
         super();
 
@@ -60,6 +62,9 @@ export class MySensorsNode extends Node {
     }
 
     onConfigureClick(node: MySensorsNode, editor: Editor, renderer: Renderer) {
+
+        node.slots = node.getInputsCount();
+
 
         let mys_node = node.properties.mys_node;
 
@@ -80,44 +85,39 @@ export class MySensorsNode extends Node {
 
         let form = $('#node-panel-form');
 
-
-        //sensors
-
-        for (let s in mys_node.sensors) {
-            let sensor = mys_node.sensors[s];
-
-            let dataType = mys.sensorDataTypeKey[sensor.dataType];
-            let sensorType = mys.sensorTypeKey[sensor.type];
-
-            form.append(`
-  <div class="fields">
-    <div class="three wide field">
-       <label>Sensor ID</label>
-       <input type="text" id="node-panel-sonsor-id1" name="node-panel-sonsor-id1" value="`+ sensor.sensorId + `"> 
-    </div>
-    <div class="seven wide field">
-       <label>Type</label>
-       <input type="text" id="node-panel-sonsor-type1" name="node-panel-sonsor-type1" value="`+ sensorType + `"> 
-    </div>
-    <div class="seven wide field">
-       <label>Data Type</label>
-       <input type="text" id="node-panel-sonsor-datatype1" name="node-panel-sonsor-datatype1" value="`+ dataType + `"> 
-    </div>
-    <div class="three wide field">
-      <label>Remove</label>
-      <button class="ui button">X</button>
-    </div>
-  </div>  
-`);
-        }
-
-
         form.append(`
     <div class="field">
       <label></label>
-      <button class="ui button">Add Sensor</button>
+      <button id="node-panel-addsensor" class="ui button">Add Sensor</button>
     </div>
         `);
+
+        //add new sensor
+        $('#node-panel-addsensor').click(function () {
+            console.log(node.slots);
+            let sensor: I_MYS_Sensor = {
+                nodeId: mys_node.id,
+                sensorId: 0,
+                type: 0,
+                dataType: 0
+            }
+            node.slots++;
+            node.addSensorToForm(node.slots - 1, sensor);
+        });
+
+        //sensors
+        for (let s in mys_node.sensors) {
+            let sensor = mys_node.sensors[s];
+            let slot = sensor.shub_node_slot;
+
+            node.addSensorToForm(slot, sensor);
+        }
+
+
+
+
+
+
 
         //modal panel
         (<any>$('#node-panel-modal')).modal({
@@ -130,7 +130,40 @@ export class MySensorsNode extends Node {
     }
 
 
+    addSensorToForm(slot, sensor) {
+        let form = $('#node-panel-form');
 
+        let dataType = mys.sensorDataTypeKey[sensor.dataType];
+        let sensorType = mys.sensorTypeKey[sensor.type];
+
+        form.append(`
+  <div id="node-panel-sensor`+ slot + `" class="fields">
+    <div class="three wide field">
+       <label>Sensor ID</label>
+       <input type="text" id="node-panel-sonsor-id`+ slot + `" name="node-panel-sonsor-id` + slot + `" value="` + sensor.sensorId + `"> 
+    </div>
+    <div class="seven wide field">
+       <label>Type</label>
+       <input type="text" id="node-panel-sonsor-type`+ slot + `" name="node-panel-sonsor-type` + slot + `" value="` + sensorType + `"> 
+    </div>
+    <div class="seven wide field">
+       <label>Data Type</label>
+       <input type="text" id="node-panel-sonsor-datatype`+ slot + `" name="node-panel-sonsor-datatype` + slot + `" value="` + dataType + `"> 
+    </div>
+    <div class="three wide field">
+      <label>Remove</label>
+      <button id="node-panel-remove-sensor`+ slot + `" class="ui button">X</button>
+    </div>
+  </div>  
+`);
+
+        let that = this;
+
+        $("#node-panel-remove-sensor" + slot).click(function () {
+            $("#node-panel-sensor" + slot).remove();
+            that.slots--;
+        })
+    }
 
     onInputUpdated() {
         for (let i in this.inputs) {
