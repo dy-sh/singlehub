@@ -216,7 +216,10 @@ export class MySensorsNode extends Node {
     }
 
     onGetMessageToServerSide(data) {
-        console.log(data);
+        if (data.slots) {
+            // this.changeInputsCount(data.slots.length);
+            // this.changeOutputsCount(data.slots.length);
+        }
     }
 
     getControllerNode(): MySensorsControllerNode {

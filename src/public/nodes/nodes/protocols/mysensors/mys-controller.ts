@@ -270,15 +270,23 @@ export class MySensorsControllerNode extends ContainerNode {
 
         }
         else {
-            let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
-            if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId);
-            if (sensor.type !== message.subType) {
-                sensor.type = message.subType;
-                sensor.dataType = mys.getDefaultDataType(message.subType);
-                this.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
-                let node = this.get_MYS_Node(message.nodeId);
-                if (!node) node = this.register_MYS_Node(message.nodeId);
-                // this.emit("sensorUpdated", sensor, "type");
+
+            //presentstion
+
+            this.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] presented: [${mys.sensorTypeKey[message.subType]}]`);
+
+            //register supported types
+            let supportedTypes: [number] = mys.getSensorDataTypes(message.subType);
+            if (supportedTypes) {
+                supportedTypes.forEach(type => {
+                    let node = this.get_MYS_Node(message.nodeId);
+                    if (!node) node = this.register_MYS_Node(message.nodeId);
+
+                    let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId, type);
+                    if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId, type, message.subType);
+
+                    // this.emit("sensorUpdated", sensor, "type");
+                });
             }
         }
     };
@@ -288,8 +296,8 @@ export class MySensorsControllerNode extends ContainerNode {
         let node = this.get_MYS_Node(message.nodeId);
         if (!node) this.register_MYS_Node(message.nodeId);
 
-        let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
-        if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId);
+        let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId, message.subType);
+        if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId, message.subType);
 
         sensor.state = message.payload;
         sensor.lastSeen = Date.now();
@@ -316,7 +324,7 @@ export class MySensorsControllerNode extends ContainerNode {
 
 
     receiveReqMessage(message: I_MYS_Message) {
-        let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId);
+        let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId, message.subType);
         if (!sensor)
             return;
 
@@ -325,7 +333,7 @@ export class MySensorsControllerNode extends ContainerNode {
             sensorId: message.sensorId,
             messageType: mys.messageType.C_SET,
             ack: 0,
-            subType: sensor.type,
+            subType: sensor.dataType,
             payload: sensor.state
         });
     };
@@ -424,11 +432,11 @@ export class MySensorsControllerNode extends ContainerNode {
         return this.nodes[nodeId];
     };
 
-    get_MYS_Sensor(nodeId: number, sensorId: number): I_MYS_Sensor {
+    get_MYS_Sensor(nodeId: number, sensorId: number, dataType: number): I_MYS_Sensor {
         if (!this.nodes[nodeId])
             return null;
 
-        return this.nodes[nodeId].sensors[sensorId];
+        return this.nodes[nodeId].sensors[sensorId + "." + dataType];
     };
 
     // add_MYS_Node(node: I_MYS_Node) {
@@ -496,38 +504,46 @@ export class MySensorsControllerNode extends ContainerNode {
     };
 
 
-    register_MYS_Sensor(nodeId: number, sensorId: number): I_MYS_Sensor {
+    register_MYS_Sensor(nodeId: number, sensorId: number, dataType: number, sensorType: number = null): I_MYS_Sensor {
         let node = this.get_MYS_Node(nodeId);
         if (!node) node = this.register_MYS_Node(nodeId);
 
-        let sensor = node.sensors[sensorId];
+        let sensor = this.get_MYS_Sensor(nodeId, sensorId, dataType);
         if (sensor) {
-            this.debugErr("Can't register node [" + nodeId + "] sensor [" + sensorId + "]. Already exist");
+            this.debugErr("Can't register node [" + nodeId + "] sensor [" + sensorId + "] datatype [" + dataType + "]. Already exist");
             return;
         }
 
         let shub_node = this.get_SHub_Node(node);
 
+        let free_slot = shub_node.getFreeInputId();
+        let inputName = free_slot + " - sensor" + sensorId + " (" + mys.sensorDataTypeKey[dataType] + ")";
+        let outputName = free_slot + "";
+
         //add input and output
-        let i_id = shub_node.addInput("[sensor " + sensorId + "]");
-        let o_id = shub_node.addOutput("sensor " + sensorId);
+        let i_id = shub_node.addInput(inputName);
+        let o_id = shub_node.addOutput(outputName);
         if (i_id != o_id)
             throw "SingleHub node has different inputs and outputs slots count!";
 
         //send to eitor side for add input\output
-        shub_node.sendAddInputToEditorSide("[sensor " + sensorId + "]");
-        shub_node.sendAddOutputToEditorSide("sensor " + sensorId);
+        shub_node.sendAddInputToEditorSide(inputName);
+        shub_node.sendAddOutputToEditorSide(outputName);
 
         sensor = {
             nodeId: nodeId,
             sensorId: sensorId,
+            dataType: dataType,
             lastSeen: Date.now(),
             shub_node_slot: i_id
         };
 
-        node.sensors[sensorId] = sensor;
+        if (sensorType)
+            sensor.type = sensorType;
 
-        this.debug(`Node[${nodeId}] sensor[${sensorId}] registered`);
+        node.sensors[sensorId + "." + dataType] = sensor;
+
+        this.debug(`Node[${nodeId}] sensor[${sensorId}] type[${dataType}] registered`);
         //        this.emit("newSensor", sensor);
 
         let s_shub_node = shub_node.serialize(true);
@@ -558,14 +574,14 @@ export class MySensorsControllerNode extends ContainerNode {
     };
 
 
-    remove_MYS_Sensor(nodeId: number, sensorId: number) {
+    remove_MYS_Sensor(nodeId: number, sensorId: number, dataType: number) {
         let node = this.get_MYS_Node(nodeId);
         if (!node) {
             this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Node does not exist");
             return;
         }
 
-        let sensor = node.sensors[sensorId];
+        let sensor = this.get_MYS_Sensor(nodeId, sensorId, dataType);
         if (sensor) {
             this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Sensor does not exist");
             return;

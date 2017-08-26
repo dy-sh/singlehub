@@ -16,16 +16,16 @@ export interface I_MYS_Message {
 export interface I_MYS_Sensor {
     nodeId: number,
     sensorId: number,
+    dataType: number,
     lastSeen?: number
     type?: number,
-    dataType?: number,
     state?: string,
     shub_node_slot?: number
 }
 
 export interface I_MYS_Node {
     id: number,
-    sensors: { [id: number]: I_MYS_Sensor },
+    sensors: { [id: string]: I_MYS_Sensor },//id = sensorId.datatype
     registered: number,
     lastSeen: number,
     sketchName?: string,
@@ -403,88 +403,88 @@ export let streamKey = [
 
 
 
-export function getDefaultDataType(sensor_type) {
+export function getSensorDataTypes(sensor_type): [number] {
     switch (sensor_type) {
         case sensorType.S_DOOR:
-            return sensorDataType.V_TRIPPED;
+            return [sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_MOTION:
-            return sensorDataType.V_TRIPPED;
+            return [sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_SMOKE:
-            return sensorDataType.V_TRIPPED;
+            return [sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_BINARY:
-            return sensorDataType.V_STATUS;
+            return [sensorDataType.V_STATUS, sensorDataType.V_WATT];
         case sensorType.S_DIMMER:
-            return sensorDataType.V_PERCENTAGE;
+            return [sensorDataType.V_STATUS, sensorDataType.V_PERCENTAGE, sensorDataType.V_WATT];
         case sensorType.S_COVER:
-            return sensorDataType.V_PERCENTAGE;
+            return [sensorDataType.V_UP, sensorDataType.V_DOWN, sensorDataType.V_STOP, sensorDataType.V_PERCENTAGE];
         case sensorType.S_TEMP:
-            return sensorDataType.V_TEMP;
+            return [sensorDataType.V_TEMP, sensorDataType.V_ID];
         case sensorType.S_HUM:
-            return sensorDataType.V_HUM;
+            return [sensorDataType.V_HUM];
         case sensorType.S_BARO:
-            return sensorDataType.V_PRESSURE;
+            return [sensorDataType.V_PRESSURE, sensorDataType.V_FORECAST];
         case sensorType.S_WIND:
-            return sensorDataType.V_WIND;
+            return [sensorDataType.V_WIND, sensorDataType.V_GUST, sensorDataType.V_DIRECTION];
         case sensorType.S_RAIN:
-            return sensorDataType.V_RAIN;
+            return [sensorDataType.V_RAIN, sensorDataType.V_RAINRATE];
         case sensorType.S_UV:
-            return sensorDataType.V_UV;
+            return [sensorDataType.V_UV];
         case sensorType.S_WEIGHT:
-            return sensorDataType.V_WEIGHT;
+            return [sensorDataType.V_WEIGHT, sensorDataType.V_IMPEDANCE];
         case sensorType.S_POWER:
-            return sensorDataType.V_WATT;
+            return [sensorDataType.V_WATT, sensorDataType.V_KWH, sensorDataType.V_VAR, sensorDataType.V_VA, sensorDataType.V_POWER_FACTOR];
         case sensorType.S_HEATER:
-            return sensorDataType.V_TEMP;
+            return [sensorDataType.V_HVAC_SETPOINT_HEAT, sensorDataType.V_HVAC_FLOW_STATE, sensorDataType.V_TEMP, sensorDataType.V_STATUS];
         case sensorType.S_DISTANCE:
-            return sensorDataType.V_DISTANCE;
+            return [sensorDataType.V_DISTANCE, sensorDataType.V_UNIT_PREFIX];
         case sensorType.S_LIGHT_LEVEL:
-            return sensorDataType.V_LIGHT_LEVEL;
+            return [sensorDataType.V_LIGHT_LEVEL, sensorDataType.V_LEVEL];
         case sensorType.S_ARDUINO_NODE:
             return null;
         case sensorType.S_ARDUINO_REPEATER_NODE:
             return null;
         case sensorType.S_LOCK:
-            return sensorDataType.V_LOCK_STATUS;
+            return [sensorDataType.V_LOCK_STATUS];
         case sensorType.S_IR:
-            return sensorDataType.V_IR_SEND;
+            return [sensorDataType.V_IR_SEND, sensorDataType.V_IR_RECEIVE, sensorDataType.V_IR_RECORD];
         case sensorType.S_WATER:
-            return sensorDataType.V_VOLUME;
+            return [sensorDataType.V_FLOW, sensorDataType.V_VOLUME];
         case sensorType.S_AIR_QUALITY:
-            return sensorDataType.V_LEVEL;
+            return [sensorDataType.V_LEVEL, sensorDataType.V_UNIT_PREFIX];
         case sensorType.S_CUSTOM:
             return null;
         case sensorType.S_DUST:
-            return sensorDataType.V_LEVEL;
+            return [sensorDataType.V_LEVEL, sensorDataType.V_UNIT_PREFIX];
         case sensorType.S_SCENE_CONTROLLER:
-            return sensorDataType.V_SCENE_ON;
+            return [sensorDataType.V_SCENE_ON, sensorDataType.V_SCENE_OFF];
         case sensorType.S_RGB_LIGHT:
-            return sensorDataType.V_RGB;
+            return [sensorDataType.V_RGB, sensorDataType.V_WATT];
         case sensorType.S_RGBW_LIGHT:
-            return sensorDataType.V_RGBW;
+            return [sensorDataType.V_RGBW, sensorDataType.V_WATT];
         case sensorType.S_COLOR_SENSOR:
-            return sensorDataType.V_RGB;
+            return [sensorDataType.V_RGB];
         case sensorType.S_HVAC:
-            return sensorDataType.V_HVAC_SETPOINT_HEAT;
+            return [sensorDataType.V_STATUS, sensorDataType.V_TEMP, sensorDataType.V_HVAC_SETPOINT_HEAT, sensorDataType.V_HVAC_SETPOINT_COOL, sensorDataType.V_HVAC_FLOW_STATE, sensorDataType.V_HVAC_FLOW_MODE, sensorDataType.V_HVAC_SPEED];
         case sensorType.S_MULTIMETER:
-            return sensorDataType.V_VOLTAGE;
+            return [sensorDataType.V_VOLTAGE, sensorDataType.V_CURRENT, sensorDataType.V_IMPEDANCE];
         case sensorType.S_SPRINKLER:
-            return sensorDataType.V_STATUS;
+            return [sensorDataType.V_STATUS, sensorDataType.V_TRIPPED];
         case sensorType.S_WATER_LEAK:
-            return sensorDataType.V_TRIPPED;
+            return [sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_SOUND:
-            return sensorDataType.V_LEVEL;
+            return [sensorDataType.V_LEVEL, sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_VIBRATION:
-            return sensorDataType.V_LEVEL;
+            return [sensorDataType.V_LEVEL, sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_MOISTURE:
-            return sensorDataType.V_LEVEL;
+            return [sensorDataType.V_LEVEL, sensorDataType.V_TRIPPED, sensorDataType.V_ARMED];
         case sensorType.S_INFO:
-            return sensorDataType.V_TEXT;
+            return [sensorDataType.V_TEXT];
         case sensorType.S_GAS:
-            return sensorDataType.V_FLOW;
+            return [sensorDataType.V_FLOW, sensorDataType.V_VOLUME];
         case sensorType.S_GPS:
-            return sensorDataType.V_POSITION;
+            return [sensorDataType.V_POSITION];
         case sensorType.S_WATER_QUALITY:
-            return sensorDataType.V_TEMP;
+            return [sensorDataType.V_TEMP, sensorDataType.V_PH, sensorDataType.V_ORP, sensorDataType.V_EC, sensorDataType.V_STATUS];
     }
 }
 
