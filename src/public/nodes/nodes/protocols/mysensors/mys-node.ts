@@ -12,28 +12,10 @@ import { Renderer } from "../../../../js/editor/renderer";
 
 // <div class="field">
 //     <label>Node Type</label>
-//     <input id="node-panel-nodetype" type="text" name="first-name" value="Unknown">
+//     <input id="mys-panel-nodetype" type="text" name="first-name" value="Unknown">
 // </div>
 
-let nodeConfigureTemplate = `
-    <div class="ui small modal" id="node-panel-modal">
-      <div class="header" id="node-panel-title"></div>
-      <div class="content">
-        <div class="ui form" id="node-panel-form">
-            <div class="field">
-                Sketch: <span id="node-panel-sketch"></span>
-            </div>
-             <div class="field">
-                Last seen: <span id="node-panel-lastseen"></span>
-            </div>
-        </div>
-      </div>
-      <div class="actions">
-        <div class="ui cancel button">Cancel</div>
-        <div class="ui ok blue button">OK</div>
-      </div>
-    </div>
-`;
+
 
 
 
@@ -68,32 +50,56 @@ export class MySensorsNode extends Node {
 
         let mys_node = node.properties.mys_node;
 
-        //clear old body
-        let body = $('#node-panel');
-        body.empty();
 
-        body.append(nodeConfigureTemplate);
+        if (!$('#mys-panel-modal').length) {
+            console.log("create")
+            //create modal panel
+            let body = $('#node-panel');
+            body.append(' <div class="ui small modal" id="mys-panel-modal"> </div>');
+        }
+
+        let panel = $('#mys-panel-modal');
+        panel.empty();
+
+        panel.append(`
+      <div class="header" id="mys-panel-title"></div>
+      <div class="content">
+        <div class="ui form" id="mys-panel-form">
+            <div class="field">
+                Sketch: <span id="mys-panel-sketch"></span>
+            </div>
+             <div class="field">
+                Last seen: <span id="mys-panel-lastseen"></span>
+            </div>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="ui cancel button">Cancel</div>
+        <div class="ui ok blue button">OK</div>
+      </div>
+`);
+
         //title
-        $('#node-panel-title').html("MySensors Node " + node.properties.mys_node_id);
+        $('#mys-panel-title').html("MySensors Node " + node.properties.mys_node_id);
 
         //last seen
         let lastSeen = moment(mys_node.lastSeen).format("DD/MM/YYYY HH:mm:ss");
-        $("#node-panel-lastseen").html(lastSeen);
+        $("#mys-panel-lastseen").html(lastSeen);
 
         //sketch
-        $("#node-panel-sketch").html(mys_node.sketchName + " " + mys_node.sketchVersion);
+        $("#mys-panel-sketch").html(mys_node.sketchName + " " + mys_node.sketchVersion);
 
-        let form = $('#node-panel-form');
+        let form = $('#mys-panel-form');
 
         form.append(`
     <div class="field">
       <label></label>
-      <button id="node-panel-addsensor" class="ui button">Add Sensor</button>
+      <button id="mys-panel-addsensor" class="ui button">Add Sensor</button>
     </div>
         `);
 
         //add new sensor
-        $('#node-panel-addsensor').click(function () {
+        $('#mys-panel-addsensor').click(function () {
             console.log(node.slots);
             let sensor: I_MYS_Sensor = {
                 nodeId: mys_node.id,
@@ -113,54 +119,51 @@ export class MySensorsNode extends Node {
             node.addSensorToForm(slot, sensor);
         }
 
-
-
-
-
-
-
-        //modal panel
-        (<any>$('#node-panel-modal')).modal({
+        //open modal
+        (<any>$('#mys-panel-modal')).modal({
             dimmerSettings: { opacity: 0.3 },
             onApprove: function () {
 
-
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
+
     }
 
 
     addSensorToForm(slot, sensor) {
-        let form = $('#node-panel-form');
+
+        let form = $('#mys-panel-form');
+
+        console.log(form);
 
         let dataType = mys.sensorDataTypeKey[sensor.dataType];
         let sensorType = mys.sensorTypeKey[sensor.type];
 
         form.append(`
-  <div id="node-panel-sensor`+ slot + `" class="fields">
+  <div id="mys-panel-sensor`+ slot + `" class="fields">
     <div class="three wide field">
        <label>Sensor ID</label>
-       <input type="text" id="node-panel-sonsor-id`+ slot + `" name="node-panel-sonsor-id` + slot + `" value="` + sensor.sensorId + `"> 
+       <input type="text" id="mys-panel-sonsor-id`+ slot + `" name="mys-panel-sonsor-id` + slot + `" value="` + sensor.sensorId + `"> 
     </div>
     <div class="seven wide field">
        <label>Type</label>
-       <input type="text" id="node-panel-sonsor-type`+ slot + `" name="node-panel-sonsor-type` + slot + `" value="` + sensorType + `"> 
+       <input type="text" id="mys-panel-sonsor-type`+ slot + `" name="mys-panel-sonsor-type` + slot + `" value="` + sensorType + `"> 
     </div>
     <div class="seven wide field">
        <label>Data Type</label>
-       <input type="text" id="node-panel-sonsor-datatype`+ slot + `" name="node-panel-sonsor-datatype` + slot + `" value="` + dataType + `"> 
+       <input type="text" id="mys-panel-sonsor-datatype`+ slot + `" name="mys-panel-sonsor-datatype` + slot + `" value="` + dataType + `"> 
     </div>
     <div class="three wide field">
       <label>Remove</label>
-      <button id="node-panel-remove-sensor`+ slot + `" class="ui button">X</button>
+      <button id="mys-panel-remove-sensor`+ slot + `" class="ui button">X</button>
     </div>
   </div>  
 `);
 
         let that = this;
 
-        $("#node-panel-remove-sensor" + slot).click(function () {
-            $("#node-panel-sensor" + slot).remove();
+        $("#mys-panel-remove-sensor" + slot).click(function () {
+            $("#mys-panel-sensor" + slot).remove();
             that.slots--;
         })
     }
