@@ -510,6 +510,8 @@ export class Editor {
         }).modal('setting', 'transition', 'fade up').modal('show');
     }
 
+
+
     private addPlayButton() {
         let that = this;
         $("#play-button").click(function () {

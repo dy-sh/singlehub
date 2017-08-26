@@ -6,7 +6,25 @@ import { ContainerNode } from "../../main";
 import { debug } from "util";
 import { I_MYS_Node, I_MYS_Sensor } from "./mys-types";
 import { MySensorsControllerNode } from "./mys-controller";
+import { Editor } from "../../../../js/editor/editor";
+import { Renderer } from "../../../../js/editor/renderer";
 
+
+
+
+let nodeConfigureTemplate =
+    '\
+    <div class="ui small modal" id="node-panel-modal">\
+      <div class="header" id="node-panel-title"></div>\
+      <div class="content">\
+        <div class="ui form" id="node-panel-body"></div>\
+      </div>\
+      <div class="actions">\
+        <div class="ui cancel button">Cancel</div>\
+        <div class="ui ok blue button">OK</div>\
+      </div>\
+    </div>\
+';
 
 export interface I_MYS_Node_Properties {
     mys_node_id: number,
@@ -27,12 +45,29 @@ export class MySensorsNode extends Node {
             description: "Send 1/0 instead of true/false", value: true, type: "boolean"
         };
 
-        this.contextMenu["configure"] = { title: "Configure", onClick: this.showConfigure }
+        this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
 
-    showConfigure() {
+    onConfigureClick(node: Node, editor: Editor, renderer: Renderer) {
 
+        //clear old body
+        let body = $('#node-panel');
+        body.empty();
+
+        body.append(nodeConfigureTemplate);
+        $('#node-panel-title').html(node.type);
+
+        //modal panel
+        (<any>$('#node-panel-modal')).modal({
+            dimmerSettings: { opacity: 0.3 },
+            onApprove: function () {
+
+
+            }
+        }).modal('setting', 'transition', 'fade up').modal('show');
     }
+
+
 
 
     onInputUpdated() {

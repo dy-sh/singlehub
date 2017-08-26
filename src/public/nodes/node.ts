@@ -4,6 +4,8 @@
 
 import { Container, Side } from "./container";
 import Utils from "./utils";
+import { Editor } from "../js/editor/editor";
+import { Renderer } from "../js/editor/renderer";
 
 
 //console logger back and front
@@ -90,7 +92,7 @@ export interface NodeSettings {
 
 export interface ContextMenuOption {
     title: string;
-    onClick: Function;
+    onClick(node: Node, editor: Editor, renderer: Renderer);
 }
 
 

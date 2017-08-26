@@ -2387,8 +2387,8 @@ export class Renderer {
         if (node.contextMenu && Object.keys(node.contextMenu).length > 0) {
             for (let option in node.contextMenu) {
                 options.push({
-                    content: node.contextMenu[option].title, callback: function () {
-                        node.contextMenu[option].onClick().bind(node);
+                    content: node.contextMenu[option].title, callback: () => {
+                        node.contextMenu[option].onClick(node, editor, this);
                     }
                 });
             }
