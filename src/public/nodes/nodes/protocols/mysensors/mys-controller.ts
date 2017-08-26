@@ -436,7 +436,7 @@ export class MySensorsControllerNode extends ContainerNode {
         if (!this.nodes[nodeId])
             return null;
 
-        return this.nodes[nodeId].sensors[sensorId + "." + dataType];
+        return this.nodes[nodeId].sensors[sensorId + "-" + dataType];
     };
 
     // add_MYS_Node(node: I_MYS_Node) {
@@ -517,8 +517,8 @@ export class MySensorsControllerNode extends ContainerNode {
         let shub_node = this.get_SHub_Node(node);
 
         let free_slot = shub_node.getFreeInputId();
-        let inputName = free_slot + " - sensor" + sensorId + " (" + mys.sensorDataTypeKey[dataType] + ")";
-        let outputName = free_slot + "";
+        let inputName = (free_slot + 1) + " - sensor" + sensorId + " (" + mys.sensorDataTypeKey[dataType] + ")";
+        let outputName = (free_slot + 1) + "";
 
         //add input and output
         let i_id = shub_node.addInput(inputName);
@@ -541,7 +541,7 @@ export class MySensorsControllerNode extends ContainerNode {
         if (sensorType)
             sensor.type = sensorType;
 
-        node.sensors[sensorId + "." + dataType] = sensor;
+        node.sensors[sensorId + "-" + dataType] = sensor;
 
         this.debug(`Node[${nodeId}] sensor[${sensorId}] type[${dataType}] registered`);
         //        this.emit("newSensor", sensor);

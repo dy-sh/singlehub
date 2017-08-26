@@ -25,7 +25,7 @@ export interface I_MYS_Sensor {
 
 export interface I_MYS_Node {
     id: number,
-    sensors: { [id: string]: I_MYS_Sensor },//id = sensorId.datatype
+    sensors: { [id: string]: I_MYS_Sensor },//id = sensorId-datatype
     registered: number,
     lastSeen: number,
     sketchName?: string,
