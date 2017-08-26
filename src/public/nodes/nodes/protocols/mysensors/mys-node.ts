@@ -52,7 +52,6 @@ export class MySensorsNode extends Node {
 
 
         if (!$('#mys-panel-modal').length) {
-            console.log("create")
             //create modal panel
             let body = $('#node-panel');
             body.append(' <div class="ui small modal" id="mys-panel-modal"> </div>');
@@ -100,7 +99,6 @@ export class MySensorsNode extends Node {
 
         //add new sensor
         $('#mys-panel-addsensor').click(function () {
-            console.log(node.slots);
             let sensor: I_MYS_Sensor = {
                 nodeId: mys_node.id,
                 sensorId: 0,
@@ -123,7 +121,20 @@ export class MySensorsNode extends Node {
         (<any>$('#mys-panel-modal')).modal({
             dimmerSettings: { opacity: 0.3 },
             onApprove: function () {
+                let slots = [];
 
+                for (let i = 0; i < node.slots; i++) {
+                    slots.push({
+                        slot: i,
+                        id: $('#mys-panel-sonsor-id' + i).val(),
+                        type: $('#mys-panel-sonsor-type' + i).val(),
+                        datatype: $('#mys-panel-sonsor-datatype' + i).val(),
+                    })
+                }
+
+                node.sendMessageToServerSide({
+                    slots: slots
+                });
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
 
@@ -134,7 +145,6 @@ export class MySensorsNode extends Node {
 
         let form = $('#mys-panel-form');
 
-        console.log(form);
 
         let dataType = mys.sensorDataTypeKey[sensor.dataType];
         let sensorType = mys.sensorTypeKey[sensor.type];
@@ -203,6 +213,10 @@ export class MySensorsNode extends Node {
 
             }
         }
+    }
+
+    onGetMessageToServerSide(data) {
+        console.log(data);
     }
 
     getControllerNode(): MySensorsControllerNode {
