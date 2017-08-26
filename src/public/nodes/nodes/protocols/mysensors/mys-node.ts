@@ -86,16 +86,28 @@ export class MySensorsNode extends Node {
   <div class="fields">
     <div class="three wide field">
        <label>Sensor ID</label>
-       <input type="text" id="node-panel-sonsor-id1" name="node-panel-sonsor-id1" value="1" readonly=""> 
+       <input type="text" id="node-panel-sonsor-id1" name="node-panel-sonsor-id1" value="1"> 
     </div>
     <div class="seven wide field">
        <label>Type</label>
        <input type="text" id="node-panel-sonsor-type1" name="node-panel-sonsor-type1" value="TYPE"> 
     </div>
+    <div class="three wide field">
+      <label>Remove</label>
+      <button class="ui button">X</button>
+    </div>
   </div>  
 `;
 
         form.append(sensorConfigureTemplate);
+        form.append(sensorConfigureTemplate);
+
+        form.append(`
+    <div class="field">
+      <label></label>
+      <button class="ui button">Add Sensor</button>
+    </div>
+        `);
 
         //modal panel
         (<any>$('#node-panel-modal')).modal({
