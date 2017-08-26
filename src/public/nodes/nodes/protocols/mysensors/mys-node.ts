@@ -10,21 +10,28 @@ import { Editor } from "../../../../js/editor/editor";
 import { Renderer } from "../../../../js/editor/renderer";
 
 
+// <div class="field">
+//     <label>Node Type</label>
+//     <input id="node-panel-nodetype" type="text" name="first-name" value="Unknown">
+// </div>
 
+let nodeConfigureTemplate = `
 
-let nodeConfigureTemplate =
-    '\
-    <div class="ui small modal" id="node-panel-modal">\
-      <div class="header" id="node-panel-title"></div>\
-      <div class="content">\
-        <div class="ui form" id="node-panel-body"></div>\
-      </div>\
-      <div class="actions">\
-        <div class="ui cancel button">Cancel</div>\
-        <div class="ui ok blue button">OK</div>\
-      </div>\
-    </div>\
-';
+    <div class="ui small modal" id="node-panel-modal">
+      <div class="header" id="node-panel-title"></div>
+      <div class="content">
+        <div class="ui form" id="node-panel-body">
+            <div class="field">
+                Last seen: <span id="node-panel-lastseen"></span>
+            </div>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="ui cancel button">Cancel</div>
+        <div class="ui ok blue button">OK</div>
+      </div>
+    </div>
+`;
 
 export interface I_MYS_Node_Properties {
     mys_node_id: number,
@@ -48,14 +55,18 @@ export class MySensorsNode extends Node {
         this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
 
-    onConfigureClick(node: Node, editor: Editor, renderer: Renderer) {
+    onConfigureClick(node: MySensorsNode, editor: Editor, renderer: Renderer) {
+
+        let mys_node = node.properties.mys_node;
 
         //clear old body
         let body = $('#node-panel');
         body.empty();
 
         body.append(nodeConfigureTemplate);
-        $('#node-panel-title').html(node.type);
+        $('#node-panel-title').html("MySensors Node " + node.properties.mys_node_id);
+        let lastSeen = moment(mys_node.lastSeen).format("DD/MM/YYYY HH:mm:ss");
+        $("#node-panel-lastseen").html(lastSeen);
 
         //modal panel
         (<any>$('#node-panel-modal')).modal({
