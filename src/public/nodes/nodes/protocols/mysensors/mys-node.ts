@@ -82,25 +82,35 @@ export class MySensorsNode extends Node {
 
 
         //sensors
-        let sensorConfigureTemplate = `
+
+        for (let s in mys_node.sensors) {
+            let sensor = mys_node.sensors[s];
+
+            let dataType = mys.sensorDataTypeKey[sensor.dataType];
+            let sensorType = mys.sensorTypeKey[sensor.type];
+
+            form.append(`
   <div class="fields">
     <div class="three wide field">
        <label>Sensor ID</label>
-       <input type="text" id="node-panel-sonsor-id1" name="node-panel-sonsor-id1" value="1"> 
+       <input type="text" id="node-panel-sonsor-id1" name="node-panel-sonsor-id1" value="`+ sensor.sensorId + `"> 
     </div>
     <div class="seven wide field">
        <label>Type</label>
-       <input type="text" id="node-panel-sonsor-type1" name="node-panel-sonsor-type1" value="TYPE"> 
+       <input type="text" id="node-panel-sonsor-type1" name="node-panel-sonsor-type1" value="`+ sensorType + `"> 
+    </div>
+    <div class="seven wide field">
+       <label>Data Type</label>
+       <input type="text" id="node-panel-sonsor-datatype1" name="node-panel-sonsor-datatype1" value="`+ dataType + `"> 
     </div>
     <div class="three wide field">
       <label>Remove</label>
       <button class="ui button">X</button>
     </div>
   </div>  
-`;
+`);
+        }
 
-        form.append(sensorConfigureTemplate);
-        form.append(sensorConfigureTemplate);
 
         form.append(`
     <div class="field">
