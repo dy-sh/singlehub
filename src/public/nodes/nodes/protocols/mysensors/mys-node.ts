@@ -104,7 +104,7 @@ export class MySensorsNode extends Node {
             let sensor: I_MYS_Sensor = {
                 nodeId: mys_node.id,
                 sensorId: 0,
-                type: 0,
+                type: null,
                 dataType: 0
             }
 
@@ -261,6 +261,7 @@ export class MySensorsNode extends Node {
                 for (let i = this.getInputsCount(); i < data.slots.length; i++) {
                     let s = data.slots[i];
                     let sensor = this.getControllerNode().register_MYS_Sensor(this.properties.mys_node.id, s.id, s.datatype);
+                    if (!sensor) this.debugErr("Cant edit MYS node. Cant create sensor");
                 }
             }
             //change sensors

@@ -598,6 +598,9 @@ export class MySensorsControllerNode extends ContainerNode {
 
         let shub_node = this.get_SHub_Node(node);
 
+        //remove sensor
+        delete node.sensors[sensorId + "-" + dataType];
+
         //remove input and output
         shub_node.removeInput(sensor.shub_node_slot);
         shub_node.removeOutput(sensor.shub_node_slot);
