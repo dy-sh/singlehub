@@ -152,7 +152,7 @@ export class MySensorsNode extends Node {
 
 
         let dataType = sensor.dataType;
-        let sensorType = sensor.type;
+        let sensorType = sensor.type != null ? sensor.type : "";
         // let dataType = mys.sensorDataTypeKey[sensor.dataType];
         // let sensorType = mys.sensorTypeKey[sensor.type];
 
