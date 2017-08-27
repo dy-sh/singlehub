@@ -591,7 +591,7 @@ export class MySensorsControllerNode extends ContainerNode {
         }
 
         let sensor = this.get_MYS_Sensor(nodeId, sensorId, dataType);
-        if (sensor) {
+        if (!sensor) {
             this.debugErr("Can't remove node [" + nodeId + "] sensor [" + sensorId + "]. Sensor does not exist");
             return;
         }

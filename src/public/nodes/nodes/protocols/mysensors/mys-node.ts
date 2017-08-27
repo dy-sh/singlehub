@@ -222,9 +222,45 @@ export class MySensorsNode extends Node {
 
     onGetMessageToServerSide(data) {
         if (data.slots) {
-            // this.changeInputsCount(data.slots.length);
-            // this.changeOutputsCount(data.slots.length);
-            console.log(data.slots);
+            let controller = this.getControllerNode();
+
+            //remove sensors
+            if (data.slots.length < this.getInputsCount()) {
+                for (let i = data.slots.length; i < this.getInputsCount(); i++) {
+                    let sensor = this.getSensorInSlot(i);
+                    if (sensor) this.getControllerNode().remove_MYS_Sensor(sensor.nodeId, sensor.sensorId, sensor.dataType);
+                    if (this.inputs[i]) this.removeInput(i);
+                    if (this.outputs[i]) this.removeOutput(i);
+                }
+            }
+            //add sensors
+            if (data.slots.length > this.getInputsCount()) {
+                for (let i = this.getInputsCount(); i < data.slots.length; i++) {
+                    let s = data.slots[i];
+                    let sensor = this.getControllerNode().register_MYS_Sensor(this.properties.mys_node.id, s.id, s.type);
+                }
+            }
+            //change sensors
+            for (let s of data.slots) {
+                console.log(s);
+                let changed = false;
+
+                let sensor = this.getSensorInSlot(s.slot);
+                let id = s.id == "" || s.id == null ? 0 : +s.id;
+                let type = s.type == "" || s.type == null ? 0 : +s.type;
+                let datatype = s.datatype == "" || s.datatype == null ? null : +s.datatype;
+                if (sensor.sensorId != id || sensor.dataType != datatype || sensor.type != type) {
+                    changed = true;
+                    sensor.sensorId = id;
+                    sensor.dataType = datatype;
+                    sensor.type = type;
+                }
+
+                if (changed)
+                    this.container.db.updateNode(this.id, this.container.id, {
+                        $set: { "properties.mys_node": this.properties.mys_node }
+                    });
+            }
         }
     }
 
@@ -260,5 +296,26 @@ export class MySensorsNode extends Node {
                 return sensor;
         }
     }
+
+    // addInput(name?: string, type?: string, extra_info?: any): number {
+    //     this.getControllerNode().register_MYS_Sensor()
+    //     return super.addInput(name, type, extra_info);
+    // }
+
+    // addOutput(name?: string, type?: string, extra_info?: any): number {
+    //     return super.addOutput(name, type, extra_info);
+    // }
+
+    // removeInput(id: number): void {
+    //     let sensor = this.getSensorInSlot(id);
+    //     if (sensor) this.getControllerNode().remove_MYS_Sensor(sensor.nodeId, sensor.sensorId, sensor.dataType);
+    //     super.removeInput(id);
+    // }
+
+    // removeOutput(id: number): void {
+    //     let sensor = this.getSensorInSlot(id);
+    //     if (sensor) this.getControllerNode().remove_MYS_Sensor(sensor.nodeId, sensor.sensorId, sensor.dataType);
+    //     super.removeOutput(id);
+    // }
 }
 Container.registerNodeType("protocols/mys-node", MySensorsNode);
