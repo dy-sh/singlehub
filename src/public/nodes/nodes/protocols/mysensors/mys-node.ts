@@ -128,12 +128,13 @@ export class MySensorsNode extends Node {
                 let slots = [];
 
 
-                for (let i of node.slots) {
+                let i = 0;
+                for (let s of node.slots) {
                     slots.push({
-                        slot: i,
-                        id: $('#mys-panel-sonsor-id' + i).val(),
-                        type: $('#mys-panel-sonsor-type' + i).val(),
-                        datatype: $('#mys-panel-sonsor-datatype' + i).val(),
+                        slot: i++,
+                        id: $('#mys-panel-sonsor-id' + s).val(),
+                        type: $('#mys-panel-sonsor-type' + s).val(),
+                        datatype: $('#mys-panel-sonsor-datatype' + s).val(),
                     })
                 }
 
@@ -247,9 +248,10 @@ export class MySensorsNode extends Node {
 
             let controller = this.getControllerNode();
 
+            let inputsCount = this.getInputsCount();
             //remove sensors
-            if (data.slots.length < this.getInputsCount()) {
-                for (let i = data.slots.length; i < this.getInputsCount(); i++) {
+            if (data.slots.length < inputsCount) {
+                for (let i = data.slots.length; i < inputsCount; i++) {
                     let sensor = this.getSensorInSlot(i);
                     if (sensor) this.getControllerNode().remove_MYS_Sensor(sensor.nodeId, sensor.sensorId, sensor.dataType);
                     if (this.inputs[i]) this.removeInput(i);
@@ -257,8 +259,8 @@ export class MySensorsNode extends Node {
                 }
             }
             //add sensors
-            if (data.slots.length > this.getInputsCount()) {
-                for (let i = this.getInputsCount(); i < data.slots.length; i++) {
+            else if (data.slots.length > inputsCount) {
+                for (let i = inputsCount; i < data.slots.length; i++) {
                     let s = data.slots[i];
                     let sensor = this.getControllerNode().register_MYS_Sensor(this.properties.mys_node.id, s.id, s.datatype);
                     if (!sensor) this.debugErr("Cant edit MYS node. Cant create sensor");
