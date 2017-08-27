@@ -151,8 +151,10 @@ export class MySensorsNode extends Node {
         let form = $('#mys-panel-form');
 
 
-        let dataType = mys.sensorDataTypeKey[sensor.dataType];
-        let sensorType = mys.sensorTypeKey[sensor.type];
+        let dataType = sensor.dataType;
+        let sensorType = sensor.type;
+        // let dataType = mys.sensorDataTypeKey[sensor.dataType];
+        // let sensorType = mys.sensorTypeKey[sensor.type];
 
         form.append(`
   <div id="mys-panel-sensor`+ slot + `" class="fields">
@@ -222,6 +224,27 @@ export class MySensorsNode extends Node {
 
     onGetMessageToServerSide(data) {
         if (data.slots) {
+            //convert strings
+            data.slots.forEach(s => {
+                s.id = (s.id == "" || s.id == null) ? 0 : +s.id;
+                s.datatype = (s.datatype == "" || s.datatype == null) ? 0 : +s.datatype;
+                s.type = (s.type == "" || s.type == null) ? null : +s.type;
+            });
+
+            //check for duplicates
+            for (var x = 0; x < data.slots.length; x++) {
+                var slot1 = data.slots[x];
+                for (var y = 0; y < data.slots.length; y++) {
+                    if (x == y) continue;
+                    var slot2 = data.slots[y];
+                    if (slot1.id == slot2.id && slot1.datatype == slot2.datatype) {
+                        this.debugWarn("Cant edit MYS-node. Check form data for missing values or duplicates.");
+                        return;
+                    }
+                }
+            }
+
+
             let controller = this.getControllerNode();
 
             //remove sensors
@@ -237,7 +260,7 @@ export class MySensorsNode extends Node {
             if (data.slots.length > this.getInputsCount()) {
                 for (let i = this.getInputsCount(); i < data.slots.length; i++) {
                     let s = data.slots[i];
-                    let sensor = this.getControllerNode().register_MYS_Sensor(this.properties.mys_node.id, s.id, s.type);
+                    let sensor = this.getControllerNode().register_MYS_Sensor(this.properties.mys_node.id, s.id, s.datatype);
                 }
             }
             //change sensors
@@ -246,14 +269,12 @@ export class MySensorsNode extends Node {
                 let changed = false;
 
                 let sensor = this.getSensorInSlot(s.slot);
-                let id = s.id == "" || s.id == null ? 0 : +s.id;
-                let type = s.type == "" || s.type == null ? 0 : +s.type;
-                let datatype = s.datatype == "" || s.datatype == null ? null : +s.datatype;
-                if (sensor.sensorId != id || sensor.dataType != datatype || sensor.type != type) {
+
+                if (sensor.sensorId != s.id || sensor.dataType != s.datatype || sensor.type != s.type) {
                     changed = true;
-                    sensor.sensorId = id;
-                    sensor.dataType = datatype;
-                    sensor.type = type;
+                    sensor.sensorId = s.id;
+                    sensor.dataType = s.datatype;
+                    sensor.type = s.type;
                 }
 
                 if (changed)
