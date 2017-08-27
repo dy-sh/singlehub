@@ -29,7 +29,7 @@ export interface I_MYS_Node_Properties {
 export class MySensorsNode extends Node {
     properties: I_MYS_Node_Properties;
 
-    private slots: number;
+    private slots: number[];
 
     constructor() {
         super();
@@ -45,7 +45,9 @@ export class MySensorsNode extends Node {
 
     onConfigureClick(node: MySensorsNode, editor: Editor, renderer: Renderer) {
 
-        node.slots = node.getInputsCount();
+        node.slots = [];
+        for (let key in node.inputs)
+            node.slots.push(+key);
 
 
         let mys_node = node.properties.mys_node;
@@ -105,8 +107,10 @@ export class MySensorsNode extends Node {
                 type: 0,
                 dataType: 0
             }
-            node.slots++;
-            node.addSensorToForm(node.slots - 1, sensor);
+
+            let newId = node.slots.length == 0 ? 0 : node.slots[node.slots.length - 1] + 1;
+            node.slots.push(newId);
+            node.addSensorToForm(newId, sensor);
         });
 
         //sensors
@@ -123,7 +127,8 @@ export class MySensorsNode extends Node {
             onApprove: function () {
                 let slots = [];
 
-                for (let i = 0; i < node.slots; i++) {
+
+                for (let i of node.slots) {
                     slots.push({
                         slot: i,
                         id: $('#mys-panel-sonsor-id' + i).val(),
@@ -174,7 +179,7 @@ export class MySensorsNode extends Node {
 
         $("#mys-panel-remove-sensor" + slot).click(function () {
             $("#mys-panel-sensor" + slot).remove();
-            that.slots--;
+            that.slots = that.slots.filter(item => item !== slot);
         })
     }
 
@@ -219,6 +224,7 @@ export class MySensorsNode extends Node {
         if (data.slots) {
             // this.changeInputsCount(data.slots.length);
             // this.changeOutputsCount(data.slots.length);
+            console.log(data.slots);
         }
     }
 

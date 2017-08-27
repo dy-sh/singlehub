@@ -285,6 +285,15 @@ export class MySensorsControllerNode extends ContainerNode {
                     let sensor = this.get_MYS_Sensor(message.nodeId, message.sensorId, type);
                     if (!sensor) sensor = this.register_MYS_Sensor(message.nodeId, message.sensorId, type, message.subType);
 
+                    //update sensor type
+                    if (sensor.type != message.subType) {
+                        sensor.type = message.subType;
+                        // let shub_node = this.get_SHub_Node(node);
+                        if (this.container.db)
+                            this.container.db.updateNode(node.shub_node_id, node.shub_node_cid, {
+                                $set: { "properties.mys_node": node }
+                            });
+                    }
                     // this.emit("sensorUpdated", sensor, "type");
                 });
             }
