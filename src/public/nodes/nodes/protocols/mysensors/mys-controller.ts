@@ -561,6 +561,9 @@ export class MySensorsControllerNode extends ContainerNode {
                 $set: { "properties.mys_node": node, inputs: s_shub_node.inputs, outputs: s_shub_node.outputs }
             });
 
+        shub_node.sendMessageToEditorSide({ mys_node: node });
+
+
         return sensor;
     };
 
