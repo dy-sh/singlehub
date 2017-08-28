@@ -547,7 +547,7 @@ export class MySensorsControllerNode extends ContainerNode {
             shub_node_slot: i_id
         };
 
-        if (sensorType)
+        if (sensorType != null)
             sensor.type = sensorType;
 
         node.sensors[sensorId + "-" + dataType] = sensor;
