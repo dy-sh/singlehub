@@ -114,10 +114,9 @@ export class MySensorsNode extends Node {
         });
 
         //sensors
-        for (let s in mys_node.sensors) {
-            let sensor = mys_node.sensors[s];
+        for (let s in node.inputs) {
+            let sensor = node.getSensorInSlot(+s);
             let slot = sensor.shub_node_slot;
-
             node.addSensorToForm(slot, sensor);
         }
 
