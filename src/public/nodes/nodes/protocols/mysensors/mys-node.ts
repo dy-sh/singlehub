@@ -40,8 +40,8 @@ export class MySensorsNode extends Node {
             "When the hardware MYS-node presents the sensors, or sending sensor data, " +
             "then all the necessary pins will be automatically added to this node, " +
             "and you can immediately send and receive messages to the hardware node. <br><br>" +
-            "You can also edit the sensors by calling Configure from the menu. " +
-            "In this menu, you can add new sensors manually, delete unnecessary sensors, change their type, etc. <br>" +
+            "You can also edit the sensors by calling \"Configure\" from this node context menu. " +
+            "In the config page, you can add new sensors manually, delete unnecessary sensors, change their type, etc. <br>" +
             "If one sensor in your hardware node works with several types of data at once, " +
             "then you can add several sensors with the same ID, but with different data types. <br>" +
             "Note that you can not add two sensors with the same ID and data type. <br>" +

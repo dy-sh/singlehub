@@ -10,7 +10,15 @@ SingleHub v0.9
 
 - MQTT protocol support.
 - Xiaomi devices support: Smart Socket Plug 2, Eyecare Lamp 2, Yeelight, Power Strip (If your device is not listed, write to me and I will add it).
-- MySensors: Protocol updated to 2.0. Now you can use multiple MySensors serial\ethernet gateways at the same time. Each gateway is a separate container. Nodes that the gateway detected are automatically added to the container. MySensors  nodes now have a setting to send 1/0 instead of true/false or not. 
+- MySensors: Protocol updated to 2.0. Now you can use multiple MySensors serial\ethernet gateways at the same time. Each gateway is a separate container. Nodes that the gateway detected are automatically added to the container. 
+When the hardware MYS-node presents the sensors, or sending sensor data, 
+then all the necessary pins will be automatically added to the node in the editor, 
+and you can immediately send and receive messages to the hardware node. 
+You can also edit the sensors by calling "Configure" from the node nontext menu.
+In the config page, you can add new sensors manually, delete unnecessary sensors, change their type, etc. 
+If one sensor in your hardware node works with several types of data at once, 
+then you can add several sensors with the same ID, but with different data types. 
+You can change some more node settings by calling the "Settings" in node context menu.
 
 
 **Node editor:**
