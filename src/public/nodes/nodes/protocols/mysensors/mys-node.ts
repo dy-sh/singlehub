@@ -318,9 +318,14 @@ export class MySensorsNode extends Node {
                     $set: { "properties.mys_node": this.properties.mys_node, inputs: this.inputs, outputs: this.outputs }
                 });
 
-                // this.sendMessageToEditorSide()
             }
+            this.sendMessageToEditorSide({ mys_node: this.properties.mys_node });
         }
+    }
+
+    onGetMessageToEditorSide(data) {
+        if (data.mys_node)
+            this.properties.mys_node = data.mys_node;
     }
 
     getControllerNode(): MySensorsControllerNode {
