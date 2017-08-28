@@ -127,7 +127,7 @@ export class MySensorsNode extends Node {
             onApprove: function () {
                 let slots = [];
 
-
+                //get form data 
                 let i = 0;
                 for (let s of node.slots) {
                     slots.push({
@@ -136,6 +136,26 @@ export class MySensorsNode extends Node {
                         type: $('#mys-panel-sonsor-type' + s).val(),
                         datatype: $('#mys-panel-sonsor-datatype' + s).val(),
                     })
+                }
+
+                //convert strings
+                slots.forEach(s => {
+                    s.id = (s.id == "" || s.id == null) ? 0 : +s.id;
+                    s.datatype = (s.datatype == "" || s.datatype == null) ? 0 : +s.datatype;
+                    s.type = (s.type == "" || s.type == null) ? null : +s.type;
+                });
+
+                //check for duplicates
+                for (var x = 0; x < slots.length; x++) {
+                    var slot1 = slots[x];
+                    for (var y = 0; y < slots.length; y++) {
+                        if (x == y) continue;
+                        var slot2 = slots[y];
+                        if (slot1.id == slot2.id && slot1.datatype == slot2.datatype) {
+                            node.debugWarn("Cant edit MYS-node. Check form data for missing values or duplicates.");
+                            return false;
+                        }
+                    }
                 }
 
                 node.sendMessageToServerSide({
@@ -225,25 +245,7 @@ export class MySensorsNode extends Node {
 
     onGetMessageToServerSide(data) {
         if (data.slots) {
-            //convert strings
-            data.slots.forEach(s => {
-                s.id = (s.id == "" || s.id == null) ? 0 : +s.id;
-                s.datatype = (s.datatype == "" || s.datatype == null) ? 0 : +s.datatype;
-                s.type = (s.type == "" || s.type == null) ? null : +s.type;
-            });
 
-            //check for duplicates
-            for (var x = 0; x < data.slots.length; x++) {
-                var slot1 = data.slots[x];
-                for (var y = 0; y < data.slots.length; y++) {
-                    if (x == y) continue;
-                    var slot2 = data.slots[y];
-                    if (slot1.id == slot2.id && slot1.datatype == slot2.datatype) {
-                        this.debugWarn("Cant edit MYS-node. Check form data for missing values or duplicates.");
-                        return;
-                    }
-                }
-            }
 
 
             let controller = this.getControllerNode();
@@ -254,8 +256,8 @@ export class MySensorsNode extends Node {
                 for (let i = data.slots.length; i < inputsCount; i++) {
                     let sensor = this.getSensorInSlot(i);
                     if (sensor) this.getControllerNode().remove_MYS_Sensor(sensor.nodeId, sensor.sensorId, sensor.dataType);
-                    if (this.inputs[i]) this.removeInput(i);
-                    if (this.outputs[i]) this.removeOutput(i);
+                    // if (this.inputs[i]) this.removeInput(i);
+                    // if (this.outputs[i]) this.removeOutput(i);
                 }
             }
             //add sensors
@@ -288,18 +290,23 @@ export class MySensorsNode extends Node {
                         lastSeen: null,
                         shub_node_slot: s.slot
                     }
-
                     if (s.type != null)
                         sensor.type = s.type;
-
                     node.sensors[sensor.sensorId + "-" + sensor.dataType] = sensor;
+
+                    //rename inputs
+                    this.inputs[s.slot].name = (s.slot + 1) + " - sensor" + sensor.sensorId + " (" + mys.sensorDataTypeKey[sensor.dataType] + ")";
+                    this.outputs[s.slot].name = (s.slot + 1) + "";
                 }
             }
 
-            if (changed)
+            if (changed) {
                 this.container.db.updateNode(this.id, this.container.id, {
-                    $set: { "properties.mys_node": this.properties.mys_node }
+                    $set: { "properties.mys_node": this.properties.mys_node, inputs: this.inputs, outputs: this.outputs }
                 });
+
+                // this.sendMessageToEditorSide()
+            }
         }
     }
 
