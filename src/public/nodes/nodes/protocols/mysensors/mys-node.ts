@@ -267,11 +267,10 @@ export class MySensorsNode extends Node {
                 }
             }
             //change sensors
+            let changed = false;
             for (let s of data.slots) {
-                console.log(s);
-                let changed = false;
 
-                let node = this.getControllerNode().get_MYS_Node(this.properties.mys_node_id);
+                let node = this.properties.mys_node;
                 let sensor = this.getSensorInSlot(s.slot);
 
                 if (!sensor || sensor.sensorId != s.id || sensor.dataType != s.datatype || sensor.type != s.type) {
@@ -295,12 +294,12 @@ export class MySensorsNode extends Node {
 
                     node.sensors[sensor.sensorId + "-" + sensor.dataType] = sensor;
                 }
-
-                if (changed)
-                    this.container.db.updateNode(this.id, this.container.id, {
-                        $set: { "properties.mys_node": node }
-                    });
             }
+
+            if (changed)
+                this.container.db.updateNode(this.id, this.container.id, {
+                    $set: { "properties.mys_node": this.properties.mys_node }
+                });
         }
     }
 
