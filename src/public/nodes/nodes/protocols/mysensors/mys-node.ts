@@ -137,13 +137,15 @@ export class MySensorsNode extends Node {
                     })
                 }
 
-                //check not empty
+                //check not empty and convert to numbers
                 for (var n = 0; n < slots.length; n++) {
                     let s = slots[n];
                     if (s.id == "" || s.id == null || s.datatype == "" || s.datatype == null) {
                         node.debugWarn("Cant edit MYS-node. Check form data for missing values.");
                         return false;
                     }
+                    s.id = +s.id;
+                    s.datatype = +s.datatype;
                     s.type = (s.type == "" || s.type == null) ? null : +s.type;
                 }
 
