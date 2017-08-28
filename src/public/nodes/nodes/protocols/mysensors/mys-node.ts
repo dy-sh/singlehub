@@ -35,7 +35,24 @@ export class MySensorsNode extends Node {
         super();
 
         // this.title = "MYS node";
-        this.descriprion = "MySensors node";
+        this.descriprion = "MySensors node. <br><br>" +
+            "This node is automatically added to the \"MYS-controller\" container as soon as a new node is detected. <br>" +
+            "When the hardware MYS-node presents the sensors, or sending sensor data, " +
+            "then all the necessary pins will be automatically added to this node, " +
+            "and you can immediately send and receive messages to the hardware node. <br><br>" +
+            "You can also edit the sensors by calling Configure from the menu. " +
+            "In this menu, you can add new sensors manually, delete unnecessary sensors, change their type, etc. <br>" +
+            "If one sensor in your hardware node works with several types of data at once, " +
+            "then you can add several sensors with the same ID, but with different data types. <br>" +
+            "Note that you can not add two sensors with the same ID and data type. <br>" +
+            "You do not need to specify the \"Sensor Type\", but you must specify the \"Data Type\". " +
+            "The sensor type is filled in automatically when the node presents the sensors. " +
+            "This setting does not affect anything at this moment. <br>" +
+            "If you do not properly configure the node, then the configuration window will not be closed " +
+            "until you correct the problem, or cancel the changes. " +
+            "You can see the warning message in the browser console to find out what it is not properly configured. <br><br>" +
+            "You can change some more node settings by calling the \"Settings\" in node context menu.";
+
         this.settings["send-true"] = {
             description: "Send 1/0 instead of true/false", value: true, type: "boolean"
         };
@@ -200,7 +217,7 @@ export class MySensorsNode extends Node {
        <input type="number" id="mys-panel-sonsor-id`+ slot + `" name="mys-panel-sonsor-id` + slot + `" value="` + sensor.sensorId + `"> 
     </div>
     <div class="seven wide field">
-       <label>Type</label>
+       <label>Sensor Type</label>
        <input type="number" id="mys-panel-sonsor-type`+ slot + `" name="mys-panel-sonsor-type` + slot + `" value="` + sensorType + `"> 
     </div>
     <div class="seven wide field">
