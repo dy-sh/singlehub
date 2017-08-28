@@ -161,9 +161,21 @@ export class MySensorsNode extends Node {
                     }
                 }
 
+                //send data
                 node.sendMessageToServerSide({
                     slots: slots
                 });
+
+                //rename inputs/outputs
+                for (var n = 0; n < slots.length; n++) {
+                    let s = slots[n];
+                    if (node.inputs[s.slot]) {
+                        node.inputs[s.slot].name = (s.slot + 1) + " - sensor" + s.id + " (" + mys.sensorDataTypeKey[s.datatype] + ")";
+                        node.outputs[s.slot].name = (s.slot + 1) + "";
+                        node.updateInputsLabels();
+                        node.updateOutputsLabels();
+                    }
+                }
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
 
@@ -249,8 +261,6 @@ export class MySensorsNode extends Node {
     onGetMessageToServerSide(data) {
         if (data.slots) {
 
-
-
             let controller = this.getControllerNode();
 
             let inputsCount = this.getInputsCount();
@@ -297,7 +307,7 @@ export class MySensorsNode extends Node {
                         sensor.type = s.type;
                     node.sensors[sensor.sensorId + "-" + sensor.dataType] = sensor;
 
-                    //rename inputs
+                    //rename inputs/outputs
                     this.inputs[s.slot].name = (s.slot + 1) + " - sensor" + sensor.sensorId + " (" + mys.sensorDataTypeKey[sensor.dataType] + ")";
                     this.outputs[s.slot].name = (s.slot + 1) + "";
                 }
