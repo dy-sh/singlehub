@@ -64,7 +64,7 @@ export class MySensorsNode extends Node {
 
         panel.append(`
       <div class="header" id="mys-panel-title"></div>
-      <div class="content">
+      <div class="scrolling content">
         <div class="ui form" id="mys-panel-form">
             <div class="field">
                 Sketch: <span id="mys-panel-sketch"></span>
