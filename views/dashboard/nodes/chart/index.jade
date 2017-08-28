@@ -51,7 +51,7 @@ block content
         #shareModal.ui.modal
             .header
                 | Chart share URL
-            .content
+            .scrolling.content
                 .ui.form
                     .field
                         label URL:
@@ -75,4 +75,4 @@ block scripts
         var style = "#{style}";
         var max_records = #{max_records};
 
-    script(src='/libs/requirejs/require.js' data-main="/nodes/nodes/ui/chart-index-page.js")
+    script(data-main="/nodes/nodes/ui/chart-index-page.js" src='/libs/requirejs/require.js')
