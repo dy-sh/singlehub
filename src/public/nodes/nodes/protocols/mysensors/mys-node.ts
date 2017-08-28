@@ -138,12 +138,15 @@ export class MySensorsNode extends Node {
                     })
                 }
 
-                //convert strings
-                slots.forEach(s => {
-                    s.id = (s.id == "" || s.id == null) ? 0 : +s.id;
-                    s.datatype = (s.datatype == "" || s.datatype == null) ? 0 : +s.datatype;
+                //check not empty
+                for (var n = 0; n < slots.length; n++) {
+                    let s = slots[n];
+                    if (s.id == "" || s.id == null || s.datatype == "" || s.datatype == null) {
+                        node.debugWarn("Cant edit MYS-node. Check form data for missing values.");
+                        return false;
+                    }
                     s.type = (s.type == "" || s.type == null) ? null : +s.type;
-                });
+                }
 
                 //check for duplicates
                 for (var x = 0; x < slots.length; x++) {
@@ -152,7 +155,7 @@ export class MySensorsNode extends Node {
                         if (x == y) continue;
                         var slot2 = slots[y];
                         if (slot1.id == slot2.id && slot1.datatype == slot2.datatype) {
-                            node.debugWarn("Cant edit MYS-node. Check form data for missing values or duplicates.");
+                            node.debugWarn("Cant edit MYS-node. Check form data for duplicates.");
                             return false;
                         }
                     }
@@ -181,15 +184,15 @@ export class MySensorsNode extends Node {
   <div id="mys-panel-sensor`+ slot + `" class="fields">
     <div class="three wide field">
        <label>Sensor ID</label>
-       <input type="text" id="mys-panel-sonsor-id`+ slot + `" name="mys-panel-sonsor-id` + slot + `" value="` + sensor.sensorId + `"> 
+       <input type="number" id="mys-panel-sonsor-id`+ slot + `" name="mys-panel-sonsor-id` + slot + `" value="` + sensor.sensorId + `"> 
     </div>
     <div class="seven wide field">
        <label>Type</label>
-       <input type="text" id="mys-panel-sonsor-type`+ slot + `" name="mys-panel-sonsor-type` + slot + `" value="` + sensorType + `"> 
+       <input type="number" id="mys-panel-sonsor-type`+ slot + `" name="mys-panel-sonsor-type` + slot + `" value="` + sensorType + `"> 
     </div>
     <div class="seven wide field">
        <label>Data Type</label>
-       <input type="text" id="mys-panel-sonsor-datatype`+ slot + `" name="mys-panel-sonsor-datatype` + slot + `" value="` + dataType + `"> 
+       <input type="number" id="mys-panel-sonsor-datatype`+ slot + `" name="mys-panel-sonsor-datatype` + slot + `" value="` + dataType + `"> 
     </div>
     <div class="three wide field">
       <label>Remove</label>
