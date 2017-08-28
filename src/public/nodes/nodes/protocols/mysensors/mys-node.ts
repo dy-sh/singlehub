@@ -166,16 +166,16 @@ export class MySensorsNode extends Node {
                     slots: slots
                 });
 
-                //rename inputs/outputs
-                for (var n = 0; n < slots.length; n++) {
-                    let s = slots[n];
-                    if (node.inputs[s.slot]) {
-                        node.inputs[s.slot].name = (s.slot + 1) + " - sensor" + s.id + " (" + mys.sensorDataTypeKey[s.datatype] + ")";
-                        node.outputs[s.slot].name = (s.slot + 1) + "";
-                        node.updateInputsLabels();
-                        node.updateOutputsLabels();
-                    }
-                }
+                // //rename inputs/outputs
+                // for (var n = 0; n < slots.length; n++) {
+                //     let s = slots[n];
+                //     if (node.inputs[s.slot]) {
+                //         node.inputs[s.slot].name = (s.slot + 1) + " - sensor" + s.id + " (" + mys.sensorDataTypeKey[s.datatype] + ")";
+                //         node.outputs[s.slot].name = (s.slot + 1) + "";
+                //         node.updateInputsLabels();
+                //         node.updateOutputsLabels();
+                //     }
+                // }
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
 
@@ -319,13 +319,18 @@ export class MySensorsNode extends Node {
                 });
 
             }
-            this.sendMessageToEditorSide({ mys_node: this.properties.mys_node });
+            this.sendMessageToEditorSide({ mys_node: this.properties.mys_node, inputs: this.inputs, outputs: this.outputs });
         }
     }
 
     onGetMessageToEditorSide(data) {
         if (data.mys_node)
             this.properties.mys_node = data.mys_node;
+        if (data.inputs)
+            this.inputs = data.inputs;
+        if (data.outputs)
+            this.outputs = data.outputs;
+        this.setDirtyCanvas(true, true);
     }
 
     getControllerNode(): MySensorsControllerNode {
