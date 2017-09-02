@@ -1,5 +1,5 @@
 {
-	"firstRun": false,
+	"firstRun": true,
 	"dataBase": {
 		"enable": true,
 		"useInternalDb": true,
