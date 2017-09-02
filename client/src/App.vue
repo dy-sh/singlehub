@@ -12,24 +12,12 @@
                 footer
                   small
                     em —John Johnson
-    v-footer(:fixed='fixed', app='')
-      span SingleHub © 2017
- 
 </template>
 
 <script>
 export default {
   data() {
-    return {
-      clipped: false,
-      drawer: true,
-      fixed: false,
-      items: [{ icon: "bubble_chart", title: "Inspire" }],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: "Vuetify.js"
-    };
+    return {};
   }
 };
 </script>
