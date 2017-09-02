@@ -9,6 +9,7 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "pug": "^2.0.0-rc.4",
     "vue": "^2.4.4",
     "vuetify": "^0.16.9"
   },
