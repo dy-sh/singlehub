@@ -15,7 +15,12 @@
 </template>
 
 <script>
+import Toolbar from "./components/Toolbar.vue";
+
 export default {
+  components: {
+    toolbar: Toolbar
+  },
   data() {
     return {};
   }
