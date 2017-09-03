@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(light='')
+  v-app(dark)
     toolbar
     router-view
 </template>
