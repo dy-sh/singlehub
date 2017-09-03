@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang='jade'>
   div
     v-navigation-drawer(persistent='', v-model='drawer', enable-resize-watcher='', app='' clipped)
       v-list
