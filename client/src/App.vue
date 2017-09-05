@@ -1,10 +1,7 @@
 <template lang="pug">
 v-app#inspire(dark)
-  toolbar
+  toolbar       
   router-view
-  //- v-app(dark)
-  //-   toolbar
-  //-   router-view
 </template>
 
 <script>
