@@ -6,10 +6,10 @@ main
         v-flex(xs12 sm10 md8 offset-xs0 offset-sm1 offset-md2)
           //- v-card(dark color='green')
           v-card(color='grey darken-3')
-            v-toolbar(color='grey darken-2', dark='')
+            v-toolbar(color='blue darken-2' dense)
               v-toolbar-title Welcome to SingleHub
               v-spacer
-              v-btn(dark='', icon='')
+              v-btn(dark icon)
                 v-icon view_module
             v-card-text
               //- h5.text-xs-center Welcome to SingleHub
@@ -19,7 +19,7 @@ main
                   li Configure database
                   li Create Admin profile
             .text-xs-center.pb-3    
-              v-btn(color='grey darken-1', @click.native='e1 = 2') Well, let's start
+              v-btn(color='blue darken-2', @click.native='e1 = 2') Well, let's start
         
 
     //- main

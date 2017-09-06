@@ -1,4 +1,4 @@
-<template lang='jade'>
+<template lang='pug'>
 div
   v-navigation-drawer(persistent='', clipped='', enable-resize-watcher='', v-model='drawer', app='')
     v-list(dense='')
@@ -20,12 +20,12 @@ div
         v-list-tile-action
           v-icon(color='grey darken-1') settings
         v-list-tile-title.grey--text.text--darken-1 Manage Subscriptions
-  v-toolbar(color='grey darken-3' dense fixed clipped-left app)
+  v-toolbar(dense fixed clipped-left app)
     v-toolbar-side-icon(@click.stop='drawer = !drawer')
     v-toolbar-title(v-text='title')
-    v-spacer
-    v-btn(icon='', @click.stop='rightDrawer = !rightDrawer')
-      v-icon menu
+    //- v-spacer
+    //- v-btn(icon @click.stop='rightDrawer = !rightDrawer')
+    //-   v-icon view_module
 </template>
 
 
