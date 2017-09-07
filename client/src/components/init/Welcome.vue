@@ -9,8 +9,7 @@ main
             v-toolbar(color='blue darken-2' dense)
               v-toolbar-title Welcome to SingleHub
               v-spacer
-              v-btn(dark icon)
-                v-icon view_module
+              v-icon(medium) view_module
             v-card-text
               //- h5.text-xs-center Welcome to SingleHub
               p This is the initial setup wizard.

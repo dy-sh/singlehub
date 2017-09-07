@@ -9,15 +9,14 @@ main
             v-toolbar(color='blue darken-2' dense)
               v-toolbar-title Admin profile
               v-spacer
-              v-btn(dark icon)
-                v-icon view_module
+              v-icon(medium) account_box
             v-card-text
               v-form(v-model='valid', ref='form', lazy-validation)
                 v-text-field(label='Name', v-model='name', :rules='nameRules', :counter='10', required)
                 v-text-field(type="password", label='Password', v-model='password', :rules='passwordRules',  required)
                 v-text-field(type="password", label='Confirm password', v-model='confirmPassword', :rules='confirmPasswordRules', required)
                 //- v-text-field(label='E-mail', v-model='email', :rules='emailRules', required)
-                .text-xs-center.pb-3 
+                .text-xs-center 
                   v-btn(color='grey darken-2', @click="clear") Clear
                   v-btn(color='blue darken-2', @click='submit', :disabled='!valid') Register   
 </template>

@@ -9,8 +9,8 @@ main
             v-toolbar(color='blue darken-2' dense)
               v-toolbar-title Database setup
               v-spacer
-              v-btn(dark icon)
-                v-icon view_module
+              v-icon(medium) storage
+              //- v-btn(dark icon)
             v-card-text
               p Select database. 
               v-layout(wrap)
