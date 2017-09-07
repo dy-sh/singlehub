@@ -31,11 +31,11 @@ main
               p If you don't know what database to use, choose the built-in database.
               v-divider(dark)
               .text-xs-center  
-                v-btn(color='blue darken-2', @click.native='e1 = 2' disabled) External 
-                v-btn(color='blue darken-2', @click.native='e1 = 2') Built-in
+                v-btn(color='blue darken-2' disabled) External 
+                v-btn(color='blue darken-2', @click='onBuiltIn') Built-in
               v-divider(dark)
               .text-xs-center.pt-2
-                a(href='/first-run/database/none') Skip this step. Don't use a database.
+                a(href='#',  @click='onSkip') Skip this step. Don't use a database.
 
 </template>
 
@@ -44,6 +44,14 @@ main
 export default {
   data() {
     return {};
+  },
+  methods: {
+    onBuiltIn() {
+      this.$router.push({ name: "init/admin" });
+    },
+    onSkip() {
+      this.$router.push({ name: "/" });
+    }
   }
 };
 </script>
