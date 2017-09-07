@@ -3,7 +3,7 @@ import Database from "./components/init/Database"
 import Admin from "./components/init/Admin.vue"
 
 export default [
-    { path: "/", component: Welcome },
-    { path: "/db", component: Database },
-    { path: "/admin", component: Admin },
+    { name: "init", path: "/", component: Welcome },
+    { name: "init/db", path: "/init/db", component: Database },
+    { name: "init/admin", path: "/init/admin", component: Admin },
 ]

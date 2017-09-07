@@ -19,13 +19,20 @@ main
                   li Configure database
                   li Create Admin profile
             .text-xs-center.pb-3    
-              v-btn(color='blue darken-2', @click.native='e1 = 2') Well, let's start
+              v-btn(color='blue darken-2', @click='onNext') Well, let's start
 </template>
 
 
 <script>
 export default {
-  data() {}
+  data() {
+    return {};
+  },
+  methods: {
+    onNext() {
+      this.$router.push({ name: "init/db" });
+    }
+  }
 };
 </script>
 
