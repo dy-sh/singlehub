@@ -18,7 +18,7 @@ main
                   //- v-list-tile-sub-title Hangouts message
                 v-spacer
                 v-list-tile-action
-                  v-switch(v-model="sw1" value="John")
+                  v-switch(v-model="sw1" value="sw1" color='grey lighten-3')
               v-list-tile
                 v-list-tile-content
                   v-list-tile-title Curtains
@@ -35,7 +35,7 @@ main
                   //- v-list-tile-sub-title Hangouts message
                 v-spacer
                 v-list-tile-action
-                  v-switch(v-model="sw1" value="John")
+                  v-switch(v-model="sw1" value="sw1" color='grey lighten-3')
               v-list-tile
                 v-list-tile-content
                   v-list-tile-title Window
