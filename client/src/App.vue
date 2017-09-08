@@ -5,7 +5,7 @@ v-app#inspire(dark)
 </template>
 
 <script>
-import Toolbar from "./components/init/Toolbar.vue";
+import Toolbar from "./components/Toolbar.vue";
 
 export default {
   components: {
