@@ -12,46 +12,29 @@ main
             v-divider
             v-list(subheader)
               v-subheader Living room
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title Ligth
-                  //- v-list-tile-sub-title Hangouts message
-                v-spacer
-                v-list-tile-action
-                  v-switch(v-model="sw1" value="sw1" color='grey lighten-3')
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title Curtains
-                  //- v-list-tile-sub-title Hangouts message
-                v-spacer
-                v-list-tile-action
-                  v-btn(color='blue darken-2', @click='') ON   
+              uiButtonNode
+              uiSwitchNode
             v-divider
             v-list(subheader)
               v-subheader Kitchen
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title Door
-                  //- v-list-tile-sub-title Hangouts message
-                v-spacer
-                v-list-tile-action
-                  v-switch(v-model="sw1" value="sw1" color='grey lighten-3')
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title Window
-                  //- v-list-tile-sub-title Hangouts message
-                v-spacer
-                v-list-tile-action
-                  v-btn(color='blue darken-2', @click='') ON  
+              uiButtonNode
+              uiSwitchNode 
 
 </template>
 
 
 <script>
+import UiButtonNode from "./UiButtonNode.vue";
+import UiSwitchNode from "./UiSwitchNode.vue";
+
 export default {
   data: () => ({
     sw1: true
-  })
+  }),
+  components: {
+    uiButtonNode: UiButtonNode,
+    uiSwitchNode: UiSwitchNode
+  }
 };
 </script>
 
