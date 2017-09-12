@@ -9,15 +9,15 @@ v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
     div(v-for="subPanel in subPanels")
       v-list(subheader)
         v-subheader {{subPanel.title}}
-        component(:is="node.component" v-for="node in subPanel.nodes")
+        div(v-for="node in subPanel.nodes")
+          component(:is="node.component")
       v-divider
 
 </template>
 
 
 <script>
-import UiButtonNode from "./UiButtonNode.vue";
-import UiSwitchNode from "./UiSwitchNode.vue";
+import Nodes from "./nodes";
 
 export default {
   data: () => ({
@@ -34,16 +34,13 @@ export default {
       {
         title: "Kitchen",
         nodes: [
-          { component: "uiSwitchNode", id: 3 },
-          { component: "uiSwitchNode", id: 3 }
+          { component: "uiSwitchNode", id: 4 },
+          { component: "uiSwitchNode", id: 5 }
         ]
       }
     ]
   }),
-  components: {
-    uiButtonNode: UiButtonNode,
-    uiSwitchNode: UiSwitchNode
-  }
+  components: Nodes
 };
 </script>
 
