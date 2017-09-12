@@ -28,9 +28,7 @@ import UiButtonNode from "./UiButtonNode.vue";
 import UiSwitchNode from "./UiSwitchNode.vue";
 
 export default {
-  data: () => ({
-    sw1: true
-  }),
+  data: () => ({}),
   components: {
     uiButtonNode: UiButtonNode,
     uiSwitchNode: UiSwitchNode

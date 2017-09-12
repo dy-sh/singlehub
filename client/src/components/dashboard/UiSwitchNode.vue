@@ -5,7 +5,7 @@ v-list-tile
     //- v-list-tile-sub-title Hangouts message
   v-spacer
   v-list-tile-action
-    v-switch(v-model="sw1" value="sw1" color='grey lighten-3')  
+    v-switch(v-model="value" value="switch" color='grey lighten-3')  
 </template>
 
 
@@ -13,7 +13,8 @@ v-list-tile
 export default {
   data() {
     return {
-      title: "Ligth"
+      title: "Ligth",
+      value: true
     };
   }
 };
