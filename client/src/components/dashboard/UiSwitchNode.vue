@@ -22,7 +22,7 @@ export default {
     onClick() {
       this.value = !this.value;
       console.log("click " + this.id + " : " + this.value);
-      this.$socket.emit("nodeData", { node: this.id, value: this.value });
+      this.$socket.emit("nodeData", { nodeId: this.id, value: this.value });
     }
   },
   sockets: {
@@ -34,6 +34,12 @@ export default {
     },
     nodeData(data) {
       console.log("UiSwitchNode nodeData: " + JSON.stringify(data));
+      if (this.id === data.nodeId) {
+        this.value = data.value;
+        console.log("updated: " + this.value);
+      } else {
+        console.log(this.id, data.nodeId);
+      }
     }
   }
 };
