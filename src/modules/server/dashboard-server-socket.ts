@@ -28,6 +28,12 @@ export class DashboardServerSocket {
             //     io.emit('test message', msg + "2");
             // });
 
+            //test event
+            socket.emit("customEmit", "hello")
+            socket.on('node_data', function (data) {
+                log.debug("node_data: " + JSON.stringify(data));//ghj
+            });
+
             //join client to container room
             socket.on('room', function (room) {
                 if ((<any>socket).room != null) {
