@@ -5,7 +5,7 @@
       //- v-list-tile-sub-title Hangouts message
     v-spacer
     v-list-tile-action
-      v-btn(color='blue darken-2', @click='') ON   
+      v-btn(color='blue darken-2', @click='onClick') ON   
 </template>
 
 
@@ -16,7 +16,12 @@ export default {
       title: "Curtains"
     };
   },
-  props: ["id"]
+  props: ["id"],
+  methods: {
+    onClick() {
+      console.log("click " + this.id);
+    }
+  }
 };
 </script>
 
