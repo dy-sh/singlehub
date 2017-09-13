@@ -30,8 +30,9 @@ export class DashboardServerSocket {
 
             //test event
             socket.emit("customEmit", "hello")
-            socket.on('node_data', function (data) {
-                log.debug("node_data: " + JSON.stringify(data));//ghj
+            socket.on('nodeData', function (data) {
+                log.debug("nodeData: " + JSON.stringify(data));
+                io.emit("nodeData", data)
             });
 
             //join client to container room

@@ -22,7 +22,7 @@ export default {
     onClick() {
       this.value = !this.value;
       console.log("click " + this.id + " : " + this.value);
-      this.$socket.emit("node_data", { node: this.id, value: this.value });
+      this.$socket.emit("nodeData", { node: this.id, value: this.value });
     }
   },
   sockets: {
@@ -30,9 +30,10 @@ export default {
       console.log("UiSwitchNode socket connected");
     },
     customEmit(val) {
-      console.log(
-        'UiSwitchNode this method was fired by the socket server. eg: io.emit("customEmit", data)'
-      );
+      console.log("UiSwitchNode customEmit");
+    },
+    nodeData(data) {
+      console.log("UiSwitchNode nodeData: " + JSON.stringify(data));
     }
   }
 };
