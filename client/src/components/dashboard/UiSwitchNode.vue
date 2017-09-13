@@ -1,7 +1,7 @@
 <template lang='pug'>
 v-list-tile
   v-list-tile-content
-    v-list-tile-title {{title}}
+    v-list-tile-title {{title}} {{id}}
     //- v-list-tile-sub-title Hangouts message
   v-spacer
   v-list-tile-action
@@ -16,7 +16,8 @@ export default {
       title: "Ligth",
       value: true
     };
-  }
+  },
+  props: ["id"]
 };
 </script>
 

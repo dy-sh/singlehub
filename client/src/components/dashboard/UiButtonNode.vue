@@ -15,7 +15,8 @@ export default {
     return {
       title: "Curtains"
     };
-  }
+  },
+  props: ["id"]
 };
 </script>
 

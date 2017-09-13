@@ -10,7 +10,7 @@ v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
       v-list(subheader)
         v-subheader {{subPanel.title}}
         div(v-for="node in subPanel.nodes")
-          component(:is="node.component")
+          component(:is="node.component", :id="node.id")
       v-divider
 
 </template>
