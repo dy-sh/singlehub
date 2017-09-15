@@ -15,6 +15,7 @@ let config = require('../config.json');
 import { Server } from './modules/server/server';
 import { Container, Side } from './public/nodes/container'
 import { Database } from "./public/interfaces/database";
+import { Dashboard } from "./modules/dashboard/dashboard";
 
 //add app root dir to global
 import * as path from 'path';
@@ -26,6 +27,7 @@ const log = require('logplease').create('app', { color: 2 });
 
 export class App extends Emitter {
     db: Database;
+    dashboard: Dashboard;
     rootContainer: Container;
     server: Server;
 
@@ -61,6 +63,8 @@ export class App extends Emitter {
             if (this.db)
                 this.loadDatabase(true);
         }
+
+        this.dashboard = new Dashboard(this.db);
 
         if (this.rootContainer && this.db)
             this.rootContainer.db = this.db;

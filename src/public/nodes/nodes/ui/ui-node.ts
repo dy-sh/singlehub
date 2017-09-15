@@ -3,24 +3,31 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Node} from "../../node";
-import {Side} from "../../container";
+import { Node } from "../../node";
+import { Side } from "../../container";
 
 
 export class UiNode extends Node {
 
     titlePrefix: string;
     template: string;
+    uiElementType: string;
 
-    constructor(titlePrefix, template) {
+    constructor(titlePrefix: string, template: string, uiElementType: string) {
         super();
 
         this.titlePrefix = titlePrefix;
         this.template = template;
+        this.uiElementType = uiElementType;
 
         this.isDashboardNode = true;
 
-        this.settings["title"] = {description: "Title", type: "string", value: this.titlePrefix};
+        this.settings["title"] = { description: "Title", type: "string", value: this.titlePrefix };
+    }
+
+    onCreated() {
+        //add ui element
+
     }
 
     onAdded() {

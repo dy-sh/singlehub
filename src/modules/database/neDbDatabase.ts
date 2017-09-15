@@ -6,7 +6,7 @@
 import * as NeDBDataStore from "nedb";
 import { Container, SerializedContainer } from "../../public/nodes/container";
 import { Node, SerializedNode } from "../../public/nodes/node";
-import { UiPanel } from "../../public/dashboard/ui-panel";
+import { UiPanel } from "../../modules/dashboard/ui-panel";
 import { Database } from "../../public/interfaces/database";
 import { User } from "../../public/interfaces/user";
 
