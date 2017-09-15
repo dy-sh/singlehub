@@ -25,10 +25,7 @@ export class UiNode extends Node {
         this.settings["title"] = { description: "Title", type: "string", value: this.titlePrefix };
     }
 
-    onCreated() {
-        //add ui element
 
-    }
 
     onAdded() {
         if (this.side == Side.dashboard) {

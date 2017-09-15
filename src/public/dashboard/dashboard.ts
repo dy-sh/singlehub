@@ -5,6 +5,9 @@
 
 import { UiPanel } from "./ui-panel";
 import { Database } from "../../public/interfaces/database";
+import { Container } from "../nodes/container";
+import { Node } from "../nodes/node";
+import { UiNode } from "../nodes/nodes/ui/ui-node";
 
 
 export class Dashboard {
@@ -14,8 +17,19 @@ export class Dashboard {
     constructor(db: Database) {
         this.db = db;
         this.uiPanels = db.getUiPanels();
+        Container.containers[0].on("created", this.onNodeCreated)
+        Container.containers[0].on("removed", this.onNodeRemoved)
     }
 
+    onNodeCreated(node: Node) {
+        if (!node.isDashboardNode)
+            return;
+    }
+
+    onNodeRemoved(node: Node) {
+        if (!node.isDashboardNode)
+            return;
+    }
 
     addUiPanel(panel: UiPanel, callback?: (err?: Error, doc?: UiPanel) => void) {
         this.uiPanels.push(panel);

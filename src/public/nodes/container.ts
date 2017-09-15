@@ -10,6 +10,8 @@ import { Database } from "../interfaces/database";
 import Utils from "./utils";
 import Namespace = SocketIO.Namespace;
 import { Emitter } from '../js/emitter/emitter'
+import { Dashboard } from "../dashboard/dashboard";
+
 
 
 //console logger back and front
@@ -50,6 +52,7 @@ export class Container extends Emitter {
     server_editor_socket: Namespace;
 
     db: Database;
+    dashboard: Dashboard;
 
     _nodes: { [id: number]: Node } = {};
 
@@ -591,6 +594,11 @@ export class Container extends Emitter {
         if (is_new) {
             this.debug("New node created: " + node.getReadableId());
 
+            //event
+            console.log("created")
+            Container.containers[0].emit('created', node);
+
+            //node event
             if (node['onCreated'])
                 node['onCreated']();
 
@@ -633,8 +641,7 @@ export class Container extends Emitter {
             return;
 
         //event
-        this.emit('remove', node);
-
+        Container.containers[0].emit('removed', node);
 
         //node event
         if (node['onRemoved'])

@@ -6,7 +6,7 @@
 
 export class Emitter {
 
-    _events: {[key: string]: Array<any>};
+    _events: { [key: string]: Array<any> };
 
     constructor() {
     }
@@ -43,10 +43,10 @@ export class Emitter {
      * @param  {string} event
      * @param  {function(...)} fn
      */
-    on=function(event: string, fn: Function) {
+    on = function (event: string, fn: Function) {
         this._events = this._events || {};
         this._events[event] = this._events[event] || [];
-        this._events[event].push({fn: fn, once: false});
+        this._events[event].push({ fn: fn, once: false });
         return this;
     }
 
@@ -61,7 +61,7 @@ export class Emitter {
     once(event: string, fn: Function) {
         this._events = this._events || {};
         this._events[event] = this._events[event] || [];
-        this._events[event].push({fn: fn, once: true});
+        this._events[event].push({ fn: fn, once: true });
         return this;
     }
 

@@ -15,7 +15,7 @@ let config = require('../config.json');
 import { Server } from './modules/server/server';
 import { Container, Side } from './public/nodes/container'
 import { Database } from "./public/interfaces/database";
-import { Dashboard } from "./modules/dashboard/dashboard";
+import { Dashboard } from "./public/dashboard/dashboard";
 
 //add app root dir to global
 import * as path from 'path';
