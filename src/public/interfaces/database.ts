@@ -41,7 +41,7 @@ export interface Database {
     //drop
     dropUsers(callback?: (err?: Error) => void);
     dropNodes(callback?: (err?: Error) => void);
-    dropUiPanel(callback?: (err?: Error) => void);
+    dropUiPanels(callback?: (err?: Error) => void);
     dropApp(callback?: (err?: Error) => void);
 
 

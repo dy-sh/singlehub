@@ -15,6 +15,7 @@ const log = require('logplease').create('database', { color: 4 });
 
 class NeDbDatabase implements Database {
 
+
     users: NeDBDataStore;
     nodes: NeDBDataStore;
     dashboard: NeDBDataStore;
@@ -76,6 +77,14 @@ class NeDbDatabase implements Database {
         })
     }
 
+    addUiPanel(panel: UiPanel, callback?: (err?: Error, doc?: UiPanel) => void) {
+        this.users.insert(panel, function (err, doc) {
+            if (err) log.error(err);
+            if (callback) callback(err, doc);
+        })
+    }
+
+
     addUser(user: User, callback?: (err?: Error, doc?: User) => void) {
         this.users.insert(user, function (err, doc) {
             if (err) log.error(err);
@@ -89,6 +98,14 @@ class NeDbDatabase implements Database {
             if (callback) callback(err, docs);
         })
     }
+
+    getUiPanels(callback?: (err?: Error, docs?: UiPanel[]) => void) {
+        this.dashboard.find({}, function (err, docs) {
+            if (err) log.error(err);
+            if (callback) callback(err, docs);
+        })
+    }
+
 
     getUsers(callback?: (err?: Error, docs?: Array<User>) => void) {
         this.users.find({}, function (err, docs) {
@@ -105,6 +122,14 @@ class NeDbDatabase implements Database {
         })
     }
 
+    getUiPanel(name: string, callback?: (err?: Error, doc?: UiPanel) => void) {
+        this.dashboard.findOne({ name: name }, function (err, doc: any) {
+            if (err) log.error(err);
+            if (callback) callback(err, doc);
+        })
+    }
+
+
     getUser(name: string, callback?: (err?: Error, doc?: User) => void) {
         this.users.findOne({ name: name }, function (err, doc: any) {
             if (err) log.error(err);
@@ -115,12 +140,21 @@ class NeDbDatabase implements Database {
 
     updateNode(id: number, cid: number, update: any, callback?: (err?: Error) => void) {
         let _id = "c" + cid + "n" + id;
-        this.nodes.update({ _id: _id }, update, function (err, updated) {
+        this.nodes.update({ _id: _id }, update, {}, function (err, updated) {
             if (err) log.error(err);
             if (updated == 0) log.error(`Cat't update node [${cid}/${id}]. Document not found.`);
             if (callback) callback(err);
         })
     }
+
+    updateUiPanel(name: string, update: any, callback?: (err?: Error) => void) {
+        this.dashboard.update({ name: name }, update, {}, function (err, updated) {
+            if (err) log.error(err);
+            if (updated == 0) log.error(`Cat't update dashboard panel [${name}]. Document not found.`);
+            if (callback) callback(err);
+        })
+    }
+
 
     getUsersCount(callback?: (err?: Error, num?: number) => void) {
         this.users.count({}, function (err, num) {
@@ -143,6 +177,14 @@ class NeDbDatabase implements Database {
         })
     }
 
+
+    dropUiPanels(callback?: (err?: Error) => void) {
+        this.dashboard.remove({}, { multi: true }, function (err) {
+            if (err) log.error(err);
+            if (callback) callback(err);
+        })
+    }
+
     dropApp(callback?: (err?: Error) => void) {
         this.app.remove({}, { multi: true }, function (err) {
             if (err) log.error(err);
@@ -154,6 +196,14 @@ class NeDbDatabase implements Database {
     removeNode(id: number, cid: number, callback?: (err?: Error) => void) {
         let _id = "c" + cid + "n" + id;
         this.nodes.remove({ _id: _id }, {}, function (err, removed) {
+            if (err) log.error(err);
+            if (removed == 0) log.error("Cat't remove. Document not found.");
+            if (callback) callback(err);
+        })
+    }
+
+    removeUiPanel(name: string, callback?: (err?: Error) => void) {
+        this.dashboard.remove({ name: name }, {}, function (err, removed) {
             if (err) log.error(err);
             if (removed == 0) log.error("Cat't remove. Document not found.");
             if (callback) callback(err);
