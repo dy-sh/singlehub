@@ -4,18 +4,20 @@
  */
 
 import * as NeDBDataStore from "nedb";
-import {Container, SerializedContainer} from "../../public/nodes/container";
-import {Node, SerializedNode} from "../../public/nodes/node";
-import {Database} from "../../public/interfaces/database";
-import {User} from "../../public/interfaces/user";
+import { Container, SerializedContainer } from "../../public/nodes/container";
+import { Node, SerializedNode } from "../../public/nodes/node";
+import { UiPanel } from "../../public/dashboard/ui-panel";
+import { Database } from "../../public/interfaces/database";
+import { User } from "../../public/interfaces/user";
 
-const log = require('logplease').create('database', {color: 4});
+const log = require('logplease').create('database', { color: 4 });
 
 
 class NeDbDatabase implements Database {
 
     users: NeDBDataStore;
     nodes: NeDBDataStore;
+    dashboard: NeDBDataStore;
     app: NeDBDataStore;
 
 
@@ -30,6 +32,7 @@ class NeDbDatabase implements Database {
     loadDatabase(callback?: (err: Error) => void) {
         this.users = new NeDBDataStore('users.db');
         this.nodes = new NeDBDataStore('nodes.db');
+        this.dashboard = new NeDBDataStore('dashboard.db');
         this.app = new NeDBDataStore('app.db');
 
         let that = this;
@@ -44,14 +47,20 @@ class NeDbDatabase implements Database {
                     log.error(err);
                     callback(err);
                 }
-                else that.app.loadDatabase((function (err) {
-                    if (err)
+                else that.dashboard.loadDatabase(function (err) {
+                    if (err) {
                         log.error(err);
-                    else
-                        log.debug("Database loaded");
+                        callback(err);
+                    }
+                    else that.app.loadDatabase((function (err) {
+                        if (err)
+                            log.error(err);
+                        else
+                            log.debug("Database loaded");
 
-                    callback(err)
-                }));
+                        callback(err)
+                    }));
+                });
             });
         });
     }
@@ -90,14 +99,14 @@ class NeDbDatabase implements Database {
 
     getNode(id: number, cid: number, callback?: (err?: Error, doc?: SerializedNode) => void) {
         let _id = "c" + cid + "n" + id;
-        this.nodes.findOne({_id: _id}, function (err, doc: any) {
+        this.nodes.findOne({ _id: _id }, function (err, doc: any) {
             if (err) log.error(err);
             if (callback) callback(err, doc);
         })
     }
 
     getUser(name: string, callback?: (err?: Error, doc?: User) => void) {
-        this.users.findOne({name: name}, function (err, doc: any) {
+        this.users.findOne({ name: name }, function (err, doc: any) {
             if (err) log.error(err);
             if (callback) callback(err, doc);
         })
@@ -106,7 +115,7 @@ class NeDbDatabase implements Database {
 
     updateNode(id: number, cid: number, update: any, callback?: (err?: Error) => void) {
         let _id = "c" + cid + "n" + id;
-        this.nodes.update({_id: _id}, update, function (err, updated) {
+        this.nodes.update({ _id: _id }, update, function (err, updated) {
             if (err) log.error(err);
             if (updated == 0) log.error(`Cat't update node [${cid}/${id}]. Document not found.`);
             if (callback) callback(err);
@@ -121,21 +130,21 @@ class NeDbDatabase implements Database {
     }
 
     dropUsers(callback?: (err?: Error) => void) {
-        this.users.remove({}, {multi: true}, function (err) {
+        this.users.remove({}, { multi: true }, function (err) {
             if (err) log.error(err);
             if (callback) callback(err);
         })
     }
 
     dropNodes(callback?: (err?: Error) => void) {
-        this.nodes.remove({}, {multi: true}, function (err) {
+        this.nodes.remove({}, { multi: true }, function (err) {
             if (err) log.error(err);
             if (callback) callback(err);
         })
     }
 
     dropApp(callback?: (err?: Error) => void) {
-        this.app.remove({}, {multi: true}, function (err) {
+        this.app.remove({}, { multi: true }, function (err) {
             if (err) log.error(err);
             if (callback) callback(err);
         })
@@ -144,7 +153,7 @@ class NeDbDatabase implements Database {
 
     removeNode(id: number, cid: number, callback?: (err?: Error) => void) {
         let _id = "c" + cid + "n" + id;
-        this.nodes.remove({_id: _id}, {}, function (err, removed) {
+        this.nodes.remove({ _id: _id }, {}, function (err, removed) {
             if (err) log.error(err);
             if (removed == 0) log.error("Cat't remove. Document not found.");
             if (callback) callback(err);
@@ -152,7 +161,7 @@ class NeDbDatabase implements Database {
     }
 
     getLastContainerId(callback?: (err?: Error, id?: number) => void) {
-        this.app.findOne({_id: "lastContainerId"}, function (err, doc: any) {
+        this.app.findOne({ _id: "lastContainerId" }, function (err, doc: any) {
             if (err) log.error(err);
             if (callback) {
                 if (doc)
@@ -164,7 +173,7 @@ class NeDbDatabase implements Database {
     }
 
     updateLastContainerId(id: number, callback?: (err?: Error) => void) {
-        this.app.update({_id: "lastContainerId"}, {$set: {last: id}}, {upsert: true}, function (err, updated) {
+        this.app.update({ _id: "lastContainerId" }, { $set: { last: id } }, { upsert: true }, function (err, updated) {
             if (err) log.error(err);
             if (updated == 0) log.error("Cat't update. Document not found.");
             if (callback) callback(err);
@@ -172,7 +181,7 @@ class NeDbDatabase implements Database {
     }
 
     getLastRootNodeId(callback?: (err?: Error, id?: number) => void) {
-        this.app.findOne({_id: "lastRootNodeId"}, function (err, doc: any) {
+        this.app.findOne({ _id: "lastRootNodeId" }, function (err, doc: any) {
             if (err) log.error(err);
             if (callback) {
                 if (doc)
@@ -184,7 +193,7 @@ class NeDbDatabase implements Database {
     }
 
     updateLastRootNodeId(id: number, callback?: (err?: Error) => void) {
-        this.app.update({_id: "lastRootNodeId"}, {$set: {last: id}}, {upsert: true}, function (err, updated) {
+        this.app.update({ _id: "lastRootNodeId" }, { $set: { last: id } }, { upsert: true }, function (err, updated) {
             if (err) log.error(err);
             if (updated == 0) log.error("Cat't update. Document not found.");
             if (callback) callback(err);

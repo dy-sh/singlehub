@@ -9,5 +9,6 @@ import { UiSubpanel } from "./ui-subpanel";
 export class UiPanel {
     name: string;
     title: string;
+    order: number;
     subpanels: Array<UiSubpanel>;
 }
