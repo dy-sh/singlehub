@@ -2,7 +2,7 @@
 v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
   v-card(color='grey darken-3')
     v-toolbar(color='blue darken-2' dense)
-      v-toolbar-title {{title}}
+      v-toolbar-title {{title}} {{id}}
       v-spacer
       v-toolbar-side-icon
     v-divider
@@ -20,27 +20,37 @@ v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
 import Nodes from "./nodes";
 
 export default {
+  props: ["id"],
   data: () => ({
     title: "My Device",
     subPanels: [
       {
         title: "Living room",
         nodes: [
-          { component: "uiButtonNode", id: 1 },
-          { component: "uiButtonNode", id: 2 },
-          { component: "uiSwitchNode", id: 3 }
+          { component: "UiButtonNode", id: 1 },
+          { component: "UiButtonNode", id: 2 },
+          { component: "UiSwitchNode", id: 3 }
         ]
       },
       {
         title: "Kitchen",
         nodes: [
-          { component: "uiSwitchNode", id: 4 },
-          { component: "uiSwitchNode", id: 5 }
+          { component: "UiSwitchNode", id: 4 },
+          { component: "UiSwitchNode", id: 5 }
         ]
       }
     ]
   }),
-  components: Nodes
+  components: Nodes,
+  created() {
+    console.log(+this.id);
+    this.$socket.emit("getPanel", +this.id);
+  },
+  sockets: {
+    getPanel(data) {
+      console.log("getPanel: " + JSON.stringify(data));
+    }
+  }
 };
 </script>
 

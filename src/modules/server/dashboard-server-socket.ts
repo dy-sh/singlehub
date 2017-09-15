@@ -28,12 +28,30 @@ export class DashboardServerSocket {
             //     io.emit('test message', msg + "2");
             // });
 
+            //----------------------- NEW API
+
             //test event
             socket.emit("customEmit", "hello")
             socket.on('nodeData', function (data) {
                 log.debug("nodeData: " + JSON.stringify(data));
                 io.emit("nodeData", data)
             });
+
+
+            socket.on('getPanel', (id) => {
+                log.debug("getPanel: " + id);
+
+                let container = Container.containers[id];
+                if (!container) return socket.emit("getPanel", null);
+
+                let s = container.serialize(true, true);
+
+                socket.emit("getPanel", s)
+            });
+
+
+            //----------------------- OLD API
+
 
             //join client to container room
             socket.on('room', function (room) {

@@ -3,8 +3,8 @@ main
   v-content    
     v-container(grid-list-xl)
       v-layout(row wrap)
-        panel
-        panel
+        panel(id="0")
+
 
 
 </template>
