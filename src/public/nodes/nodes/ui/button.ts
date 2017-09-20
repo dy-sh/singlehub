@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -20,7 +20,7 @@ let template =
 export class UiButtonNode extends UiNode {
 
     constructor() {
-        super("Button", template);
+        super("Button", template, "UiButtonNode");
 
         this.descriprion = "";
         this.properties['value'] = false;

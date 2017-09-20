@@ -8,7 +8,7 @@ let router = express.Router();
 
 import { Container } from "../public/nodes/container"
 import { Link, LinkInfo, SerializedNode } from "../public/nodes/node";
-import { app } from "../app";
+import app from "../app";
 
 
 setInterval(updateActiveNodes, 500);

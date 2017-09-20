@@ -10,6 +10,7 @@ import { Node } from "../nodes/node";
 import { UiNode } from "../nodes/nodes/ui/ui-node";
 
 
+
 export class Dashboard {
     db: Database;
     uiPanels: Array<UiPanel> = [];
@@ -17,6 +18,7 @@ export class Dashboard {
     constructor(db: Database) {
         this.db = db;
         this.uiPanels = db.getUiPanels();
+        Container.containers[0].dashboard = this;
         Container.containers[0].on("created", this.onNodeCreated)
         Container.containers[0].on("removed", this.onNodeRemoved)
     }
@@ -24,6 +26,7 @@ export class Dashboard {
     onNodeCreated(node: Node) {
         if (!node.isDashboardNode)
             return;
+
     }
 
     onNodeRemoved(node: Node) {
@@ -79,3 +82,4 @@ export class Dashboard {
 
 
 }
+

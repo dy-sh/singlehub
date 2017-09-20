@@ -192,9 +192,8 @@ export class App extends Emitter {
     }
 }
 
-export let app = new App();
-
-
+let app = new App();
+export default app;
 
 
 

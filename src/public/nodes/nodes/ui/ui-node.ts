@@ -4,7 +4,7 @@
  */
 
 import { Node } from "../../node";
-import { Side } from "../../container";
+import { Container, Side } from "../../container";
 
 
 export class UiNode extends Node {
@@ -12,6 +12,7 @@ export class UiNode extends Node {
     titlePrefix: string;
     template: string;
     uiElementType: string;
+    uiPanel: string;
 
     constructor(titlePrefix: string, template: string, uiElementType: string) {
         super();
@@ -23,11 +24,15 @@ export class UiNode extends Node {
         this.isDashboardNode = true;
 
         this.settings["title"] = { description: "Title", type: "string", value: this.titlePrefix };
+        this.settings["ui-panel"] = { description: "Ui Panel Name", type: "string" };
     }
 
 
 
     onAdded() {
+        if (this.settings["ui-panel"].value == null || this.settings["ui-panel"].value == "")
+            this.settings["ui-panel"].value = "Container" + this.container.id;
+
         if (this.side == Side.dashboard) {
             let templ = Handlebars.compile(this.template);
             $(templ(this))
@@ -41,6 +46,11 @@ export class UiNode extends Node {
 
     onSettingsChanged() {
         this.changeTitle();
+
+        if (this.side == Side.server) {
+            if (this.uiPanel != this.settings["ui-panel"].value)
+                Container.containers[0].emit("onSettingsChange", this);
+        }
     }
 
     changeTitle() {

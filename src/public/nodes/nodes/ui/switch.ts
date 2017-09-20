@@ -3,8 +3,8 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import {Container, Side} from "../../container";
-import {UiNode} from "./ui-node";
+import { Container, Side } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '  <div class="ui attached clearing segment" id="node-{{id}}">\
@@ -21,7 +21,7 @@ let template =
 export class UiSwitchNode extends UiNode {
 
     constructor() {
-        super("Switch", template);
+        super("Switch", template, "UiSwitchNode");
 
         this.descriprion = "";
         this.properties['value'] = false;
@@ -41,7 +41,7 @@ export class UiSwitchNode extends UiNode {
                 that.sendMessageToServerSide('toggle');
             });
 
-            this.onGetMessageToDashboardSide({value: this.properties['value']})
+            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
     }
 
@@ -50,7 +50,7 @@ export class UiSwitchNode extends UiNode {
         let val = !this.properties['value'];
         this.properties['value'] = val;
         this.setOutputData(0, val);
-        this.sendMessageToDashboardSide({value: val});
+        this.sendMessageToDashboardSide({ value: val });
         this.sendIOValuesToEditor();
     };
 

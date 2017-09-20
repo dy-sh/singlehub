@@ -19,7 +19,7 @@ const log = require('logplease').create('server', { color: 3 });
 
 import { EditorServerSocket } from "./editor-server-socket"
 import { DashboardServerSocket } from "./dashboard-server-socket"
-import { App } from "../../app";
+import app from "../../app";
 
 
 let config = require('../../../config.json');
@@ -33,7 +33,7 @@ export class Server {
 
     private __rootdirname;
 
-    constructor(app: App) {
+    constructor() {
         this.__rootdirname = (<any>global).__rootdirname;
         this.express = express();
         this.express.locals.moment = require('moment');
@@ -42,7 +42,7 @@ export class Server {
         this.routes();
         this.handeErrors();
         this.configure();
-        this.start_io(app);
+        this.start_io();
     }
 
     private setViewEngine() {
@@ -170,7 +170,7 @@ export class Server {
         }
     }
 
-    private start_io(app: App) {
+    private start_io() {
         let io_root = socket(this.server);
         this.editorSocket = new EditorServerSocket(io_root);
         this.dashboardSocket = new DashboardServerSocket(io_root, app);
