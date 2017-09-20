@@ -30,11 +30,12 @@ export class UiNode extends Node {
     onCreated() {
         if (this.side == Side.server)
             this.container.dashboard.onNodeCreated(this);
+
+        this.changeUiPanel("Container" + this.container.id);
     }
 
     onAdded() {
-        if (this.settings["ui-panel"].value == null || this.settings["ui-panel"].value == "")
-            this.changeUiPanel("Container" + this.container.id);
+
 
         if (this.side == Side.dashboard) {
             let templ = Handlebars.compile(this.template);
@@ -59,7 +60,9 @@ export class UiNode extends Node {
     }
 
     changeUiPanel(name: string) {
-        this.container.dashboard.onNodeChangePanel(this.uiPanel, name);
+        if (this.side == Side.server)
+            this.container.dashboard.onNodeChangePanel(this.uiPanel, name);
+
         this.uiPanel = name;
         this.settings["ui-panel"].value = name;
     }

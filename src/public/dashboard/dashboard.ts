@@ -23,13 +23,13 @@ export class Dashboard {
         Container.containers[0].on("removed", this.onNodeRemoved)
     }
 
-    onNodeCreated(node: Node) {
+    onNodeCreated(node: UiNode) {
         console.log("onNodeCreated")
         if (!node.isDashboardNode)
             return;
     }
 
-    onNodeRemoved(node: Node) {
+    onNodeRemoved(node: UiNode) {
         if (!node.isDashboardNode)
             return;
     }
