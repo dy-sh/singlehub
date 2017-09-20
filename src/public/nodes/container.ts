@@ -121,6 +121,9 @@ export class Container extends Emitter {
             if (rootContainer.db)
                 this.db = rootContainer.db;
 
+            if (rootContainer.dashboard)
+                this.dashboard = rootContainer.dashboard;
+
             if (rootContainer._events)
                 this._events = rootContainer._events;
         }
@@ -595,8 +598,7 @@ export class Container extends Emitter {
             this.debug("New node created: " + node.getReadableId());
 
             //event
-            console.log("created")
-            Container.containers[0].emit('created', node);
+            // Container.containers[0].emit('created', node);
 
             //node event
             if (node['onCreated'])
@@ -641,7 +643,7 @@ export class Container extends Emitter {
             return;
 
         //event
-        Container.containers[0].emit('removed', node);
+        // Container.containers[0].emit('removed', node);
 
         //node event
         if (node['onRemoved'])

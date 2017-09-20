@@ -69,6 +69,9 @@ export class App extends Emitter {
         if (this.rootContainer && this.db)
             this.rootContainer.db = this.db;
 
+        if (this.rootContainer && this.dashboard)
+            this.rootContainer.dashboard = this.dashboard;
+
         this.emit('started');
 
         this.rootContainer.run();
@@ -83,7 +86,7 @@ export class App extends Emitter {
     }
 
     createServer() {
-        this.server = new Server(this);
+        this.server = new Server();
     }
 
     registerNodes() {

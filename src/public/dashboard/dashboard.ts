@@ -24,14 +24,18 @@ export class Dashboard {
     }
 
     onNodeCreated(node: Node) {
+        console.log("onNodeCreated")
         if (!node.isDashboardNode)
             return;
-
     }
 
     onNodeRemoved(node: Node) {
         if (!node.isDashboardNode)
             return;
+    }
+
+    onNodeChangePanel(oldName: string, newName: string) {
+        console.log("onNodeChangePanel")
     }
 
     addUiPanel(panel: UiPanel, callback?: (err?: Error, doc?: UiPanel) => void) {

@@ -27,11 +27,14 @@ export class UiNode extends Node {
         this.settings["ui-panel"] = { description: "Ui Panel Name", type: "string" };
     }
 
-
+    onCreated() {
+        if (this.side == Side.server)
+            this.container.dashboard.onNodeCreated(this);
+    }
 
     onAdded() {
         if (this.settings["ui-panel"].value == null || this.settings["ui-panel"].value == "")
-            this.settings["ui-panel"].value = "Container" + this.container.id;
+            this.changeUiPanel("Container" + this.container.id);
 
         if (this.side == Side.dashboard) {
             let templ = Handlebars.compile(this.template);
@@ -47,10 +50,18 @@ export class UiNode extends Node {
     onSettingsChanged() {
         this.changeTitle();
 
+        //change ui panel
         if (this.side == Side.server) {
-            if (this.uiPanel != this.settings["ui-panel"].value)
-                Container.containers[0].emit("onSettingsChange", this);
+            let panel = this.settings["ui-panel"].value;
+            if (this.uiPanel != panel)
+                this.changeUiPanel(panel);
         }
+    }
+
+    changeUiPanel(name: string) {
+        this.container.dashboard.onNodeChangePanel(this.uiPanel, name);
+        this.uiPanel = name;
+        this.settings["ui-panel"].value = name;
     }
 
     changeTitle() {
@@ -76,5 +87,8 @@ export class UiNode extends Node {
                 $(this).remove();
             });
         }
+
+        if (this.side == Side.server)
+            this.container.dashboard.onNodeRemoved(this);
     }
 }
