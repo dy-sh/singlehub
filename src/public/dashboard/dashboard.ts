@@ -52,7 +52,6 @@ export class Dashboard {
     }
 
     onNodeChangePanel(node: UiNode, oldName: string, newName: string) {
-        console.log("onNodeChangePanel", oldName, newName)
         var oldPanel = this.getUiPanel(oldName);
         if (oldPanel) {
             //remove old element
@@ -61,9 +60,9 @@ export class Dashboard {
                 for (var e = 0; e < subpanel.uiElements.length; e++) {
                     var element = subpanel.uiElements[e];
                     if (element.containerId == node.container.id && element.nodeId == node.id) {
-                        subpanel.uiElements = subpanel.uiElements.slice(e, 1);
+                        subpanel.uiElements.splice(e, 1);
                         this.db.updateUiPanel(oldPanel.name, { $set: { subpanels: oldPanel.subpanels } })
-                        return;
+                        // return;
                     }
                 }
             }
