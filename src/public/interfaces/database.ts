@@ -4,7 +4,7 @@
 
 import { Container, SerializedContainer } from "../nodes/container";
 import { Node, SerializedNode } from "../../public/nodes/node";
-import { UiPanel } from "../../public/dashboard/ui-panel";
+import { UiPanel } from "../../public/dashboard/dashboard";
 import { User } from "./user";
 
 

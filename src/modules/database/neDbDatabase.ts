@@ -6,7 +6,7 @@
 import * as NeDBDataStore from "nedb";
 import { Container, SerializedContainer } from "../../public/nodes/container";
 import { Node, SerializedNode } from "../../public/nodes/node";
-import { UiPanel } from "../../public/dashboard/ui-panel";
+import { UiPanel } from "../../public/dashboard/dashboard";
 import { Database } from "../../public/interfaces/database";
 import { User } from "../../public/interfaces/user";
 
@@ -78,7 +78,7 @@ class NeDbDatabase implements Database {
     }
 
     addUiPanel(panel: UiPanel, callback?: (err?: Error, doc?: UiPanel) => void) {
-        this.users.insert(panel, function (err, doc) {
+        this.dashboard.insert(panel, function (err, doc) {
             if (err) log.error(err);
             if (callback) callback(err, doc);
         })
