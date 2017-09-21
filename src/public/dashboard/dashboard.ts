@@ -34,11 +34,11 @@ export interface UiElement {
 
 export class Dashboard {
     db: Database;
-    uiPanels: Array<UiPanel> = [];
+    uiPanels: Array<UiPanel>;
 
     constructor(db: Database) {
         this.db = db;
-        this.uiPanels = db.getUiPanels();
+        this.uiPanels = db.getUiPanels() || [];
     }
 
     onNodeCreated(node: UiNode) {
@@ -56,13 +56,20 @@ export class Dashboard {
         var oldPanel = this.getUiPanel(oldName);
         if (oldPanel) {
             //remove old element
-
+            for (var s = 0; s < oldPanel.subpanels.length; s++) {
+                var subpanel = oldPanel.subpanels[s];
+                for (var e = 0; e < subpanel.uiElements.length; e++) {
+                    var element = subpanel.uiElements[e];
+                    if (element.containerId == node.container.id && element.nodeId == node.id) {
+                        subpanel.uiElements = subpanel.uiElements.slice(e, 1);
+                        this.db.updateUiPanel(oldPanel.name, { $set: { subpanels: oldPanel.subpanels } })
+                        return;
+                    }
+                }
+            }
         }
 
         //add new element
-        var newPanel = this.getUiPanel(newName)
-            || this.addUiPanel(newName);
-
         var uiElemet: UiElement = {
             title: node.title,
             type: node.uiElementType,
@@ -70,26 +77,36 @@ export class Dashboard {
             nodeId: node.id
         }
 
-        newPanel.subpanels[0].uiElements.push(uiElemet);
-        this.db.updateUiPanel(newPanel.name, { subpanels: newPanel.subpanels })
+        var newPanel = this.getUiPanel(newName);
+        if (!newPanel) {
+            //add to new panel
+            newPanel = this.addUiPanel(newName);
+            newPanel.subpanels[0].uiElements.push(uiElemet);
+            this.db.addUiPanel(newPanel);
+        } else {
+            //update existing panel
+            newPanel.subpanels[0].uiElements.push(uiElemet);
+            this.db.updateUiPanel(newPanel.name, { $set: { subpanels: newPanel.subpanels } })
+        }
+
     }
 
 
-    getUiElementForNode(node: UiNode): UiElement {
-        var panel = this.getUiPanel(node.uiPanel);
-        if (panel)
-            return;
+    // getUiElementForNode(node: UiNode): UiElement {
+    //     var panel = this.getUiPanel(node.uiPanel);
+    //     if (panel)
+    //         return;
 
-        for (var s = 0; s < panel.subpanels.length; s++) {
-            var subpanel = panel.subpanels[s];
-            for (var e = 0; e < subpanel.uiElements.length; e++) {
-                var element = subpanel.uiElements[e];
-                if (element.containerId == node.container.id
-                    && element.nodeId == node.id)
-                    return element;
-            }
-        }
-    };
+    //     for (var s = 0; s < panel.subpanels.length; s++) {
+    //         var subpanel = panel.subpanels[s];
+    //         for (var e = 0; e < subpanel.uiElements.length; e++) {
+    //             var element = subpanel.uiElements[e];
+    //             if (element.containerId == node.container.id
+    //                 && element.nodeId == node.id)
+    //                 return element;
+    //         }
+    //     }
+    // };
 
     getUiPanelForNode(node: UiNode): UiPanel {
         return this.uiPanels.find(p => p.name === node.uiPanel);
@@ -119,7 +136,6 @@ export class Dashboard {
         };
 
         this.uiPanels.push(panel);
-        this.db.addUiPanel(panel, callback);
 
         return panel;
 
