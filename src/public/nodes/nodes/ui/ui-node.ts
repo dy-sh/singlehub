@@ -61,7 +61,7 @@ export class UiNode extends Node {
 
     changeUiPanel(name: string) {
         if (this.side == Side.server)
-            this.container.dashboard.onNodeChangePanel(this.uiPanel, name);
+            this.container.dashboard.onNodeChangePanel(this, this.uiPanel, name);
 
         this.uiPanel = name;
         this.settings["ui-panel"].value = name;

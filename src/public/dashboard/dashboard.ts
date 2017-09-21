@@ -3,12 +3,32 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import { UiPanel } from "./ui-panel";
 import { Database } from "../../public/interfaces/database";
 import { Container } from "../nodes/container";
 import { Node } from "../nodes/node";
 import { UiNode } from "../nodes/nodes/ui/ui-node";
-import { UiElement } from "./ui-element";
+
+
+export interface UiPanel {
+    name: string;
+    title: string;
+    // order: number;
+    subpanels: Array<UiSubpanel>;
+}
+
+export interface UiSubpanel {
+    title: string;
+    uiElements: Array<UiElement>;
+}
+
+export interface UiElement {
+    title: string;
+    type: string;
+
+    //link to node
+    containerId: Number;
+    nodeId: Number;
+}
 
 
 
@@ -31,12 +51,27 @@ export class Dashboard {
             return;
     }
 
-    onNodeChangePanel(oldName: string, newName: string) {
+    onNodeChangePanel(node: UiNode, oldName: string, newName: string) {
         console.log("onNodeChangePanel", oldName, newName)
         var oldPanel = this.getUiPanel(oldName);
         if (oldPanel) {
+            //remove old element
 
         }
+
+        //add new element
+        var newPanel = this.getUiPanel(newName)
+            || this.addUiPanel(newName);
+
+        var uiElemet: UiElement = {
+            title: node.title,
+            type: node.uiElementType,
+            containerId: node.container.id,
+            nodeId: node.id
+        }
+
+        newPanel.subpanels[0].uiElements.push(uiElemet);
+        this.db.updateUiPanel(newPanel.name, { subpanels: newPanel.subpanels })
     }
 
 
@@ -71,16 +106,29 @@ export class Dashboard {
 
 
 
-    // addUiPanel(panel: UiPanel, callback?: (err?: Error, doc?: UiPanel) => void) {
-    //     this.uiPanels.push(panel);
-    //     this.db.addUiPanel(panel, callback);
+    addUiPanel(name: string, callback?: (err?: Error, doc?: UiPanel) => void): UiPanel {
+        var subpanel: UiSubpanel = {
+            title: "",
+            uiElements: []
+        }
 
-    //     // return this.db.addUiPanel(panel, (err, doc) => {
-    //     //     if (!err)
-    //     //         this.uiPanels.push(panel);
-    //     //     callback(err, doc);
-    //     // });
-    // };
+        var panel: UiPanel = {
+            name: name,
+            title: name,
+            subpanels: [subpanel]
+        };
+
+        this.uiPanels.push(panel);
+        this.db.addUiPanel(panel, callback);
+
+        return panel;
+
+        // return this.db.addUiPanel(panel, (err, doc) => {
+        //     if (!err)
+        //         this.uiPanels.push(panel);
+        //     callback(err, doc);
+        // });
+    };
 
 
     // updateUiPanel(name: string, update: any, callback?: (err?: Error) => void) {
