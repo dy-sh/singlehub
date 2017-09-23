@@ -15,7 +15,7 @@ export interface UiPanel {
     title: string;
     icon: string;
     // order: number;
-    subpanels: Array<UiSubpanel>;
+    subPanels: Array<UiSubpanel>;
 }
 
 export interface UiSubpanel {
@@ -72,12 +72,12 @@ export class Dashboard {
         if (!newPanel) {
             //add to new panel
             newPanel = this.addUiPanel(newName);
-            newPanel.subpanels[0].uiElements.push(uiElemet);
+            newPanel.subPanels[0].uiElements.push(uiElemet);
             this.db.addUiPanel(newPanel);
         } else {
             //update existing panel
-            newPanel.subpanels[0].uiElements.push(uiElemet);
-            this.db.updateUiPanel(newPanel.name, { $set: { subpanels: newPanel.subpanels } })
+            newPanel.subPanels[0].uiElements.push(uiElemet);
+            this.db.updateUiPanel(newPanel.name, { $set: { subPanels: newPanel.subPanels } })
         }
 
         this.socket.io.emit("getUiPanelsList", this.getUiPanelsList())
@@ -87,13 +87,13 @@ export class Dashboard {
         var oldPanel = this.getUiPanel(node.uiPanel);
         if (oldPanel) {
             //remove old element
-            for (var s = 0; s < oldPanel.subpanels.length; s++) {
-                var subpanel = oldPanel.subpanels[s];
-                for (var e = 0; e < subpanel.uiElements.length; e++) {
-                    var element = subpanel.uiElements[e];
+            for (var s = 0; s < oldPanel.subPanels.length; s++) {
+                var subPanel = oldPanel.subPanels[s];
+                for (var e = 0; e < subPanel.uiElements.length; e++) {
+                    var element = subPanel.uiElements[e];
                     if (element.containerId == node.container.id && element.nodeId == node.id) {
-                        subpanel.uiElements.splice(e, 1);
-                        this.db.updateUiPanel(oldPanel.name, { $set: { subpanels: oldPanel.subpanels } })
+                        subPanel.uiElements.splice(e, 1);
+                        this.db.updateUiPanel(oldPanel.name, { $set: { subPanels: oldPanel.subPanels } })
                         // return;
                     }
                 }
@@ -106,10 +106,10 @@ export class Dashboard {
     //     if (panel)
     //         return;
 
-    //     for (var s = 0; s < panel.subpanels.length; s++) {
-    //         var subpanel = panel.subpanels[s];
-    //         for (var e = 0; e < subpanel.uiElements.length; e++) {
-    //             var element = subpanel.uiElements[e];
+    //     for (var s = 0; s < panel.subPanels.length; s++) {
+    //         var subPanel = panel.subPanels[s];
+    //         for (var e = 0; e < subPanel.uiElements.length; e++) {
+    //             var element = subPanel.uiElements[e];
     //             if (element.containerId == node.container.id
     //                 && element.nodeId == node.id)
     //                 return element;
@@ -139,7 +139,7 @@ export class Dashboard {
     };
 
     addUiPanel(name: string, callback?: (err?: Error, doc?: UiPanel) => void): UiPanel {
-        var subpanel: UiSubpanel = {
+        var subPanel: UiSubpanel = {
             title: "",
             uiElements: []
         }
@@ -148,7 +148,7 @@ export class Dashboard {
             name: name,
             title: name,
             icon: "label_outline",
-            subpanels: [subpanel]
+            subPanels: [subPanel]
         };
 
         this.uiPanels.push(panel);

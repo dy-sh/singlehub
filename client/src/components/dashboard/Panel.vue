@@ -9,8 +9,8 @@ v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
     div(v-for="subPanel in subPanels")
       v-list(subheader)
         v-subheader {{subPanel.title}}
-        div(v-for="node in subPanel.nodes")
-          component(:is="node.component", :id="node.id")
+        div(v-for="uiElement in subPanel.uiElements")
+          component(:is="uiElement.type", :id="uiElement.id")
       v-divider
 
 </template>
@@ -25,29 +25,36 @@ export default {
     subPanels: [
       {
         title: "Living room",
-        nodes: [
-          { component: "UiButtonNode", id: 1 },
-          { component: "UiButtonNode", id: 2 },
-          { component: "UiSwitchNode", id: 3 }
+        uiElements: [
+          { type: "UiButtonNode", id: 1 },
+          { type: "UiButtonNode", id: 2 },
+          { type: "UiSwitchNode", id: 3 }
         ]
       },
       {
         title: "Kitchen",
-        nodes: [
-          { component: "UiSwitchNode", id: 4 },
-          { component: "UiSwitchNode", id: 5 }
+        uiElements: [
+          { type: "UiSwitchNode", id: 4 },
+          { type: "UiSwitchNode", id: 5 }
         ]
       }
     ]
   }),
+  watch: {
+    panel() {
+      console.log("update", this.panel.name);
+      this.$socket.emit("getUiPanel", this.panel.name);
+    }
+  },
   components: Nodes,
   mounted() {
     console.log(this.panel.name);
     this.$socket.emit("getUiPanel", this.panel.name);
   },
   sockets: {
-    getUiPanel(data) {
-      console.log("getUiPanel: " + JSON.stringify(data));
+    getUiPanel(panel) {
+      console.log("getUiPanel: " + JSON.stringify(panel));
+      this.subPanels = panel.subPanels;
     }
   }
 };

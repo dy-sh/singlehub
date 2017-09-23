@@ -41,7 +41,7 @@ export class DashboardServerSocket {
             socket.on('getUiPanel', (name) => {
                 log.debug("getUiPanel: " + name);
 
-                socket.emit("getPanel", app.dashboard.getUiPanel(name))
+                socket.emit("getUiPanel", app.dashboard.getUiPanel(name))
             });
 
             socket.on('getUiPanels', () => {
