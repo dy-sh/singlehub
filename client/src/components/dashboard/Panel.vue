@@ -44,11 +44,11 @@ export default {
   components: Nodes,
   created() {
     console.log(+this.id);
-    this.$socket.emit("getPanel", +this.id);
+    this.$socket.emit("getUiPanel", +this.id);
   },
   sockets: {
-    getPanel(data) {
-      console.log("getPanel: " + JSON.stringify(data));
+    getUiPanel(data) {
+      console.log("getUiPanel: " + JSON.stringify(data));
     }
   }
 };

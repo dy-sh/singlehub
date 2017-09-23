@@ -5,7 +5,7 @@
 
 
 import { Container } from "../../public/nodes/container";
-import { app, App } from "../../app";
+import app from "../../app";
 import Namespace = SocketIO.Namespace;
 
 
@@ -17,7 +17,7 @@ export class DashboardServerSocket {
     io_root: SocketIO.Server;
     io: Namespace;
 
-    constructor(io_root: SocketIO.Server, app: App) {
+    constructor(io_root: SocketIO.Server) {
         this.io_root = io_root;
         let io = this.io_root.of('/dashboard');
         this.io = io;
@@ -38,17 +38,23 @@ export class DashboardServerSocket {
             });
 
 
-            socket.on('getPanel', (id) => {
-                log.debug("getPanel: " + id);
+            socket.on('getUiPanel', (name) => {
+                log.debug("getUiPanel: " + name);
 
-                let container = Container.containers[id];
-                if (!container) return socket.emit("getPanel", null);
-
-                let s = container.serialize(true, true);
-
-                socket.emit("getPanel", s)
+                socket.emit("getPanel", app.dashboard.getUiPanel(name))
             });
 
+            socket.on('getUiPanels', () => {
+                log.debug("getUiPanels");
+
+                socket.emit("getPanels", app.dashboard.getUiPanels())
+            });
+
+            socket.on('getUiPanelsList', () => {
+                log.debug("getUiPanelsList", app.dashboard.getUiPanelsList());
+
+                socket.emit("getUiPanelsList", app.dashboard.getUiPanelsList())
+            });
 
             //----------------------- OLD API
 

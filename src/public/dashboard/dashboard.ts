@@ -121,11 +121,13 @@ export class Dashboard {
         return this.uiPanels.find(p => p.name === name);
     };
 
-    // getUiPanels(): Array<UiPanel> {
-    //     return this.uiPanels;
-    // };
+    getUiPanels(): Array<UiPanel> {
+        return this.uiPanels;
+    };
 
-
+    getUiPanelsList(): Array<string> {
+        return this.uiPanels.map(x => x.name);
+    };
 
     addUiPanel(name: string, callback?: (err?: Error, doc?: UiPanel) => void): UiPanel {
         var subpanel: UiSubpanel = {

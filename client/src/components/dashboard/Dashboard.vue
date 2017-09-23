@@ -3,7 +3,7 @@ main
   v-content    
     v-container(grid-list-xl)
       v-layout(row wrap)
-        panel(id="0")
+        //- panel(id="0")
 
 
 
@@ -17,6 +17,14 @@ export default {
   data: () => ({}),
   components: {
     panel: Panel
+  },
+  created() {
+    this.$socket.emit("getUiPanelsList");
+  },
+  sockets: {
+    getUiPanelsList(data) {
+      console.log("getUiPanelsList: " + JSON.stringify(data));
+    }
   }
 };
 </script>
