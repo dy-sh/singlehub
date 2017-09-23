@@ -7,6 +7,7 @@ import { Database } from "../../public/interfaces/database";
 import { Container } from "../nodes/container";
 import { Node } from "../nodes/node";
 import { UiNode } from "../nodes/nodes/ui/ui-node";
+import { DashboardServerSocket } from "../../modules/server/dashboard-server-socket";
 
 
 export interface UiPanel {
@@ -36,9 +37,11 @@ export interface UiElement {
 export class Dashboard {
     db: Database;
     uiPanels: Array<UiPanel>;
+    socket: DashboardServerSocket;
 
-    constructor(db: Database) {
+    constructor(db: Database, socket: DashboardServerSocket) {
         this.db = db;
+        this.socket = socket;
         this.uiPanels = db.getUiPanels() || [];
     }
 
@@ -77,6 +80,7 @@ export class Dashboard {
             this.db.updateUiPanel(newPanel.name, { $set: { subpanels: newPanel.subpanels } })
         }
 
+        this.socket.io.emit("getUiPanelsList", this.getUiPanelsList())
     }
 
     removeElemetForNode(node: UiNode) {

@@ -64,7 +64,7 @@ export class App extends Emitter {
                 this.loadDatabase(true);
         }
 
-        this.dashboard = new Dashboard(this.db);
+        this.dashboard = new Dashboard(this.db, this.server.dashboardSocket);
 
         if (this.rootContainer && this.db)
             this.rootContainer.db = this.db;

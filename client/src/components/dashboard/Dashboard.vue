@@ -19,8 +19,8 @@ import Toolbar from "../Toolbar.vue";
 export default {
   data: () => ({
     panels: [
-      { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
-      { icon: "trending_up", title: "Editor", name: "Editor" }
+      // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
+      // { icon: "trending_up", title: "Editor", name: "Editor" }
     ]
   }),
   components: {
