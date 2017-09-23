@@ -1,6 +1,6 @@
 <template lang='pug'>
 div
-  toolbar(:panels="panels")
+  toolbar(:panels="panels", @click="onClickToolbar")
   main
     v-content    
       v-container(grid-list-xl)
@@ -39,6 +39,12 @@ export default {
     getUiPanelsList(data) {
       this.panels = data;
       console.log("getUiPanelsList: " + JSON.stringify(data));
+    }
+  },
+  methods: {
+    onClickToolbar(panelName) {
+      console.log(panelName);
+      this.activePanel = this.panels.find(x => x.name == panelName);
     }
   }
 };

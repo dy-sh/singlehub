@@ -29,7 +29,7 @@ export default {
   }),
   methods: {
     onClick(name) {
-      console.log(name);
+      this.$emit("click", name);
     }
   }
 };
