@@ -49,24 +49,12 @@ export class Dashboard {
     onNodeRemoved(node: UiNode) {
         if (!node.isDashboardNode)
             return;
+
+        this.removeElemetForNode(node);
     }
 
-    onNodeChangePanel(node: UiNode, oldName: string, newName: string) {
-        var oldPanel = this.getUiPanel(oldName);
-        if (oldPanel) {
-            //remove old element
-            for (var s = 0; s < oldPanel.subpanels.length; s++) {
-                var subpanel = oldPanel.subpanels[s];
-                for (var e = 0; e < subpanel.uiElements.length; e++) {
-                    var element = subpanel.uiElements[e];
-                    if (element.containerId == node.container.id && element.nodeId == node.id) {
-                        subpanel.uiElements.splice(e, 1);
-                        this.db.updateUiPanel(oldPanel.name, { $set: { subpanels: oldPanel.subpanels } })
-                        // return;
-                    }
-                }
-            }
-        }
+    onNodeChangePanel(node: UiNode, newName: string) {
+        this.removeElemetForNode(node);
 
         //add new element
         var uiElemet: UiElement = {
@@ -90,6 +78,23 @@ export class Dashboard {
 
     }
 
+    removeElemetForNode(node: UiNode) {
+        var oldPanel = this.getUiPanel(node.uiPanel);
+        if (oldPanel) {
+            //remove old element
+            for (var s = 0; s < oldPanel.subpanels.length; s++) {
+                var subpanel = oldPanel.subpanels[s];
+                for (var e = 0; e < subpanel.uiElements.length; e++) {
+                    var element = subpanel.uiElements[e];
+                    if (element.containerId == node.container.id && element.nodeId == node.id) {
+                        subpanel.uiElements.splice(e, 1);
+                        this.db.updateUiPanel(oldPanel.name, { $set: { subpanels: oldPanel.subpanels } })
+                        // return;
+                    }
+                }
+            }
+        }
+    }
 
     // getUiElementForNode(node: UiNode): UiElement {
     //     var panel = this.getUiPanel(node.uiPanel);
