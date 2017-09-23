@@ -12,6 +12,7 @@ import { UiNode } from "../nodes/nodes/ui/ui-node";
 export interface UiPanel {
     name: string;
     title: string;
+    icon: string;
     // order: number;
     subpanels: Array<UiSubpanel>;
 }
@@ -126,7 +127,11 @@ export class Dashboard {
     };
 
     getUiPanelsList(): Array<string> {
-        return this.uiPanels.map(x => x.name);
+        let arr = [];
+        this.uiPanels.forEach(p => {
+            arr.push({ name: p.name, title: p.title, icon: p.icon })
+        });
+        return arr;
     };
 
     addUiPanel(name: string, callback?: (err?: Error, doc?: UiPanel) => void): UiPanel {
@@ -138,6 +143,7 @@ export class Dashboard {
         var panel: UiPanel = {
             name: name,
             title: name,
+            icon: "label_outline",
             subpanels: [subpanel]
         };
 
