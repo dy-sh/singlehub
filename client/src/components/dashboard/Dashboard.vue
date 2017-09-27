@@ -5,7 +5,7 @@ div
     v-content    
       v-container(grid-list-xl)
         v-layout(row wrap)
-          panel(:panel="activePanel" v-if="activePanel")
+          panel(:name="activePanel" v-if="activePanel")
 
 
 
@@ -22,7 +22,7 @@ export default {
       // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
       // { icon: "trending_up", title: "Editor", name: "Editor" }
     ],
-    activePanel: null
+    activePanel: ""
     // {
     //   icon: "subscriptions",
     //   title: "TestPanel",
@@ -45,7 +45,7 @@ export default {
   methods: {
     onClickToolbar(panelName) {
       console.log(panelName);
-      this.activePanel = this.panels.find(x => x.name == panelName);
+      this.activePanel = panelName;
     }
   }
 };

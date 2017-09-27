@@ -81,6 +81,7 @@ export class Dashboard {
         }
 
         this.socket.io.emit("getUiPanelsList", this.getUiPanelsList())
+        this.socket.io.emit("getUiPanel", this.getUiPanel(newName))
     }
 
     removeElemetForNode(node: UiNode) {
