@@ -55,8 +55,11 @@ export class Dashboard {
             return;
 
         this.removeElemetForNode(node);
-        this.socket.io.emit("getUiPanel", this.getUiPanel(node.uiPanel))
+        this.removeEmptyPanels();
+        this.socket.io.emit("getUiPanel", this.getUiPanel(node.uiPanel));
     }
+
+
 
     onNodeChangePanel(node: UiNode, newName: string) {
         this.removeElemetForNode(node);
@@ -81,8 +84,25 @@ export class Dashboard {
             this.db.updateUiPanel(newPanel.name, { $set: { subPanels: newPanel.subPanels } })
         }
 
+        this.removeEmptyPanels();
         this.socket.io.emit("getUiPanelsList", this.getUiPanelsList())
         this.socket.io.emit("getUiPanel", this.getUiPanel(newName))
+    }
+
+    removeEmptyPanels() {
+        let changed = false;
+        for (var p = 0; p < this.uiPanels.length; p++) {
+            let panel = this.uiPanels[p];
+            if (panel.subPanels.every(s => s.uiElements.length == 0)) {
+                //reove panel
+                changed = true;
+                this.uiPanels = this.uiPanels.filter(pan => pan.name != panel.name);
+                this.db.removeUiPanel(panel.name);
+            }
+        }
+
+        if (changed)
+            this.socket.io.emit("getUiPanelsList", this.getUiPanelsList());
     }
 
     removeElemetForNode(node: UiNode) {

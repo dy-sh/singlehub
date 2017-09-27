@@ -1,5 +1,5 @@
 <template lang='pug'>
-v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
+v-flex(v-if="title" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
   v-card(color='grey darken-3')
     v-toolbar(color='blue darken-2' dense)
       v-toolbar-title {{title}}
@@ -55,8 +55,12 @@ export default {
   sockets: {
     getUiPanel(panel) {
       console.log("getUiPanel: " + JSON.stringify(panel));
-      this.title = panel.title;
-      this.subPanels = panel.subPanels;
+      if (panel) {
+        this.title = panel.title;
+        this.subPanels = panel.subPanels;
+      } else {
+        this.title = "";
+      }
     }
   }
 };

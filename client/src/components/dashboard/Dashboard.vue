@@ -2,7 +2,7 @@
 div
   toolbar(:panels="panels", @click="onClickToolbar")
   main
-    v-content    
+    v-content    {{activePanel}}
       v-container(grid-list-xl)
         v-layout(row wrap)
           panel(:name="activePanel" v-if="activePanel")
@@ -38,14 +38,19 @@ export default {
   },
   sockets: {
     getUiPanelsList(data) {
-      this.panels = data;
       console.log("getUiPanelsList: " + JSON.stringify(data));
+      this.panels = data;
+      if (!this.panels.some(x => x.name == this.activePanel))
+        this.activePanel = "";
     }
   },
   methods: {
     onClickToolbar(panelName) {
       console.log(panelName);
-      this.activePanel = panelName;
+
+      if (this.activePanel === panelName)
+        this.$socket.emit("getUiPanel", panelName);
+      else this.activePanel = panelName;
     }
   }
 };
