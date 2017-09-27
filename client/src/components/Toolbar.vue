@@ -1,7 +1,8 @@
 <template lang='pug'>
 div
-  v-navigation-drawer(persistent='', clipped='', enable-resize-watcher='', v-model='drawer', app='')
-    v-list(dense='')
+  v-navigation-drawer(permanent clipped app width=200)
+    //- v-navigation-drawer(v-else persistent clipped enable-resize-watcher v-model='drawer' app width=200)
+    v-list(dense)
       v-subheader.mt-3.grey--text.text--darken-1 DASHBOARD
       v-list-tile(v-for='panel in panels', :key='panel.name', @click='onClick(panel.name)')
         v-list-tile-action

@@ -5,7 +5,7 @@ div
     v-content    
       v-container(grid-list-xl)
         v-layout(row wrap)
-          panel(:panel="activePanel")
+          panel(:panel="activePanel" v-if="activePanel")
 
 
 
@@ -22,11 +22,12 @@ export default {
       // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
       // { icon: "trending_up", title: "Editor", name: "Editor" }
     ],
-    activePanel: {
-      icon: "subscriptions",
-      title: "TestPanel",
-      name: "TestPanel"
-    }
+    activePanel: null
+    // {
+    //   icon: "subscriptions",
+    //   title: "TestPanel",
+    //   name: "TestPanel"
+    // }
   }),
   components: {
     panel: Panel,
