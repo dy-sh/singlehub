@@ -42,6 +42,10 @@ export default {
       this.panels = data;
       if (!this.panels.some(x => x.name == this.activePanel))
         this.activePanel = "";
+    },
+    getUiPanel(panel) {
+      if (panel) this.activePanel = panel.name;
+      else this.activePanel = "";
     }
   },
   methods: {
