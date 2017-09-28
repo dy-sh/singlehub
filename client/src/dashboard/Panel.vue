@@ -8,7 +8,7 @@ v-flex(v-if="title" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
     v-divider
     div(v-for="subPanel in subPanels")
       v-list(subheader)
-        v-subheader {{title}}
+        //- v-subheader {{title}}
         div(v-for="uiElement in subPanel.uiElements")
           component(:is="uiElement.type", :uiElement="uiElement")
       v-divider

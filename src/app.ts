@@ -56,6 +56,8 @@ export class App extends Emitter {
             this.createRootContainer();
         }
 
+        this.dashboard = new Dashboard(this.server.dashboardSocket);
+
         if (config.dataBase.enable) {
             if (!this.db)
                 this.connectDatabase();
@@ -64,7 +66,6 @@ export class App extends Emitter {
                 this.loadDatabase(true);
         }
 
-        this.dashboard = new Dashboard(this.db, this.server.dashboardSocket);
 
         if (this.rootContainer && this.db)
             this.rootContainer.db = this.db;
@@ -121,10 +122,10 @@ export class App extends Emitter {
 
     loadDatabase(importNodes: boolean, callback?: Function) {
 
-        let db = this.db;
 
 
-        db.loadDatabase(function (err) {
+
+        this.db.loadDatabase((err) => {
             if (callback)
                 callback(err);
 
@@ -133,20 +134,22 @@ export class App extends Emitter {
             if (!importNodes)
                 return;
 
+
+
             //get last container id
-            db.getLastContainerId(function (err, id) {
+            this.db.getLastContainerId((err, id) => {
                 if (id)
                     Container.last_container_id = id;
             });
 
             //get last node id for root container
-            db.getLastRootNodeId(function (err, id) {
+            this.db.getLastRootNodeId((err, id) => {
                 if (id)
                     app.rootContainer.last_node_id = id;
             });
 
             //import nodes
-            db.getNodes(function (err, ser_nodes) {
+            this.db.getNodes((err, ser_nodes) => {
                 if (!ser_nodes)
                     return;
 
@@ -186,6 +189,8 @@ export class App extends Emitter {
                     }
                 }
 
+                //load dashboard ui elements
+                this.dashboard.loadFromDatabase(this.db);
 
                 let contCount = Object.keys(containers).length;
                 if (containers[0]) contCount--;

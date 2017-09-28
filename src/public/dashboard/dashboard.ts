@@ -40,11 +40,19 @@ export class Dashboard {
     uiPanels: Array<UiPanel>;
     socket: DashboardServerSocket;
 
-    constructor(db: Database, socket: DashboardServerSocket) {
-        this.db = db;
+    constructor(socket: DashboardServerSocket) {
         this.socket = socket;
-        this.uiPanels = db.getUiPanels() || [];
-        this.updateElementsStates();
+        this.uiPanels = [];
+    }
+
+    loadFromDatabase(db: Database) {
+        this.db = db;
+        db.getUiPanels((err, docs) => {
+            if (err) return console.log(err);
+
+            this.uiPanels = docs || [];
+            this.updateElementsStates();
+        })
     }
 
     onNodeCreated(node: UiNode) {
@@ -79,11 +87,15 @@ export class Dashboard {
             //add to new panel
             newPanel = this.addUiPanel(newName);
             newPanel.subPanels[0].uiElements.push(uiElemet);
-            this.db.addUiPanel(newPanel);
+
+            if (this.db)
+                this.db.addUiPanel(newPanel);
         } else {
             //update existing panel
             newPanel.subPanels[0].uiElements.push(uiElemet);
-            this.db.updateUiPanel(newPanel.name, { $set: { subPanels: newPanel.subPanels } })
+
+            if (this.db)
+                this.db.updateUiPanel(newPanel.name, { $set: { subPanels: newPanel.subPanels } })
         }
 
         this.removeEmptyPanels();
@@ -100,7 +112,9 @@ export class Dashboard {
                 //reove panel
                 changed = true;
                 this.uiPanels = this.uiPanels.filter(pan => pan.name != panel.name);
-                this.db.removeUiPanel(panel.name);
+
+                if (this.db)
+                    this.db.removeUiPanel(panel.name);
             }
         }
 
@@ -119,7 +133,9 @@ export class Dashboard {
                     var element = subPanel.uiElements[e];
                     if (element.containerId == node.container.id && element.nodeId == node.id) {
                         subPanel.uiElements.splice(e, 1);
-                        this.db.updateUiPanel(oldPanel.name, { $set: { subPanels: oldPanel.subPanels } })
+
+                        if (this.db)
+                            this.db.updateUiPanel(oldPanel.name, { $set: { subPanels: oldPanel.subPanels } })
                         // return;
                     }
                 }

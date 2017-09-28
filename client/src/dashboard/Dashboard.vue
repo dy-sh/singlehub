@@ -2,7 +2,7 @@
 div
   toolbar(:panels="panels" :selected="activePanel" @click="onClickToolbar")
   main
-    v-content    {{activePanel}}
+    v-content
       v-container(grid-list-xl)
         v-layout(row wrap)
           panel(:name="activePanel" v-if="activePanel")
