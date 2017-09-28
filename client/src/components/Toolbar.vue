@@ -4,11 +4,11 @@ div
     //- v-navigation-drawer(v-else persistent clipped enable-resize-watcher v-model='drawer' app width=200)
     v-list(dense)
       v-subheader.mt-3.grey--text.text--darken-1 DASHBOARD
-      v-list-tile(v-for='panel in panels', :key='panel.name', @click='onClick(panel.name)')
+      v-list-tile(v-for='panel in panels' :key='panel.name' @click='onClick(panel.name)')
         v-list-tile-action
-          v-icon {{ panel.icon }}
+          v-icon(:class="{'blue--text': panel.name==selected,'text--lighten-1':panel.name==selected }")  {{ panel.icon }}
         v-list-tile-content
-          v-list-tile-title {{ panel.title }}
+          v-list-tile-title(:class="{'blue--text': panel.name==selected,'text--lighten-1':panel.name==selected }")  {{ panel.title }}
 
   v-toolbar(dense fixed clipped-left app)
     v-toolbar-side-icon(@click.stop='drawer = !drawer')
@@ -19,7 +19,7 @@ div
 
 <script>
 export default {
-  props: ["panels"],
+  props: ["panels", "selected"],
   data: () => ({
     drawer: true,
     title: "SingleHub"
