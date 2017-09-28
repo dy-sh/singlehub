@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 declare let vis;
 declare let moment;
@@ -53,10 +53,10 @@ export class UiChartNode extends UiNode {
 
         this.descriprion = "";
         this.properties['log'] = [];
-        this.settings['maxRecords'] = {description: "Max Records", type: "number", value: 100};
-        this.settings['saveToDb'] = {description: "Save data to DB", type: "boolean", value: false};
-        this.settings['style'] = {description: "Style", type: "string", value: "bars"};
-        this.settings['autoscroll'] = {description: "Auto scroll", type: "string", value: "continuous"};
+        this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 100 };
+        this.settings['saveToDb'] = { description: "Save data to DB", type: "boolean", value: false };
+        this.settings['style'] = { description: "Style", type: "string", value: "bars" };
+        this.settings['autoscroll'] = { description: "Auto scroll", type: "string", value: "continuous" };
 
         this.addInput("input");
     }
@@ -80,7 +80,7 @@ export class UiChartNode extends UiNode {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
 
-                that.sendMessageToDashboardSide({value: that.lastData});
+                that.sendMessageToDashboard({ value: that.lastData });
             }
         }, this.UPDATE_INTERVAL);
     }
@@ -94,7 +94,7 @@ export class UiChartNode extends UiNode {
 
         //add to log
         let records = this.properties['log'];
-        let record = {x: Date.now(), y: val};
+        let record = { x: Date.now(), y: val };
         records.push(record);
 
         this.lastData = record;
@@ -106,7 +106,7 @@ export class UiChartNode extends UiNode {
         //update in db
         if (this.container.db && this.settings['saveToDb'].value) {
             this.container.db.updateNode(this.id, this.container.id,
-                {$push: {"properties.log": {$each: [record], $slice: -max}}});
+                { $push: { "properties.log": { $each: [record], $slice: -max } } });
         }
     };
 
@@ -115,18 +115,18 @@ export class UiChartNode extends UiNode {
         if (data.clear) {
             this.isRecentlyActive = true;
             this.properties['log'] = [];
-            this.sendMessageToDashboardSide({clear: true});
+            this.sendMessageToDashboard({ clear: true });
 
             //update in db
             if (this.container.db && this.settings['saveToDb'].value) {
                 this.container.db.updateNode(this.id, this.container.id,
-                    {$unset: {"properties.log":true}});
+                    { $unset: { "properties.log": true } });
             }
         }
 
         if (data.style) {
             this.settings['style'].value = data.style;
-            this.sendMessageToDashboardSide({style: data.style});
+            this.sendMessageToDashboard({ style: data.style });
         }
     };
 
@@ -150,7 +150,7 @@ export class UiChartNode extends UiNode {
 
 
         $('#chart-clear-' + this.id).click(function () {
-            that.sendMessageToServerSide({clear: true});
+            that.sendMessageToServerSide({ clear: true });
         });
 
         $('#chart-now-' + this.id).click(function () {
@@ -163,7 +163,7 @@ export class UiChartNode extends UiNode {
 
         $('#chart-style-' + this.id).click(function () {
             that.changeStyle();
-            that.sendMessageToServerSide({style: that.settings['style'].value});
+            that.sendMessageToServerSide({ style: that.settings['style'].value });
         });
 
 
@@ -174,7 +174,7 @@ export class UiChartNode extends UiNode {
             height: this.CHART_HEIGHT,
             style: 'bar',
             drawPoints: false,
-            barChart: {width: 50, align: 'right', sideBySide: false}
+            barChart: { width: 50, align: 'right', sideBySide: false }
         };
 
         this.dataset = new vis.DataSet();
@@ -216,12 +216,12 @@ export class UiChartNode extends UiNode {
         switch (this.settings['autoscroll'].value) {
             case 'continuous':
                 // continuously move the window
-                this.graph2d.setWindow(now - interval, now, {animation: false});
+                this.graph2d.setWindow(now - interval, now, { animation: false });
                 requestAnimationFrame(that.renderStep.bind(that));
                 break;
 
             case 'discrete':
-                this.graph2d.setWindow(now - interval, now, {animation: false});
+                this.graph2d.setWindow(now - interval, now, { animation: false });
                 setTimeout(that.renderStep.bind(that), 1000);
                 break;
 
@@ -243,50 +243,50 @@ export class UiChartNode extends UiNode {
                     height: this.CHART_HEIGHT,
                     style: 'bar',
                     drawPoints: false,
-                    barChart: {width: 50, align: 'right', sideBySide: false}
+                    barChart: { width: 50, align: 'right', sideBySide: false }
                 };
                 break;
             case 'splines':
                 this.options = {
                     height: this.CHART_HEIGHT,
                     style: 'line',
-                    drawPoints: {style: 'circle', size: 6},
-                    shaded: {enabled: false},
-                    interpolation: {enabled: true}
+                    drawPoints: { style: 'circle', size: 6 },
+                    shaded: { enabled: false },
+                    interpolation: { enabled: true }
                 };
                 break;
             case 'shadedsplines':
                 this.options = {
                     style: 'line',
                     height: this.CHART_HEIGHT,
-                    drawPoints: {style: 'circle', size: 6},
-                    shaded: {enabled: true, orientation: 'bottom'},
-                    interpolation: {enabled: true}
+                    drawPoints: { style: 'circle', size: 6 },
+                    shaded: { enabled: true, orientation: 'bottom' },
+                    interpolation: { enabled: true }
                 };
                 break;
             case 'lines':
                 this.options = {
                     height: this.CHART_HEIGHT,
                     style: 'line',
-                    drawPoints: {style: 'square', size: 6},
-                    shaded: {enabled: false},
-                    interpolation: {enabled: false}
+                    drawPoints: { style: 'square', size: 6 },
+                    shaded: { enabled: false },
+                    interpolation: { enabled: false }
                 };
                 break;
             case 'shadedlines':
                 this.options = {
                     height: this.CHART_HEIGHT,
                     style: 'line',
-                    drawPoints: {style: 'square', size: 6},
-                    shaded: {enabled: true, orientation: 'bottom'},
-                    interpolation: {enabled: false}
+                    drawPoints: { style: 'square', size: 6 },
+                    shaded: { enabled: true, orientation: 'bottom' },
+                    interpolation: { enabled: false }
                 };
                 break;
             case 'dots':
                 this.options = {
                     height: this.CHART_HEIGHT,
                     style: 'points',
-                    drawPoints: {style: 'circle', size: 10}
+                    drawPoints: { style: 'circle', size: 10 }
                 };
                 break;
             default:
@@ -302,7 +302,7 @@ export class UiChartNode extends UiNode {
 
     }
 
-    redrawChart(options,) {
+    redrawChart(options, ) {
         let window = this.graph2d.getWindow();
         options.start = window.start;
         options.end = window.end;
@@ -383,7 +383,7 @@ export class UiChartNode extends UiNode {
 
         this.updateChartStyle();
 
-        this.sendMessageToServerSide({style: val});
+        this.sendMessageToServerSide({ style: val });
     }
 
     onDashboardGetRequest(req, res) {
@@ -418,13 +418,13 @@ export class UiChartNode extends UiNode {
         //ajax get log
         if (req.params[0] == "/style") {
             this.settings['style'].value = req.body.style;
-            this.sendMessageToDashboardSide({style: req.body.style});
+            this.sendMessageToDashboard({ style: req.body.style });
             res.json("ok");
         }
         if (req.params[0] == "/clear") {
             this.isRecentlyActive = true;
             this.properties['log'] = [];
-            this.sendMessageToDashboardSide({clear: true});
+            this.sendMessageToDashboard({ clear: true });
             res.json("ok");
         }
     }

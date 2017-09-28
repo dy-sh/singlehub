@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -31,8 +31,8 @@ export class UiSliderNode extends UiNode {
         this.descriprion = "";
         this.properties['value'] = 0;
 
-        this.settings["min"] = {description: "Min", type: "number", value: 0};
-        this.settings["max"] = {description: "Max", type: "number", value: 100};
+        this.settings["min"] = { description: "Min", type: "number", value: 0 };
+        this.settings["max"] = { description: "Max", type: "number", value: 100 };
 
         this.addOutput("output", "number");
     }
@@ -66,7 +66,7 @@ export class UiSliderNode extends UiNode {
 
             this.startSendingToServer();
 
-            this.onGetMessageToDashboardSide({value: this.properties['value']})
+            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
     }
 
@@ -90,7 +90,7 @@ export class UiSliderNode extends UiNode {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToServerSide({value: that.properties['value']});
+                that.sendMessageToServerSide({ value: that.properties['value'] });
             }
         }, this.UPDATE_INTERVAL);
     }
@@ -100,7 +100,7 @@ export class UiSliderNode extends UiNode {
         this.properties['value'] = data.value;
         this.setOutputData(0, data.value);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboardSide(data);
+        this.sendMessageToDashboard(data);
     };
 
     onGetMessageToDashboardSide(data) {

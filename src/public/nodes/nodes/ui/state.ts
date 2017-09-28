@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -26,7 +26,7 @@ export class UiStateNode extends UiNode {
     dataUpdated = false;
 
     constructor() {
-        super("State",template);
+        super("State", template);
 
         this.descriprion = "Show value of input";
         this.properties['value'] = false;
@@ -34,18 +34,18 @@ export class UiStateNode extends UiNode {
         this.addInput("input");
     }
 
-    onAdded  () {
+    onAdded() {
         super.onAdded();
 
         if (this.side == Side.server)
             this.startSendingToDashboard();
 
         if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({value: this.properties['value']})
+            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
     }
 
-    onInputUpdated  () {
+    onInputUpdated() {
         this.properties['value'] = this.getInputData(0) == true;
         this.dataUpdated = true;
         this.isRecentlyActive = true;
@@ -56,12 +56,12 @@ export class UiStateNode extends UiNode {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToDashboardSide({value: that.properties['value']});
+                that.sendMessageToDashboard({ value: that.properties['value'] });
             }
         }, this.UPDATE_INTERVAL);
     }
 
-    onGetMessageToDashboardSide  (data) {
+    onGetMessageToDashboardSide(data) {
         if (data.value == true) {
             $('#state-on-' + this.id).show();
             $('#state-off-' + this.id).hide();

@@ -47,7 +47,7 @@ export class UiLabelNode extends UiNode {
 
         this.isRecentlyActive = true;
 
-        this.sendMessageToDashboardSide({ value: this.properties['value'] });
+        this.sendMessageToDashboard({ value: this.properties['value'] });
     };
 
     onGetMessageToDashboardSide(data) {

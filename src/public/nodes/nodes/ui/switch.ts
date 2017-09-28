@@ -54,7 +54,8 @@ export class UiSwitchNode extends UiNode {
 
         this.properties['value'] = value;
         this.setOutputData(0, value);
-        this.sendMessageToDashboardSide(value);
+        this.sendMessageToDashboard(value);
+        this.updateDahboardElementState();
         this.sendIOValuesToEditor();
     };
 

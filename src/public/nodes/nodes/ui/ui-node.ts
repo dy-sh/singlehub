@@ -94,4 +94,8 @@ export class UiNode extends Node {
         if (this.side == Side.server)
             this.container.dashboard.onNodeRemoved(this);
     }
+
+    updateDahboardElementState() {
+        this.container.dashboard.updateElementStateForNode(this);
+    }
 }

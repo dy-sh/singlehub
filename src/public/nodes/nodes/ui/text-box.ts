@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -44,10 +44,10 @@ export class UiTextBoxNode extends UiNode {
             let that = this;
             $('#textBoxSend-' + this.id).click(function () {
                 let value = $('#textBoxText-' + that.id).val();
-                that.sendMessageToServerSide({value: value});
+                that.sendMessageToServerSide({ value: value });
             });
 
-            this.onGetMessageToDashboardSide({value: this.properties['value']})
+            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
     }
 
@@ -57,7 +57,7 @@ export class UiTextBoxNode extends UiNode {
             data.value = null;
         this.properties['value'] = data.value;
         this.setOutputData(0, data.value);
-        this.sendMessageToDashboardSide(data);
+        this.sendMessageToDashboard(data);
         this.sendIOValuesToEditor();
     };
 

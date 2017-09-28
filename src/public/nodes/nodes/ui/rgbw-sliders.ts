@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -67,25 +67,25 @@ export class UiRGBWSlidersNode extends UiNode {
                 start: 0,
                 connect: 'lower',
                 animate: false,
-                range: {'min': 0, 'max': 255}
+                range: { 'min': 0, 'max': 255 }
             });
             noUiSlider.create(this.sliderG, {
                 start: 0,
                 connect: 'lower',
                 animate: false,
-                range: {'min': 0, 'max': 255}
+                range: { 'min': 0, 'max': 255 }
             });
             noUiSlider.create(this.sliderB, {
                 start: 0,
                 connect: 'lower',
                 animate: false,
-                range: {'min': 0, 'max': 255}
+                range: { 'min': 0, 'max': 255 }
             });
             noUiSlider.create(this.sliderW, {
                 start: 0,
                 connect: 'lower',
                 animate: false,
-                range: {'min': 0, 'max': 255}
+                range: { 'min': 0, 'max': 255 }
             });
 
 
@@ -143,7 +143,7 @@ export class UiRGBWSlidersNode extends UiNode {
         let hex = Utils.numsToRgbwHex([data.r, data.g, data.b, data.w]);
         this.setOutputData(0, hex);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboardSide(data);
+        this.sendMessageToDashboard(data);
     };
 
     onGetMessageToDashboardSide(data) {

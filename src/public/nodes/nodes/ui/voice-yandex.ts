@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -26,7 +26,7 @@ export class UiVoiceYandexNode extends UiNode {
 
         this.descriprion = "";
 
-        this.settings['api-key'] = {description: "Yandex SpeechKit Cloud Key", type: "string"}
+        this.settings['api-key'] = { description: "Yandex SpeechKit Cloud Key", type: "string" }
 
         this.addInput("text", "string");
         this.addInput("play", "boolean");
@@ -44,7 +44,7 @@ export class UiVoiceYandexNode extends UiNode {
     onInputUpdated() {
         let text = this.getInputData(0);
         let play = this.getInputData(1) == true;
-        this.sendMessageToDashboardSide({text: text, play: play})
+        this.sendMessageToDashboard({ text: text, play: play })
         this.isRecentlyActive = true;
     };
 
@@ -62,14 +62,14 @@ export class UiVoiceYandexNode extends UiNode {
             return;
 
         let text = this.playlist.shift();
-        let api_key=this.settings['api-key'].value;
+        let api_key = this.settings['api-key'].value;
 
         if (!api_key) {
             this.debugErr("Please, set api-key in node settings.");
             return;
         }
 
-        let url = "https://tts.voicetech.yandex.net/generate?key="+api_key+"&text=" + text;
+        let url = "https://tts.voicetech.yandex.net/generate?key=" + api_key + "&text=" + text;
 
         this.audioSpeech.src = url;
         this.audioSpeech.load();

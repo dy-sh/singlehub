@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -40,7 +40,7 @@ export class UiAudioNode extends UiNode {
     onInputUpdated() {
         let url = this.getInputData(0);
         let play = this.getInputData(1) == true;
-        this.sendMessageToDashboardSide({url: url, play: play})
+        this.sendMessageToDashboard({ url: url, play: play })
         this.isRecentlyActive = true;
     };
 

@@ -28,8 +28,8 @@ export interface UiElement {
     type: string;
 
     //link to node
-    containerId: Number;
-    nodeId: Number;
+    containerId: number;
+    nodeId: number;
     value?: any;
 }
 
@@ -44,6 +44,7 @@ export class Dashboard {
         this.db = db;
         this.socket = socket;
         this.uiPanels = db.getUiPanels() || [];
+        this.updateElementsStates();
     }
 
     onNodeCreated(node: UiNode) {
@@ -126,21 +127,48 @@ export class Dashboard {
         }
     }
 
-    // getUiElementForNode(node: UiNode): UiElement {
-    //     var panel = this.getUiPanel(node.uiPanel);
-    //     if (panel)
-    //         return;
+    updateElementsStates() {
+        this.uiPanels.forEach(p => {
+            p.subPanels.forEach(s => {
+                s.uiElements.forEach(e => {
+                    let container = Container.containers[e.containerId];
+                    if (container) {
+                        let node = container._nodes[e.nodeId];
+                        if (node) {
+                            e.value = node.properties['value'];
+                        }
+                        else console.log("Can't update dashboard element state. Node [ " + e.containerId + "/" + e.nodeId + "] is not found");
+                    }
+                    else console.log("Can't update dashboard element state. Node container [" + e.containerId + "] is not found");
+                    e.value
+                })
+            })
+        });
+    }
 
-    //     for (var s = 0; s < panel.subPanels.length; s++) {
-    //         var subPanel = panel.subPanels[s];
-    //         for (var e = 0; e < subPanel.uiElements.length; e++) {
-    //             var element = subPanel.uiElements[e];
-    //             if (element.containerId == node.container.id
-    //                 && element.nodeId == node.id)
-    //                 return element;
-    //         }
-    //     }
-    // };
+    updateElementStateForNode(node: UiNode) {
+        let element = this.getUiElementForNode(node);
+        if (element)
+            element.value = node.properties['value'];
+        else console.log("Can't update dashboard element state. Element for node " + node.getReadableId() + " is not found");
+
+    }
+
+    getUiElementForNode(node: UiNode): UiElement {
+        var panel = this.getUiPanel(node.uiPanel);
+        if (!panel)
+            return;
+
+        for (var s = 0; s < panel.subPanels.length; s++) {
+            var subPanel = panel.subPanels[s];
+            for (var e = 0; e < subPanel.uiElements.length; e++) {
+                var element = subPanel.uiElements[e];
+                if (element.containerId == node.container.id
+                    && element.nodeId == node.id)
+                    return element;
+            }
+        }
+    };
 
     getUiPanelForNode(node: UiNode): UiPanel {
         return this.uiPanels.find(p => p.name === node.uiPanel);

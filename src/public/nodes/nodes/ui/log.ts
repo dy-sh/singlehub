@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 declare let moment;
 
@@ -30,8 +30,8 @@ export class UiLogNode extends UiNode {
 
         this.descriprion = "";
         this.properties['log'] = [];
-        this.settings['maxRecords'] = {description: "Max Records", type: "number", value: 10};
-        this.settings['saveToDb'] = {description: "Save log to DB", type: "boolean", value: false};
+        this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 10 };
+        this.settings['saveToDb'] = { description: "Save log to DB", type: "boolean", value: false };
 
         this.addInput("input");
     }
@@ -48,7 +48,7 @@ export class UiLogNode extends UiNode {
 
             if (this.properties['log'].length > 0) {
                 let log = $('#log-' + this.id);
-                for (let record of  this.properties['log']) {
+                for (let record of this.properties['log']) {
                     log.append(
                         '<div class="log-record">' +
                         moment(record.date).format("DD.MM.YYYY H:mm:ss.SSS")
@@ -68,9 +68,9 @@ export class UiLogNode extends UiNode {
         setInterval(function () {
             if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
                 let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
-                let record = {date: Date.now(), value: "Dropped " + dropped + " messages (data rate limitation)"};
+                let record = { date: Date.now(), value: "Dropped " + dropped + " messages (data rate limitation)" };
                 that.properties['log'].push(record);
-                that.sendMessageToDashboardSide({record: record});
+                that.sendMessageToDashboard({ record: record });
             }
 
             that.messagesPerSec = 0;
@@ -88,19 +88,19 @@ export class UiLogNode extends UiNode {
         if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
 
             let records = this.properties['log'];
-            let record = {date: Date.now(), value: val};
+            let record = { date: Date.now(), value: val };
             records.push(record);
 
             let max = this.settings['maxRecords'].value;
             let unwanted = records.length - max;
             records.splice(0, unwanted);
 
-            this.sendMessageToDashboardSide({record: record});
+            this.sendMessageToDashboard({ record: record });
 
             //update in db
             if (this.container.db && this.settings['saveToDb'].value) {
                 this.container.db.updateNode(this.id, this.container.id,
-                    {$push: {"properties.log": {$each: [record], $slice: -max}}});
+                    { $push: { "properties.log": { $each: [record], $slice: -max } } });
             }
         }
     };
@@ -110,12 +110,12 @@ export class UiLogNode extends UiNode {
         this.isRecentlyActive = true;
         this.properties['log'] = [];
 
-        this.sendMessageToDashboardSide({clear: true});
+        this.sendMessageToDashboard({ clear: true });
 
         //update in db
         if (this.container.db && this.settings['saveToDb'].value) {
             this.container.db.updateNode(this.id, this.container.id,
-                {$unset: {"properties.log":true}});
+                { $unset: { "properties.log": true } });
         }
     };
 
@@ -145,7 +145,7 @@ export class UiLogNode extends UiNode {
         }
 
         if (log.get(0) != null)
-            log.animate({scrollTop: $('#log-' + this.id).get(0).scrollHeight}, 0);
+            log.animate({ scrollTop: $('#log-' + this.id).get(0).scrollHeight }, 0);
     }
 }
 

@@ -4,10 +4,10 @@
  */
 
 
-import {Node} from "../../node";
+import { Node } from "../../node";
 import Utils from "../../utils";
-import {Side, Container} from "../../container";
-import {UiNode} from "./ui-node";
+import { Side, Container } from "../../container";
+import { UiNode } from "./ui-node";
 
 let template =
     '<div class="ui attached clearing segment" id="node-{{id}}">\
@@ -40,7 +40,7 @@ export class UiToggleNode extends UiNode {
                 that.sendMessageToServerSide('toggle');
             });
 
-            this.onGetMessageToDashboardSide({value: this.properties['value']})
+            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
     }
 
@@ -49,7 +49,7 @@ export class UiToggleNode extends UiNode {
         let val = !this.properties['value'];
         this.properties['value'] = val;
         this.setOutputData(0, val);
-        this.sendMessageToDashboardSide({value: val});
+        this.sendMessageToDashboard({ value: val });
         this.sendIOValuesToEditor();
     };
 
