@@ -30,6 +30,7 @@ export interface UiElement {
     //link to node
     containerId: Number;
     nodeId: Number;
+    value?: any;
 }
 
 
@@ -89,6 +90,7 @@ export class Dashboard {
         this.socket.io.emit("getUiPanel", this.getUiPanel(newName))
     }
 
+
     removeEmptyPanels() {
         let changed = false;
         for (var p = 0; p < this.uiPanels.length; p++) {
@@ -104,6 +106,7 @@ export class Dashboard {
         if (changed)
             this.socket.io.emit("getUiPanelsList", this.getUiPanelsList());
     }
+
 
     removeElemetForNode(node: UiNode) {
         var oldPanel = this.getUiPanel(node.uiPanel);

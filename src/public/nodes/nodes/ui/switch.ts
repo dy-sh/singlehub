@@ -48,13 +48,13 @@ export class UiSwitchNode extends UiNode {
 
     }
 
-    onGetMessageToServerSide(data) {
-        console.log("onGetMessageToServerSide", data)
+    onGetMessageToServerSide(value) {
+        console.log("onGetMessageToServerSide", value)
         this.isRecentlyActive = true;
-        let val = !this.properties['value'];
-        this.properties['value'] = val;
-        this.setOutputData(0, val);
-        this.sendMessageToDashboardSide({ value: val });
+
+        this.properties['value'] = value;
+        this.setOutputData(0, value);
+        this.sendMessageToDashboardSide(value);
         this.sendIOValuesToEditor();
     };
 

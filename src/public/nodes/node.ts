@@ -1391,7 +1391,9 @@ export class Node {
         }
         else if (this.side == Side.server) {
             let socket = this.container.server_dashboard_socket;
+            //todo subscribe from dashboard
             socket.in("" + this.container.id).emit('node-message-to-dashboard-side', m);
+            socket.emit('nodeMessageToDashboard', m);
         }
         else {
             this.container.clinet_socket.emit('node-message-to-dashboard-side', m);

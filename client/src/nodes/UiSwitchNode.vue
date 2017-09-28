@@ -21,6 +21,7 @@ export default {
     onClick() {
       this.value = !this.value;
       console.log("click " + this.id + " : " + this.value);
+
       this.$socket.emit("node-message-to-server-side", {
         cid: this.uiElement.containerId,
         id: this.uiElement.nodeId,
@@ -29,13 +30,14 @@ export default {
     }
   },
   sockets: {
-    nodeData(data) {
-      console.log("UiSwitchNode nodeData: " + JSON.stringify(data));
-      if (this.id === data.nodeId) {
+    nodeMessageToDashboard(data) {
+      console.log("UiSwitchNode nodeMessageToDashboard", JSON.stringify(data));
+      if (
+        this.uiElement.containerId === data.cid &&
+        this.uiElement.nodeId === data.id
+      ) {
         this.value = data.value;
         console.log("updated: " + this.value);
-      } else {
-        console.log(this.id, data.nodeId);
       }
     }
   }
