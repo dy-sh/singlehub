@@ -43,9 +43,13 @@ export class UiSwitchNode extends UiNode {
 
             this.onGetMessageToDashboardSide({ value: this.properties['value'] })
         }
+
+
+
     }
 
     onGetMessageToServerSide(data) {
+        console.log("onGetMessageToServerSide", data)
         this.isRecentlyActive = true;
         let val = !this.properties['value'];
         this.properties['value'] = val;

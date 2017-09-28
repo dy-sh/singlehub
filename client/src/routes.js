@@ -1,8 +1,8 @@
 import Dashboard from "./dashboard/Dashboard.vue"
 
-import Welcome from "./setup-wizard/Welcome.vue"
-import Database from "./setup-wizard/Database"
-import Admin from "./setup-wizard/Admin.vue"
+import Welcome from "./setup/Welcome.vue"
+import Database from "./setup/Database"
+import Admin from "./setup/Admin.vue"
 
 export default [
     //editor

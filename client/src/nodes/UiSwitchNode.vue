@@ -1,7 +1,7 @@
 <template lang='pug'>
 v-list-tile
   v-list-tile-content
-    v-list-tile-title {{title}}
+    v-list-tile-title {{uiElement.title}}
     //- v-list-tile-sub-title Hangouts message
   v-spacer
   v-list-tile-action
@@ -11,27 +11,24 @@ v-list-tile
 
 <script>
 export default {
+  props: ["uiElement"],
   data() {
     return {
-      title: "Ligth",
-      value: true
+      value: this.uiElement.value
     };
   },
-  props: ["id"],
   methods: {
     onClick() {
       this.value = !this.value;
       console.log("click " + this.id + " : " + this.value);
-      this.$socket.emit("nodeData", { nodeId: this.id, value: this.value });
+      this.$socket.emit("node-message-to-server-side", {
+        cid: this.uiElement.containerId,
+        id: this.uiElement.nodeId,
+        value: this.value
+      });
     }
   },
   sockets: {
-    connect() {
-      console.log("UiSwitchNode socket connected");
-    },
-    customEmit(val) {
-      console.log("UiSwitchNode customEmit");
-    },
     nodeData(data) {
       console.log("UiSwitchNode nodeData: " + JSON.stringify(data));
       if (this.id === data.nodeId) {

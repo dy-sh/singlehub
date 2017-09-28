@@ -32,46 +32,29 @@ export class DashboardServerSocket {
 
             //test event
             socket.emit("customEmit", "hello")
+
+            socket.on('getUiPanel', (name) => {
+                log.debug("getUiPanel: " + name);
+                socket.emit("getUiPanel", app.dashboard.getUiPanel(name))
+            });
+
+            socket.on('getUiPanels', () => {
+                log.debug("getUiPanels");
+                socket.emit("getPanels", app.dashboard.getUiPanels())
+            });
+
+            socket.on('getUiPanelsList', () => {
+                log.debug("getUiPanelsList", app.dashboard.getUiPanelsList());
+                socket.emit("getUiPanelsList", app.dashboard.getUiPanelsList())
+            });
+
             socket.on('nodeData', function (data) {
                 log.debug("nodeData: " + JSON.stringify(data));
                 io.emit("nodeData", data)
             });
 
 
-            socket.on('getUiPanel', (name) => {
-                log.debug("getUiPanel: " + name);
-
-                socket.emit("getUiPanel", app.dashboard.getUiPanel(name))
-            });
-
-            socket.on('getUiPanels', () => {
-                log.debug("getUiPanels");
-
-                socket.emit("getPanels", app.dashboard.getUiPanels())
-            });
-
-            socket.on('getUiPanelsList', () => {
-                log.debug("getUiPanelsList", app.dashboard.getUiPanelsList());
-
-                socket.emit("getUiPanelsList", app.dashboard.getUiPanelsList())
-            });
-
-            //----------------------- OLD API
-
-
-            //join client to container room
-            socket.on('room', function (room) {
-                if ((<any>socket).room != null) {
-                    // log.debug("Leave dashboard room [" + (<any>socket).room + "]");
-                    socket.leave((<any>socket).room);
-                }
-
-                (<any>socket).room = room;
-                socket.join(room);
-                log.debug("Join to dashboard room [" + room + "]");
-            });
-
-            socket.on('node-message-to-server-side', function (n) {
+            socket.on('node-message-to-server-side', (n) => {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to server-side. Container id [" + n.cid + "] does not exist");
@@ -93,8 +76,9 @@ export class DashboardServerSocket {
             });
 
 
+
             //redirect message
-            socket.on('node-message-to-editor-side', function (n) {
+            socket.on('node-message-to-editor-side', (n) => {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to editor-side. Container id [" + n.cid + "] does not exist");
@@ -112,7 +96,7 @@ export class DashboardServerSocket {
             });
 
             //redirect message
-            socket.on('node-message-to-dashboard-side', function (n) {
+            socket.on('node-message-to-dashboard-side', (n) => {
                 console.log(n)
 
                 let cont = Container.containers[n.cid];
@@ -129,6 +113,24 @@ export class DashboardServerSocket {
 
                 app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
             });
+
+
+            //----------------------- OLD API
+
+
+            //join client to container room
+            socket.on('room', function (room) {
+                if ((<any>socket).room != null) {
+                    // log.debug("Leave dashboard room [" + (<any>socket).room + "]");
+                    socket.leave((<any>socket).room);
+                }
+
+                (<any>socket).room = room;
+                socket.join(room);
+                log.debug("Join to dashboard room [" + room + "]");
+            });
+
+
         });
 
         // app.on('started', function () {
