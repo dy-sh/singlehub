@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     onBuiltIn() {
-      this.$router.push({ name: "init/admin" });
+      this.$router.push({ name: "setup/admin" });
     },
     onSkip() {
       this.$router.push({ name: "/" });

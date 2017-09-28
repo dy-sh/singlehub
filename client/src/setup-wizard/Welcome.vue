@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     onNext() {
-      this.$router.push({ name: "init/db" });
+      this.$router.push({ name: "setup/db" });
     }
   }
 };

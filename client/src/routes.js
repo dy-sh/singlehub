@@ -1,15 +1,15 @@
-import Dashboard from "./components/dashboard/Dashboard.vue"
+import Dashboard from "./dashboard/Dashboard.vue"
 
-import Welcome from "./components/init/Welcome.vue"
-import Database from "./components/init/Database"
-import Admin from "./components/init/Admin.vue"
+import Welcome from "./setup-wizard/Welcome.vue"
+import Database from "./setup-wizard/Database"
+import Admin from "./setup-wizard/Admin.vue"
 
 export default [
     //editor
     { name: "/", path: "/", component: Dashboard },
 
     //initial setup wizard
-    { name: "init", path: "/init", component: Welcome },
-    { name: "init/db", path: "/init/db", component: Database },
-    { name: "init/admin", path: "/init/admin", component: Admin },
+    { name: "setup", path: "/setup", component: Welcome },
+    { name: "setup/db", path: "/setup/db", component: Database },
+    { name: "setup/admin", path: "/setup/admin", component: Admin },
 ]

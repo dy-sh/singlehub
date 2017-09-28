@@ -2,7 +2,7 @@
 div
   toolbar(:panels="panels" :selected="activePanel" @click="onClickToolbar")
   main
-    v-content 
+    v-content    {{activePanel}}
       v-container(grid-list-xl)
         v-layout(row wrap)
           panel(:name="activePanel" v-if="activePanel")
@@ -14,7 +14,7 @@ div
 
 <script>
 import Panel from "./Panel.vue";
-import Toolbar from "../Toolbar.vue";
+import Toolbar from "./Toolbar.vue";
 
 export default {
   data: () => ({

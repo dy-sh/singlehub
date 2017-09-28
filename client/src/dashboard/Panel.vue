@@ -17,7 +17,7 @@ v-flex(v-if="title" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
 
 
 <script>
-import Nodes from "./nodes";
+import Nodes from "../nodes/nodes";
 
 export default {
   props: ["name"],
