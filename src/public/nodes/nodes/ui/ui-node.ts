@@ -35,8 +35,6 @@ export class UiNode extends Node {
     }
 
     onAdded() {
-
-
         if (this.side == Side.dashboard) {
             let templ = Handlebars.compile(this.template);
             $(templ(this))
@@ -46,6 +44,8 @@ export class UiNode extends Node {
         }
 
         this.changeTitle();
+
+        this.uiPanel = this.settings["ui-panel"].value;
     }
 
     onSettingsChanged() {
