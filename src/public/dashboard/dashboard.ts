@@ -167,7 +167,6 @@ export class Dashboard {
         if (element)
             element.value = node.properties['value'];
         else console.log("Can't update dashboard element state. Element for node " + node.getReadableId() + " is not found");
-
     }
 
     getUiElementForNode(node: UiNode): UiElement {

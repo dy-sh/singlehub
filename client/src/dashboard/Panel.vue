@@ -57,7 +57,12 @@ export default {
       console.log("getUiPanel: " + JSON.stringify(panel));
       if (panel) {
         this.title = panel.title;
-        this.subPanels = panel.subPanels;
+
+        //force update!!!
+        this.subPanels = null;
+        this.$nextTick(() => {
+          this.subPanels = panel.subPanels;
+        });
       } else {
         this.title = "";
       }
