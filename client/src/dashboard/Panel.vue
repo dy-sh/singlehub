@@ -22,8 +22,8 @@ import Nodes from "../nodes/nodes";
 export default {
   props: ["name"],
   data: () => ({
-    // title: "",
-    title: "Test panel",
+    title: "",
+    // title: "Test panel",
     subPanels: [
       {
         title: "Test sub-panel",
@@ -37,7 +37,7 @@ export default {
   }),
   watch: {
     name() {
-      console.log("watch name update", this.name);
+      // console.log("watch name update", this.name);
       this.$socket.emit("getUiPanel", this.name);
     }
   },

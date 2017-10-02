@@ -19,9 +19,6 @@ new Vue({
   sockets: {
     connect() {
       console.log('socket connected')
-    },
-    customEmit(val) {
-      console.log('customEmit')
     }
   }
 

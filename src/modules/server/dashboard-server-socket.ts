@@ -31,7 +31,7 @@ export class DashboardServerSocket {
             //----------------------- NEW API
 
             //test event
-            socket.emit("customEmit", "hello")
+            // socket.emit("customEmit", "hello")
 
             socket.on('getUiPanel', (name) => {
                 log.debug("getUiPanel: " + name);
@@ -97,7 +97,7 @@ export class DashboardServerSocket {
 
             //redirect message
             socket.on('nodeMessageToDashboard', (n) => {
-                console.log(n)
+                // console.log("nodeMessageToDashboard",n)
 
                 let cont = Container.containers[n.cid];
                 if (!cont) {
