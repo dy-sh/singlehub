@@ -22,37 +22,34 @@ import Nodes from "../nodes/nodes";
 export default {
   props: ["name"],
   data: () => ({
-    title: "",
-    subPanels: []
+    // title: "",
+    title: "Test panel",
+    subPanels: [
+      {
+        title: "Test sub-panel",
+        uiElements: [
+          { type: "UiSwitchNode", title: "Switch", cid: 0, id: 0, value: true },
+          { type: "UiSwitchNode", title: "Switch2", cid: 0, id: 0 },
+          { type: "UiButtonNode", title: "Button", cid: 0, id: 0 }
+        ]
+      }
+    ]
   }),
   watch: {
     name() {
-      console.log("update", this.name);
+      console.log("watch name update", this.name);
       this.$socket.emit("getUiPanel", this.name);
     }
   },
   components: Nodes,
   mounted() {
-    console.log(this.name);
     this.$socket.emit("getUiPanel", this.name);
-    // this.subPanels = {
-    //   title: "Living room",
-    //   uiElements: [
-    //     { type: "UiButtonNode", id: 1 },
-    //     { type: "UiButtonNode", id: 2 },
-    //     { type: "UiSwitchNode", title: "Switch1", cid: 1 }
-    //   ]
-    // },
-    //   {
-    //     title: "Kitchen",
-    //     uiElements: [
-    //       { type: "UiSwitchNode", id: 4 },
-    //       { type: "UiSwitchNode", id: 5 }
-    //     ]
-    //   };
   },
   sockets: {
     getUiPanel(panel) {
+      //for offline develop
+      if (this.title == "Test panel") return;
+
       console.log("getUiPanel: " + JSON.stringify(panel));
       if (panel) {
         this.title = panel.title;

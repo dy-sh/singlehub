@@ -34,7 +34,6 @@ export default {
       // console.log("UiSwitchNode nodeMessageToDashboard", JSON.stringify(data));
       if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
         this.value = data.value;
-        console.log("updated: " + this.value);
       }
     }
   }
