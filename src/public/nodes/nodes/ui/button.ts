@@ -9,18 +9,11 @@ import Utils from "../../utils";
 import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
 
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <button class="ui right floated small button" id="button-{{id}}">\
-            &nbsp <span id="nodeTitle-{{id}}"></span> &nbsp\
-        </button>\
-    </div>';
-
 
 export class UiButtonNode extends UiNode {
 
     constructor() {
-        super("Button", template, "UiButtonNode");
+        super("Button", null, "UiButtonNode");
 
         this.descriprion = "";
         this.properties['value'] = false;
@@ -33,13 +26,6 @@ export class UiButtonNode extends UiNode {
 
         if (this.side == Side.server)
             this.setOutputData(0, this.properties['value']);
-
-        if (this.side == Side.dashboard) {
-            let that = this;
-            $('#button-' + this.id).click(function () {
-                that.sendMessageToServerSide('click');
-            });
-        }
     }
 
     onGetMessageToServerSide(data) {

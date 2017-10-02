@@ -1,8 +1,8 @@
 <template lang='pug'>
   v-list-tile
     v-list-tile-content
-      v-list-tile-title {{title}}
-      //- v-list-tile-sub-title Hangouts message
+      v-list-tile-title {{uiElement.title}}
+      v-list-tile-sub-title {{uiElement.subtitle}}
     v-spacer
     v-list-tile-action
       v-btn(color='blue darken-2', @click='onClick') ON   
@@ -11,21 +11,19 @@
 
 <script>
 export default {
+  props: ["uiElement"],
   data() {
     return {
-      title: "Curtains"
+      value: this.uiElement.value
     };
   },
-  props: ["id"],
   methods: {
     onClick() {
-      console.log("click " + this.id);
+      this.$socket.emit("nodeMessageToServer", {
+        cid: this.uiElement.cid,
+        id: this.uiElement.id
+      });
     }
   }
 };
 </script>
-
-
-<style>
-
-</style>
