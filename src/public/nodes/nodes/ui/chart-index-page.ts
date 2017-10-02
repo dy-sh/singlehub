@@ -5,7 +5,7 @@
 
 declare let vis;
 declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', {color: 3});
+let log = Logger.create('client', { color: 3 });
 
 export class ChartIndexPage {
 
@@ -20,23 +20,23 @@ export class ChartIndexPage {
     DataSet;
     DELAY = 100;
     dataset;
-    options:any;
+    options: any;
     chart_body;
     groups;
     zoomTimer;
-    socket:SocketIOClient.Socket;
-    reconnecting=false;
+    socket: SocketIOClient.Socket;
+    reconnecting = false;
 
     constructor() {
 
         //get vars from view
-        this.container_id=(<any>window).container_id;
-        this.node_id=(<any>window).node_id;
-        this.range_start=(<any>window).range_start;
-        this.range_end=(<any>window).range_end;
-        this.autoscroll=(<any>window).autoscroll;
-        this.style=(<any>window).style;
-        this.max_records=(<any>window).max_records;
+        this.container_id = (<any>window).container_id;
+        this.node_id = (<any>window).node_id;
+        this.range_start = (<any>window).range_start;
+        this.range_end = (<any>window).range_end;
+        this.autoscroll = (<any>window).autoscroll;
+        this.style = (<any>window).style;
+        this.max_records = (<any>window).max_records;
 
         this.createChart();
         this.createControles();
@@ -47,8 +47,8 @@ export class ChartIndexPage {
 
     private createSocket() {
         let socket = io('/dashboard');
-        this.socket=socket;
-        let that=this;
+        this.socket = socket;
+        let that = this;
 
         socket.on('connect', function () {
             log.debug("Connected to socket");
@@ -58,17 +58,17 @@ export class ChartIndexPage {
             socket.emit('room', that.container_id);
 
             if (that.reconnecting) {
-                noty({text: 'Connection is restored.', type: 'alert'});
+                noty({ text: 'Connection is restored.', type: 'alert' });
                 that.reconnecting = false;
             }
         });
 
         socket.on('disconnect', function () {
-            noty({text: 'Connection is lost!', type: 'error'});
+            noty({ text: 'Connection is lost!', type: 'error' });
             that.reconnecting = true;
         });
 
-        socket.on('node-message-to-dashboard-side', function (n) {
+        socket.on('nodeMessageToDashboard', function (n) {
             if (n.cid != that.container_id || n.id != that.node_id)
                 return;
 
@@ -100,7 +100,7 @@ export class ChartIndexPage {
 
     private createChart() {
         this.groups = new vis.DataSet();
-        this.groups.add({id: 0});
+        this.groups.add({ id: 0 });
         this.chart_body = document.getElementById('visualization');
         this.dataset = new vis.DataSet();
 
@@ -123,11 +123,11 @@ export class ChartIndexPage {
 
         switch (this.autoscroll) {
             case 'continuous':
-                this.graph2d.setWindow(now - interval, now, {animation: false});
+                this.graph2d.setWindow(now - interval, now, { animation: false });
                 requestAnimationFrame(this.renderStep.bind(this));
                 break;
             case 'discrete':
-                this.graph2d.setWindow(now - interval, now, {animation: false});
+                this.graph2d.setWindow(now - interval, now, { animation: false });
                 setTimeout(this.renderStep.bind(this), this.DELAY);
                 break;
             case 'none':
@@ -193,50 +193,50 @@ export class ChartIndexPage {
                     height: '370px',
                     style: 'bar',
                     drawPoints: false,
-                    barChart: {width: 50, align: 'right', sideBySide: false}
+                    barChart: { width: 50, align: 'right', sideBySide: false }
                 };
                 break;
             case 'splines':
                 this.options = {
                     height: '370px',
                     style: 'line',
-                    drawPoints: {style: 'circle', size: 6},
-                    shaded: {enabled: false},
-                    interpolation: {enabled: true}
+                    drawPoints: { style: 'circle', size: 6 },
+                    shaded: { enabled: false },
+                    interpolation: { enabled: true }
                 };
                 break;
             case 'shadedsplines':
                 this.options = {
                     style: 'line',
                     height: '370px',
-                    drawPoints: {style: 'circle', size: 6},
-                    shaded: {enabled: true, orientation: 'bottom'},
-                    interpolation: {enabled: true}
+                    drawPoints: { style: 'circle', size: 6 },
+                    shaded: { enabled: true, orientation: 'bottom' },
+                    interpolation: { enabled: true }
                 };
                 break;
             case 'lines':
                 this.options = {
                     height: '370px',
                     style: 'line',
-                    drawPoints: {style: 'square', size: 6},
-                    shaded: {enabled: false},
-                    interpolation: {enabled: false}
+                    drawPoints: { style: 'square', size: 6 },
+                    shaded: { enabled: false },
+                    interpolation: { enabled: false }
                 };
                 break;
             case 'shadedlines':
                 this.options = {
                     height: '370px',
                     style: 'line',
-                    drawPoints: {style: 'square', size: 6},
-                    shaded: {enabled: true, orientation: 'bottom'},
-                    interpolation: {enabled: false}
+                    drawPoints: { style: 'square', size: 6 },
+                    shaded: { enabled: true, orientation: 'bottom' },
+                    interpolation: { enabled: false }
                 };
                 break;
             case 'dots':
                 this.options = {
                     height: '370px',
                     style: 'points',
-                    drawPoints: {style: 'circle', size: 10}
+                    drawPoints: { style: 'circle', size: 10 }
                 };
                 break;
             default:
@@ -262,7 +262,7 @@ export class ChartIndexPage {
     }
 
 
-// -------------- zoom --------------------
+    // -------------- zoom --------------------
 
 
     showNow() {
@@ -306,7 +306,7 @@ export class ChartIndexPage {
     }
 
 
-// -------------- ui controls events --------------------
+    // -------------- ui controls events --------------------
 
     createControles() {
         let that = this;
@@ -317,7 +317,7 @@ export class ChartIndexPage {
             $.ajax({
                 url: "/api/editor/c/" + that.container_id + "/n/" + that.node_id + "/style",
                 type: "POST",
-                data: {style: that.style}
+                data: { style: that.style }
             });
         });
 

@@ -4,7 +4,7 @@
  */
 
 declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', {color: 3});
+let log = Logger.create('client', { color: 3 });
 declare let moment;
 
 export class ChartLogPage {
@@ -12,13 +12,13 @@ export class ChartLogPage {
     container_id: number;
     node_id: number;
     max_records: number;
-    socket:SocketIOClient.Socket;
-    reconnecting=false;
+    socket: SocketIOClient.Socket;
+    reconnecting = false;
 
     constructor() {
-        this.container_id=(<any>window).container_id;
-        this.node_id=(<any>window).node_id;
-        this.max_records=(<any>window).max_records;
+        this.container_id = (<any>window).container_id;
+        this.node_id = (<any>window).node_id;
+        this.max_records = (<any>window).max_records;
 
         this.createControles();
         this.createSocket();
@@ -27,8 +27,8 @@ export class ChartLogPage {
 
     private createSocket() {
         let socket = io('/dashboard');
-        this.socket=socket;
-        let that=this;
+        this.socket = socket;
+        let that = this;
 
         socket.on('connect', function () {
             log.debug("Connected to socket");
@@ -38,17 +38,17 @@ export class ChartLogPage {
             socket.emit('room', that.container_id);
 
             if (that.reconnecting) {
-                noty({text: 'Connection is restored.', type: 'alert'});
+                noty({ text: 'Connection is restored.', type: 'alert' });
                 that.reconnecting = false;
             }
         });
 
         socket.on('disconnect', function () {
-            noty({text: 'Connection is lost!', type: 'error'});
+            noty({ text: 'Connection is lost!', type: 'error' });
             that.reconnecting = true;
         });
 
-        socket.on('node-message-to-dashboard-side', function (n) {
+        socket.on('nodeMessageToDashboard', function (n) {
             if (n.cid != that.container_id || n.id != that.node_id)
                 return;
 
@@ -81,8 +81,8 @@ export class ChartLogPage {
         this.removeOldRecords();
     }
 
-    removeOldRecords(){
-        let rows=$('#history-table tr');
+    removeOldRecords() {
+        let rows = $('#history-table tr');
         let unwanted = rows.length - this.max_records;
         if (unwanted > 0) {
             for (let i = 0; i < unwanted; i++) {
@@ -92,7 +92,7 @@ export class ChartLogPage {
     }
 
     createControles() {
-        let that=this;
+        let that = this;
         $('#clear-button').click(function () {
             $.ajax({
                 url: "/api/editor/c/" + that.container_id + "/n/" + that.node_id + "/clear",

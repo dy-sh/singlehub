@@ -1277,7 +1277,7 @@ export class Node {
         if (this.side == Side.server)
             log.warn("Node " + this.getReadableId() + " is trying to send message from server side to server side");
         else
-            this.container.clinet_socket.emit('node-message-to-server-side',
+            this.container.clinet_socket.emit('nodeMessageToServer',
                 { id: this.id, cid: this.container.id, value: mess });
     }
 
@@ -1291,12 +1291,12 @@ export class Node {
             let socket = this.container.server_editor_socket;
 
             if (onlyConnectedUsers)
-                socket.in("" + this.container.id).emit('node-message-to-editor-side', m);
+                socket.in("" + this.container.id).emit('nodeMessageToEditor', m);
             else
-                socket.emit('node-message-to-editor-side', m);
+                socket.emit('nodeMessageToEditor', m);
         }
         else {
-            this.container.clinet_socket.emit('node-message-to-editor-side', m);
+            this.container.clinet_socket.emit('nodeMessageToEditor', m);
         }
     }
 
@@ -1392,11 +1392,11 @@ export class Node {
         else if (this.side == Side.server) {
             let socket = this.container.server_dashboard_socket;
             //todo subscribe from dashboard
-            socket.in("" + this.container.id).emit('node-message-to-dashboard-side', m);
+            socket.in("" + this.container.id).emit('nodeMessageToDashboard', m);
             socket.emit('nodeMessageToDashboard', m);
         }
         else {
-            this.container.clinet_socket.emit('node-message-to-dashboard-side', m);
+            this.container.clinet_socket.emit('nodeMessageToDashboard', m);
         }
     }
 

@@ -221,7 +221,7 @@ export class EditorClientSocket {
             container.moveNodesToNewContainer(data.ids, data.pos);
         });
 
-        socket.on('node-message-to-editor-side', function (n) {
+        socket.on('nodeMessageToEditor', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);
@@ -236,7 +236,7 @@ export class EditorClientSocket {
                 node['onGetMessageToEditorSide'](n.value);
         });
 
-        socket.on('node-message-to-editor-side', function (n) {
+        socket.on('nodeMessageToEditor', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);

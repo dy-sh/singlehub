@@ -4,14 +4,14 @@
  */
 
 
-import {Container} from "../../public/nodes/container";
-import {Node} from "../../public/nodes/node";
-import {app} from "../../app";
+import { Container } from "../../public/nodes/container";
+import { Node } from "../../public/nodes/node";
+import { app } from "../../app";
 import Utils from "../../public/nodes/utils";
 import Namespace = SocketIO.Namespace;
 
 
-const log = require('logplease').create('server', {color: 3});
+const log = require('logplease').create('server', { color: 3 });
 
 
 export class EditorServerSocket {
@@ -47,7 +47,7 @@ export class EditorServerSocket {
                 }
             });
 
-            socket.on('node-message-to-server-side', function (n) {
+            socket.on('nodeMessageToServer', function (n) {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to server-side. Container id [" + n.cid + "] does not exist");
@@ -65,7 +65,7 @@ export class EditorServerSocket {
 
 
             //redirect message
-            socket.on('node-message-to-editor-side', function (n) {
+            socket.on('nodeMessageToEditor', function (n) {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to editor-side. Container id [" + n.cid + "] does not exist");
@@ -78,12 +78,12 @@ export class EditorServerSocket {
                     return;
                 }
 
-                app.server.editorSocket.io.in(n.cid).emit('node-message-to-editor-side', n);
+                app.server.editorSocket.io.in(n.cid).emit('nodeMessageToEditor', n);
 
             });
 
             //redirect message
-            socket.on('node-message-to-dashboard-side', function (n) {
+            socket.on('nodeMessageToDashboard', function (n) {
                 console.log(n)
 
                 let cont = Container.containers[n.cid];
@@ -98,7 +98,7 @@ export class EditorServerSocket {
                     return;
                 }
 
-                app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
+                app.server.dashboardSocket.io.in(n.cid).emit('nodeMessageToDashboard', n);
             });
 
 

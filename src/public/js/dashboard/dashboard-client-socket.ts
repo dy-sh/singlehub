@@ -108,7 +108,7 @@ export class DashboardClientSocket {
             // container.moveNodesToNewContainer(data.ids, data.pos);
         });
 
-        socket.on('node-message-to-dashboard-side', function (n) {
+        socket.on('nodeMessageToDashboard', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);

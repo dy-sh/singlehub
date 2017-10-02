@@ -54,7 +54,7 @@ export class DashboardServerSocket {
             });
 
 
-            socket.on('node-message-to-server-side', (n) => {
+            socket.on('nodeMessageToServer', (n) => {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to server-side. Container id [" + n.cid + "] does not exist");
@@ -78,7 +78,7 @@ export class DashboardServerSocket {
 
 
             //redirect message
-            socket.on('node-message-to-editor-side', (n) => {
+            socket.on('nodeMessageToEditor', (n) => {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to editor-side. Container id [" + n.cid + "] does not exist");
@@ -91,12 +91,12 @@ export class DashboardServerSocket {
                     return;
                 }
 
-                app.server.editorSocket.io.in(n.cid).emit('node-message-to-editor-side', n);
+                app.server.editorSocket.io.in(n.cid).emit('nodeMessageToEditor', n);
 
             });
 
             //redirect message
-            socket.on('node-message-to-dashboard-side', (n) => {
+            socket.on('nodeMessageToDashboard', (n) => {
                 console.log(n)
 
                 let cont = Container.containers[n.cid];
@@ -111,7 +111,7 @@ export class DashboardServerSocket {
                     return;
                 }
 
-                app.server.dashboardSocket.io.in(n.cid).emit('node-message-to-dashboard-side', n);
+                app.server.dashboardSocket.io.in(n.cid).emit('nodeMessageToDashboard', n);
             });
 
 

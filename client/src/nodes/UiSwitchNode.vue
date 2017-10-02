@@ -2,10 +2,10 @@
 v-list-tile
   v-list-tile-content
     v-list-tile-title {{uiElement.title}}
-    //- v-list-tile-sub-title Hangouts message
+    v-list-tile-sub-title {{uiElement.subtitle}}
   v-spacer
   v-list-tile-action
-    v-switch(v-model="value", color='grey lighten-3', @click='onClick')  
+    v-switch(v-model="value" color='grey lighten-3' @click='onClick')  
 </template>
 
 
@@ -22,7 +22,7 @@ export default {
       this.value = !this.value;
       console.log("click " + this.id + " : " + this.value);
 
-      this.$socket.emit("node-message-to-server-side", {
+      this.$socket.emit("nodeMessageToServer", {
         cid: this.uiElement.containerId,
         id: this.uiElement.nodeId,
         value: this.value
