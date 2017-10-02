@@ -28,8 +28,8 @@ export interface UiElement {
     type: string;
 
     //link to node
-    containerId: number;
-    nodeId: number;
+    cid: number;
+    id: number;
     value?: any;
 }
 
@@ -78,8 +78,8 @@ export class Dashboard {
         var uiElemet: UiElement = {
             title: node.title,
             type: node.uiElementType,
-            containerId: node.container.id,
-            nodeId: node.id
+            cid: node.container.id,
+            id: node.id
         }
 
         var newPanel = this.getUiPanel(newName);
@@ -131,7 +131,7 @@ export class Dashboard {
                 var subPanel = oldPanel.subPanels[s];
                 for (var e = 0; e < subPanel.uiElements.length; e++) {
                     var element = subPanel.uiElements[e];
-                    if (element.containerId == node.container.id && element.nodeId == node.id) {
+                    if (element.cid == node.container.id && element.id == node.id) {
                         subPanel.uiElements.splice(e, 1);
 
                         if (this.db)
@@ -147,15 +147,15 @@ export class Dashboard {
         this.uiPanels.forEach(p => {
             p.subPanels.forEach(s => {
                 s.uiElements.forEach(e => {
-                    let container = Container.containers[e.containerId];
+                    let container = Container.containers[e.cid];
                     if (container) {
-                        let node = container._nodes[e.nodeId];
+                        let node = container._nodes[e.id];
                         if (node) {
                             e.value = node.properties['value'];
                         }
-                        else console.log("Can't update dashboard element state. Node [ " + e.containerId + "/" + e.nodeId + "] is not found");
+                        else console.log("Can't update dashboard element state. Node [ " + e.cid + "/" + e.id + "] is not found");
                     }
-                    else console.log("Can't update dashboard element state. Node container [" + e.containerId + "] is not found");
+                    else console.log("Can't update dashboard element state. Node container [" + e.cid + "] is not found");
                     e.value
                 })
             })
@@ -178,8 +178,8 @@ export class Dashboard {
             var subPanel = panel.subPanels[s];
             for (var e = 0; e < subPanel.uiElements.length; e++) {
                 var element = subPanel.uiElements[e];
-                if (element.containerId == node.container.id
-                    && element.nodeId == node.id)
+                if (element.cid == node.container.id
+                    && element.id == node.id)
                     return element;
             }
         }

@@ -23,23 +23,7 @@ export default {
   props: ["name"],
   data: () => ({
     title: "",
-    subPanels: [
-      // {
-      //   title: "Living room",
-      //   uiElements: [
-      //     { type: "UiButtonNode", id: 1 },
-      //     { type: "UiButtonNode", id: 2 },
-      //     { type: "UiSwitchNode", id: 3 }
-      //   ]
-      // },
-      // {
-      //   title: "Kitchen",
-      //   uiElements: [
-      //     { type: "UiSwitchNode", id: 4 },
-      //     { type: "UiSwitchNode", id: 5 }
-      //   ]
-      // }
-    ]
+    subPanels: []
   }),
   watch: {
     name() {
@@ -51,6 +35,21 @@ export default {
   mounted() {
     console.log(this.name);
     this.$socket.emit("getUiPanel", this.name);
+    // this.subPanels = {
+    //   title: "Living room",
+    //   uiElements: [
+    //     { type: "UiButtonNode", id: 1 },
+    //     { type: "UiButtonNode", id: 2 },
+    //     { type: "UiSwitchNode", title: "Switch1", cid: 1 }
+    //   ]
+    // },
+    //   {
+    //     title: "Kitchen",
+    //     uiElements: [
+    //       { type: "UiSwitchNode", id: 4 },
+    //       { type: "UiSwitchNode", id: 5 }
+    //     ]
+    //   };
   },
   sockets: {
     getUiPanel(panel) {
