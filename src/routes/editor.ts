@@ -4,7 +4,7 @@
  */
 
 import * as express from 'express';
-import { app } from "../app";
+import app from "../app";
 import { Container } from "../public/nodes/container";
 
 

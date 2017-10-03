@@ -5,8 +5,11 @@ div
     v-content
       v-container(grid-list-xl)
         v-layout(row wrap)
-          panel(:name="activePanel" v-if="activePanel")
-
+          v-flex(v-if="activePanel" xs12 sm6 md4)
+            //- v-flex(v-if="activePanel" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
+            panel(:name="activePanel" v-if="activePanel")
+          v-flex(v-if="activePanel" xs12 sm6 md8)
+            editor
 
 
 </template>
@@ -15,6 +18,7 @@ div
 <script>
 import Panel from "./Panel.vue";
 import Toolbar from "./Toolbar.vue";
+import Editor from "./Editor.vue";
 
 export default {
   data: () => ({
@@ -22,7 +26,7 @@ export default {
       // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
       // { icon: "trending_up", title: "Editor", name: "Editor" }
     ],
-    activePanel: ""
+    activePanel: "Test panel"
     // {
     //   icon: "subscriptions",
     //   title: "TestPanel",
@@ -31,7 +35,8 @@ export default {
   }),
   components: {
     panel: Panel,
-    toolbar: Toolbar
+    toolbar: Toolbar,
+    editor: Editor
   },
   created() {
     this.$socket.emit("getUiPanelsList");

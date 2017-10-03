@@ -1,5 +1,4 @@
 <template lang='pug'>
-v-flex(v-if="title" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
   v-card(color='grey darken-3')
     v-toolbar(color='blue darken-2' dense)
       v-toolbar-title {{title}}

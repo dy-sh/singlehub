@@ -1,11 +1,11 @@
 <template lang='pug'>
 div
-  v-navigation-drawer(permanent clipped app width=200)
+  v-navigation-drawer(permanent clipped app width=170)
     //- v-navigation-drawer(v-else persistent clipped enable-resize-watcher v-model='drawer' app width=200)
     v-list(dense)
       v-subheader.mt-3.grey--text.text--darken-1 DASHBOARD
       v-list-tile(v-for='panel in panels' :key='panel.name' @click='onClick(panel.name)')
-        v-list-tile-action
+        v-list-tile-action.panel-icon
           v-icon(:class="{'blue--text': panel.name==selected,'text--lighten-1':panel.name==selected }")  {{ panel.icon }}
         v-list-tile-content
           v-list-tile-title(:class="{'blue--text': panel.name==selected,'text--lighten-1':panel.name==selected }")  {{ panel.title }}
@@ -38,5 +38,7 @@ export default {
 
 
 <style>
-
+.panel-icon {
+  min-width: 30px;
+}
 </style>

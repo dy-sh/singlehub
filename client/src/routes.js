@@ -1,4 +1,5 @@
 import Dashboard from "./dashboard/Dashboard.vue"
+import Editor from "./editor/Editor.vue"
 
 import Welcome from "./setup/Welcome.vue"
 import Database from "./setup/Database"
@@ -6,6 +7,7 @@ import Admin from "./setup/Admin.vue"
 
 export default [
     //editor
+    // { name: "/", path: "/", component: Editor },
     { name: "/", path: "/", component: Dashboard },
 
     //initial setup wizard

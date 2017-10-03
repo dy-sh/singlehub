@@ -9,13 +9,22 @@ module.exports = {
     filename: 'build.js'
   },
   resolve: {
-    extensions: ['.js', '.vue'],
+    extensions: ['.js', '.vue', ".ts", ".tsx"],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       'public': path.resolve(__dirname, './public')
     }
   },
   module: {
+    noParse: [
+      /mys-controller.js/,
+      /xiaomi-device.js/,
+      /request/,
+      /child*process/,
+      /fs/,
+      /net/,
+      /system.js/
+    ],
     rules: [
       {
         test: /\.vue$/,
@@ -41,6 +50,16 @@ module.exports = {
       {
         test: /\.styl$/,
         loader: ['style-loader', 'css-loader', 'stylus-loader']
+      },
+      {
+        test: /\.tsx?$/,
+        include: [
+          path.resolve(__dirname, "./src/ts2")
+        ],
+        exclude: [
+          path.resolve(__dirname, "../src")
+        ],
+        loader: "ts-loader"
       }
     ]
   },

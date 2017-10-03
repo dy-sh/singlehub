@@ -2216,6 +2216,10 @@ export class Renderer {
         if (this.canvas.width == width && this.canvas.height == height)
             return;
 
+        //todo remove
+        // width = 500;
+        // height = 500;
+
         this.canvas.width = width;
         this.canvas.height = height;
         this.bgcanvas.width = this.canvas.width;

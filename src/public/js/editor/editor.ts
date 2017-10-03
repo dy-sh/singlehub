@@ -27,6 +27,12 @@ export class Editor {
 
 
     constructor() {
+        console.log("editor constructor");
+
+    }
+
+    start() {
+        console.log("editor start");
 
         (<any>window).editor = this;
 
@@ -79,6 +85,20 @@ export class Editor {
         this.addStepButton();
         this.addSlotsValuesButton();
         this.updateContainersNavigation();
+
+
+        (<any>window).rootContainer = Container.containers[0];
+        (<any>window).Container = Container;
+        (<any>window).renderer = this.renderer;
+
+        // socket.container_id=editor.renderer.container.container_id;
+
+        window.addEventListener("resize", function () {
+            this.renderer.resize();
+        });
+
+
+        this.getNodes();
 
     }
 
@@ -588,6 +608,10 @@ export class Editor {
     }
 
     updateContainersNavigation() {
+
+        //todo 
+        return;
+
         let that = this;
 
         //update dashboard button
@@ -681,36 +705,25 @@ export class Editor {
 let minimap_opened = false;
 
 // noty settings
-$.noty.defaults.layout = 'bottomRight';
-$.noty.defaults.theme = 'relax';
-$.noty.defaults.timeout = 3000;
-$.noty.defaults.animation = {
-    open: 'animated bounceInRight', // Animate.css class names
-    close: 'animated flipOutX', // Animate.css class names
-    easing: 'swing', // unavailable - no need
-    speed: 500 // unavailable - no need
-};
+// $.noty.defaults.layout = 'bottomRight';
+// $.noty.defaults.theme = 'relax';
+// $.noty.defaults.timeout = 3000;
+// $.noty.defaults.animation = {
+//     open: 'animated bounceInRight', // Animate.css class names
+//     close: 'animated flipOutX', // Animate.css class names
+//     easing: 'swing', // unavailable - no need
+//     speed: 500 // unavailable - no need
+// };
 
 
 //setting-elements templates
-let textSettingTemplate = Handlebars.compile($('#textSettingTemplate').html());
-let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
-let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
-let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
+// let textSettingTemplate = Handlebars.compile($('#textSettingTemplate').html());
+// let numberSettingTemplate = Handlebars.compile($('#numberSettingTemplate').html());
+// let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
+// let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
 
 
 export let editor = new Editor();
 
 
-(<any>window).rootContainer = Container.containers[0];
-(<any>window).Container = Container;
-(<any>window).renderer = editor.renderer;
 (<any>window).editor = editor;
-// socket.container_id=editor.renderer.container.container_id;
-
-window.addEventListener("resize", function () {
-    editor.renderer.resize();
-});
-
-
-editor.getNodes();
