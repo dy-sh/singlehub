@@ -8,7 +8,7 @@ import VueSocketIO from 'vue-socket.io';
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
-Vue.use(VueSocketIO, 'http://localhost:1312/dashboard');
+Vue.use(VueSocketIO, '/dashboard');
 
 const router = new VueRouter({ routes: Routes });
 

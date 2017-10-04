@@ -32,6 +32,8 @@ export class Editor {
     }
 
     start() {
+
+
         console.log("editor start");
 
         (<any>window).editor = this;
@@ -697,6 +699,8 @@ export class Editor {
 
                 that.renderer.openContainer(cont, false);
             }
+            else
+                that.renderer.openContainer(Container.containers[0]);
         });
 
     }

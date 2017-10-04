@@ -196,6 +196,7 @@ export class Renderer {
      * @param skip_clear
      */
     setContainer(container?: Container, skip_clear = false, joinRoom = true): void {
+
         if (this.container == container)
             return;
 

@@ -3,7 +3,7 @@ div
   toolbar(:panels="panels" :selected="activePanel" @click="onClickToolbar")
   main
     v-content
-      v-container(grid-list-xl) hello
+      v-container(grid-list-xl)
         v-layout(row wrap)
           v-flex(v-if="activePanel" xs12 sm6 md4)
             //- v-flex(v-if="activePanel" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)

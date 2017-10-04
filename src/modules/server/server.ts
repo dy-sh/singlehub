@@ -41,7 +41,7 @@ export class Server {
         this.express.locals.moment = require('moment');
         this.setViewEngine();
         this.middleware();
-        if (isDev) this.connectWebPackLiveReload();
+        // if (isDev) this.connectWebPackLiveReload();
         this.routes();
         this.handeErrors();
         this.configure();
@@ -51,20 +51,18 @@ export class Server {
     private connectWebPackLiveReload() {
         //webpack live-reloading
         var webpack = require('webpack');
-        var webpackDevMiddleware = require('webpack-dev-middleware');
-        var webpackHotMiddleware = require('webpack-hot-middleware');
-        var webpackDevConfig = require('../../../webpack.config.js');
-        var compiler = webpack(webpackDevConfig);
+        var webpackConfig = require('../../../webpack.config');
+        var compiler = webpack(webpackConfig);
 
-        // attach to the compiler & the server
-        this.express.use(webpackDevMiddleware(compiler, {
-            // public path should be the same with webpack config
-            publicPath: webpackDevConfig.output.publicPath,
-            noInfo: true,
-            stats: { colors: true }
+        // Attach the dev middleware to the compiler & the server
+        this.express.use(require("webpack-dev-middleware")(compiler, {
+            noInfo: true, publicPath: webpackConfig.output.publicPath
         }));
 
-        this.express.use(webpackHotMiddleware(compiler));
+        //  Attach the hot middleware to the compiler & the server
+        this.express.use(require("webpack-hot-middleware")(compiler, {
+            log: console.log, path: '/__webpack_hmr', heartbeat: 10 * 1000
+        }));
     }
 
     private setViewEngine() {

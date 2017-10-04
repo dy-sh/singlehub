@@ -1,11 +1,15 @@
 var path = require('path')
 var webpack = require('webpack')
+var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
-  entry: './src/client/main.js',
+  entry: [
+    // 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+    './src/client/main.js'
+  ],
   output: {
     path: path.resolve(__dirname, './dist/public/client'),
-    publicPath: '/dist/public/',
+    publicPath: '/',
     filename: 'build.js'
   },
   resolve: {
@@ -66,8 +70,10 @@ module.exports = {
   },
   plugins: [
     //for hot reloading:
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    // new webpack.HotModuleReplacementPlugin(),
+    // new webpack.NoEmitOnErrorsPlugin()
+    //for live reloading
+    new LiveReloadPlugin()
   ],
   devServer: {
     historyApiFallback: true,
