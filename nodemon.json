@@ -1,4 +1,8 @@
 {
   "verbose": false,
-  "ignore": ["*.json","*.db"]
+  "ignore": [
+    "*.json",
+    "*.db",
+    "dist/public/*"
+  ]
 }
