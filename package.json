@@ -7,6 +7,7 @@
     "start": "node dist/app.js",
     "build": "npm run build-ts && npm run copy-static-assets && npm run build-webpack",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-webpack\" \"nodemon dist/app.js\"",
+    "dev": "cross-env NODE_ENV=development node dist/app.js",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "build-webpack": "cross-env NODE_ENV=production webpack --progress --hide-modules",
@@ -25,7 +26,7 @@
     "express-validator": "^3.1.2",
     "jade": "^1.11.0",
     "lodash": "^4.17.4",
-    "logplease": "^1.2.13",
+    "logplease": "^1.2.14",
     "miio": "^0.13.0",
     "morgan": "^1.8.1",
     "mqtt": "^2.4.0",
@@ -83,6 +84,7 @@
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.4.4",
     "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.9.1"
+    "webpack-dev-middleware": "^1.12.0",
+    "webpack-hot-middleware": "^2.20.0"
   }
 }

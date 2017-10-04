@@ -2,10 +2,10 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  entry: './client/src/main.js',
+  entry: './src/client/main.js',
   output: {
     path: path.resolve(__dirname, './dist/public/client'),
-    publicPath: '/dist/',
+    publicPath: '/dist/public/',
     filename: 'build.js'
   },
   resolve: {
@@ -23,7 +23,8 @@ module.exports = {
       /child*process/,
       /fs/,
       /net/,
-      /system.js/
+      /system.js/,
+      /logplease\/src\/index\.js/
     ],
     rules: [
       {
@@ -63,6 +64,11 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    //for hot reloading:
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
+  ],
   devServer: {
     historyApiFallback: true,
     noInfo: true

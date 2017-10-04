@@ -6,7 +6,7 @@
 var mys = require('./mysensors');
 
 //console logger
-let log = require('logplease').create('container', {color: 5});
+let log = require('../../../node_modules/logplease/es5/index.js').create('container', { color: 5 });
 
 
 var _ = require("lodash");
@@ -34,7 +34,7 @@ Gateway.prototype.connectToSerialPort = function (portName, baudRate) {
     baudRate = 115200;
 
     var SerialPort = require("serialport");
-    this.port = new SerialPort(portName, {baudRate: baudRate, autoOpen: false});
+    this.port = new SerialPort(portName, { baudRate: baudRate, autoOpen: false });
 
     this.port.on("open", function () {
         log.debug("Port connected");
@@ -236,7 +236,7 @@ Gateway.prototype._proceedInternal = function (message) {
             }
             break;
 
-        case ( mys.internalDataType.I_SKETCH_VERSION):
+        case (mys.internalDataType.I_SKETCH_VERSION):
             var node = this.get_MYS_Node(message.nodeId);
             if (node.sketchVersion !== message.payload) {
                 node.sketchVersion = message.payload;
@@ -245,14 +245,14 @@ Gateway.prototype._proceedInternal = function (message) {
             }
             break;
 
-        case ( mys.internalDataType.I_BATTERY_LEVEL):
+        case (mys.internalDataType.I_BATTERY_LEVEL):
             var node = this.get_MYS_Node(message.nodeId);
             node.batteryLevel = +message.payload;
             log.debug(`Node[${message.nodeId}] Sensor[${message.sensorId}] battery level: [${message.payload}]`);
             this.emit("nodeUpdated", node, "batteryLevel");
             break;
 
-        case ( mys.internalDataType.I_CONFIG):
+        case (mys.internalDataType.I_CONFIG):
             this.send_MYS_Message({
                 nodeId: message.nodeId,
                 sensorId: BROADCAST_ID,
@@ -262,7 +262,7 @@ Gateway.prototype._proceedInternal = function (message) {
             });
             break;
 
-        case ( mys.internalDataType.I_TIME):
+        case (mys.internalDataType.I_TIME):
             this.this.send_MYS_Message({
                 nodeId: message.nodeId,
                 sensorId: message.sensorId,
@@ -293,11 +293,11 @@ Gateway.prototype.sendMessage = function (message) {
 
 
 Gateway.prototype.getNodeIfExist = function (nodeId) {
-    return _.find(this.nodes, {'id': nodeId});
+    return _.find(this.nodes, { 'id': nodeId });
 };
 
 Gateway.prototype.getNode = function (nodeId) {
-    var node = _.find(this.nodes, {'id': nodeId});
+    var node = _.find(this.nodes, { 'id': nodeId });
     if (!node) node = this.register_MYS_Node(nodeId);
     return node;
 };
@@ -307,13 +307,13 @@ Gateway.prototype.getSensorIfExist = function (nodeId, sensorId) {
     var node = this.getNodeIfExist(nodeId);
     if (!node) return;
 
-    return _.find(node.sensors, {'id': sensorId});
+    return _.find(node.sensors, { 'id': sensorId });
 };
 
 Gateway.prototype.getSensor = function (nodeId, sensorId) {
     var node = this.get_MYS_Node(nodeId);
 
-    var sensor = _.find(node.sensors, {'sensorId': sensorId});
+    var sensor = _.find(node.sensors, { 'sensorId': sensorId });
     if (!sensor) sensor = this.register_MYS_Sensor(nodeId, sensorId);
 
     return sensor;
@@ -342,7 +342,7 @@ Gateway.prototype._registerNode = function (nodeId) {
 Gateway.prototype._registerSensor = function (nodeId, sensorId) {
     var node = this.get_MYS_Node(nodeId);
 
-    var sensor = _.find(node.sensors, {'sensorId': sensorId});
+    var sensor = _.find(node.sensors, { 'sensorId': sensorId });
     if (!sensor) {
         sensor = {
             nodeId: nodeId,
@@ -371,4 +371,4 @@ Gateway.prototype._getNewNodeId = function () {
 
 var mys_gateway = new Gateway;
 
-export{mys_gateway};
+export { mys_gateway };

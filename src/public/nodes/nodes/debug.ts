@@ -2,18 +2,18 @@
  * Created by Derwish (derwish.pro@gmail.com) on 11.02.17.
  */
 
-import {Node} from "../node";
+import { Node } from "../node";
 import Utils from "../utils";
-import {Container, Side} from "../container";
+import { Container, Side } from "../container";
 
 
 //console logger back and front
 let log;
 declare let Logger: any; // tell the ts compiler global variable is defined
 if (typeof (window) === 'undefined') //for backside only
-    log = require('logplease').create('node', {color: 5});
+    log = require('../../../../node_modules/logplease/es5/index.js').create('node', { color: 5 });
 else  //for frontside only
-    log = Logger.create('node', {color: 5});
+    log = Logger.create('node', { color: 5 });
 
 
 //Show value inside the debug console
@@ -41,7 +41,7 @@ export class ConsoleNode extends Node {
             if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
                 let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
                 log.info("CONSOLE NODE [" + that.container.id + "/" + that.id + "]: dropped " + dropped + " messages (data rate limitation)");
-                that.sendMessageToEditorSide({dropped: dropped});
+                that.sendMessageToEditorSide({ dropped: dropped });
             }
 
             that.messagesPerSec = 0;
@@ -58,7 +58,7 @@ export class ConsoleNode extends Node {
         this.messagesPerSec++;
         if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
             log.info("CONSOLE NODE [" + this.container.id + "/" + this.id + "]: " + val);
-            this.sendMessageToEditorSide({value: val});
+            this.sendMessageToEditorSide({ value: val });
         }
     };
 
@@ -89,7 +89,7 @@ export class WatchNode extends Node {
 
         this.title = "Watch";
         this.descriprion = "Show value of input";
-        this.addInput("", null, {label: ""});
+        this.addInput("", null, { label: "" });
 
     }
 
@@ -103,7 +103,7 @@ export class WatchNode extends Node {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToEditorSide({value: that.lastData});
+                that.sendMessageToEditorSide({ value: that.lastData });
             }
         }, this.UPDATE_INTERVAL);
     }

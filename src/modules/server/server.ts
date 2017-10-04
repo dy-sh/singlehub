@@ -15,11 +15,13 @@ let expressValidator = require('express-validator');
 import * as http from 'http';
 import * as socket from 'socket.io';
 
-const log = require('logplease').create('server', { color: 3 });
+const log = require('../../../node_modules/logplease/es5/index.js').create('server', { color: 3 });
 
 import { EditorServerSocket } from "./editor-server-socket"
 import { DashboardServerSocket } from "./dashboard-server-socket"
 import app from "../../app";
+
+let isDev = process.env.NODE_ENV !== 'production';
 
 
 let config = require('../../../config.json');
@@ -39,10 +41,30 @@ export class Server {
         this.express.locals.moment = require('moment');
         this.setViewEngine();
         this.middleware();
+        if (isDev) this.connectWebPackLiveReload();
         this.routes();
         this.handeErrors();
         this.configure();
         this.start_io();
+    }
+
+    private connectWebPackLiveReload() {
+        //webpack live-reloading
+        var webpack = require('webpack');
+        var webpackDevMiddleware = require('webpack-dev-middleware');
+        var webpackHotMiddleware = require('webpack-hot-middleware');
+        var webpackDevConfig = require('../../../webpack.config.js');
+        var compiler = webpack(webpackDevConfig);
+
+        // attach to the compiler & the server
+        this.express.use(webpackDevMiddleware(compiler, {
+            // public path should be the same with webpack config
+            publicPath: webpackDevConfig.output.publicPath,
+            noInfo: true,
+            stats: { colors: true }
+        }));
+
+        this.express.use(webpackHotMiddleware(compiler));
     }
 
     private setViewEngine() {
@@ -101,20 +123,21 @@ export class Server {
 
         // error handlers
         // development error handler: will print stacktrace
-        if (this.express.get('env') === 'development') {
+        if (isDev) {
             this.express.use((err: Error & { status: number }, req: express.Request, res: express.Response, next: express.NextFunction): void => {
                 log.warn(err);
                 res.status(err.status || 500);
                 res.render('error', { message: err.message, error: err });
             });
         }
-
         // production error handler: no stacktraces leaked to user
-        this.express.use((err: Error & { status: number }, req: express.Request, res: express.Response, next: express.NextFunction): void => {
-            log.warn(err);
-            res.status(err.status || 500);
-            res.render('error', { message: err.message, error: {} });
-        });
+        else {
+            this.express.use((err: Error & { status: number }, req: express.Request, res: express.Response, next: express.NextFunction): void => {
+                log.warn(err);
+                res.status(err.status || 500);
+                res.render('error', { message: err.message, error: {} });
+            });
+        }
     }
 
     private configure() {
@@ -173,7 +196,7 @@ export class Server {
     private start_io() {
         let io_root = socket(this.server);
         this.editorSocket = new EditorServerSocket(io_root);
-        this.dashboardSocket = new DashboardServerSocket(io_root, app);
+        this.dashboardSocket = new DashboardServerSocket(io_root);
     }
 }
 

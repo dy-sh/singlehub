@@ -11,7 +11,7 @@ import { app } from "../app";
 let router = express.Router();
 let config = require('../../config.json');
 
-const log = require('logplease').create('app', { color: 2 });
+const log = require('../../node_modules/logplease/es5/index.js').create('app', { color: 2 });
 
 // first run wizard
 
