@@ -20,7 +20,7 @@ export class UiAudioNode extends UiNode {
     audio: HTMLAudioElement;
 
     constructor() {
-        super("Audio", template);
+        super("Audio", "UiAudioNode");
 
         this.descriprion = "";
 

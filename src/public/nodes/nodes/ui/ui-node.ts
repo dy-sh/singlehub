@@ -14,11 +14,10 @@ export class UiNode extends Node {
     uiElementType: string;
     uiPanel: string;
 
-    constructor(titlePrefix: string, template: string, uiElementType: string) {
+    constructor(titlePrefix: string, uiElementType: string) {
         super();
 
         this.titlePrefix = titlePrefix;
-        this.template = template;
         this.uiElementType = uiElementType;
 
         this.isDashboardNode = true;

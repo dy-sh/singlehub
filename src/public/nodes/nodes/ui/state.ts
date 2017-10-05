@@ -26,7 +26,7 @@ export class UiStateNode extends UiNode {
     dataUpdated = false;
 
     constructor() {
-        super("State", template);
+        super("State", "UiStateNode");
 
         this.descriprion = "Show value of input";
         this.properties['value'] = false;

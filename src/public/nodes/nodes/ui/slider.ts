@@ -26,7 +26,7 @@ export class UiSliderNode extends UiNode {
     slider: HTMLElement;
 
     constructor() {
-        super("Slider", template);
+        super("Slider", "UiSliderNode");
 
         this.descriprion = "";
         this.properties['value'] = 0;

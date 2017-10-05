@@ -20,7 +20,7 @@ declare let SpeechSynthesisUtterance;
 export class UiVoiceChromeNode extends UiNode {
 
     constructor() {
-        super("Voice Chrome", template);
+        super("Voice Chrome", "UiVoiceChromeNode");
 
         this.descriprion = "This is a UI node. It can generate speech from the incoming text. <br/>" +
             "As the TTS engine is used built-in Google Chrome TTS, " +

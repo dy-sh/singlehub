@@ -20,7 +20,7 @@ let template =
 export class UiToggleNode extends UiNode {
 
     constructor() {
-        super("Toggle", template);
+        super("Toggle", "UiToggleNode");
 
         this.descriprion = "Toggle button";
         this.properties['value'] = false;

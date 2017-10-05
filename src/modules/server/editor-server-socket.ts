@@ -6,7 +6,7 @@
 
 import { Container } from "../../public/nodes/container";
 import { Node } from "../../public/nodes/node";
-import { app } from "../../app";
+import app from "../../app";
 import Utils from "../../public/nodes/utils";
 import Namespace = SocketIO.Namespace;
 

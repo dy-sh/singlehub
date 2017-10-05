@@ -9,7 +9,7 @@ import { UiNode } from "./ui-node";
 export class UiSwitchNode extends UiNode {
 
     constructor() {
-        super("Switch", null, "UiSwitchNode");
+        super("Switch", "UiSwitchNode");
 
         this.descriprion = "";
         this.properties['value'] = false;

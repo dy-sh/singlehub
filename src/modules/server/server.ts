@@ -37,8 +37,8 @@ export class Server {
     constructor() {
         this.express = express();
         this.express.locals.moment = require('moment');
-        this.middleware();
         if (isDev) this.connectWebPackLiveReload();
+        this.middleware();
         this.routes();
         this.handeErrors();
         this.configure();

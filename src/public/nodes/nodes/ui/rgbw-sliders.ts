@@ -33,7 +33,7 @@ export class UiRGBWSlidersNode extends UiNode {
 
 
     constructor() {
-        super("RGB Sliders", template);
+        super("RGB Sliders", "UiRGBWSlidersNode");
 
         this.descriprion = "";
         this.properties['r'] = 0;

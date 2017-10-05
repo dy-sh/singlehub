@@ -87,7 +87,7 @@ export class App extends Emitter {
     }
 
     createServer() {
-        this.server = new Server(__dirname);
+        this.server = new Server();
     }
 
     registerNodes() {

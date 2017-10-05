@@ -21,7 +21,7 @@ let template =
 export class UiLabelNode extends UiNode {
 
     constructor() {
-        super("Label", template);
+        super("Label", "UiLabelNode");
 
         this.descriprion = "Show value of input";
         this.properties['value'] = '-';

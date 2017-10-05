@@ -95,7 +95,7 @@ export class Editor {
 
         // socket.container_id=editor.renderer.container.container_id;
 
-        window.addEventListener("resize", function () {
+        window.addEventListener("resize", () => {
             this.renderer.resize();
         });
 
@@ -464,33 +464,35 @@ export class Editor {
         body.empty();
 
         //add setting-elements from templates
-        for (let s in node.settings) {
 
-            if (!node.settings[s].type || node.settings[s].type == "string") {
-                body.append(textSettingTemplate({ settings: node.settings[s], key: s }));
-                continue;
-            }
+        //todo
+        // for (let s in node.settings) {
 
-            switch (node.settings[s].type) {
-                case "number":
-                    body.append(numberSettingTemplate({ settings: node.settings[s], key: s }));
-                    break;
-                case "boolean":
-                    body.append(checkboxSettingTemplate({ settings: node.settings[s], key: s }));
-                    if (node.settings[s].value)
-                        $('#node-setting-' + s).prop('checked', true);
-                    break;
-                case "dropdown":
-                    let settings = Utils.cloneObject(node.settings[s]);
-                    //set selected element
-                    for (let el of settings.config.elements)
-                        if (el.key == settings.value)
-                            el.selected = true;
-                    body.append(dropdownSettingTemplate({ settings: settings, key: s }));
-                    (<any>$('.ui.dropdown')).dropdown();
-                    break;
-            }
-        }
+        //     if (!node.settings[s].type || node.settings[s].type == "string") {
+        //         body.append(textSettingTemplate({ settings: node.settings[s], key: s }));
+        //         continue;
+        //     }
+
+        //     switch (node.settings[s].type) {
+        //         case "number":
+        //             body.append(numberSettingTemplate({ settings: node.settings[s], key: s }));
+        //             break;
+        //         case "boolean":
+        //             body.append(checkboxSettingTemplate({ settings: node.settings[s], key: s }));
+        //             if (node.settings[s].value)
+        //                 $('#node-setting-' + s).prop('checked', true);
+        //             break;
+        //         case "dropdown":
+        //             let settings = Utils.cloneObject(node.settings[s]);
+        //             //set selected element
+        //             for (let el of settings.config.elements)
+        //                 if (el.key == settings.value)
+        //                     el.selected = true;
+        //             body.append(dropdownSettingTemplate({ settings: settings, key: s }));
+        //             (<any>$('.ui.dropdown')).dropdown();
+        //             break;
+        //     }
+        // }
 
 
         //modal panel
@@ -612,58 +614,58 @@ export class Editor {
     updateContainersNavigation() {
 
         //todo 
-        return;
 
-        let that = this;
 
-        //update dashboard button
-        $("#dashboard-button").attr("href", '/dashboard/c/' + that.renderer.container.id);
+        // let that = this;
 
-        //update split button
-        let split = $("#split-button").attr("href").startsWith("/editor/split/");
-        if (split)
-            $("#split-button").attr("href", '/editor/split/c/' + that.renderer.container.id);
-        else
-            $("#split-button").attr("href", '/editor/c/' + that.renderer.container.id);
+        // //update dashboard button
+        // $("#dashboard-button").attr("href", '/dashboard/c/' + that.renderer.container.id);
 
-        //update navigation buttons
-        $("#containers-navigation").html("");
-        addendButton(0, "Main");
+        // //update split button
+        // let split = $("#split-button").attr("href").startsWith("/editor/split/");
+        // if (split)
+        //     $("#split-button").attr("href", '/editor/split/c/' + that.renderer.container.id);
+        // else
+        //     $("#split-button").attr("href", '/editor/c/' + that.renderer.container.id);
 
-        //if this is a sub-container
-        if (this.renderer._containers_stack
-            && this.renderer._containers_stack.length > 0) {
+        // //update navigation buttons
+        // $("#containers-navigation").html("");
+        // addendButton(0, "Main");
 
-            //add containers
-            let cont_count = this.renderer._containers_stack.length;
-            for (let cont = 1; cont < cont_count; cont++) {
-                let cont_name = this.renderer._containers_stack[cont].name;
-                let cont_id = this.renderer._containers_stack[cont].id;
-                addendButton(cont_id, cont_name);
-            }
+        // //if this is a sub-container
+        // if (this.renderer._containers_stack
+        //     && this.renderer._containers_stack.length > 0) {
 
-            //add this container
-            // console.log(this.renderer.container)
-            // let cont_name = this.renderer.container.container_node.title;
-            let cont_name = this.renderer.container.name;
-            let cont_id = this.renderer.container.id;
-            addendButton(cont_id, cont_name);
+        //     //add containers
+        //     let cont_count = this.renderer._containers_stack.length;
+        //     for (let cont = 1; cont < cont_count; cont++) {
+        //         let cont_name = this.renderer._containers_stack[cont].name;
+        //         let cont_id = this.renderer._containers_stack[cont].id;
+        //         addendButton(cont_id, cont_name);
+        //     }
 
-        }
+        //     //add this container
+        //     // console.log(this.renderer.container)
+        //     // let cont_name = this.renderer.container.container_node.title;
+        //     let cont_name = this.renderer.container.name;
+        //     let cont_id = this.renderer.container.id;
+        //     addendButton(cont_id, cont_name);
 
-        function addendButton(cont_id, cont_name) {
-            $("#containers-navigation")
-                .append(`<div id="container${cont_id}" class="ui black tiny compact button">${cont_name}</div>`);
-            $("#container" + cont_id).click(function () {
-                for (let i = 0; i < 1000; i++) {
-                    if (that.renderer.container.id == cont_id)
-                        break;
-                    that.renderer.closeContainer(false);
-                }
-                that.socket.sendJoinContainerRoom(that.renderer.container.id);
-                editor.updateNodesLabels();
-            });
-        }
+        // }
+
+        // function addendButton(cont_id, cont_name) {
+        //     $("#containers-navigation")
+        //         .append(`<div id="container${cont_id}" class="ui black tiny compact button">${cont_name}</div>`);
+        //     $("#container" + cont_id).click(function () {
+        //         for (let i = 0; i < 1000; i++) {
+        //             if (that.renderer.container.id == cont_id)
+        //                 break;
+        //             that.renderer.closeContainer(false);
+        //         }
+        //         that.socket.sendJoinContainerRoom(that.renderer.container.id);
+        //         editor.updateNodesLabels();
+        //     });
+        // }
     }
 
     updateBrowserUrl() {

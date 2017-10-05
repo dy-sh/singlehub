@@ -10,7 +10,7 @@ module.exports = {
   ],
   output: {
     path: path.resolve(__dirname, './dist/public/client'),
-    publicPath: '/',
+    publicPath: '/client',
     filename: 'build.js'
   },
   resolve: {

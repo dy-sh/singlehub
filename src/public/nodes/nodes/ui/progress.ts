@@ -26,7 +26,7 @@ export class UiProgressNode extends UiNode {
     dataUpdated = false;
 
     constructor() {
-        super("Progress", template);
+        super("Progress", "UiProgressNode");
 
         this.descriprion = "";
         this.properties['value'] = 0;

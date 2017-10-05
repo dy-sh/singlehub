@@ -26,7 +26,7 @@ let template =
 export class UiTextBoxNode extends UiNode {
 
     constructor() {
-        super("TextBox", template);
+        super("TextBox", "UiTextBoxNode");
 
         this.descriprion = "";
         this.properties['value'] = null;

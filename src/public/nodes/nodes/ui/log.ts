@@ -26,7 +26,7 @@ export class UiLogNode extends UiNode {
     messagesPerSec = 0;
 
     constructor() {
-        super("Log", template);
+        super("Log", "UiLogNode");
 
         this.descriprion = "";
         this.properties['log'] = [];

@@ -22,7 +22,7 @@ export class UiVoiceYandexNode extends UiNode {
     audioSpeech: HTMLAudioElement;
 
     constructor() {
-        super("Voice Yandex", template);
+        super("Voice Yandex", "UiVoiceYandexNode");
 
         this.descriprion = "";
 

@@ -13,7 +13,7 @@ import { UiNode } from "./ui-node";
 export class UiButtonNode extends UiNode {
 
     constructor() {
-        super("Button", null, "UiButtonNode");
+        super("Button", "UiButtonNode");
 
         this.descriprion = "";
         this.properties['value'] = false;

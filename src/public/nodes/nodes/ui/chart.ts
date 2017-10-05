@@ -47,7 +47,7 @@ export class UiChartNode extends UiNode {
 
 
     constructor() {
-        super("Chart", template);
+        super("Chart", "UiChartNode");
 
         this.UPDATE_INTERVAL = 300;
 

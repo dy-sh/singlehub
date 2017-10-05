@@ -6,9 +6,9 @@
 import * as express from 'express';
 let router = express.Router();
 
-import {Container} from "../public/nodes/container"
-import {Link, LinkInfo} from "../public/nodes/node";
-import {app} from "../app";
+import { Container } from "../public/nodes/container"
+import { Link, LinkInfo } from "../public/nodes/node";
+import app from "../app";
 
 //
 // setInterval(updateActiveNodes, 1000);
