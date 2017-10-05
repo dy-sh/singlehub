@@ -33,13 +33,10 @@ export class Server {
     editorSocket: EditorServerSocket;
     dashboardSocket: DashboardServerSocket;
 
-    private __rootdirname;
 
     constructor() {
-        this.__rootdirname = (<any>global).__rootdirname;
         this.express = express();
         this.express.locals.moment = require('moment');
-        this.setViewEngine();
         this.middleware();
         if (isDev) this.connectWebPackLiveReload();
         this.routes();
@@ -65,10 +62,7 @@ export class Server {
         }));
     }
 
-    private setViewEngine() {
-        this.express.set('views', path.join(this.__rootdirname, '../views'));
-        this.express.set('view engine', 'jade');
-    }
+
 
     private middleware() {
         // uncomment after placing your favicon in /public
@@ -83,8 +77,9 @@ export class Server {
         this.express.use(bodyParser.urlencoded({ extended: false }));
         this.express.use(cookieParser());
         this.express.use(expressValidator());
-        this.express.use(require('stylus').middleware(path.join(this.__rootdirname, 'public')));
-        this.express.use(express.static(path.join(this.__rootdirname, 'public')));
+        //merge two static folders in root url
+        this.express.use("/", express.static(path.join(__dirname + "/../../public")));
+        this.express.use("/", express.static(__dirname + "/../../../public"));
     }
 
     private routes() {

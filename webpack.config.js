@@ -1,6 +1,5 @@
 var path = require('path')
 var webpack = require('webpack')
-var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
   entry: [
@@ -12,7 +11,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist/public/client'),
     publicPath: '/',
-    filename: 'client/build.js'
+    filename: 'build.js'
   },
   resolve: {
     extensions: ['.js', '.vue', ".ts", ".tsx"],
