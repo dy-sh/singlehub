@@ -4,5 +4,6 @@
     "*.json",
     "*.db",
     "dist/public/*"
-  ]
+  ],
+  "delay": "500"
 }
