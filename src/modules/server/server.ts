@@ -41,7 +41,7 @@ export class Server {
         this.express.locals.moment = require('moment');
         this.setViewEngine();
         this.middleware();
-        // if (isDev) this.connectWebPackLiveReload();
+        if (isDev) this.connectWebPackLiveReload();
         this.routes();
         this.handeErrors();
         this.configure();

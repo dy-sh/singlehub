@@ -4,13 +4,15 @@ var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
   entry: [
-    // 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+    //live reload
+    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+    //app
     './src/client/main.js'
   ],
   output: {
     path: path.resolve(__dirname, './dist/public/client'),
     publicPath: '/',
-    filename: 'build.js'
+    filename: 'client/build.js'
   },
   resolve: {
     extensions: ['.js', '.vue', ".ts", ".tsx"],
@@ -69,11 +71,9 @@ module.exports = {
     ]
   },
   plugins: [
-    //for hot reloading:
-    // new webpack.HotModuleReplacementPlugin(),
-    // new webpack.NoEmitOnErrorsPlugin()
-    //for live reloading
-    new LiveReloadPlugin()
+    //live reload
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
   ],
   devServer: {
     historyApiFallback: true,
