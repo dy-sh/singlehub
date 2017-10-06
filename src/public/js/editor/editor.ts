@@ -335,7 +335,7 @@ export class Editor {
             // $('#import-script-body').hide();
 
             let script;
-            let url = $('#modal-panel-text').val();
+            let url = "" + $('#modal-panel-text').val();
 
             $.ajax({
                 url: url,
@@ -670,12 +670,12 @@ export class Editor {
 
     updateBrowserUrl() {
         //change browser url
-
-        let cid = editor.renderer.container.id;
-        if (cid == 0)
-            window.history.pushState('Container ' + cid, 'SingeHub', '/editor/');
-        else
-            window.history.pushState('Container ' + cid, 'SingeHub', '/editor/c/' + cid);
+        //todo
+        // let cid = editor.renderer.container.id;
+        // if (cid == 0)
+        //     window.history.pushState('Container ' + cid, 'SingeHub', '/editor/');
+        // else
+        //     window.history.pushState('Container ' + cid, 'SingeHub', '/editor/c/' + cid);
 
     }
 

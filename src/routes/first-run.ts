@@ -144,54 +144,55 @@ router.post('/first-run/user', function (req, res, next) {
         password: req.body.password
     };
 
-    req.assert('name', 'Login is required').notEmpty();
-    req.assert('password', 'Password is required').notEmpty();
-    // req.assert('email', 'A valid email is required').isEmail();
-    req.assert('c_password', 'Passwords must match').equals(req.body.password);
-    let errors = req.validationErrors();
+    //todo
+    // req.assert('name', 'Login is required').notEmpty();
+    // req.assert('password', 'Password is required').notEmpty();
+    // // req.assert('email', 'A valid email is required').isEmail();
+    // req.assert('c_password', 'Passwords must match').equals(req.body.password);
+    // let errors = req.validationErrors();
 
 
-    if (!errors) {
-        //save user profile to db
-        app.db.getUser(user.name, function (err, doc) {
-            if (err) {
-                res.render('first-run/user/index', {
-                    canSkip: false,
-                    user: user,
-                    errors: [{ param: "name", msg: err, value: "" }]
-                });
-                return;
-            }
+    // if (!errors) {
+    //     //save user profile to db
+    //     app.db.getUser(user.name, function (err, doc) {
+    //         if (err) {
+    //             res.render('first-run/user/index', {
+    //                 canSkip: false,
+    //                 user: user,
+    //                 errors: [{ param: "name", msg: err, value: "" }]
+    //             });
+    //             return;
+    //         }
 
-            if (doc) {
-                res.render('first-run/user/index', {
-                    canSkip: false,
-                    user: user,
-                    errors: [{ param: "name", msg: "User already exist", value: "" }]
-                });
-                return;
-            }
+    //         if (doc) {
+    //             res.render('first-run/user/index', {
+    //                 canSkip: false,
+    //                 user: user,
+    //                 errors: [{ param: "name", msg: "User already exist", value: "" }]
+    //             });
+    //             return;
+    //         }
 
-            app.db.addUser(user, function (err) {
-                if (err) {
-                    res.render('first-run/user/index', {
-                        canSkip: false,
-                        user: user,
-                        errors: [{ param: "name", msg: err, value: "" }]
-                    });
-                }
-                res.redirect("/first-run/hardware");
-            });
-        });
+    //         app.db.addUser(user, function (err) {
+    //             if (err) {
+    //                 res.render('first-run/user/index', {
+    //                     canSkip: false,
+    //                     user: user,
+    //                     errors: [{ param: "name", msg: err, value: "" }]
+    //                 });
+    //             }
+    //             res.redirect("/first-run/hardware");
+    //         });
+    //     });
 
 
-    } else {
-        res.render('first-run/user/index', {
-            canSkip: false,
-            user: user,
-            errors: errors
-        });
-    }
+    // } else {
+    //     res.render('first-run/user/index', {
+    //         canSkip: false,
+    //         user: user,
+    //         errors: errors
+    //     });
+    // }
 
 
 });

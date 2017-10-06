@@ -4,15 +4,16 @@
  */
 
 
-import {Node} from "../../../node";
+import { Node } from "../../../node";
 import Utils from "../../../utils";
-import {Container, Side} from "../../../container";
+import { Container, Side } from "../../../container";
 
 
 let mqtt;
 if (typeof (window) === 'undefined') { //for backside only
     mqtt = require('mqtt')
 }
+
 
 
 export class MqttClientNode extends Node {
@@ -27,12 +28,12 @@ export class MqttClientNode extends Node {
         this.addOutput("connected", "boolean");
 
 
-        this.settings["enable"] = {description: "Enable", value: false, type: "boolean"};
+        this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
 
-        this.settings["server"] = {description: "Broker URL", value: "", type: "string"};
-        this.settings["port"] = {description: "Broker port", value: "", type: "string"};
-        this.settings["username"] = {description: "User name", value: "", type: "string"};
-        this.settings["password"] = {description: "Password", value: "", type: "string"};
+        this.settings["server"] = { description: "Broker URL", value: "", type: "string" };
+        this.settings["port"] = { description: "Broker port", value: "", type: "string" };
+        this.settings["username"] = { description: "User name", value: "", type: "string" };
+        this.settings["password"] = { description: "Password", value: "", type: "string" };
 
         this.settings["topics_count"] = {
             description: 'Number of topics (click "OK" and reopen settings if change this)',
@@ -62,7 +63,7 @@ export class MqttClientNode extends Node {
 
 
     connectToBrocker() {
-        let options: any = {host: this.settings["server"].value};
+        let options: any = { host: this.settings["server"].value };
 
         if (this.settings["port"].value != null
             && this.settings["port"].value != "")
@@ -154,7 +155,7 @@ export class MqttClientNode extends Node {
         //update db
         if (this.container.db)
             this.container.db.updateNode(this.id, this.container.id, {
-                $set: {inputs: this.inputs, outputs: this.outputs, settings: this.settings}
+                $set: { inputs: this.inputs, outputs: this.outputs, settings: this.settings }
             });
 
         if (this.side == Side.server) {
@@ -178,7 +179,7 @@ export class MqttClientNode extends Node {
         //change settings for topics
         if (diff > 0) {
             for (let i = this.topicsCount + 1; i <= target_count; i++) {
-                this.settings['topic' + i] = {description: "Topic " + i, value: "", type: "string"};
+                this.settings['topic' + i] = { description: "Topic " + i, value: "", type: "string" };
             }
         }
         else if (diff < 0) {

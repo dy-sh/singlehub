@@ -415,17 +415,16 @@ export class EditorClientSocket {
         // this.getGatewayInfo();
 
 
-        $("#sendButton").click(
-            function () {
-                let gr = JSON.stringify(this.rootContainer.serialize());
-                $.ajax({
-                    url: '/api/editor',
-                    type: 'POST',
-                    data: { json: gr.toString() }
-                }).done(function () {
+        $("#sendButton").click(() => {
+            let gr = JSON.stringify(Container.containers[0].serialize());
+            $.ajax({
+                url: '/api/editor',
+                type: 'POST',
+                data: { json: gr.toString() }
+            }).done(function () {
 
-                });
-            }
+            });
+        }
         );
 
 

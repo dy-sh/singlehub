@@ -45,8 +45,13 @@ export default {
     getUiPanelsList(data) {
       console.log("getUiPanelsList: " + JSON.stringify(data));
       this.panels = data;
+
+      //if active panel removed, close panel
       if (!this.panels.some(x => x.name == this.activePanel))
         this.activePanel = "";
+
+      //for testing - open first panel
+      if (this.activePanel == "") this.activePanel = this.panels[0].name;
     },
     getUiPanel(panel) {
       if (panel) this.activePanel = panel.name;

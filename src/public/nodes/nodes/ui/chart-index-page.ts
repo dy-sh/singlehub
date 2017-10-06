@@ -310,7 +310,7 @@ export class ChartIndexPage {
     createControles() {
         let that = this;
         $('#chartstyle').change(function () {
-            that.style = this.value;
+            that.style = (<any>this).value;
             that.updateChartStyle();
 
             $.ajax({
@@ -343,7 +343,7 @@ export class ChartIndexPage {
 
 
         $('#autoscroll').change(function () {
-            that.autoscroll = this.value;
+            that.autoscroll = (<any>this).value;
         });
 
         $('#show-all-button').click(function () {
