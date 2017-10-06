@@ -6,7 +6,7 @@
 var mys = require('./mysensors');
 
 //console logger
-let log = require('../../../node_modules/logplease/es5/index.js').create('container', { color: 5 });
+let log = require('logplease').create('container', { color: 5 });
 
 
 var _ = require("lodash");

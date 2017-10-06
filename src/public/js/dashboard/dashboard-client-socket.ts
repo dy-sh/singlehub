@@ -9,9 +9,9 @@ import { editor } from "../editor/editor";
 
 
 
-//console logger
-declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', { color: 3 });
+const log = require('logplease').create('client', { color: 3 });
+
+
 
 export class DashboardClientSocket {
 

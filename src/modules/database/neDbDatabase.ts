@@ -10,7 +10,7 @@ import { UiPanel } from "../../public/dashboard/dashboard";
 import { Database } from "../../public/interfaces/database";
 import { User } from "../../public/interfaces/user";
 
-const log = require('../../../node_modules/logplease/es5/index.js').create('database', { color: 4 });
+const log = require('logplease').create('database', { color: 4 });
 
 
 class NeDbDatabase implements Database {

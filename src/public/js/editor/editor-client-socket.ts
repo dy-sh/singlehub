@@ -7,9 +7,7 @@ import { Node, Link, LinkInfo } from "../../nodes/node"
 import { Container } from "../../nodes/container";
 import { Editor } from "./editor";
 
-//console logger
-declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', { color: 3 });
+const log = require('logplease').create('client', { color: 3 });
 
 export class EditorClientSocket {
 

@@ -15,7 +15,7 @@ let expressValidator = require('express-validator');
 import * as http from 'http';
 import * as socket from 'socket.io';
 
-const log = require('../../../node_modules/logplease/es5/index.js').create('server', { color: 3 });
+const log = require('logplease').create('server', { color: 3 });
 
 import { EditorServerSocket } from "./editor-server-socket"
 import { DashboardServerSocket } from "./dashboard-server-socket"

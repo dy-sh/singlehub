@@ -17,6 +17,8 @@ module.exports = {
     extensions: ['.js', '.vue', ".ts", ".tsx"],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
+      //using ES5 version for prevent webpack compile ES6 error
+      'logplease': "logplease/es5/index.js",
       'public': path.resolve(__dirname, './dist/public')
     }
   },
@@ -28,8 +30,7 @@ module.exports = {
       /child*process/,
       /fs/,
       /net/,
-      /system.js/,
-      /logplease\/src\/index\.js/
+      /system.js/
     ],
     rules: [
       {

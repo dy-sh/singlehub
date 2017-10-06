@@ -7,13 +7,8 @@ import Utils from "../utils";
 import { Container, Side } from "../container";
 
 
-//console logger back and front
-let log;
-declare let Logger: any; // tell the ts compiler global variable is defined
-if (typeof (window) === 'undefined') //for backside only
-    log = require('../../../../node_modules/logplease/es5/index.js').create('node', { color: 5 });
-else  //for frontside only
-    log = Logger.create('node', { color: 5 });
+const log = require('logplease').create('node', { color: 5 });
+
 
 
 //Show value inside the debug console

@@ -3,8 +3,7 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-declare let Logger: any; // tell the ts compiler global variable is defined
-let log = Logger.create('client', { color: 3 });
+const log = require('logplease').create('client', { color: 3 });
 declare let moment;
 
 export class ChartLogPage {

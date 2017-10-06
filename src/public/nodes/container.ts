@@ -12,15 +12,8 @@ import Namespace = SocketIO.Namespace;
 import { Emitter } from '../js/emitter/emitter'
 import { Dashboard } from "../dashboard/dashboard";
 
+const log = require('logplease').create('container', { color: 5 });
 
-
-//console logger back and front
-let log;
-declare let Logger: any; // tell the ts compiler global variable is defined
-if (typeof (window) === 'undefined') //for backside only
-    log = require('../../../node_modules/logplease/es5/index.js').create('container', { color: 5 });
-else  //for frontside only
-    log = Logger.create('container', { color: 5 });
 
 
 export interface SerializedContainer {

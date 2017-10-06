@@ -22,7 +22,7 @@ import * as path from 'path';
 (<any>global).__rootdirname = path.resolve(__dirname);
 
 
-const log = require('../node_modules/logplease/es5/index.js').create('app', { color: 2 });
+const log = require('logplease').create('app', { color: 2 });
 
 
 export class App extends Emitter {

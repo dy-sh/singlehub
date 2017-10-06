@@ -9,7 +9,7 @@ import app from "../../app";
 import Namespace = SocketIO.Namespace;
 
 
-const log = require('../../../node_modules/logplease/es5/index.js').create('server', { color: 3 });
+const log = require('logplease').create('server', { color: 3 });
 
 
 export class DashboardServerSocket {
