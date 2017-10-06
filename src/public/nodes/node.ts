@@ -1231,7 +1231,7 @@ export class Node {
      * @param message
      * @param module
      */
-    debug(message: string): void {
+    debug(message: any): void {
         log.debug(this.getReadableId() + " " + message);
     }
 
@@ -1240,7 +1240,7 @@ export class Node {
      * @param message
      * @param module
      */
-    debugInfo(message: string): void {
+    debugInfo(message: any): void {
         log.info(this.getReadableId() + " " + message);
     }
 
@@ -1249,7 +1249,7 @@ export class Node {
      * @param message
      * @param module
      */
-    debugWarn(message: string, module?: string): void {
+    debugWarn(message: any, module?: string): void {
         log.warn(this.getReadableId() + " " + message);
     }
 
@@ -1258,7 +1258,7 @@ export class Node {
      * @param message
      * @param module
      */
-    debugErr(message: string, module?: string): void {
+    debugErr(message: any, module?: string): void {
         log.error(this.getReadableId() + " " + message);
     }
 

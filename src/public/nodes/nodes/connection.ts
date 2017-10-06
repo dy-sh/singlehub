@@ -7,10 +7,8 @@
 import { Node } from "../node";
 import Utils from "../utils";
 import { Container, Side } from "../container";
+import * as request from "request";
 
-let request;
-if (typeof (window) === 'undefined') //for backside only
-    request = require('request');
 
 
 

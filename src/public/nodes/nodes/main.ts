@@ -3,11 +3,11 @@
  */
 
 
-import {Node, SerializedNode} from "../node";
-import {Container, Side} from "../container";
+import { Node, SerializedNode } from "../node";
+import { Container, Side } from "../container";
 import Utils from "../utils";
-import {runInNewContext} from "vm";
-import {type} from "os";
+// import {runInNewContext} from "vm";
+// import {type} from "os";
 
 
 //Constant
@@ -17,16 +17,16 @@ export class ConstantNode extends Node {
         this.title = "Constant";
         this.descriprion = "Constant value";
 
-        this.settings["value"] = {description: "Value", value: 1};
+        this.settings["value"] = { description: "Value", value: 1 };
         this.settings["output-type"] = {
             description: "Output type",
             type: "dropdown",
             config: {
                 elements: [
                     // {key: "any", text: "any"},
-                    {key: "string", text: "string"},
-                    {key: "number", text: "number"},
-                    {key: "boolean", text: "boolean"}
+                    { key: "string", text: "string" },
+                    { key: "number", text: "number" },
+                    { key: "boolean", text: "boolean" }
                 ]
             },
             value: "number"
@@ -60,7 +60,7 @@ export class ConstantNode extends Node {
 
         if (this.container.db) {
             let s_node = this.serialize(true);
-            this.container.db.updateNode(this.id, this.container.id, {$set: {outputs: s_node.outputs}});
+            this.container.db.updateNode(this.id, this.container.id, { $set: { outputs: s_node.outputs } });
         }
 
         if (this.side == Side.editor) {
@@ -86,7 +86,7 @@ export class ContainerNode extends Node {
 
         this.title = "Container";
         this.descriprion = "Contain other nodes";
-        this.settings["name"] = {description: "Container name", type: "string", value: this.title};
+        this.settings["name"] = { description: "Container name", type: "string", value: this.title };
     }
 
     onCreated() {
@@ -148,32 +148,32 @@ export class ContainerNode extends Node {
         return [
             {
                 content: "Open", callback: function () {
-                renderer.openContainer(that.sub_container, true);
-            }
+                    renderer.openContainer(that.sub_container, true);
+                }
             },
             null, //null for horizontal line
             {
                 content: 'Show on Dashboard', callback: function () {
-                let win = window.open('/dashboard/c/' + that.sub_container.id, '_blank');
-                win.focus();
-            }
+                    let win = window.open('/dashboard/c/' + that.sub_container.id, '_blank');
+                    win.focus();
+                }
             },
             null,
             {
                 content: 'Export to file', callback: function () {
-                let win = window.open('/api/editor/c/' + that.sub_container.id + "/file", '_blank');
-                win.focus();
-            }
+                    let win = window.open('/api/editor/c/' + that.sub_container.id + "/file", '_blank');
+                    win.focus();
+                }
             },
             {
                 content: 'Export to script', callback: function () {
-                editor.exportContainerToScript(that.sub_container.id)
-            }
+                    editor.exportContainerToScript(that.sub_container.id)
+                }
             },
             {
                 content: 'Export URL', callback: function () {
-                editor.exportContainerURL(that.sub_container.id)
-            }
+                    editor.exportContainerURL(that.sub_container.id)
+                }
             },
             null
         ];
@@ -237,7 +237,7 @@ export class ContainerInputNode extends Node {
 
         this.addOutput("input", null);
 
-        this.properties = {type: null};
+        this.properties = { type: null };
     }
 
 
@@ -254,8 +254,8 @@ export class ContainerInputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {inputs: s_cont_node.inputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { inputs: s_cont_node.inputs } });
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
         }
     }
 
@@ -269,8 +269,8 @@ export class ContainerInputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {inputs: s_cont_node.inputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { inputs: s_cont_node.inputs } });
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
         }
     }
 
@@ -295,7 +295,7 @@ export class ContainerOutputNode extends Node {
 
         this.addInput("output", null);
 
-        this.properties = {type: null};
+        this.properties = { type: null };
     }
 
 
@@ -313,8 +313,8 @@ export class ContainerOutputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {outputs: s_cont_node.outputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { outputs: s_cont_node.outputs } });
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
         }
     }
 
@@ -328,8 +328,8 @@ export class ContainerOutputNode extends Node {
 
         if (this.container.db) {
             let s_cont_node = cont_node.serialize(true);
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {outputs: s_cont_node.outputs}});
-            this.container.db.updateNode(cont_node.id, cont_node.container.id, {$set: {size: cont_node.size}});
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { outputs: s_cont_node.outputs } });
+            this.container.db.updateNode(cont_node.id, cont_node.container.id, { $set: { size: cont_node.size } });
         }
     }
 

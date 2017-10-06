@@ -9,11 +9,9 @@ import Utils from "../../../utils";
 import { Container, Side } from "../../../container";
 
 import Models from './xiaomi-models';
+import * as miio from 'miio';
 
-let miio;
-if (typeof (window) === 'undefined') { //for backside only
-    miio = require('miio')
-}
+
 
 export interface IXiomiDeviceModel {
     //called on server and editor side

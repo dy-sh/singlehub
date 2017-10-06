@@ -17,21 +17,26 @@ module.exports = {
     extensions: ['.js', '.vue', ".ts", ".tsx"],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
+      'public': path.resolve(__dirname, './dist/public'),
       //using ES5 version for prevent webpack compile ES6 error
-      'logplease': "logplease/es5/index.js",
-      'public': path.resolve(__dirname, './dist/public')
+      'logplease': 'logplease/es5/index.js',
+      //ignore server-side modules, not used in client-side
+      'child_process': 'empty-module',
+      'fs': 'empty-module',
+      'mqtt': 'empty-module',
+      'split': 'empty-module',
+      'miio': 'empty-module',
+      'request': 'empty-module',
+      'serialport': 'empty-module',
+      '': 'empty-module',
+      '': 'empty-module',
+
     }
   },
   module: {
-    noParse: [
-      /mys-controller.js/,
-      /xiaomi-device.js/,
-      /request/,
-      /child*process/,
-      /fs/,
-      /net/,
-      /system.js/
-    ],
+    // noParse: [
+
+    // ],
     rules: [
       {
         test: /\.vue$/,
@@ -60,12 +65,7 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        include: [
-          path.resolve(__dirname, "./src/ts2")
-        ],
-        exclude: [
-          path.resolve(__dirname, "../src")
-        ],
+        exclude: /node_modules/,
         loader: "ts-loader"
       }
     ]

@@ -7,12 +7,9 @@
 import { Node } from "../../../node";
 import Utils from "../../../utils";
 import { Container, Side } from "../../../container";
+import * as mqtt from "mqtt";
 
 
-let mqtt;
-if (typeof (window) === 'undefined') { //for backside only
-    mqtt = require('mqtt')
-}
 
 
 

@@ -7,12 +7,9 @@ import { Node } from "../node";
 import { Container, Side } from "../container";
 import Utils from "../utils";
 
-let exec, fs;
-if (typeof (window) === 'undefined') { //for backside only
-    exec = require('child_process').exec;
-    fs = require('fs');
-}
 
+import * as fs from 'fs';
+import { exec } from 'child_process';
 
 export class SystemBeepNode extends Node {
 

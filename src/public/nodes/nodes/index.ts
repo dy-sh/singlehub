@@ -17,7 +17,7 @@ import "./math";
 import "./numbers";
 import "./operation";
 import "./rgb";
-// import "./system";
+import "./system";
 import "./text";
 import "./time";
 
@@ -38,6 +38,6 @@ import "./ui/voice-yandex";
 import "./ui/chart";
 
 import "./protocols/mqtt/mqtt-client";
-// import "./protocols/mysensors/mys-controller";
-// import "./protocols/mysensors/mys-node";
-// import "./protocols/xiaomi/xiaomi-device";
+import "./protocols/mysensors/mys-controller";
+import "./protocols/mysensors/mys-node";
+import "./protocols/xiaomi/xiaomi-device";

@@ -11,16 +11,9 @@ import { ContainerNode } from "../../main";
 import { debug } from "util";
 import { I_MYS_Node, I_MYS_Message, I_MYS_Sensor } from "./mys-types";
 import { MySensorsNode, I_MYS_Node_Properties } from "./mys-node";
+import * as split from "split";
 
 
-let split;
-// let app;
-//let _;
-if (typeof (window) === 'undefined') { //for backside only
-    split = require("split");
-    // _ = require("lodash");
-    // app = require("../../../../../app.js");
-}
 
 
 let GATEWAY_ID = 0;
