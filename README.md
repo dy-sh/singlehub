@@ -43,12 +43,4 @@ To be aware of all the changes, look at the [changelog](https://github.com/derwi
 
 **How to run for develop (watch mode):**
 -------------------
-For server side:
 - npm run watch
-
-For client side (webpack, vue, vuetify):
-- cd client
-- npm i
-- npm run dev<br>
-  or <br>
-  npm run build

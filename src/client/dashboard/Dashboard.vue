@@ -2,14 +2,17 @@
 div
   toolbar(:panels="panels" :selected="activePanel" @click="onClickToolbar")
   main
-    v-content
-      v-container(grid-list-xl)
+    v-content.dash
+      //- v-container(grid-list-xl)
+      div(v-if="activePanel")
         v-layout(row wrap)
           v-flex(v-if="activePanel" xs12 sm6 md4)
             //- v-flex(v-if="activePanel" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
-            panel(:name="activePanel" v-if="activePanel")
-          v-flex(v-if="activePanel" xs12 sm6 md8)
-            editor
+            panel.panel(:name="activePanel")
+          v-flex(xs12 sm6 md8)
+            editor.editor
+      div(v-else)
+        editor.editor           
 
 
 </template>
@@ -51,7 +54,7 @@ export default {
         this.activePanel = "";
 
       //for testing - open first panel
-      if (this.activePanel == "") this.activePanel = this.panels[0].name;
+      // if (this.activePanel == "") this.activePanel = this.panels[0].name;
     },
     getUiPanel(panel) {
       if (panel) this.activePanel = panel.name;
@@ -70,3 +73,15 @@ export default {
 };
 </script>
 
+<style>
+.dash {
+  margin: 5px;
+}
+.panel {
+  margin: 5px;
+}
+
+.editor {
+  margin: 5px;
+}
+</style>
