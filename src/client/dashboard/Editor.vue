@@ -12,11 +12,17 @@ import { Editor } from "../../public/js/editor/editor";
 
 export default {
   props: ["cid"],
-  data: () => ({}),
+  data: () => ({
+    editor: null
+  }),
   mounted() {
-    console.log("mounted");
-    let ed = new Editor();
-    ed.start();
+    console.log("VUE EDITOR MOUNTED");
+    this.editor = new Editor(0);
+    this.editor.start();
+  },
+  beforeDestroy() {
+    console.log("VUE EDITOR DESTROY");
+    this.editor.stop();
   }
 };
 </script>
