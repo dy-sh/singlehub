@@ -27,10 +27,7 @@ module.exports = {
       'split': 'empty-module',
       'miio': 'empty-module',
       'request': 'empty-module',
-      'serialport': 'empty-module',
-      '': 'empty-module',
-      '': 'empty-module',
-
+      'serialport': 'empty-module'
     }
   },
   module: {
