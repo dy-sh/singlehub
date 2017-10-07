@@ -6,6 +6,7 @@
 import { Node, Link, LinkInfo } from "../../nodes/node"
 import { Container } from "../../nodes/container";
 import { Editor } from "./editor";
+import * as io from 'socket.io-client';
 
 const log = require('logplease').create('client', { color: 3 });
 

@@ -17,6 +17,7 @@ const log = require('logplease').create('editor', { color: 6 });
 
 export class Editor {
 
+    themeId = 0;
     private root: HTMLDivElement;
     rootContainer: Container;
     renderer: Renderer;
@@ -27,15 +28,14 @@ export class Editor {
     showNodesIOValues = false;
 
 
-    constructor() {
+    constructor(themeId = 0) {
+        this.themeId = themeId;
         log.warn("!!! NEW EDITOR CREATED");
-
-        (<any>window).editor = this;
-
     }
 
     start() {
 
+        // (<any>window).editor = this;
         log.warn("!!! EDITOR STARTED");
 
 
@@ -59,9 +59,8 @@ export class Editor {
         this.rootContainer.clinet_socket = this.socket.socket;
 
         //renderer theme
-        let theme;
-        if ((<any>window).theme)
-            theme = themes[(<any>window).theme];
+
+        let theme = themes[this.themeId];
 
         //create renderer
         this.renderer = new Renderer(
@@ -92,9 +91,9 @@ export class Editor {
         this.updateContainersNavigation();
 
 
-        (<any>window).rootContainer = Container.containers[0];
-        (<any>window).Container = Container;
-        (<any>window).renderer = this.renderer;
+        // (<any>window).rootContainer = Container.containers[0];
+        // (<any>window).Container = Container;
+        // (<any>window).renderer = this.renderer;
 
         // socket.container_id=editor.renderer.container.container_id;
 
@@ -105,6 +104,10 @@ export class Editor {
 
         this.getNodes();
 
+    }
+
+    stop() {
+        // (<any>window).editor = null;
     }
 
     addMiniWindow(w: number, h: number): void {
@@ -685,27 +688,26 @@ export class Editor {
     getNodes() {
         this.socket.getContainerState();
 
-        let that = this;
-        this.socket.getNodes(function (nodes) {
+        this.socket.getNodes((nodes) => {
             //open container from url
-            let cont_id = (<any>window).container_id;
-            if (cont_id && cont_id != 0) {
-                //get containers stack
-                let cont = Container.containers[cont_id];
+            // let cont_id = (<any>window).container_id;
+            // if (cont_id && cont_id != 0) {
+            //     //get containers stack
+            //     let cont = Container.containers[cont_id];
 
-                let parentStack = cont.getParentsStack();
-                while (parentStack.length > 0) {
-                    let cid = parentStack.pop();
-                    if (cid != 0) {
-                        let parent_cont = Container.containers[cid];
-                        that.renderer.openContainer(parent_cont, false);
-                    }
-                }
+            //     let parentStack = cont.getParentsStack();
+            //     while (parentStack.length > 0) {
+            //         let cid = parentStack.pop();
+            //         if (cid != 0) {
+            //             let parent_cont = Container.containers[cid];
+            //             that.renderer.openContainer(parent_cont, false);
+            //         }
+            //     }
 
-                that.renderer.openContainer(cont, false);
-            }
-            else
-                that.renderer.openContainer(Container.containers[0]);
+            //     this.renderer.openContainer(cont, false);
+            // }
+            // else
+            //     this.renderer.openContainer(Container.containers[0]);
         });
 
     }
