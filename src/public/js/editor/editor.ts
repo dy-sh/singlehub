@@ -12,6 +12,7 @@ import { themes, RendererTheme } from "./renderer-themes"
 import Utils from "../../nodes/utils";
 
 import "../../nodes/nodes/index";
+const log = require('logplease').create('editor', { color: 6 });
 
 
 export class Editor {
@@ -27,16 +28,17 @@ export class Editor {
 
 
     constructor() {
-        console.log("editor constructor");
+        log.warn("!!! NEW EDITOR CREATED");
+
+        (<any>window).editor = this;
 
     }
 
     start() {
 
+        log.warn("!!! EDITOR STARTED");
 
-        console.log("editor start");
 
-        (<any>window).editor = this;
 
         //fill container
         let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
@@ -62,12 +64,13 @@ export class Editor {
             theme = themes[(<any>window).theme];
 
         //create renderer
-        let renderer = this.renderer = new Renderer(
+        this.renderer = new Renderer(
+            this,
             <HTMLCanvasElement>canvas,
             this.rootContainer, theme);
         // renderer.background_image = "/images/node-editor/grid.png";
-        this.rootContainer.onAfterExecute = function () {
-            renderer.draw(true)
+        this.rootContainer.onAfterExecute = () => {
+            this.renderer.draw(true)
         };
 
 
@@ -80,7 +83,7 @@ export class Editor {
             parent.appendChild(root);
 
 
-        renderer.resize();
+        this.renderer.resize();
         //renderer.draw(true,true);
         this.addFullscreenButton();
         this.addPlayButton();
@@ -116,7 +119,7 @@ export class Editor {
         miniwindow.innerHTML = "<canvas class='canvas' width='" + w + "' height='" + h + "' tabindex=10></canvas>";
         let canvas = miniwindow.querySelector("canvas");
 
-        let renderer = new Renderer(canvas, this.rootContainer);
+        let renderer = new Renderer(this, canvas, this.rootContainer);
         //  renderer.background_image = "images/node-editor/grid.png";
         //derwish edit
         renderer.scale = 0.1;
@@ -728,8 +731,6 @@ let minimap_opened = false;
 // let checkboxSettingTemplate = Handlebars.compile($('#checkboxSettingTemplate').html());
 // let dropdownSettingTemplate = Handlebars.compile($('#dropdownSettingTemplate').html());
 
+// export let editor = new Editor();
 
-export let editor = new Editor();
 
-
-(<any>window).editor = editor;

@@ -8,7 +8,7 @@
 
 import { Node, NodeOutput, IInputInfo, IOutputInfo } from "../../nodes/node"
 import { Container } from "../../nodes/container"
-import { editor, Editor } from "./editor";
+import { Editor } from "./editor";
 import Utils from "../../nodes/utils";
 import { RendererTheme } from "./renderer-themes";
 
@@ -27,6 +27,7 @@ interface IgetExtraMenuOptions {
 
 
 export class Renderer {
+    editor: Editor;
     theme: RendererTheme;
 
     max_zoom: number;
@@ -113,7 +114,9 @@ export class Renderer {
     root: HTMLDivElement;
 
 
-    constructor(canvas: HTMLCanvasElement, container?: Container, theme?: RendererTheme, skip_render?: boolean) {
+    constructor(editor: Editor, canvas: HTMLCanvasElement, container?: Container, theme?: RendererTheme, skip_render?: boolean) {
+
+        this.editor = editor;
 
         this.max_zoom = 2;
         this.min_zoom = 0.1;
@@ -218,12 +221,12 @@ export class Renderer {
         container.attachRenderer(this);
         this.setDirty(true, true);
 
-        editor.updateContainersNavigation();
-        editor.updateBrowserUrl();
+        this.editor.updateContainersNavigation();
+        this.editor.updateBrowserUrl();
 
         if (joinRoom) {
-            editor.socket.sendJoinContainerRoom(container.id);
-            editor.updateNodesLabels();
+            this.editor.socket.sendJoinContainerRoom(container.id);
+            this.editor.updateNodesLabels();
         }
     }
 
@@ -249,12 +252,12 @@ export class Renderer {
         container.attachRenderer(this);
         this.setDirty(true, true);
 
-        editor.updateContainersNavigation();
-        editor.updateBrowserUrl();
+        this.editor.updateContainersNavigation();
+        this.editor.updateBrowserUrl();
 
         if (joinRoom) {
-            editor.socket.sendJoinContainerRoom(container.id);
-            editor.updateNodesLabels();
+            this.editor.socket.sendJoinContainerRoom(container.id);
+            this.editor.updateNodesLabels();
         }
     }
 
@@ -268,12 +271,12 @@ export class Renderer {
         container.attachRenderer(this);
         this.setDirty(true, true);
 
-        editor.updateContainersNavigation();
-        editor.updateBrowserUrl();
+        this.editor.updateContainersNavigation();
+        this.editor.updateBrowserUrl();
 
         if (joinRoom) {
-            editor.socket.sendJoinContainerRoom(container.id);
-            editor.updateNodesLabels();
+            this.editor.socket.sendJoinContainerRoom(container.id);
+            this.editor.updateNodesLabels();
         }
     }
 
@@ -639,7 +642,7 @@ export class Renderer {
                             let link_pos = this.getConnectionPos(n, true, +i);
                             if (Utils.isInsideRectangle(e.canvasX, e.canvasY, link_pos[0] - 10, link_pos[1] - 5, 20, 10)) {
                                 if (input.link != null) {
-                                    editor.socket.sendRemoveLink(
+                                    this.editor.socket.sendRemoveLink(
                                         input.link.target_node_id,
                                         input.link.target_slot,
                                         n.id,
@@ -928,7 +931,7 @@ export class Renderer {
                         //slot below mouse? connect
                         let slot = this.isOverNodeInput(node, e.canvasX, e.canvasY);
 
-                        editor.socket.sendCreateLink(
+                        this.editor.socket.sendCreateLink(
                             this.connecting_node.id, this.connecting_slot,
                             node.id, slot
                         );
@@ -950,7 +953,7 @@ export class Renderer {
                 this.dirty_canvas = true;
                 this.dirty_bgcanvas = true;
 
-                editor.socket.sendUpdateNodeSize(this.resizing_node);
+                this.editor.socket.sendUpdateNodeSize(this.resizing_node);
 
                 this.resizing_node = null;
             }
@@ -964,7 +967,7 @@ export class Renderer {
                 for (let i in this.selected_nodes) {
                     this.selected_nodes[i].size[0] = Math.round(this.selected_nodes[i].size[0]);
                     this.selected_nodes[i].size[1] = Math.round(this.selected_nodes[i].size[1]);
-                    editor.socket.sendUpdateNodePosition(this.selected_nodes[i]);
+                    this.editor.socket.sendUpdateNodePosition(this.selected_nodes[i]);
                 }
 
                 this.node_dragged = null;
@@ -2323,44 +2326,44 @@ export class Renderer {
         if (this.getMenuOptions)
             options = this.getMenuOptions();
         else {
-            options.push({ content: "Add", is_menu: true, callback: this.onMenuAdd });
+            options.push({ content: "Add", is_menu: true, callback: this.onMenuAdd.bind(this) });
             options.push(null);
 
             //{content:"Collapse All", callback: NodeEditorCanvas.onMenuCollapseAll }
 
-            options.push({ content: "Import", is_menu: true, callback: this.onMenuImport });
+            options.push({ content: "Import", is_menu: true, callback: this.onMenuImport.bind(this) });
             options.push(null);
 
             options.push({
                 content: "Reset View",
                 callback: () => {
-                    editor.renderer.offset = [0, 0];
-                    editor.renderer.scale = 1;
-                    editor.renderer.setZoom(1, [1, 1]);
+                    this.editor.renderer.offset = [0, 0];
+                    this.editor.renderer.scale = 1;
+                    this.editor.renderer.setZoom(1, [1, 1]);
                 }
             });
 
             options.push({
                 content: "Show Map",
                 callback: () => {
-                    editor.addMiniWindow(200, 200);
+                    this.editor.addMiniWindow(200, 200);
                 }
             });
 
 
-            let that = this;
+
 
             if (this._containers_stack && this._containers_stack.length > 0)
                 options.push({
-                    content: "Close Container", callback: function () {
-                        that.closeContainer(true);
+                    content: "Close Container", callback: () => {
+                        this.closeContainer(true);
                     }
                 });
 
         }
 
         if (this.getExtraMenuOptions) {
-            let extra = this.getExtraMenuOptions(this, editor);
+            let extra = this.getExtraMenuOptions(this, this.editor);
             if (extra) {
                 extra.push(null);
                 options = extra.concat(options);
@@ -2381,8 +2384,8 @@ export class Renderer {
 
         if (node.settings && Object.keys(node.settings).length > 0) {
             options.push({
-                content: "Settings", callback: function () {
-                    editor.showNodeSettings(node);
+                content: "Settings", callback: () => {
+                    this.editor.showNodeSettings(node);
                 }
             });
             options.push(null);
@@ -2393,7 +2396,7 @@ export class Renderer {
             for (let option in node.contextMenu) {
                 options.push({
                     content: node.contextMenu[option].title, callback: () => {
-                        node.contextMenu[option].onClick(node, editor, this);
+                        node.contextMenu[option].onClick(node, this.editor, this);
                     }
                 });
             }
@@ -2406,7 +2409,7 @@ export class Renderer {
 
 
         if (node['getExtraMenuOptions']) {
-            let extra = node['getExtraMenuOptions'](this, editor);
+            let extra = node['getExtraMenuOptions'](this, this.editor);
             if (extra) {
                 //extra.push(null);
                 options = extra.concat(options);
@@ -2414,24 +2417,24 @@ export class Renderer {
         }
 
         if (node.clonable !== false)
-            options.push({ content: "Clone", callback: this.onMenuNodeClone });
+            options.push({ content: "Clone", callback: this.onMenuNodeClone.bind(this) });
 
 
         options.push({
             content: "Description", callback: function () {
-                editor.showNodeDescription(node)
+                this.editor.showNodeDescription(node)
             }
         });
 
-        options.push({ content: "Collapse", callback: this.onMenuNodeCollapse });
+        options.push({ content: "Collapse", callback: this.onMenuNodeCollapse.bind(this) });
 
         // if (Object.keys(this.selected_nodes).length>1) {
         if (node.removable !== false)
-            options.push({ content: "Move to container", callback: this.onMenuNodeMoveToContainer });
+            options.push({ content: "Move to container", callback: this.onMenuNodeMoveToContainer.bind(this) });
         // }
 
         if (node.removable !== false)
-            options.push({ content: "Remove", callback: this.onMenuNodeRemove });
+            options.push({ content: "Remove", callback: this.onMenuNodeRemove.bind(this) });
 
 
         if (node['onGetInputs']) {
@@ -2459,7 +2462,7 @@ export class Renderer {
         let win = this.getCanvasWindow();
 
         let menu_info = null;
-        let options = { event: event, callback: inner_option_clicked };
+        let options = { event: event, callback: inner_option_clicked.bind(this) };
 
         //check if mouse is in input
         let slot: IInputInfo | IOutputInfo = null;
@@ -2531,8 +2534,7 @@ export class Renderer {
         for (let i in values)
             if (values[i])
                 entries[i] = { value: values[i], content: values[i], is_menu: true };
-
-        let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
+        let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked.bind(this), from: prev_menu }, window);
 
         function inner_clicked(v, e) {
             let category = v.value;
@@ -2542,8 +2544,8 @@ export class Renderer {
                 if (!node_types[i].show_in_menu)
                     continue;
 
-                //do ton show container input/output in root container
-                if (editor.renderer.container.id == 0) {
+                //do not show container input/output in root container
+                if (this.editor.renderer.container.id == 0) {
                     if (node_types[i].type == "main/input"
                         || node_types[i].type == "main/output")
                         continue;
@@ -2552,7 +2554,7 @@ export class Renderer {
                 values.push({ content: node_types[i].node_name, value: node_types[i].type });
             }
 
-            canvas.createContextualMenu(values, { event: e, callback: inner_create, from: menu }, window);
+            canvas.createContextualMenu(values, { event: e, callback: inner_create.bind(this), from: menu }, window);
             return false;
         }
 
@@ -2562,7 +2564,7 @@ export class Renderer {
             pos[0] = Math.round(pos[0]);
             pos[1] = Math.round(pos[1]);
 
-            editor.socket.sendCreateNode(type, pos);
+            this.editor.socket.sendCreateNode(type, pos);
         }
 
         return false;
@@ -2586,28 +2588,28 @@ export class Renderer {
         entries[1] = { value: "Container from script", content: "Container from script", is_menu: false };
         entries[2] = { value: "Container from URL", content: "Container from URL", is_menu: false };
 
-        let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu }, window);
+        let menu = canvas.createContextualMenu(entries, { event: e, callback: inner_clicked.bind(this), from: prev_menu }, window);
 
         function inner_clicked(v, e) {
             if (v.value == "Container from file") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                editor.importContainerFromFile(pos);
+                this.editor.importContainerFromFile(pos);
             }
 
             if (v.value == "Container from script") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                editor.importContainerFromScript(pos);
+                this.editor.importContainerFromScript(pos);
             }
 
             if (v.value == "Container from URL") {
                 let pos = canvas.convertEventToCanvas(first_event);
                 pos[0] = Math.round(pos[0]);
                 pos[1] = Math.round(pos[1]);
-                editor.importContainerFromURL(pos);
+                this.editor.importContainerFromURL(pos);
             }
 
             canvas.closeAllContextualMenus();
@@ -2654,7 +2656,7 @@ export class Renderer {
                     label = entry[2].label;
                 entries.push({ content: label, value: entry });
             }
-            let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
+            let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked.bind(this), from: prev_menu });
         }
 
         function inner_clicked(v) {
@@ -2690,7 +2692,7 @@ export class Renderer {
                 entries.push({ content: label, value: entry });
             }
             if (entries.length) {
-                let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
+                let menu = this.createContextualMenu(entries, { event: e, callback: inner_clicked.bind(this), from: prev_menu });
             }
         }
 
@@ -2705,7 +2707,7 @@ export class Renderer {
                 let entries = [];
                 for (let i in value)
                     entries.push({ content: i, value: value[i] });
-                this.createContextualMenu(entries, { event: e, callback: inner_clicked, from: prev_menu });
+                this.createContextualMenu(entries, { event: e, callback: inner_clicked.bind(this), from: prev_menu });
                 return false;
             }
             else
@@ -2742,7 +2744,7 @@ export class Renderer {
             };
             values.push(value);
         }
-        this.createContextualMenu(values, { event: e, callback: inner_clicked, from: prev_menu });
+        this.createContextualMenu(values, { event: e, callback: inner_clicked.bind(this), from: prev_menu });
 
         function inner_clicked(v) {
             if (!node) return;
@@ -2764,7 +2766,7 @@ export class Renderer {
      * @returns {boolean}
      */
     onMenuNodeShapes(node: Node, e: any): boolean {
-        this.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked });
+        this.createContextualMenu(["box", "round"], { event: e, callback: inner_clicked.bind(this) });
 
         function inner_clicked(v) {
             if (!node) return;
@@ -2791,10 +2793,10 @@ export class Renderer {
             for (let n in renderer.selected_nodes)
                 ids.push(n);
 
-            editor.socket.sendRemoveNodes(ids);
+            this.editor.socket.sendRemoveNodes(ids);
         }
         else
-            editor.socket.sendRemoveNodes([node.id]);
+            this.editor.socket.sendRemoveNodes([node.id]);
     }
 
 
@@ -2806,10 +2808,10 @@ export class Renderer {
             for (let n in renderer.selected_nodes)
                 ids.push(n);
 
-            editor.socket.sendMoveToNewContainer(ids, node.pos);
+            this.editor.socket.sendMoveToNewContainer(ids, node.pos);
         }
         else
-            editor.socket.sendMoveToNewContainer([node.id], node.pos);
+            this.editor.socket.sendMoveToNewContainer([node.id], node.pos);
     }
 
 
@@ -2824,10 +2826,10 @@ export class Renderer {
             for (let n in renderer.selected_nodes)
                 ids.push(n);
 
-            editor.socket.sendCloneNode(ids);
+            this.editor.socket.sendCloneNode(ids);
         }
         else
-            editor.socket.sendCloneNode([node.id]);
+            this.editor.socket.sendCloneNode([node.id]);
     }
 
     /**

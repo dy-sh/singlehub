@@ -7,14 +7,16 @@
 
 
 <script>
-require("../../../dist/public/js/editor/editor.js");
+// require("../../../dist/public/js/editor/editor.js");
+import { Editor } from "../../public/js/editor/editor";
 
 export default {
   props: ["cid"],
   data: () => ({}),
   mounted() {
     console.log("mounted");
-    editor.start();
+    let ed = new Editor();
+    ed.start();
   }
 };
 </script>
