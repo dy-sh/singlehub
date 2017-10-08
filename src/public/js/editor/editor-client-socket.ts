@@ -8,7 +8,7 @@ import { Container } from "../../nodes/container";
 import { Editor } from "./editor";
 import * as io from 'socket.io-client';
 
-const log = require('logplease').create('client', { color: 3 });
+const log = require('logplease').create('editor-socket', { color: 3 });
 
 export class EditorClientSocket {
 
@@ -57,11 +57,13 @@ export class EditorClientSocket {
         //     this.socketConnected = true;
         // });
         //
-        // socket.on('disconnect', function () {
-        //     $("#main").fadeOut(300);
-        //     noty({text: 'Web server is not responding!', type: 'error'});
-        //     this.socketConnected = false;
-        // });
+        socket.on('disconnect', () => {
+            // $("#main").fadeOut(300);
+            // noty({ text: 'Web server is not responding!', type: 'error' });
+
+            log.debug("Disconnected")
+            // this.socketConnected = false;
+        });
 
 
         socket.on('node-create', function (n) {

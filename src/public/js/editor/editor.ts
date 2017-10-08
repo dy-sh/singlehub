@@ -107,6 +107,7 @@ export class Editor {
     }
 
     stop() {
+        this.socket.socket.close();
         // (<any>window).editor = null;
     }
 

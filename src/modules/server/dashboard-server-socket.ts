@@ -23,7 +23,7 @@ export class DashboardServerSocket {
         this.io = io;
 
         io.on('connection', function (socket) {
-            log.debug("New socket connection to dashboard");
+            log.debug("New client connected to dashboard");
             // socket.on('test message', function (msg) {
             //     io.emit('test message', msg + "2");
             // });
@@ -32,6 +32,10 @@ export class DashboardServerSocket {
 
             //test event
             // socket.emit("customEmit", "hello")
+
+            socket.on('disconnect', () => {
+                log.debug('Client disconnected from dashboard');
+            });
 
             socket.on('getUiPanel', (name) => {
                 log.debug("getUiPanel: " + name);

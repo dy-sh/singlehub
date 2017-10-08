@@ -8,7 +8,7 @@ import { dashboard } from "./dashboard";
 import * as io from 'socket.io-client';
 
 
-const log = require('logplease').create('client', { color: 3 });
+const log = require('logplease').create('dashboard-socket', { color: 3 });
 
 
 
@@ -43,11 +43,14 @@ export class DashboardClientSocket {
             }
         });
 
-        socket.on('disconnect', function () {
-            log.debug("Disconnected from socket");
-            $("#panelsContainer").fadeOut(300);
-            noty({ text: 'Connection is lost!', type: 'error' });
-            that.reconnecting = true;
+
+        socket.on('disconnect', () => {
+            // $("#panelsContainer").fadeOut(300);
+            // noty({ text: 'Connection is lost!', type: 'error' });
+            // noty({ text: 'Web server is not responding!', type: 'error' });
+
+            log.debug("Disconnected")
+            // this.reconnecting = true;
         });
 
 

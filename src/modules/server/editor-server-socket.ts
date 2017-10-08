@@ -27,10 +27,15 @@ export class EditorServerSocket {
         let that = this;
 
         io.on('connection', function (socket) {
-            log.debug("New socket connection to editor");
+            log.debug("New client connected to editor");
+
             // socket.on('test message', function (msg) {
             //     io.emit('test message', msg + "2");
             // });
+
+            socket.on('disconnect', () => {
+                log.debug('Client disconnected from editor');
+            });
 
             //join client to container room
             socket.on('room', function (room) {
