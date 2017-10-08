@@ -2213,9 +2213,15 @@ export class Renderer {
     resize(width?: number, height?: number): void {
         if (!width && !height) {
             let parent = this.canvas.parentNode;
-            width = (<any>parent).offsetWidth;//check ES6
-            height = (<any>parent).offsetHeight;
+
+            //     width = (<any>parent).clientWidth - parseInt((<any>parent).style.paddingLeft) - parseInt((<any>parent).style.paddingRight);
+            //     height = (<any>parent).clientHeight - parseInt((<any>parent).style.paddingTop) - parseInt((<any>parent).style.paddingBottom);
+
+            width = (<any>parent).clientWidth;
+            height = window.innerHeight - 80;
         }
+
+        console.log(width, height)
 
         if (this.canvas.width == width && this.canvas.height == height)
             return;

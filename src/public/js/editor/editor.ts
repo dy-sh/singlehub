@@ -29,19 +29,15 @@ export class Editor {
 
 
     constructor(themeId = 0) {
-        this.themeId = themeId;
         log.warn("!!! NEW EDITOR CREATED");
-    }
+        this.themeId = themeId;
 
-    start() {
 
         // (<any>window).editor = this;
-        log.warn("!!! EDITOR STARTED");
-
 
 
         //fill container
-        let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='1000' height='500' tabindex=10></canvas></div></div>";
+        let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='50' height='50' tabindex=10></canvas></div></div>";
 
         let root = document.createElement("div");
         this.root = root;
@@ -54,9 +50,7 @@ export class Editor {
         //create root container
         this.rootContainer = new Container(Side.editor);
 
-        //create socket
-        this.socket = new EditorClientSocket(this);
-        this.rootContainer.clinet_socket = this.socket.socket;
+
 
         //renderer theme
 
@@ -102,11 +96,17 @@ export class Editor {
         });
 
 
-        this.getNodes();
-
     }
 
-    stop() {
+    connect() {
+        //create socket
+        this.socket = new EditorClientSocket(this);
+        this.rootContainer.clinet_socket = this.socket.socket;
+
+        this.getNodes();
+    }
+
+    disconnect() {
         this.socket.socket.close();
         // (<any>window).editor = null;
     }

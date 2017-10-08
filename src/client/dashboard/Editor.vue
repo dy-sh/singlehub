@@ -18,11 +18,11 @@ export default {
   mounted() {
     console.log("VUE EDITOR MOUNTED");
     this.editor = new Editor(0);
-    this.editor.start();
+    this.editor.connect();
   },
   beforeDestroy() {
     console.log("VUE EDITOR DESTROY");
-    this.editor.stop();
+    this.editor.disconnect();
   }
 };
 </script>
