@@ -30,7 +30,7 @@ export class Editor {
 
     constructor(themeId = 0) {
         log.warn("!!! NEW EDITOR CREATED");
-        // (<any>window).editor = this;
+        (<any>window).editor = this;
 
         //check #main element exist
         let parent = document.getElementById("main");
@@ -70,8 +70,9 @@ export class Editor {
     }
 
     disconnect() {
+        (<any>window).editor = null;
         this.socket.socket.close();
-        // (<any>window).editor = null;
+        Container.clear();
     }
 
     addMiniWindow(w: number, h: number): void {

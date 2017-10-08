@@ -122,6 +122,10 @@ export class Container extends Emitter {
         }
     }
 
+    static clear() {
+        Container.containers = {};
+        Container.last_container_id = -1;
+    }
 
     /**
      * Register a node class so it can be listed when the user wants to create a new one
