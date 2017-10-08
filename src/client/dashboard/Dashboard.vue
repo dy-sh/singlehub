@@ -16,7 +16,7 @@ div
           v-flex(xs12 sm6 md4)
             //- v-flex(v-if="activePanel" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
             panel.panel(v-if="activePanel" :name="activePanel")
-            div(v-else)
+            div.text-xs-center.pt-5.grey--text.text--darken-2(v-else) {{noPanelMessage}}
           v-flex(xs12 sm6 md8)
             editor.editor
       div(v-if="!dashboardIsVisible && editorIsVisible")
@@ -25,6 +25,7 @@ div
         v-layout(row wrap)
           v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
             panel.panel(v-if="activePanel" :name="activePanel")
+            div.text-xs-center.pt-5.grey--text.text--darken-2(v-else)  {{noPanelMessage}}
 
 </template>
 
@@ -40,14 +41,15 @@ export default {
       // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
       // { icon: "trending_up", title: "Editor", name: "Editor" }
     ],
-    activePanel: "Test panel",
+    activePanel: "",
+    // activePanel: "Test panel",
     // {
     //   icon: "subscriptions",
     //   title: "TestPanel",
     //   name: "TestPanel"
     // }
     dashboardIsVisible: true,
-    editorIsVisible: true
+    editorIsVisible: false
   }),
   components: {
     panel: Panel,
@@ -56,6 +58,10 @@ export default {
   },
   created() {
     this.$socket.emit("getUiPanelsList");
+    //for testing
+    setTimeout(() => {
+      this.editorIsVisible = true;
+    }, 700);
   },
   sockets: {
     getUiPanelsList(data) {
@@ -72,6 +78,14 @@ export default {
     getUiPanel(panel) {
       if (panel) this.activePanel = panel.name;
       else this.activePanel = "";
+    }
+  },
+  computed: {
+    noPanelMessage: function() {
+      console.log(this);
+      return !this.panels || this.panels.length == 0
+        ? "NO PANELS CREATED"
+        : "SELECT THE PANEL FROM THE LIST";
     }
   },
   methods: {

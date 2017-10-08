@@ -24,14 +24,14 @@ export default {
     title: "",
     // title: "Test panel",
     subPanels: [
-      {
-        title: "Test sub-panel",
-        uiElements: [
-          { type: "UiSwitchNode", title: "Switch", cid: 0, id: 0, value: true },
-          { type: "UiSwitchNode", title: "Switch2", cid: 0, id: 0 },
-          { type: "UiButtonNode", title: "Button", cid: 0, id: 0 }
-        ]
-      }
+      // {
+      //   title: "Test sub-panel",
+      //   uiElements: [
+      //     { type: "UiSwitchNode", title: "Switch", cid: 0, id: 0, value: true },
+      //     { type: "UiSwitchNode", title: "Switch2", cid: 0, id: 0 },
+      //     { type: "UiButtonNode", title: "Button", cid: 0, id: 0 }
+      //   ]
+      // }
     ]
   }),
   watch: {
