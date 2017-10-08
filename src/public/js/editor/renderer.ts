@@ -116,6 +116,10 @@ export class Renderer {
 
     constructor(editor: Editor, canvas: HTMLCanvasElement, container?: Container, theme?: RendererTheme, skip_render?: boolean) {
 
+        container.onAfterExecute = () => {
+            this.draw(true)
+        };
+
         this.editor = editor;
 
         this.max_zoom = 2;
@@ -133,6 +137,12 @@ export class Renderer {
         if (!skip_render)
             this.startRendering();
 
+        this.resize();
+        this.draw(true, true);
+
+        window.addEventListener("resize", () => {
+            this.resize();
+        });
     }
 
     /**
@@ -2221,7 +2231,7 @@ export class Renderer {
             height = window.innerHeight - 80;
         }
 
-        console.log(width, height)
+        // console.log(width, height)
 
         if (this.canvas.width == width && this.canvas.height == height)
             return;

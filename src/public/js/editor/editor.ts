@@ -30,72 +30,35 @@ export class Editor {
 
     constructor(themeId = 0) {
         log.warn("!!! NEW EDITOR CREATED");
-        this.themeId = themeId;
-
-
         // (<any>window).editor = this;
 
+        //check #main element exist
+        let parent = document.getElementById("main");
+        if (!parent) return log.error("Cant find #main element. Please, create it on the html page.")
 
-        //fill container
-        let html = "<div class='content'><div class='editor-area'><canvas class='canvas' width='50' height='50' tabindex=10></canvas></div></div>";
+        this.themeId = themeId;
 
-        let root = document.createElement("div");
-        this.root = root;
-        root.className = "node-editor";
-        root.innerHTML = html;
-
-        let canvas = root.querySelector(".canvas");
-
+        //create canvas and append to DOM
+        this.root = document.createElement("div");
+        this.root.className = "node-editor";
+        this.root.innerHTML = "<div class='content'><div class='editor-area'><canvas class='canvas' width='50' height='50' tabindex=10></canvas></div></div>";
+        let canvas = <HTMLCanvasElement>this.root.querySelector(".canvas");
+        parent.appendChild(this.root);
 
         //create root container
         this.rootContainer = new Container(Side.editor);
 
-
-
-        //renderer theme
-
-        let theme = themes[this.themeId];
-
         //create renderer
-        this.renderer = new Renderer(
-            this,
-            <HTMLCanvasElement>canvas,
-            this.rootContainer, theme);
-        // renderer.background_image = "/images/node-editor/grid.png";
-        this.rootContainer.onAfterExecute = () => {
-            this.renderer.draw(true)
-        };
-
+        this.renderer = new Renderer(this, canvas, this.rootContainer, themes[this.themeId]);
 
         //todo later
         //  this.addMiniWindow(200, 200);
 
-        //append to DOM
-        let parent = document.getElementById("main");
-        if (parent)
-            parent.appendChild(root);
-
-
-        this.renderer.resize();
-        //renderer.draw(true,true);
         this.addFullscreenButton();
         this.addPlayButton();
         this.addStepButton();
         this.addSlotsValuesButton();
         this.updateContainersNavigation();
-
-
-        // (<any>window).rootContainer = Container.containers[0];
-        // (<any>window).Container = Container;
-        // (<any>window).renderer = this.renderer;
-
-        // socket.container_id=editor.renderer.container.container_id;
-
-        window.addEventListener("resize", () => {
-            this.renderer.resize();
-        });
-
-
     }
 
     connect() {
