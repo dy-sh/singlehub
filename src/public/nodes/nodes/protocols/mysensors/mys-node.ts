@@ -60,14 +60,14 @@ export class MySensorsNode extends Node {
         this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
 
-    onConfigureClick(node: MySensorsNode, editor: Editor, renderer: Renderer) {
+    onConfigureClick() {
 
-        node.slots = [];
-        for (let key in node.inputs)
-            node.slots.push(+key);
+        this.slots = [];
+        for (let key in this.inputs)
+            this.slots.push(+key);
 
 
-        let mys_node = node.properties.mys_node;
+        let mys_node = this.properties.mys_node;
 
 
         if (!$('#mys-panel-modal').length) {
@@ -98,7 +98,7 @@ export class MySensorsNode extends Node {
 `);
 
         //title
-        $('#mys-panel-title').html("MySensors Node " + node.properties.mys_node_id);
+        $('#mys-panel-title').html("MySensors Node " + this.properties.mys_node_id);
 
         //last seen
         let lastSeen = moment(mys_node.lastSeen).format("DD/MM/YYYY HH:mm:ss");
@@ -117,7 +117,7 @@ export class MySensorsNode extends Node {
         `);
 
         //add new sensor
-        $('#mys-panel-addsensor').click(function () {
+        $('#mys-panel-addsensor').click(() => {
             let sensor: I_MYS_Sensor = {
                 nodeId: mys_node.id,
                 sensorId: 0,
@@ -125,16 +125,16 @@ export class MySensorsNode extends Node {
                 dataType: 0
             }
 
-            let newId = node.slots.length == 0 ? 0 : node.slots[node.slots.length - 1] + 1;
-            node.slots.push(newId);
-            node.addSensorToForm(newId, sensor);
+            let newId = this.slots.length == 0 ? 0 : this.slots[this.slots.length - 1] + 1;
+            this.slots.push(newId);
+            this.addSensorToForm(newId, sensor);
         });
 
         //sensors
-        for (let s in node.inputs) {
-            let sensor = node.getSensorInSlot(+s);
+        for (let s in this.inputs) {
+            let sensor = this.getSensorInSlot(+s);
             let slot = sensor.shub_node_slot;
-            node.addSensorToForm(slot, sensor);
+            this.addSensorToForm(slot, sensor);
         }
 
         //open modal
@@ -145,7 +145,7 @@ export class MySensorsNode extends Node {
 
                 //get form data 
                 let i = 0;
-                for (let s of node.slots) {
+                for (let s of this.slots) {
                     slots.push({
                         slot: i++,
                         id: $('#mys-panel-sonsor-id' + s).val(),
@@ -158,7 +158,7 @@ export class MySensorsNode extends Node {
                 for (var n = 0; n < slots.length; n++) {
                     let s = slots[n];
                     if (s.id == "" || s.id == null || s.datatype == "" || s.datatype == null) {
-                        node.debugWarn("Cant edit MYS-node. Check form data for missing values.");
+                        this.debugWarn("Cant edit MYS-node. Check form data for missing values.");
                         return false;
                     }
                     s.id = +s.id;
@@ -173,14 +173,14 @@ export class MySensorsNode extends Node {
                         if (x == y) continue;
                         var slot2 = slots[y];
                         if (slot1.id == slot2.id && slot1.datatype == slot2.datatype) {
-                            node.debugWarn("Cant edit MYS-node. Check form data for duplicates.");
+                            this.debugWarn("Cant edit MYS-node. Check form data for duplicates.");
                             return false;
                         }
                     }
                 }
 
                 //send data
-                node.sendMessageToServerSide({
+                this.sendMessageToServerSide({
                     slots: slots
                 });
 

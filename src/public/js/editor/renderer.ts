@@ -2412,7 +2412,7 @@ export class Renderer {
             for (let option in node.contextMenu) {
                 options.push({
                     content: node.contextMenu[option].title, callback: () => {
-                        node.contextMenu[option].onClick(node, this.editor, this);
+                        node.contextMenu[option].onClick.call(node);
                     }
                 });
             }

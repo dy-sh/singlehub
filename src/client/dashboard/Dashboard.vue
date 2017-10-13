@@ -84,7 +84,6 @@ export default {
   },
   computed: {
     noPanelMessage: function() {
-      console.log(this);
       return !this.panels || this.panels.length == 0
         ? "NO PANELS CREATED"
         : "SELECT THE PANEL FROM THE LIST";
@@ -92,8 +91,6 @@ export default {
   },
   methods: {
     onClickSidebar(panelName) {
-      console.log(panelName);
-
       if (this.activePanel === panelName)
         this.$socket.emit("getUiPanel", panelName);
       else this.activePanel = panelName;

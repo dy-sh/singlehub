@@ -20,6 +20,8 @@ export class UiButtonNode extends UiNode {
         this.properties['value'] = false;
 
         this.addOutput("output", "boolean");
+
+        this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
 
     onAdded() {
@@ -50,7 +52,7 @@ export class UiButtonNode extends UiNode {
     }
 
 
-    onClickSettings() {
+    onConfigureClick() {
         (<any>window).vueEditor.$refs.UiButtonSettings[0].show(this);
     }
 }

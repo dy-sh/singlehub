@@ -1,7 +1,8 @@
 <template lang='pug'>
   div.editor.elevation-5
     #main
-    component(:is="node", :ref="node" v-for="node in nodesCustomComponents")
+    div(v-for="node in nodesCustomComponents")
+      component(:is="node", :ref="node")
 
 
 </template>

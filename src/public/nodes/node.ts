@@ -88,7 +88,7 @@ export interface NodeSettings {
 
 export interface ContextMenuOption {
     title: string;
-    onClick(node: Node, editor: Editor, renderer: Renderer);
+    onClick();
 }
 
 
