@@ -1,13 +1,13 @@
 <template lang='pug'>
-    v-dialog(v-model='visible', transition="slide-y-transition" persistent)
-      v-card(v-if="node")
-        v-card-title.headline {{node.title}} {{node.id}} 
+    v-dialog(v-model='visible', transition="slide-y-transition")
+      v-card(v-if="settings")
+        v-card-title.headline {{title}} {{id}} 
         v-card-text
-          div(v-for="setting in node.settings")
-            component(:is="setting.type", :value="setting.value", :description="setting.description")
+          div(v-for="setting in settings")
+            component(:is="setting.type", :setting="setting")
         v-card-actions
           v-spacer
-          v-btn(color="gray darken-1" flat @click='hide') Cancel
+          v-btn(color="gray darken-1" flat @click='visible = false') Cancel
           v-btn(color="blue darken-1" flat @click='save') Save
 </template>
 
@@ -20,34 +20,31 @@ export default {
   data() {
     return {
       visible: false,
-      node: null,
-      testVal: false
+      id: 0,
+      cid: 0,
+      title: "",
+      settings: null
     };
   },
   components: {
     string: SettingString
   },
-  mounted() {
-    // setTimeout(() => {
-    //   this.visible = true;
-    // }, 1000);
-  },
   methods: {
     show(node) {
-      this.node = node;
+      this.settings = JSON.parse(JSON.stringify(node.settings));
+      this.id = node.id;
+      this.cid = node.cid;
+      this.title = node.title;
       this.visible = true;
-    },
-    hide() {
-      this.visible = false;
-      this.node = null;
     },
     save() {
       this.$socket.emit("nodeSettings", {
-        cid: this.node.cid,
-        id: this.node.id,
-        settings: this.node.settings
+        cid: this.cid,
+        id: this.id,
+        settings: this.settings
       });
-      this.hide();
+      this.visible = false;
+      this.settings = null;
     }
   }
 };

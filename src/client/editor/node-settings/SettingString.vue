@@ -1,14 +1,9 @@
 <template lang='pug'>
-    v-text-field(:label="description" v-model="newValue")
+    v-text-field(:label="setting.description" v-model="setting.value")
 </template>
 
 <script>
 export default {
-  props: ["value", "description"],
-  data() {
-    return {
-      newValue: this.value
-    };
-  }
+  props: ["setting"]
 };
 </script>
