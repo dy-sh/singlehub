@@ -16,7 +16,7 @@ import NodesCustomComponents from "./nodes-custom-components/list";
 import NodesSettings from "./node-settings/NodeSettings";
 
 //merge components
-let components = Object.assign(NodesCustomComponents, {
+let components = Object.assign({}, NodesCustomComponents, {
   "node-settings": NodesSettings
 });
 

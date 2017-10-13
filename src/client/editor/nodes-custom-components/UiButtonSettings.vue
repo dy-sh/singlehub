@@ -1,5 +1,5 @@
 <template lang='pug'>
-    v-dialog(v-model='visible')
+    v-dialog(v-model='visible',transition="slide-y-transition")
       v-card(v-if="node")
         v-card-title.headline {{node.title}}
         v-card-text

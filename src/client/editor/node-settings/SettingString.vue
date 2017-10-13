@@ -1,5 +1,5 @@
 <template lang='pug'>
-    v-text-field( :label="setting.description" v-model="value")
+    v-text-field(:label="setting.description" v-model="value")
 </template>
 
 <script>
