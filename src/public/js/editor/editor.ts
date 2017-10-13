@@ -427,10 +427,10 @@ export class Editor {
     }
 
     showNodeSettings(node: Node): void {
-        $('#node-settings-title').html(node.type);
+        // $('#node-settings-title').html(node.type);
 
+        (<any>window).vueEditor.$refs.nodeSettings.show(node);
 
-        node['onClickSettings']();
 
         // //clear old body
         // let body = $('#node-settings-body');

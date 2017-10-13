@@ -1,6 +1,7 @@
 <template lang='pug'>
   div.editor.elevation-5
     #main
+    node-settings(ref="nodeSettings")
     div(v-for="node in nodesCustomComponents")
       component(:is="node", :ref="node")
 
@@ -12,10 +13,16 @@
 // require("../../../dist/public/js/editor/editor.js");
 import { Editor } from "../../public/js/editor/editor";
 import NodesCustomComponents from "./nodes-custom-components/list";
+import NodesSettings from "./node-settings/NodeSettings";
+
+//merge components
+let components = Object.assign(NodesCustomComponents, {
+  "node-settings": NodesSettings
+});
 
 export default {
   props: ["cid"],
-  components: NodesCustomComponents,
+  components: components,
   data: () => ({
     nodesCustomComponents: Object.keys(NodesCustomComponents),
     editor: null

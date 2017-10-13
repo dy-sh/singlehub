@@ -1,11 +1,10 @@
 <template lang='pug'>
     v-dialog(v-model='visible')
       v-card(v-if="node")
-        v-card-title.headline {{node.title}}
+        v-card-title.headline {{node.title}} {{node.id}} 
         v-card-text
-          | Node id {{node.id}} 
-          br
-          v-checkbox(label="Test Value" v-model="testVal")
+          div(v-for="setting in node.settings")
+            component(:is="setting.type", :setting="setting")
         v-card-actions
           v-spacer
           v-btn(color="gray darken-1" flat @click='visible = false') Cancel
@@ -14,6 +13,8 @@
 
 
 <script>
+import SettingString from "./SettingString";
+
 export default {
   // props: ["show"],
   data() {
@@ -22,6 +23,9 @@ export default {
       node: null,
       testVal: false
     };
+  },
+  components: {
+    string: SettingString
   },
   mounted() {
     // setTimeout(() => {

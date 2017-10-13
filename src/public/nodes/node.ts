@@ -174,9 +174,6 @@ export class Node {
     //  */
     // onDbReaded
 
-    // Invoked when user click "settings" from node menu
-    // onClickSettings
-
     //
     //
     // onDrawBackground
