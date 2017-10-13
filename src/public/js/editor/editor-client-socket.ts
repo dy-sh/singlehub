@@ -196,7 +196,7 @@ export class EditorClientSocket {
             }
         });
 
-        socket.on('node-settings', function (n) {
+        socket.on('nodeSettings', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't set node settings. Container id [${n.cid}] not found.`);

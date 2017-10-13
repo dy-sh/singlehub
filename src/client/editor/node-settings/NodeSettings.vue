@@ -1,14 +1,14 @@
 <template lang='pug'>
-    v-dialog(v-model='visible', transition="slide-y-transition")
+    v-dialog(v-model='visible', transition="slide-y-transition" persistent)
       v-card(v-if="node")
         v-card-title.headline {{node.title}} {{node.id}} 
         v-card-text
           div(v-for="setting in node.settings")
-            component(:is="setting.type", :setting="setting")
+            component(:is="setting.type", :value="setting.value", :description="setting.description")
         v-card-actions
           v-spacer
-          v-btn(color="gray darken-1" flat @click='visible = false') Cancel
-          v-btn(color="blue darken-1" flat @click='onClick') Save
+          v-btn(color="gray darken-1" flat @click='hide') Cancel
+          v-btn(color="blue darken-1" flat @click='save') Save
 </template>
 
 
@@ -37,15 +37,17 @@ export default {
       this.node = node;
       this.visible = true;
     },
-    onClick() {
+    hide() {
       this.visible = false;
-      this.$socket.emit("nodeMessageToServerSide", {
+      this.node = null;
+    },
+    save() {
+      this.$socket.emit("nodeSettings", {
         cid: this.node.cid,
         id: this.node.id,
-        message: {
-          settings: { testVal: this.testVal }
-        }
+        settings: this.node.settings
       });
+      this.hide();
     }
   }
 };

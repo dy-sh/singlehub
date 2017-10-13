@@ -87,7 +87,7 @@ export class DashboardClientSocket {
             }
         });
 
-        socket.on('node-settings', function (n) {
+        socket.on('nodeSettings', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't set node settings. Container id [${n.cid}] not found.`);
@@ -98,6 +98,7 @@ export class DashboardClientSocket {
                 log.error(`Can't set node settings. Node id [${n.cid}/${n.id}] not found.`);
                 return;
             }
+
             node.settings = n.settings;
             if (node['onSettingsChanged'])
                 node['onSettingsChanged']();

@@ -88,7 +88,7 @@ export class ChartIndexPage {
             }
         });
 
-        socket.on('node-settings', function (n) {
+        socket.on('nodeSettings', function (n) {
             if (n.cid != that.container_id || n.id != that.node_id)
                 return;
 

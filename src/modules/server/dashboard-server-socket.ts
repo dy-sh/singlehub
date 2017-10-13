@@ -121,6 +121,45 @@ export class DashboardServerSocket {
             });
 
 
+            socket.on('nodeSettings', (n) => {
+                console.log(n)
+                // let cont = Container.containers[n.cid];
+                // if (!cont) {
+                //     log.error("Can't update node settings. Container id [" + n.cid + "] does not exist");
+                //     return;
+                // }
+
+                // let node = cont.getNodeById(n.id);
+                // if (!node) {
+                //     log.error("Can't update node settings. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                //     return;
+                // }
+
+                // for (let s of n.settings) {
+                //     node.settings[s.key].value = s.value;
+                // }
+
+                // if (node['onSettingsChanged'])
+                //     node['onSettingsChanged']();
+
+                // if (app.db)
+                //     app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
+
+                // app.server.editorSocket.io.emit('nodeSettings', {
+                //     id: n.id,
+                //     cid: n.cid,
+                //     settings: node.settings
+                // });
+
+                // if (node.isDashboardNode)
+                //     app.server.dashboardSocket.io.in(n.cid).emit('nodeSettings', {
+                //         id: n.id,
+                //         cid: n.cid,
+                //         settings: node.settings
+                //     });
+            });
+
+
             //----------------------- OLD API
 
 

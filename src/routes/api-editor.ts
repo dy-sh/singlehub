@@ -283,14 +283,14 @@ router.put('/c/:cid/n/:id/settings', function (req, res) {
     if (app.db)
         app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
 
-    app.server.editorSocket.io.emit('node-settings', {
+    app.server.editorSocket.io.emit('nodeSettings', {
         id: req.params.id,
         cid: req.params.cid,
         settings: node.settings
     });
 
     if (node.isDashboardNode)
-        app.server.dashboardSocket.io.in(req.params.cid).emit('node-settings', {
+        app.server.dashboardSocket.io.in(req.params.cid).emit('nodeSettings', {
             id: req.params.id,
             cid: req.params.cid,
             settings: node.settings
