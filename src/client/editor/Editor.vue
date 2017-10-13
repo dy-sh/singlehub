@@ -1,7 +1,7 @@
 <template lang='pug'>
   div.editor.elevation-5
     #main
-    component(:is="setting", :ref="setting" v-for="setting in settingsTemplates")
+    component(:is="node", :ref="node" v-for="node in nodesCustomComponents")
 
 
 </template>
@@ -10,13 +10,13 @@
 <script>
 // require("../../../dist/public/js/editor/editor.js");
 import { Editor } from "../../public/js/editor/editor";
-import NodesSettings from "./nodes-settings/list";
+import NodesCustomComponents from "./nodes-custom-components/list";
 
 export default {
   props: ["cid"],
-  components: NodesSettings,
+  components: NodesCustomComponents,
   data: () => ({
-    settingsTemplates: Object.keys(NodesSettings),
+    nodesCustomComponents: Object.keys(NodesCustomComponents),
     editor: null
   }),
   mounted() {
