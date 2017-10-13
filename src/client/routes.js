@@ -1,5 +1,4 @@
 import Dashboard from "./dashboard/Dashboard.vue"
-import Editor from "./editor/Editor.vue"
 
 import Welcome from "./setup/Welcome.vue"
 import Database from "./setup/Database"

@@ -110,7 +110,7 @@ export class DashboardClientSocket {
             // container.moveNodesToNewContainer(data.ids, data.pos);
         });
 
-        socket.on('nodeMessageToDashboard', function (n) {
+        socket.on('nodeMessageToDashboardSide', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);
@@ -122,7 +122,7 @@ export class DashboardClientSocket {
                 return;
             }
             if (node['onGetMessageToDashboardSide'])
-                node['onGetMessageToDashboardSide'](n.value);
+                node['onGetMessageToDashboardSide'](n.message);
         });
 
         socket.on('nodes-active', function (data) {

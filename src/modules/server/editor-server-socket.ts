@@ -52,7 +52,7 @@ export class EditorServerSocket {
                 }
             });
 
-            socket.on('nodeMessageToServer', function (n) {
+            socket.on('nodeMessageToServerSide', function (n) {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to server-side. Container id [" + n.cid + "] does not exist");
@@ -65,12 +65,12 @@ export class EditorServerSocket {
                     return;
                 }
 
-                node['onGetMessageToServerSide'](n.value);
+                node['onGetMessageToServerSide'](n.message);
             });
 
 
             //redirect message
-            socket.on('nodeMessageToEditor', function (n) {
+            socket.on('nodeMessageToEditorSide', function (n) {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to editor-side. Container id [" + n.cid + "] does not exist");
@@ -83,12 +83,12 @@ export class EditorServerSocket {
                     return;
                 }
 
-                app.server.editorSocket.io.in(n.cid).emit('nodeMessageToEditor', n);
+                app.server.editorSocket.io.in(n.cid).emit('nodeMessageToEditorSide', n);
 
             });
 
             //redirect message
-            socket.on('nodeMessageToDashboard', function (n) {
+            socket.on('nodeMessageToDashboardSide', function (n) {
                 console.log(n)
 
                 let cont = Container.containers[n.cid];
@@ -103,7 +103,7 @@ export class EditorServerSocket {
                     return;
                 }
 
-                app.server.dashboardSocket.io.in(n.cid).emit('nodeMessageToDashboard', n);
+                app.server.dashboardSocket.io.in(n.cid).emit('nodeMessageToDashboardSide', n);
             });
 
 

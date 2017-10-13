@@ -21,5 +21,4 @@ new Vue({
       console.log('socket connected')
     }
   }
-
 });

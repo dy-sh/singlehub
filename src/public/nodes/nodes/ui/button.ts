@@ -10,6 +10,7 @@ import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
 
 
+
 export class UiButtonNode extends UiNode {
 
     constructor() {
@@ -29,6 +30,12 @@ export class UiButtonNode extends UiNode {
     }
 
     onGetMessageToServerSide(data) {
+
+        if (data.settings) {
+            console.log(data.settings);
+            return;
+        }
+
         this.isRecentlyActive = true;
         this.properties['value'] = true;
         this.setOutputData(0, true);
@@ -40,6 +47,11 @@ export class UiButtonNode extends UiNode {
             this.properties['value'] = false;
             this.setOutputData(0, false);
         }
+    }
+
+
+    onClickSettings() {
+        (<any>window).vueEditor.$refs.UiButtonSettings[0].show(this);
     }
 }
 

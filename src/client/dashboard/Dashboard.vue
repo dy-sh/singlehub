@@ -1,5 +1,6 @@
 <template lang='pug'>
 div
+
   toolbar(
     :panels="panels" 
     :selected="activePanel" 
@@ -8,6 +9,7 @@ div
     @clickSidebar="onClickSidebar",
     @clickToolbarDashboard="onClickToolbarDashboard",
     @clickToolbarEditor="onClickToolbarEditor")
+
   main
     v-content.dash
       //- v-container(grid-list-xl)
@@ -33,7 +35,7 @@ div
 <script>
 import Panel from "./Panel.vue";
 import Toolbar from "./Toolbar.vue";
-import Editor from "./Editor.vue";
+import Editor from "../editor/Editor";
 
 export default {
   data: () => ({

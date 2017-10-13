@@ -19,9 +19,10 @@ export default {
   },
   methods: {
     onClick() {
-      this.$socket.emit("nodeMessageToServer", {
+      this.$socket.emit("nodeMessageToServerSide", {
         cid: this.uiElement.cid,
-        id: this.uiElement.id
+        id: this.uiElement.id,
+        message: { click: true }
       });
     }
   }

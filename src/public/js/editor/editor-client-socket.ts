@@ -222,7 +222,7 @@ export class EditorClientSocket {
             container.moveNodesToNewContainer(data.ids, data.pos);
         });
 
-        socket.on('nodeMessageToEditor', function (n) {
+        socket.on('nodeMessageToEditorSide', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);
@@ -234,10 +234,10 @@ export class EditorClientSocket {
                 return;
             }
             if (node['onGetMessageToEditorSide'])
-                node['onGetMessageToEditorSide'](n.value);
+                node['onGetMessageToEditorSide'](n.message);
         });
 
-        socket.on('nodeMessageToEditor', function (n) {
+        socket.on('nodeMessageToEditorSide', function (n) {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);
@@ -249,7 +249,7 @@ export class EditorClientSocket {
                 return;
             }
             if (node['onGetMessageToEditorSide'])
-                node['onGetMessageToEditorSide'](n.value);
+                node['onGetMessageToEditorSide'](n.message);
         });
 
 

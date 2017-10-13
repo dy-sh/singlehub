@@ -430,9 +430,11 @@ export class Editor {
         $('#node-settings-title').html(node.type);
 
 
-        //clear old body
-        let body = $('#node-settings-body');
-        body.empty();
+        node['onClickSettings']();
+
+        // //clear old body
+        // let body = $('#node-settings-body');
+        // body.empty();
 
         //add setting-elements from templates
 
@@ -466,43 +468,43 @@ export class Editor {
         // }
 
 
-        //modal panel
-        (<any>$('#node-settings-panel')).modal({
-            dimmerSettings: { opacity: 0.3 },
-            onApprove: function () {
+        // //modal panel
+        // (<any>$('#node-settings-panel')).modal({
+        //     dimmerSettings: { opacity: 0.3 },
+        //     onApprove: function () {
 
-                //get settings from form
-                let data = [];
-                for (let s in node.settings) {
+        //         //get settings from form
+        //         let data = [];
+        //         for (let s in node.settings) {
 
-                    if (!node.settings[s].type || node.settings[s].type == "string") {
-                        data.push({ key: s, value: $('#node-setting-' + s).val() });
-                        continue;
-                    }
+        //             if (!node.settings[s].type || node.settings[s].type == "string") {
+        //                 data.push({ key: s, value: $('#node-setting-' + s).val() });
+        //                 continue;
+        //             }
 
-                    switch (node.settings[s].type) {
-                        case "number":
-                            data.push({ key: s, value: +$('#node-setting-' + s).val() });
-                            break;
-                        case "boolean":
-                            data.push({ key: s, value: $('#node-setting-' + s).prop('checked') });
-                            break;
-                        case "dropdown":
-                            data.push({ key: s, value: $('#node-setting-' + s).val() });
-                            break;
-                    }
-                }
+        //             switch (node.settings[s].type) {
+        //                 case "number":
+        //                     data.push({ key: s, value: +$('#node-setting-' + s).val() });
+        //                     break;
+        //                 case "boolean":
+        //                     data.push({ key: s, value: $('#node-setting-' + s).prop('checked') });
+        //                     break;
+        //                 case "dropdown":
+        //                     data.push({ key: s, value: $('#node-setting-' + s).val() });
+        //                     break;
+        //             }
+        //         }
 
 
-                //send settings
-                $.ajax({
-                    url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
-                    type: "PUT",
-                    contentType: 'application/json',
-                    data: JSON.stringify(data)
-                });
-            }
-        }).modal('setting', 'transition', 'fade up').modal('show');
+        //         //send settings
+        //         $.ajax({
+        //             url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
+        //             type: "PUT",
+        //             contentType: 'application/json',
+        //             data: JSON.stringify(data)
+        //         });
+        //     }
+        // }).modal('setting', 'transition', 'fade up').modal('show');
     }
 
 

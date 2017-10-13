@@ -174,6 +174,9 @@ export class Node {
     //  */
     // onDbReaded
 
+    // Invoked when user click "settings" from node menu
+    // onClickSettings
+
     //
     //
     // onDrawBackground
@@ -1273,8 +1276,8 @@ export class Node {
         if (this.side == Side.server)
             log.warn("Node " + this.getReadableId() + " is trying to send message from server side to server side");
         else
-            this.container.clinet_socket.emit('nodeMessageToServer',
-                { id: this.id, cid: this.container.id, value: mess });
+            this.container.clinet_socket.emit('nodeMessageToServerSide',
+                { id: this.id, cid: this.container.id, message: mess });
     }
 
     sendMessageToEditorSide(mess: any, onlyConnectedUsers = true) {
@@ -1287,12 +1290,12 @@ export class Node {
             let socket = this.container.server_editor_socket;
 
             if (onlyConnectedUsers)
-                socket.in("" + this.container.id).emit('nodeMessageToEditor', m);
+                socket.in("" + this.container.id).emit('nodeMessageToEditorSide', m);
             else
-                socket.emit('nodeMessageToEditor', m);
+                socket.emit('nodeMessageToEditorSide', m);
         }
         else {
-            this.container.clinet_socket.emit('nodeMessageToEditor', m);
+            this.container.clinet_socket.emit('nodeMessageToEditorSide', m);
         }
     }
 
@@ -1388,11 +1391,11 @@ export class Node {
         else if (this.side == Side.server) {
             let socket = this.container.server_dashboard_socket;
             //todo subscribe from dashboard
-            socket.in("" + this.container.id).emit('nodeMessageToDashboard', m);
-            socket.emit('nodeMessageToDashboard', m);
+            socket.in("" + this.container.id).emit('nodeMessageToDashboardSide', m);
+            socket.emit('nodeMessageToDashboardSide', m);
         }
         else {
-            this.container.clinet_socket.emit('nodeMessageToDashboard', m);
+            this.container.clinet_socket.emit('nodeMessageToDashboardSide', m);
         }
     }
 

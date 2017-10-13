@@ -58,7 +58,9 @@ export class DashboardServerSocket {
             });
 
 
-            socket.on('nodeMessageToServer', (n) => {
+            socket.on('nodeMessageToServerSide', (n) => {
+                // console.log("nodeMessageToServerSide", n);
+
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to server-side. Container id [" + n.cid + "] does not exist");
@@ -76,13 +78,13 @@ export class DashboardServerSocket {
                     return;
                 }
 
-                node['onGetMessageToServerSide'](n.value);
+                node['onGetMessageToServerSide'](n.message);
             });
 
 
 
             //redirect message
-            socket.on('nodeMessageToEditor', (n) => {
+            socket.on('nodeMessageToEditorSide', (n) => {
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't send node message to editor-side. Container id [" + n.cid + "] does not exist");
@@ -95,13 +97,13 @@ export class DashboardServerSocket {
                     return;
                 }
 
-                app.server.editorSocket.io.in(n.cid).emit('nodeMessageToEditor', n);
+                app.server.editorSocket.io.in(n.cid).emit('nodeMessageToEditorSide', n);
 
             });
 
             //redirect message
-            socket.on('nodeMessageToDashboard', (n) => {
-                // console.log("nodeMessageToDashboard",n)
+            socket.on('nodeMessageToDashboardSide', (n) => {
+                // console.log("nodeMessageToDashboardSide",n)
 
                 let cont = Container.containers[n.cid];
                 if (!cont) {
@@ -115,7 +117,7 @@ export class DashboardServerSocket {
                     return;
                 }
 
-                app.server.dashboardSocket.io.in(n.cid).emit('nodeMessageToDashboard', n);
+                app.server.dashboardSocket.io.in(n.cid).emit('nodeMessageToDashboardSide', n);
             });
 
 

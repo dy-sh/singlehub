@@ -47,11 +47,11 @@ export class ChartLogPage {
             that.reconnecting = true;
         });
 
-        socket.on('nodeMessageToDashboard', function (n) {
+        socket.on('nodeMessageToDashboardSide', function (n) {
             if (n.cid != that.container_id || n.id != that.node_id)
                 return;
 
-            let data = n.value;
+            let data = n.message;
 
             if (data.clear)
                 $('#history-table').html("");

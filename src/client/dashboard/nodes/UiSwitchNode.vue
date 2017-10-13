@@ -22,18 +22,18 @@ export default {
       this.value = !this.value;
       // console.log("UiSwitchNode click " + this.id + " : " + this.value);
 
-      this.$socket.emit("nodeMessageToServer", {
+      this.$socket.emit("nodeMessageToServerSide", {
         cid: this.uiElement.cid,
         id: this.uiElement.id,
-        value: this.value
+        message: { value: this.value }
       });
     }
   },
   sockets: {
-    nodeMessageToDashboard(data) {
-      // console.log("UiSwitchNode nodeMessageToDashboard", JSON.stringify(data));
+    nodeMessageToDashboardSide(data) {
+      // console.log("UiSwitchNode nodeMessageToDashboardSide", JSON.stringify(data));
       if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
-        this.value = data.value;
+        this.value = data.message;
       }
     }
   }

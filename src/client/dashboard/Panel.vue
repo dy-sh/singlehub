@@ -16,7 +16,7 @@
 
 
 <script>
-import Nodes from "../nodes/nodes";
+import Nodes from "./nodes/list";
 
 export default {
   props: ["name"],
