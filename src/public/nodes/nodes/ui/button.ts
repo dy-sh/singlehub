@@ -13,13 +13,17 @@ import { UiNode } from "./ui-node";
 
 export class UiButtonNode extends UiNode {
 
+
+
     constructor() {
         super("Button", "UiButtonNode");
 
         this.descriprion = "";
-        this.properties['value'] = false;
 
         this.addOutput("output", "boolean");
+
+        this.settings["button-text"] = { description: "Button Text", type: "string", value: "ON" };
+        this.properties['state'] = { buttonText: "ON" };
 
         this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
@@ -28,7 +32,17 @@ export class UiButtonNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server)
-            this.setOutputData(0, this.properties['value']);
+            this.setOutputData(0, false);
+    }
+
+    onAfterSettingsChange(oldSettings) {
+        if (this.side == Side.server) {
+            if (this.settings["button-text"].value != oldSettings["button-text"].value) {
+                this.properties['state'].buttonText = this.settings["button-text"].value;
+                this.sendMessageToDashboardSide({ state: this.properties['state'] });
+                this.updateDahboardElementState();
+            }
+        }
     }
 
     onGetMessageToServerSide(data) {
@@ -39,14 +53,12 @@ export class UiButtonNode extends UiNode {
         }
 
         this.isRecentlyActive = true;
-        this.properties['value'] = true;
         this.setOutputData(0, true);
         this.sendIOValuesToEditor();
     };
 
     onExecute() {
-        if (this.properties['value'] == true) {
-            this.properties['value'] = false;
+        if (this.outputs[0].data == true) {
             this.setOutputData(0, false);
         }
     }

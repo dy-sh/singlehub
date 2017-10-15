@@ -5,7 +5,7 @@
       v-list-tile-sub-title {{uiElement.subtitle}}
     v-spacer
     v-list-tile-action
-      v-btn(color='blue darken-2', @click='onClick') ON   
+      v-btn(color='blue darken-2', @click='onClick') {{state.buttonText}}   
 </template>
 
 
@@ -14,7 +14,7 @@ export default {
   props: ["uiElement"],
   data() {
     return {
-      value: this.uiElement.value
+      state: this.uiElement.state
     };
   },
   methods: {
@@ -24,6 +24,13 @@ export default {
         id: this.uiElement.id,
         message: { click: true }
       });
+    }
+  },
+  sockets: {
+    nodeMessageToDashboardSide(data) {
+      if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
+        this.state = data.message.state;
+      }
     }
   }
 };
