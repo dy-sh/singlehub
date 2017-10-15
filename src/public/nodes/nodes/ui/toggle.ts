@@ -23,7 +23,7 @@ export class UiToggleNode extends UiNode {
         super("Toggle", "UiToggleNode");
 
         this.descriprion = "Toggle button";
-        this.properties['value'] = false;
+        this.properties['state'] = false;
 
         this.addOutput("output", "boolean");
     }
@@ -32,7 +32,7 @@ export class UiToggleNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server)
-            this.setOutputData(0, this.properties['value']);
+            this.setOutputData(0, this.properties['state']);
 
         if (this.side == Side.dashboard) {
             let that = this;
@@ -40,16 +40,16 @@ export class UiToggleNode extends UiNode {
                 that.sendMessageToServerSide('toggle');
             });
 
-            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
+            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
         }
     }
 
     onGetMessageToServerSide(data) {
         this.isRecentlyActive = true;
-        let val = !this.properties['value'];
-        this.properties['value'] = val;
+        let val = !this.properties['state'];
+        this.properties['state'] = val;
         this.setOutputData(0, val);
-        this.sendMessageToDashboard({ value: val });
+        this.sendMessageToDashboardSide({ value: val });
         this.sendIOValuesToEditor();
     };
 

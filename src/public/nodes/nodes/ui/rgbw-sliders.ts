@@ -143,7 +143,7 @@ export class UiRGBWSlidersNode extends UiNode {
         let hex = Utils.numsToRgbwHex([data.r, data.g, data.b, data.w]);
         this.setOutputData(0, hex);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboard(data);
+        this.sendMessageToDashboardSide(data);
     };
 
     onGetMessageToDashboardSide(data) {

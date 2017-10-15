@@ -29,7 +29,7 @@ export class UiSliderNode extends UiNode {
         super("Slider", "UiSliderNode");
 
         this.descriprion = "";
-        this.properties['value'] = 0;
+        this.properties['state'] = 0;
 
         this.settings["min"] = { description: "Min", type: "number", value: 0 };
         this.settings["max"] = { description: "Max", type: "number", value: 100 };
@@ -41,7 +41,7 @@ export class UiSliderNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server)
-            this.setOutputData(0, this.properties['value']);
+            this.setOutputData(0, this.properties['state']);
 
         if (this.side == Side.dashboard) {
 
@@ -60,13 +60,13 @@ export class UiSliderNode extends UiNode {
             let that = this;
             (<any>this.slider).noUiSlider.on('slide', function () {
                 let val = (<any>that.slider).noUiSlider.get();
-                that.properties['value'] = val;
+                that.properties['state'] = val;
                 that.dataUpdated = true;
             });
 
             this.startSendingToServer();
 
-            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
+            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
         }
     }
 
@@ -89,17 +89,17 @@ export class UiSliderNode extends UiNode {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToServerSide({ value: that.properties['value'] });
+                that.sendMessageToServerSide({ value: that.properties['state'] });
             }
         }, this.UPDATE_INTERVAL);
     }
 
     onGetMessageToServerSide(data) {
         this.isRecentlyActive = true;
-        this.properties['value'] = data.value;
+        this.properties['state'] = data.value;
         this.setOutputData(0, data.value);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboard(data);
+        this.sendMessageToDashboardSide(data);
     };
 
     onGetMessageToDashboardSide(data) {

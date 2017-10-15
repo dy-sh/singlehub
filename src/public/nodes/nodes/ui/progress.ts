@@ -29,7 +29,7 @@ export class UiProgressNode extends UiNode {
         super("Progress", "UiProgressNode");
 
         this.descriprion = "";
-        this.properties['value'] = 0;
+        this.properties['state'] = 0;
 
         this.addInput("input", "number");
     }
@@ -42,7 +42,7 @@ export class UiProgressNode extends UiNode {
             this.startSendingToDashboard();
 
         if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
+            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
         }
     }
 
@@ -52,7 +52,7 @@ export class UiProgressNode extends UiNode {
         if (val > 100) val = 100;
         if (val < 0) val = 0;
 
-        this.properties['value'] = val;
+        this.properties['state'] = val;
         this.dataUpdated = true;
         this.isRecentlyActive = true;
     };
@@ -62,7 +62,7 @@ export class UiProgressNode extends UiNode {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToDashboard({ value: that.properties['value'] });
+                that.sendMessageToDashboardSide({ value: that.properties['state'] });
             }
         }, this.UPDATE_INTERVAL);
     }

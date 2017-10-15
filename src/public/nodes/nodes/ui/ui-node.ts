@@ -27,6 +27,7 @@ export class UiNode extends Node {
     }
 
     onCreated() {
+        console.log("properties", this.properties)
         this.settings["ui-panel"].value = "Container" + this.container.id;
 
         if (this.side == Side.server) {

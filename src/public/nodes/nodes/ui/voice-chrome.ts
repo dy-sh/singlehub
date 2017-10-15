@@ -42,7 +42,7 @@ export class UiVoiceChromeNode extends UiNode {
     onInputUpdated() {
         // if (this.getInputData(1) != false) {
         let text = this.getInputData(0);
-        this.sendMessageToDashboard({ text: text })
+        this.sendMessageToDashboardSide({ text: text })
         this.isRecentlyActive = true;
         // }
     };

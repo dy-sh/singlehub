@@ -1382,7 +1382,7 @@ export class Node {
         }
     }
 
-    sendMessageToDashboard(mess: any) {
+    sendMessageToDashboardSide(mess: any) {
         let m = { id: this.id, cid: this.container.id, message: mess };
         if (this.side == Side.dashboard) {
             log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");

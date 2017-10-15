@@ -70,7 +70,7 @@ export class UiLogNode extends UiNode {
                 let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
                 let record = { date: Date.now(), value: "Dropped " + dropped + " messages (data rate limitation)" };
                 that.properties['log'].push(record);
-                that.sendMessageToDashboard({ record: record });
+                that.sendMessageToDashboardSide({ record: record });
             }
 
             that.messagesPerSec = 0;
@@ -95,7 +95,7 @@ export class UiLogNode extends UiNode {
             let unwanted = records.length - max;
             records.splice(0, unwanted);
 
-            this.sendMessageToDashboard({ record: record });
+            this.sendMessageToDashboardSide({ record: record });
 
             //update in db
             if (this.container.db && this.settings['saveToDb'].value) {
@@ -110,7 +110,7 @@ export class UiLogNode extends UiNode {
         this.isRecentlyActive = true;
         this.properties['log'] = [];
 
-        this.sendMessageToDashboard({ clear: true });
+        this.sendMessageToDashboardSide({ clear: true });
 
         //update in db
         if (this.container.db && this.settings['saveToDb'].value) {

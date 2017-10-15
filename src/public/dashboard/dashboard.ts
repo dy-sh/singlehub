@@ -30,7 +30,7 @@ export interface UiElement {
     //link to node
     cid: number;
     id: number;
-    value?: any;
+    state?: any;
 }
 
 
@@ -79,7 +79,8 @@ export class Dashboard {
             title: newTitle,
             type: node.uiElementType,
             cid: node.container.id,
-            id: node.id
+            id: node.id,
+            state: node.properties['state']
         }
 
         var newPanel = this.getUiPanel(newPanelName);
@@ -151,12 +152,11 @@ export class Dashboard {
                     if (container) {
                         let node = container._nodes[e.id];
                         if (node) {
-                            e.value = node.properties['value'];
+                            e.state = node.properties['state'];
                         }
                         else console.log("Can't update dashboard element state. Node [ " + e.cid + "/" + e.id + "] is not found");
                     }
                     else console.log("Can't update dashboard element state. Node container [" + e.cid + "] is not found");
-                    e.value
                 })
             })
         });
@@ -165,7 +165,7 @@ export class Dashboard {
     updateElementStateForNode(node: UiNode) {
         let element = this.getUiElementForNode(node);
         if (element)
-            element.value = node.properties['value'];
+            element.state = node.properties['state'];
         else console.log("Can't update dashboard element state. Element for node " + node.getReadableId() + " is not found");
     }
 

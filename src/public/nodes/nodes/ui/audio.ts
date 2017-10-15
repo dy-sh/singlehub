@@ -40,7 +40,7 @@ export class UiAudioNode extends UiNode {
     onInputUpdated() {
         let url = this.getInputData(0);
         let play = this.getInputData(1) == true;
-        this.sendMessageToDashboard({ url: url, play: play })
+        this.sendMessageToDashboardSide({ url: url, play: play })
         this.isRecentlyActive = true;
     };
 

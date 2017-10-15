@@ -5,7 +5,7 @@
       v-list-tile-sub-title {{uiElement.subtitle}}
     v-spacer
     v-list-tile-action
-      v-switch(v-model="value" color='grey lighten-3' @click='onClick')  
+      v-switch(v-model="state" color='grey lighten-3' @click='onClick')  
 </template>
 
 
@@ -14,18 +14,18 @@ export default {
   props: ["uiElement"],
   data() {
     return {
-      value: this.uiElement.value
+      state: this.uiElement.state
     };
   },
   methods: {
     onClick() {
-      this.value = !this.value;
-      // console.log("UiSwitchNode click " + this.id + " : " + this.value);
+      this.state = !this.state;
+      // console.log("UiSwitchNode click " + this.id + " : " + this.state);
 
       this.$socket.emit("nodeMessageToServerSide", {
         cid: this.uiElement.cid,
         id: this.uiElement.id,
-        message: { value: this.value }
+        message: { state: this.state }
       });
     }
   },
@@ -33,7 +33,7 @@ export default {
     nodeMessageToDashboardSide(data) {
       // console.log("UiSwitchNode nodeMessageToDashboardSide", JSON.stringify(data));
       if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
-        this.value = data.message;
+        this.state = data.message.state;
       }
     }
   }

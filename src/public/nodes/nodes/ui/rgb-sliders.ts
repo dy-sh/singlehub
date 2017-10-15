@@ -125,7 +125,7 @@ export class UiRGBSlidersNode extends UiNode {
         let hex = Utils.numsToRgbHex([data.r, data.g, data.b]);
         this.setOutputData(0, hex);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboard(data);
+        this.sendMessageToDashboardSide(data);
     };
 
     onGetMessageToDashboardSide(data) {

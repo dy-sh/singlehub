@@ -24,7 +24,7 @@ export class UiLabelNode extends UiNode {
         super("Label", "UiLabelNode");
 
         this.descriprion = "Show value of input";
-        this.properties['value'] = '-';
+        this.properties['state'] = '-';
 
         this.addInput("input");
 
@@ -36,18 +36,18 @@ export class UiLabelNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
+            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
         }
     }
 
     onInputUpdated() {
-        this.properties['value'] = Utils.formatAndTrimValue(this.getInputData(0));
-        if (this.properties['value'] == "")
-            this.properties['value'] = "-";
+        this.properties['state'] = Utils.formatAndTrimValue(this.getInputData(0));
+        if (this.properties['state'] == "")
+            this.properties['state'] = "-";
 
         this.isRecentlyActive = true;
 
-        this.sendMessageToDashboard({ value: this.properties['value'] });
+        this.sendMessageToDashboardSide({ value: this.properties['state'] });
     };
 
     onGetMessageToDashboardSide(data) {

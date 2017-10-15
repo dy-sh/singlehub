@@ -80,7 +80,7 @@ export class UiChartNode extends UiNode {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
 
-                that.sendMessageToDashboard({ value: that.lastData });
+                that.sendMessageToDashboardSide({ value: that.lastData });
             }
         }, this.UPDATE_INTERVAL);
     }
@@ -115,7 +115,7 @@ export class UiChartNode extends UiNode {
         if (data.clear) {
             this.isRecentlyActive = true;
             this.properties['log'] = [];
-            this.sendMessageToDashboard({ clear: true });
+            this.sendMessageToDashboardSide({ clear: true });
 
             //update in db
             if (this.container.db && this.settings['saveToDb'].value) {
@@ -126,7 +126,7 @@ export class UiChartNode extends UiNode {
 
         if (data.style) {
             this.settings['style'].value = data.style;
-            this.sendMessageToDashboard({ style: data.style });
+            this.sendMessageToDashboardSide({ style: data.style });
         }
     };
 
@@ -418,13 +418,13 @@ export class UiChartNode extends UiNode {
         //ajax get log
         if (req.params[0] == "/style") {
             this.settings['style'].value = req.body.style;
-            this.sendMessageToDashboard({ style: req.body.style });
+            this.sendMessageToDashboardSide({ style: req.body.style });
             res.json("ok");
         }
         if (req.params[0] == "/clear") {
             this.isRecentlyActive = true;
             this.properties['log'] = [];
-            this.sendMessageToDashboard({ clear: true });
+            this.sendMessageToDashboardSide({ clear: true });
             res.json("ok");
         }
     }

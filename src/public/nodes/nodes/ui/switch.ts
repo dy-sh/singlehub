@@ -12,7 +12,7 @@ export class UiSwitchNode extends UiNode {
         super("Switch", "UiSwitchNode");
 
         this.descriprion = "";
-        this.properties['value'] = false;
+        this.properties['state'] = false;
 
         this.addOutput("output", "boolean");
     }
@@ -21,16 +21,18 @@ export class UiSwitchNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server)
-            this.setOutputData(0, this.properties['value']);
+            this.setOutputData(0, this.properties['state']);
     }
 
     onGetMessageToServerSide(data) {
-        let value = data.value;
-        console.log("onGetMessageToServerSide", value)
+        let state = data.state;
+
+        console.log("onGetMessageToServerSide", state)
+
         this.isRecentlyActive = true;
-        this.properties['value'] = value;
-        this.setOutputData(0, value);
-        this.sendMessageToDashboard(value);
+        this.properties['state'] = state;
+        this.setOutputData(0, state);
+        this.sendMessageToDashboardSide({ state: state });
         this.updateDahboardElementState();
         this.sendIOValuesToEditor();
     };

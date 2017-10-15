@@ -29,7 +29,7 @@ export class UiStateNode extends UiNode {
         super("State", "UiStateNode");
 
         this.descriprion = "Show value of input";
-        this.properties['value'] = false;
+        this.properties['state'] = false;
 
         this.addInput("input");
     }
@@ -41,12 +41,12 @@ export class UiStateNode extends UiNode {
             this.startSendingToDashboard();
 
         if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
+            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
         }
     }
 
     onInputUpdated() {
-        this.properties['value'] = this.getInputData(0) == true;
+        this.properties['state'] = this.getInputData(0) == true;
         this.dataUpdated = true;
         this.isRecentlyActive = true;
     };
@@ -56,7 +56,7 @@ export class UiStateNode extends UiNode {
         setInterval(function () {
             if (that.dataUpdated) {
                 that.dataUpdated = false;
-                that.sendMessageToDashboard({ value: that.properties['value'] });
+                that.sendMessageToDashboardSide({ value: that.properties['state'] });
             }
         }, this.UPDATE_INTERVAL);
     }

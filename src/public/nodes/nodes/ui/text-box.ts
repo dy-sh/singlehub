@@ -29,7 +29,7 @@ export class UiTextBoxNode extends UiNode {
         super("TextBox", "UiTextBoxNode");
 
         this.descriprion = "";
-        this.properties['value'] = null;
+        this.properties['state'] = null;
 
         this.addOutput("output", "string");
     }
@@ -38,7 +38,7 @@ export class UiTextBoxNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server)
-            this.setOutputData(0, this.properties['value']);
+            this.setOutputData(0, this.properties['state']);
 
         if (this.side == Side.dashboard) {
             let that = this;
@@ -47,7 +47,7 @@ export class UiTextBoxNode extends UiNode {
                 that.sendMessageToServerSide({ value: value });
             });
 
-            this.onGetMessageToDashboardSide({ value: this.properties['value'] })
+            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
         }
     }
 
@@ -55,9 +55,9 @@ export class UiTextBoxNode extends UiNode {
         this.isRecentlyActive = true;
         if (data.value == "")
             data.value = null;
-        this.properties['value'] = data.value;
+        this.properties['state'] = data.value;
         this.setOutputData(0, data.value);
-        this.sendMessageToDashboard(data);
+        this.sendMessageToDashboardSide(data);
         this.sendIOValuesToEditor();
     };
 

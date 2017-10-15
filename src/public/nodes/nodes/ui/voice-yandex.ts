@@ -44,7 +44,7 @@ export class UiVoiceYandexNode extends UiNode {
     onInputUpdated() {
         let text = this.getInputData(0);
         let play = this.getInputData(1) == true;
-        this.sendMessageToDashboard({ text: text, play: play })
+        this.sendMessageToDashboardSide({ text: text, play: play })
         this.isRecentlyActive = true;
     };
 
