@@ -567,6 +567,7 @@ export class Container extends Emitter {
 
         //set node properties
         node.id = id;
+        node.cid = this.id;
         node.container = this;
         node.side = this.side;
         node.type = type;

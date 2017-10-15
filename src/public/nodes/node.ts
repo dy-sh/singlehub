@@ -101,6 +101,7 @@ export class Node {
     size: [number, number];
     container: Container;
     id?: number;
+    cid?: number;
     type: string;
     category: string;
     side: Side;
@@ -1278,7 +1279,7 @@ export class Node {
     }
 
     sendMessageToEditorSide(mess: any, onlyConnectedUsers = true) {
-        let m = { id: this.id, cid: this.container.id, value: mess };
+        let m = { id: this.id, cid: this.container.id, message: mess };
 
         if (this.side == Side.editor) {
             log.warn("Node " + this.getReadableId() + " is trying to send message from editor side to editor side");
@@ -1381,7 +1382,7 @@ export class Node {
     }
 
     sendMessageToDashboard(mess: any) {
-        let m = { id: this.id, cid: this.container.id, value: mess };
+        let m = { id: this.id, cid: this.container.id, message: mess };
         if (this.side == Side.dashboard) {
             log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
         }
