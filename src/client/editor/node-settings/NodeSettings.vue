@@ -1,7 +1,7 @@
 <template lang='pug'>
     v-dialog(v-model='visible', transition="slide-y-transition")
       v-card(v-if="settings")
-        v-card-title.headline {{title}} {{id}} 
+        v-card-title.headline {{title}} 
         v-card-text
           div(v-for="setting in settings")
             component(:is="setting.type", :setting="setting")

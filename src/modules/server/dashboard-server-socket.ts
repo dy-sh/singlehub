@@ -122,7 +122,7 @@ export class DashboardServerSocket {
 
 
             socket.on('nodeSettings', (n) => {
-                console.log(n)
+                // console.log(n)
                 let cont = Container.containers[n.cid];
                 if (!cont) {
                     log.error("Can't update node settings. Container id [" + n.cid + "] does not exist");
@@ -145,6 +145,7 @@ export class DashboardServerSocket {
 
                 if (app.db)
                     app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
+
 
                 app.server.editorSocket.io.emit('nodeSettings', {
                     id: n.id,

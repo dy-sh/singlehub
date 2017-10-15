@@ -89,7 +89,7 @@ export class EditorServerSocket {
 
             //redirect message
             socket.on('nodeMessageToDashboardSide', function (n) {
-                console.log(n)
+                // console.log(n)
 
                 let cont = Container.containers[n.cid];
                 if (!cont) {
