@@ -267,36 +267,36 @@ router.post('/nodes/clone/:id', function (req, res) {
 
 
 router.put('/c/:cid/n/:id/settings', function (req, res) {
-    let container = Container.containers[req.params.cid];
-    if (!container) return res.status(404).send(`Can't update node size. Container id [${req.params.cid}] not found.`);
+    // let container = Container.containers[req.params.cid];
+    // if (!container) return res.status(404).send(`Can't update node size. Container id [${req.params.cid}] not found.`);
 
-    let node = container.getNodeById(req.params.id);
-    if (!node) return res.status(404).send(`Can't update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
+    // let node = container.getNodeById(req.params.id);
+    // if (!node) return res.status(404).send(`Can't update node size. Node id [${req.params.cid}/${req.params.id}] not found.`);
 
-    for (let s of req.body) {
-        node.settings[s.key].value = s.value;
-    }
+    // for (let s of req.body) {
+    //     node.settings[s.key].value = s.value;
+    // }
 
-    if (node['onSettingsChanged'])
-        node['onSettingsChanged']();
+    // if (node['onAfterSettingsChange'])
+    //     node['onAfterSettingsChange']();
 
-    if (app.db)
-        app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
+    // if (app.db)
+    //     app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
 
-    app.server.editorSocket.io.emit('nodeSettings', {
-        id: req.params.id,
-        cid: req.params.cid,
-        settings: node.settings
-    });
+    // app.server.editorSocket.io.emit('nodeSettings', {
+    //     id: req.params.id,
+    //     cid: req.params.cid,
+    //     settings: node.settings
+    // });
 
-    if (node.isDashboardNode)
-        app.server.dashboardSocket.io.in(req.params.cid).emit('nodeSettings', {
-            id: req.params.id,
-            cid: req.params.cid,
-            settings: node.settings
-        });
+    // if (node.isDashboardNode)
+    //     app.server.dashboardSocket.io.in(req.params.cid).emit('nodeSettings', {
+    //         id: req.params.id,
+    //         cid: req.params.cid,
+    //         settings: node.settings
+    //     });
 
-    res.send(`Node settings updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
+    // res.send(`Node settings updated: type [${node.type}] id [${node.container.id}/${node.id}]`);
 });
 
 

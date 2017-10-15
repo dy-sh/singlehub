@@ -371,7 +371,7 @@ class OperationLinearShaperNode extends Node {
         this.settings["inputs"] = { description: "Inputs count", value: 1, type: "number" };
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
         inputs = Utils.clamp(inputs, 1, 1000);
         this.changeInputsCount(inputs);

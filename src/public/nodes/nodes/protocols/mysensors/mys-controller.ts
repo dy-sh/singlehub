@@ -80,8 +80,8 @@ export class MySensorsControllerNode extends ContainerNode {
         super.onRemoved();
     }
 
-    onSettingsChanged() {
-        super.onSettingsChanged();
+    onAfterSettingsChange(oldSettings) {
+        super.onAfterSettingsChange(oldSettings);
 
 
         if (this.side == Side.server) {

@@ -63,7 +63,7 @@ class HubNode extends Node {
             this.setOutputData(+i, val);
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
         let outputs = this.settings["outputs"].value;
 
@@ -146,7 +146,7 @@ class RouterOneToMultipleNode extends Node {
         this.setOutputData(active, val);
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let outputs = this.settings["outputs"].value;
 
         outputs = Utils.clamp(outputs, 1, 1000);
@@ -200,7 +200,7 @@ class RouterMultipleToOneNode extends Node {
         this.setOutputData(0, val);
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
 
         inputs = Utils.clamp(inputs, 1, 1000);
@@ -267,7 +267,7 @@ class ConnectionLocalTransmitterNode extends Node {
         }
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
 
         inputs = Utils.clamp(inputs, 1, 1000);
@@ -309,7 +309,7 @@ class ConnectionLocalReceiverNode extends Node {
         this.title = "Local Receiver [" + this.settings["channel"].value + "]";
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let outputs = this.settings["outputs"].value;
 
         outputs = Utils.clamp(outputs, 1, 1000);
@@ -387,7 +387,7 @@ class ConnectionRemoteTransmitterNode extends Node {
 
 
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
 
         inputs = Utils.clamp(inputs, 1, 1000);
@@ -455,7 +455,7 @@ class ConnectionRemoteReceiverNode extends Node {
             res.send("ok");
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let outputs = this.settings["outputs"].value;
 
         outputs = Utils.clamp(outputs, 1, 1000);

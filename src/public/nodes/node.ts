@@ -212,7 +212,8 @@ export class Node {
     // onExecute
     // onInputUpdated
     //
-    // onSettingsChanged
+    // onBeforeSettingsChange(newSettings)
+    // onAfterSettingsChange(oldSettings)
 
     // getMenuOptions
     // getExtraMenuOptions

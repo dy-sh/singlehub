@@ -44,7 +44,7 @@ export class ConstantNode extends Node {
     }
 
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         //change output type
         let out_type = this.settings["output-type"].value;
         if (out_type == "any")
@@ -187,7 +187,7 @@ export class ContainerNode extends Node {
         this.sub_container.runStep();
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange(oldSettings) {
         this.changeTitle();
     }
 

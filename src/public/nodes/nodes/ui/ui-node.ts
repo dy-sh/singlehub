@@ -12,7 +12,7 @@ export class UiNode extends Node {
     titlePrefix: string;
     template: string;
     uiElementType: string;
-    uiPanel: string;
+
 
     constructor(titlePrefix: string, uiElementType: string) {
         super();
@@ -27,51 +27,37 @@ export class UiNode extends Node {
     }
 
     onCreated() {
-        if (this.side == Side.server)
-            this.container.dashboard.onNodeCreated(this);
+        this.settings["ui-panel"].value = "Container" + this.container.id;
 
-        this.changeUiPanel("Container" + this.container.id);
+        if (this.side == Side.server) {
+            this.container.dashboard.onNodeChangePanelOrTitle(
+                this, this.settings["ui-panel"].value, this.settings["title"].value);
+        }
     }
 
     onAdded() {
-        if (this.side == Side.dashboard) {
-            let templ = Handlebars.compile(this.template);
-            $(templ(this))
-                .hide()
-                .appendTo("#uiContainer-" + this.container.id)
-                .fadeIn(300);
-        }
-
-        this.changeTitle();
-
-        this.uiPanel = this.settings["ui-panel"].value;
+        this.changeTitle(this.settings["title"].value);
     }
 
-    onSettingsChanged() {
-        this.changeTitle();
+    onBeforeSettingsChange(newSettings) {
 
         //change ui panel
         if (this.side == Side.server) {
-            let panel = this.settings["ui-panel"].value;
-            if (this.uiPanel != panel)
-                this.changeUiPanel(panel);
-        }
-    }
-
-    changeUiPanel(name: string) {
-        if (this.side == Side.server)
-            this.container.dashboard.onNodeChangePanel(this, name);
-
-        this.uiPanel = name;
-        this.settings["ui-panel"].value = name;
-    }
-
-    changeTitle() {
-        if (this.side == Side.dashboard) {
-            $('#nodeTitle-' + this.id).html(this.settings["title"].value);
+            if (newSettings["ui-panel"].value != this.settings["ui-panel"].value
+                || newSettings["title"].value != this.settings["title"].value) {
+                this.container.dashboard.onNodeChangePanelOrTitle(
+                    this, newSettings["ui-panel"].value, newSettings["title"].value);
+            }
         }
 
-        let t = this.settings["title"].value;
+        //change title
+        this.changeTitle(newSettings['title'].value);
+    }
+
+
+
+    changeTitle(title: string) {
+        let t = title;
         if (t.length > 10)
             t = t.substr(0, 10) + "...";
 
@@ -84,12 +70,6 @@ export class UiNode extends Node {
     }
 
     onRemoved() {
-        if (this.side == Side.dashboard) {
-            $('#node-' + this.id).fadeOut(300, function () {
-                $(this).remove();
-            });
-        }
-
         if (this.side == Side.server)
             this.container.dashboard.onNodeRemoved(this);
     }

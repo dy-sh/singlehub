@@ -203,7 +203,7 @@ export class XiaomiDeviceNode extends Node {
             this.model.onInputUpdated(this);
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
 
         this.changeTitle();
 

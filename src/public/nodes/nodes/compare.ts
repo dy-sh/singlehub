@@ -39,7 +39,7 @@ class AndNode extends Node {
         this.setOutputData(0, true);
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
         inputs = Utils.clamp(inputs, 2, 1000);
         this.changeInputsCount(inputs, "boolean");
@@ -85,7 +85,7 @@ class OrNode extends Node {
         this.setOutputData(0, false);
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let inputs = this.settings["inputs"].value;
         inputs = Utils.clamp(inputs, 2, 1000);
         this.changeInputsCount(inputs, "boolean");

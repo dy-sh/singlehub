@@ -536,7 +536,7 @@ export class RgbFadeRgbNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
@@ -637,7 +637,7 @@ export class RgbFadeRgbwNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
@@ -746,7 +746,7 @@ export class RgbSmoothRgbNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
@@ -869,7 +869,7 @@ export class RgbSmoothRgbwNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }

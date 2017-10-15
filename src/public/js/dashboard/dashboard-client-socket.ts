@@ -99,9 +99,16 @@ export class DashboardClientSocket {
                 return;
             }
 
+            let oldSettings = JSON.parse(JSON.stringify(node.settings));
+
+            if (node['onBeforeSettingsChange'])
+                node['onBeforeSettingsChange'](n.settings);
+
             node.settings = n.settings;
-            if (node['onSettingsChanged'])
-                node['onSettingsChanged']();
+
+            if (node['onAfterSettingsChange'])
+                node['onAfterSettingsChange'](oldSettings);
+
             node.setDirtyCanvas(true, true);
         });
 

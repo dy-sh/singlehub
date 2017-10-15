@@ -159,7 +159,7 @@ export class ClockNode extends Node {
         this.settings["add_outs"] = { description: "Day, month, year outputs", value: false, type: "boolean" };
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         let outputsCount = this.getOutputsCount();
         if (this.settings["add_outs"].value == true && outputsCount == 4) {
             this.addOutput("day", "number");
@@ -262,7 +262,7 @@ export class TimeFadeNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
@@ -351,7 +351,7 @@ export class TimeIntervalTimerNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
@@ -574,7 +574,7 @@ export class TimeSmoothByTimeNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
@@ -679,7 +679,7 @@ export class TimeSmoothByRangeNode extends Node {
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
         this.EXECUTE_INTERVAL = this.settings["update-interval"].value;
         this.UPDATE_INPUTS_INTERVAL = this.EXECUTE_INTERVAL;
     }

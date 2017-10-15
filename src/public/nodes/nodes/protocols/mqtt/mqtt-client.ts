@@ -136,7 +136,7 @@ export class MqttClientNode extends Node {
         }
     }
 
-    onSettingsChanged() {
+    onAfterSettingsChange() {
 
         let topics = this.settings["topics_count"].value;
         topics = Utils.clamp(topics, 1, 100);

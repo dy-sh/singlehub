@@ -7,6 +7,7 @@
 import { Container } from "../../public/nodes/container";
 import app from "../../app";
 import Namespace = SocketIO.Namespace;
+import { UiNode } from "../../public/nodes/nodes/ui/ui-node";
 
 
 const log = require('logplease').create('server', { color: 3 });
@@ -135,17 +136,22 @@ export class DashboardServerSocket {
                     return;
                 }
 
+                let oldSettings = JSON.parse(JSON.stringify(node.settings));
+
+                if (node['onBeforeSettingsChange'])
+                    node['onBeforeSettingsChange'](n.settings);
+
                 for (let key in n.settings) {
                     let s = n.settings[key];
                     node.settings[key].value = s.value;
                 }
 
-                if (node['onSettingsChanged'])
-                    node['onSettingsChanged']();
+                if (node['onAfterSettingsChange'])
+                    node['onAfterSettingsChange'](oldSettings);
+
 
                 if (app.db)
                     app.db.updateNode(node.id, node.container.id, { $set: { settings: node.settings } });
-
 
                 app.server.editorSocket.io.emit('nodeSettings', {
                     id: n.id,

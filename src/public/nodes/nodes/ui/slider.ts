@@ -71,8 +71,7 @@ export class UiSliderNode extends UiNode {
     }
 
 
-    onSettingsChanged() {
-        super.onSettingsChanged();
+    onAfterSettingsChange() {
 
         if (this.side == Side.dashboard) {
             (<any>$("#slider-" + this.id)[0]).noUiSlider.updateOptions({

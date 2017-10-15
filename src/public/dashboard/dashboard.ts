@@ -55,10 +55,10 @@ export class Dashboard {
         })
     }
 
-    onNodeCreated(node: UiNode) {
-        if (!node.isDashboardNode)
-            return;
-    }
+    // onNodeCreated(node: UiNode) {
+    //     if (!node.isDashboardNode)
+    //         return;
+    // }
 
     onNodeRemoved(node: UiNode) {
         if (!node.isDashboardNode)
@@ -66,26 +66,26 @@ export class Dashboard {
 
         this.removeElemetForNode(node);
         this.removeEmptyPanels();
-        this.socket.io.emit("getUiPanel", this.getUiPanel(node.uiPanel));
+        this.socket.io.emit("getUiPanel", this.getUiPanel(node.settings["ui-panel"].value));
     }
 
 
 
-    onNodeChangePanel(node: UiNode, newName: string) {
+    onNodeChangePanelOrTitle(node: UiNode, newPanelName: string, newTitle: string) {
         this.removeElemetForNode(node);
 
         //add new element
         var uiElemet: UiElement = {
-            title: node.title,
+            title: newTitle,
             type: node.uiElementType,
             cid: node.container.id,
             id: node.id
         }
 
-        var newPanel = this.getUiPanel(newName);
+        var newPanel = this.getUiPanel(newPanelName);
         if (!newPanel) {
             //add to new panel
-            newPanel = this.addUiPanel(newName);
+            newPanel = this.addUiPanel(newPanelName);
             newPanel.subPanels[0].uiElements.push(uiElemet);
 
             if (this.db)
@@ -100,7 +100,7 @@ export class Dashboard {
 
         this.removeEmptyPanels();
         this.socket.io.emit("getUiPanelsList", this.getUiPanelsList())
-        this.socket.io.emit("getUiPanel", this.getUiPanel(newName))
+        this.socket.io.emit("getUiPanel", this.getUiPanel(newPanelName))
     }
 
 
@@ -124,7 +124,7 @@ export class Dashboard {
 
 
     removeElemetForNode(node: UiNode) {
-        var oldPanel = this.getUiPanel(node.uiPanel);
+        var oldPanel = this.getUiPanel(node.settings["ui-panel"].value);
         if (oldPanel) {
             //remove old element
             for (var s = 0; s < oldPanel.subPanels.length; s++) {
@@ -170,7 +170,7 @@ export class Dashboard {
     }
 
     getUiElementForNode(node: UiNode): UiElement {
-        var panel = this.getUiPanel(node.uiPanel);
+        var panel = this.getUiPanel(node.settings["ui-panel"].value);
         if (!panel)
             return;
 
@@ -186,7 +186,7 @@ export class Dashboard {
     };
 
     getUiPanelForNode(node: UiNode): UiPanel {
-        return this.uiPanels.find(p => p.name === node.uiPanel);
+        return this.uiPanels.find(p => p.name === node.settings["ui-panel"].value);
     };
 
 
