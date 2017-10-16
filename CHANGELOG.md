@@ -76,6 +76,7 @@ You can change some more node settings by calling the "Settings" in node context
   - **Constant**. Now it has a data type setting.
   
 - **UI**:
+  - **Button**. Change button text option.
   - **Chart**. Changing settings in editor. Chart log realtime update.
    
 - **Numbers**:
