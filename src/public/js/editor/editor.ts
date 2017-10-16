@@ -14,8 +14,10 @@ import Utils from "../../nodes/utils";
 import "../../nodes/nodes/index";
 const log = require('logplease').create('editor', { color: 6 });
 
+import { EventEmitter } from 'events';
 
-export class Editor {
+
+export class Editor extends EventEmitter {
 
     themeId = 0;
     private root: HTMLDivElement;
@@ -29,6 +31,8 @@ export class Editor {
 
 
     constructor(themeId = 0) {
+        super();
+
         log.warn("!!! NEW EDITOR CREATED");
         (<any>window).editor = this;
 
@@ -50,6 +54,12 @@ export class Editor {
 
         //create renderer
         this.renderer = new Renderer(this, canvas, this.rootContainer, themes[this.themeId]);
+
+        this.renderer.on("changeContainer", (cont) => {
+            this.updateContainersNavigation();
+            this.updateBrowserUrl();
+            this.emit("changeContainer", cont);
+        })
 
         //todo later
         //  this.addMiniWindow(200, 200);
@@ -639,6 +649,30 @@ export class Editor {
         //         editor.updateNodesLabels();
         //     });
         // }
+    }
+
+    openContainer(id: number) {
+        if (this.renderer.container.id == id)
+            return;
+
+        //todo search back in renderer._containers_stack
+
+        let cont = Container.containers[id];
+        if (!cont)
+            return log.error("Cant open. Container id [" + id + "] not found");
+
+        this.renderer.openContainer(cont);
+
+        this.socket.sendJoinContainerRoom(this.renderer.container.id);
+        this.updateNodesLabels();
+    }
+
+    closeContainer() {
+        if (this.renderer.container.id != 0) {
+            this.renderer.closeContainer(false);
+            this.socket.sendJoinContainerRoom(this.renderer.container.id);
+            this.updateNodesLabels();
+        }
     }
 
     updateBrowserUrl() {
