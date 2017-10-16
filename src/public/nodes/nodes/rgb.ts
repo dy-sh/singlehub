@@ -526,8 +526,8 @@ export class RgbFadeRgbNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["reset-on-stop"] = { description: "Reset on Stop", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["reset-on-stop"] = { description: "Reset on Stop", value: false, type: "boolean" };
 
     }
 
@@ -627,8 +627,8 @@ export class RgbFadeRgbwNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["reset-on-stop"] = { description: "Reset on Stop", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["reset-on-stop"] = { description: "Reset on Stop", value: false, type: "boolean" };
 
     }
 
@@ -735,10 +735,10 @@ export class RgbSmoothRgbNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["start-value"] = { description: "Default value at start", type: "string", value: "#000000" };
-        this.settings["stop-on-disc"] = { description: "Stop when input color is null (disconnected)", type: "boolean", value: false };
-        this.settings["null-on-disc"] = { description: "Send null when input color is null (disconnected)", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["start-value"] = { description: "Default value at start", value: "#000000", type: "string" };
+        this.settings["stop-on-disc"] = { description: "Stop when input color is null (disconnected)", value: false, type: "boolean" };
+        this.settings["null-on-disc"] = { description: "Send null when input color is null (disconnected)", value: false, type: "boolean" };
     }
 
     onAdded() {
@@ -858,10 +858,10 @@ export class RgbSmoothRgbwNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["start-value"] = { description: "Default value at start", type: "string", value: "#00000000" };
-        this.settings["stop-on-disc"] = { description: "Stop when input color is null (disconnected)", type: "boolean", value: false };
-        this.settings["null-on-disc"] = { description: "Send null when input color is null (disconnected)", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["start-value"] = { description: "Default value at start", value: "#00000000", type: "string" };
+        this.settings["stop-on-disc"] = { description: "Stop when input color is null (disconnected)", value: false, type: "boolean" };
+        this.settings["null-on-disc"] = { description: "Send null when input color is null (disconnected)", value: false, type: "boolean" };
     }
 
     onAdded() {

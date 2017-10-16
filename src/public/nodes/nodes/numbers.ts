@@ -4,8 +4,8 @@
  */
 
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 import Utils from "../utils";
 
 
@@ -16,7 +16,7 @@ class Random01Node extends Node {
         this.title = "Random 0-1";
         this.descriprion = "Returns a random number between 0 and 1.";
 
-        this.settings["digits"] = {description: "Number of digits after the decimal point", type: "number", value: 3};
+        this.settings["digits"] = { description: "Number of digits after the decimal point", value: 3, type: "number" };
 
         this.addInput("generate", "boolean");
         this.addOutput("random", "number");
@@ -43,7 +43,7 @@ class RandomNode extends Node {
         this.title = "Random";
         this.descriprion = "Returns a random number between Min and Max.";
 
-        this.settings["digits"] = {description: "Number of digits after the decimal point", type: "number", value: 3};
+        this.settings["digits"] = { description: "Number of digits after the decimal point", value: 3, type: "number" };
 
         this.addInput("min", "number");
         this.addInput("max", "number");

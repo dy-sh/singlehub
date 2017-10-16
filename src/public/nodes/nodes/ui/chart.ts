@@ -53,10 +53,10 @@ export class UiChartNode extends UiNode {
 
         this.descriprion = "";
         this.properties['log'] = [];
-        this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 100 };
-        this.settings['saveToDb'] = { description: "Save data to DB", type: "boolean", value: false };
-        this.settings['style'] = { description: "Style", type: "string", value: "bars" };
-        this.settings['autoscroll'] = { description: "Auto scroll", type: "string", value: "continuous" };
+        this.settings['maxRecords'] = { description: "Max Records", value: 100, type: "number" };
+        this.settings['saveToDb'] = { description: "Save data to DB", value: false, type: "boolean" };
+        this.settings['style'] = { description: "Style", value: "bars", type: "string" };
+        this.settings['autoscroll'] = { description: "Auto scroll", value: "continuous", type: "string" };
 
         this.addInput("input");
     }

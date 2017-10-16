@@ -31,8 +31,8 @@ export class UiSliderNode extends UiNode {
         this.descriprion = "";
         this.properties['state'] = 0;
 
-        this.settings["min"] = { description: "Min", type: "number", value: 0 };
-        this.settings["max"] = { description: "Max", type: "number", value: 100 };
+        this.settings["min"] = { description: "Min", value: 0, type: "number" };
+        this.settings["max"] = { description: "Max", value: 100, type: "number" };
 
         this.addOutput("output", "number");
     }

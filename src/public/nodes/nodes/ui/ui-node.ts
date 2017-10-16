@@ -22,7 +22,7 @@ export class UiNode extends Node {
 
         this.isDashboardNode = true;
 
-        this.settings["title"] = { description: "Title", type: "string", value: this.titlePrefix };
+        this.settings["title"] = { description: "Title", value: this.titlePrefix, type: "string" };
         this.settings["ui-panel"] = { description: "Ui Panel Name", type: "string" };
     }
 

@@ -30,8 +30,8 @@ export class UiLogNode extends UiNode {
 
         this.descriprion = "";
         this.properties['log'] = [];
-        this.settings['maxRecords'] = { description: "Max Records", type: "number", value: 10 };
-        this.settings['saveToDb'] = { description: "Save log to DB", type: "boolean", value: false };
+        this.settings['maxRecords'] = { description: "Max Records", value: 10, type: "number" };
+        this.settings['saveToDb'] = { description: "Save log to DB", value: false, type: "boolean" };
 
         this.addInput("input");
     }

@@ -251,7 +251,7 @@ class OperationFlipflopNode extends Node {
         this.addInput("value", "boolean");
         this.addOutput("value", "boolean");
 
-        this.settings["reset-on-disc"] = { description: "Reset on disconnected or input is null", type: "boolean", value: false };
+        this.settings["reset-on-disc"] = { description: "Reset on disconnected or input is null", value: false, type: "boolean" };
     }
 
     onInputUpdated() {

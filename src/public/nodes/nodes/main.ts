@@ -17,7 +17,7 @@ export class ConstantNode extends Node {
         this.title = "Constant";
         this.descriprion = "Constant value";
 
-        this.settings["value"] = { description: "Value", value: 1 };
+        this.settings["value"] = { description: "Value", value: 1, type: "string" };
         this.settings["output-type"] = {
             description: "Output type",
             type: "dropdown",
@@ -86,7 +86,7 @@ export class ContainerNode extends Node {
 
         this.title = "Container";
         this.descriprion = "Contain other nodes";
-        this.settings["name"] = { description: "Container name", type: "string", value: this.title };
+        this.settings["name"] = { description: "Container name", value: this.title, type: "string" };
     }
 
     onCreated() {

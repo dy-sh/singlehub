@@ -253,8 +253,8 @@ export class TimeFadeNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["reset-on-stop"] = { description: "Reset on Stop", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["reset-on-stop"] = { description: "Reset on Stop", value: false, type: "boolean" };
     }
 
     onAdded() {
@@ -341,9 +341,9 @@ export class TimeIntervalTimerNode extends Node {
         this.setOutputData(2, 0);
 
         this.settings["interval"] = { description: "Interval", value: 1000, type: "number" };
-        this.settings["update-interval"] = { description: "Update Interval", type: "number", value: 50 };
-        this.settings["elapsed-true-at-stop"] = { description: "Set elapsed to true at early stop", type: "boolean", value: false };
-        this.settings["progress-100-at-stop"] = { description: "Set progress to 100 at early stop", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Update Interval", value: 50, type: "number" };
+        this.settings["elapsed-true-at-stop"] = { description: "Set elapsed to true at early stop", value: false, type: "boolean" };
+        this.settings["progress-100-at-stop"] = { description: "Set progress to 100 at early stop", value: false, type: "boolean" };
     }
 
     onAdded() {
@@ -563,10 +563,10 @@ export class TimeSmoothByTimeNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["start-value"] = { description: "Default value at start", type: "number", value: 0 };
-        this.settings["stop-on-disc"] = { description: "Stop when input value is null (disconnected)", type: "boolean", value: false };
-        this.settings["null-on-disc"] = { description: "Send null when input value is null (disconnected)", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["start-value"] = { description: "Default value at start", value: 0, type: "number" };
+        this.settings["stop-on-disc"] = { description: "Stop when input value is null (disconnected)", value: false, type: "boolean" };
+        this.settings["null-on-disc"] = { description: "Send null when input value is null (disconnected)", value: false, type: "boolean" };
     }
 
     onAdded() {
@@ -668,10 +668,10 @@ export class TimeSmoothByRangeNode extends Node {
 
         this.setOutputData(1, false);
 
-        this.settings["update-interval"] = { description: "Output Update Interval", type: "number", value: 50 };
-        this.settings["start-value"] = { description: "Default value at start", type: "number", value: 0 };
-        this.settings["stop-on-disc"] = { description: "Stop when input value is null (disconnected)", type: "boolean", value: false };
-        this.settings["null-on-disc"] = { description: "Send null when input value is null (disconnected)", type: "boolean", value: false };
+        this.settings["update-interval"] = { description: "Output Update Interval", value: 50, type: "number" };
+        this.settings["start-value"] = { description: "Default value at start", value: 0, type: "number" };
+        this.settings["stop-on-disc"] = { description: "Stop when input value is null (disconnected)", value: false, type: "boolean" };
+        this.settings["null-on-disc"] = { description: "Send null when input value is null (disconnected)", value: false, type: "boolean" };
     }
 
     onAdded() {

@@ -51,8 +51,8 @@ export class XiaomiDeviceNode extends Node {
 
         this.settings["enable"] = { description: "Enable", value: false, type: "boolean" };
         this.settings["address"] = { description: 'IP address', value: "10.0.0.18", type: "string" };
-        this.settings["title"] = { description: "Title", type: "string", value: "" };
-        this.settings["update-interval"] = { description: "Update interval", type: "number", value: 500 };
+        this.settings["title"] = { description: "Title", value: "", type: "string" };
+        this.settings["update-interval"] = { description: "Update interval", value: 500, type: "number" };
 
         this.properties['deviceModel'] = "";
     }
