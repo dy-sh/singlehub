@@ -4,6 +4,7 @@ SingleHub v0.9
 **Common changes:**
 
 - Rewritten from ASP.NET to Node.js.
+- Completely redesigned UI (single-page application).
 
 
 **Hardware:**
@@ -28,10 +29,14 @@ You can change some more node settings by calling the "Settings" in node context
 - Move selected nodes to new container. The editor will create all the necessary inputs/outputs in the container and create links to relocated nodes. 
 - Now you can make loop connections between nodes (A-B-A-B...). It will not cause any problems in the system.
 - Advanced nodes settings (new UI elements).
-- Modified UI. Controls got a little more compact and roomier. 
-  The cursor now responds to the elements of the node. The font in ubuntu is fixed.
+
+
+ **Dashboard:**
  
- 
+- Dashboard is now made in a modern dark style, with animated elements.
+- The application is now single-page. The dashboard and the node editor are now located on the same page. This made it possible to make a better interaction between the editor and the dashboard. Due to the fact that the entire application is now loaded entirely, the responsiveness of the interface is now very high.
+- Now the nodes that require a lot of settings have a nice and convenient configuration interface.
+
  
 **New nodes:**
 
@@ -105,14 +110,13 @@ You can change some more node settings by calling the "Settings" in node context
 
 
 **For developers:**
-- Code is written in TypeScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
+- Code is written in TypeScript and JavaScript, but all scripts are compiled into JavaScript and you can add new functionality using JavaScript if you want.
+- Using Vue and Vuetify for the user interface.
 - Built-in database is replaced by NeDB. 
 - Very comfortable color output debugging information to the console. 
   You can filter messages by importance: debug/info/warnings/errors.
   This also applies to the client part (in the debug panel of the browser).
-- API to create nodes is now much friendlier to developers. 
-  This is especially true of UI-nodes. 
-  All of the code for backend and frontend is now focused in the node class. 
+- API to create nodes is now much friendlier. 
 - Now, API allows the node to accept http requests from other nodes 
   or from the browser and render interface (apart from the editor and dashboard).
   Thus, for example ui-chart, renders simple interface on the dashboard 
