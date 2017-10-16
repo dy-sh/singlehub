@@ -13,7 +13,7 @@
 
 
 <script>
-import SettingString from "./SettingString";
+import SettingsComponents from "./list";
 
 export default {
   // props: ["show"],
@@ -26,9 +26,7 @@ export default {
       settings: null
     };
   },
-  components: {
-    string: SettingString
-  },
+  components: SettingsComponents,
   methods: {
     show(node) {
       this.settings = JSON.parse(JSON.stringify(node.settings));
