@@ -22,11 +22,11 @@ export class ConstantNode extends Node {
             description: "Output type",
             type: "dropdown",
             config: {
-                elements: [
-                    // {key: "any", text: "any"},
-                    { key: "string", text: "string" },
-                    { key: "number", text: "number" },
-                    { key: "boolean", text: "boolean" }
+                items: [
+                    // {value: "any", text: "any"},
+                    { value: "string", text: "string" },
+                    { value: "number", text: "number" },
+                    { value: "boolean", text: "boolean" }
                 ]
             },
             value: "number"
