@@ -3,11 +3,17 @@ SingleHub v0.9
 
 Home automation controller with node-based visual programming (Node.js port of MyNodes.NET).
 
+To be aware of all the changes, look at the [changelog](https://github.com/derwish-pro/singlehub/blob/master/CHANGELOG.md).
+
 This software allows you to control hardware devices using MQTT, MySensors, Xiaomi and other protocols. You can use this program as a control center for your smart home, integrating various devices in one system, or as a controller for your simple device in Ardiuno. 
 
 The program can be used for drawing graphs, collecting some statistics, using timers, visualizing and testing some logic, using voice synthesis, working with files, databases, executing OS commands on a schedule and etc. You can integrate several SingleHub systems running on different computers into one large system.
 
-To be aware of all the changes, look at the [changelog](https://github.com/derwish-pro/singlehub/blob/master/CHANGELOG.md).
+The code is written using the following frameworks/technologies/tools: Node, Express, Vue, Pug, Stylus, Vuetify, Socket.io, Webpack, TypeScript.
+
+Feel free to join the development!
+
+
 
 
 **How to install:**
