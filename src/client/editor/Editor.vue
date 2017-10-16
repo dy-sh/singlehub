@@ -21,7 +21,9 @@ let components = Object.assign({}, NodesCustomComponents, {
 });
 
 export default {
-  props: ["cid"],
+  props: [
+    "selectedContainer" //{id,name}
+  ],
   components: components,
   data: () => ({
     nodesCustomComponents: Object.keys(NodesCustomComponents),
@@ -31,12 +33,23 @@ export default {
     console.log("VUE EDITOR MOUNTED");
 
     this.editor = new Editor(0);
-    this.editor.connect();
     window.vueEditor = this;
+    this.editor.on("changeContainer", cont => {
+      this.$emit("changeContainer", cont, editor);
+    });
+
+    this.editor.connect();
   },
   beforeDestroy() {
     console.log("VUE EDITOR DESTROY");
     this.editor.disconnect();
+  },
+  watch: {
+    selectedContainer: function(cont) {
+      console.log("watch", cont.id);
+      if (cont.id == -1) editor.closeContainer();
+      else editor.openContainer(cont.id);
+    }
   }
 };
 </script>
