@@ -23,7 +23,7 @@ div
         v-layout(row wrap)
           v-flex(xs12 sm6 md4)
             //- v-flex(v-if="activePanel" xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
-            panel.panel(v-if="activePanel" :name="activePanel")
+            dashboard-panel.panel(v-if="activePanel" :name="activePanel")
             div.text-xs-center.pt-5.grey--text.text--darken-2(v-else) {{noPanelMessage}}
           v-flex(xs12 sm6 md8)
             editor.editor
@@ -32,19 +32,25 @@ div
       div(v-if="dashboardIsVisible && !editorIsVisible")
         v-layout(row wrap)
           v-flex(xs12 sm10 md6 offset-xs0 offset-sm1 offset-md3)
-            panel.panel(v-if="activePanel" :name="activePanel")
+            dashboard-panel.panel(v-if="activePanel" :name="activePanel")
             div.text-xs-center.pt-5.grey--text.text--darken-2(v-else)  {{noPanelMessage}}
 
 </template>
 
 
 <script>
-import Panel from "./Panel";
+import DashboardPanel from "../dashboard/DashboardPanel";
 import Toolbar from "./Toolbar";
 import Sidebar from "./Sidebar";
 import Editor from "../editor/Editor";
 
 export default {
+  components: {
+    "dashboard-panel": DashboardPanel,
+    toolbar: Toolbar,
+    sidebar: Sidebar,
+    editor: Editor
+  },
   data: () => ({
     panels: [
       // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
@@ -61,12 +67,6 @@ export default {
     editorIsVisible: false,
     sidebarIsVisible: true
   }),
-  components: {
-    panel: Panel,
-    toolbar: Toolbar,
-    sidebar: Sidebar,
-    editor: Editor
-  },
   created() {
     this.$socket.emit("getUiPanelsList");
     //for testing
