@@ -12,6 +12,8 @@ import { Editor } from "./editor";
 import Utils from "../../nodes/utils";
 import { RendererTheme } from "./renderer-themes";
 
+import { EventEmitter } from 'events';
+
 
 interface IgetMenuOptions {
     (): Array<any>;
@@ -26,7 +28,7 @@ interface IgetExtraMenuOptions {
 }
 
 
-export class Renderer {
+export class Renderer extends EventEmitter {
     editor: Editor;
     theme: RendererTheme;
 
@@ -115,6 +117,7 @@ export class Renderer {
 
 
     constructor(editor: Editor, canvas: HTMLCanvasElement, container?: Container, theme?: RendererTheme, skip_render?: boolean) {
+        super();
 
         container.onAfterExecute = () => {
             this.draw(true)
@@ -210,6 +213,7 @@ export class Renderer {
      */
     setContainer(container?: Container, skip_clear = false, joinRoom = true): void {
 
+
         if (this.container == container)
             return;
 
@@ -231,13 +235,14 @@ export class Renderer {
         container.attachRenderer(this);
         this.setDirty(true, true);
 
-        this.editor.updateContainersNavigation();
-        this.editor.updateBrowserUrl();
+
 
         if (joinRoom) {
             this.editor.socket.sendJoinContainerRoom(container.id);
             this.editor.updateNodesLabels();
         }
+
+        this.emit("changeContainer", container)
     }
 
     /**
@@ -262,13 +267,13 @@ export class Renderer {
         container.attachRenderer(this);
         this.setDirty(true, true);
 
-        this.editor.updateContainersNavigation();
-        this.editor.updateBrowserUrl();
 
         if (joinRoom) {
             this.editor.socket.sendJoinContainerRoom(container.id);
             this.editor.updateNodesLabels();
         }
+
+        this.emit("changeContainer", container)
     }
 
     /**
@@ -281,13 +286,13 @@ export class Renderer {
         container.attachRenderer(this);
         this.setDirty(true, true);
 
-        this.editor.updateContainersNavigation();
-        this.editor.updateBrowserUrl();
 
         if (joinRoom) {
             this.editor.socket.sendJoinContainerRoom(container.id);
             this.editor.updateNodesLabels();
         }
+
+        this.emit("changeContainer", container)
     }
 
     /**
