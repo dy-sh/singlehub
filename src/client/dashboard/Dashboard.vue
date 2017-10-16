@@ -2,17 +2,23 @@
 div
 
   toolbar(
-    :panels="panels" 
-    :selected="activePanel" 
     :dashboardIsVisible="dashboardIsVisible",
     :editorIsVisible="editorIsVisible",
-    @clickSidebar="onClickSidebar",
-    @clickToolbarDashboard="onClickToolbarDashboard",
-    @clickToolbarEditor="onClickToolbarEditor")
+    @clickSidebar="onClickToolbarSidebar",
+    @clickDashboard="onClickToolbarDashboard",
+    @clickEditor="onClickToolbarEditor")
+
+  sidebar(
+    :sidebarIsVisible="sidebarIsVisible",
+    :dashboardIsVisible="dashboardIsVisible",
+    :editorIsVisible="editorIsVisible",
+    :panels="panels",
+    :selected="activePanel",
+    @selectPanel="onSelectPanel")    
 
   main
     v-content.dash
-      //- v-container(grid-list-xl)
+      //- v-container(fluid)
       div(v-if="dashboardIsVisible && editorIsVisible")
         v-layout(row wrap)
           v-flex(xs12 sm6 md4)
@@ -33,8 +39,9 @@ div
 
 
 <script>
-import Panel from "./Panel.vue";
-import Toolbar from "./Toolbar.vue";
+import Panel from "./Panel";
+import Toolbar from "./Toolbar";
+import Sidebar from "./Sidebar";
 import Editor from "../editor/Editor";
 
 export default {
@@ -51,11 +58,13 @@ export default {
     //   name: "TestPanel"
     // }
     dashboardIsVisible: true,
-    editorIsVisible: false
+    editorIsVisible: false,
+    sidebarIsVisible: true
   }),
   components: {
     panel: Panel,
     toolbar: Toolbar,
+    sidebar: Sidebar,
     editor: Editor
   },
   created() {
@@ -90,16 +99,19 @@ export default {
     }
   },
   methods: {
-    onClickSidebar(panelName) {
-      if (this.activePanel === panelName)
-        this.$socket.emit("getUiPanel", panelName);
-      else this.activePanel = panelName;
+    onClickToolbarSidebar() {
+      this.sidebarIsVisible = !this.sidebarIsVisible;
     },
     onClickToolbarDashboard() {
       this.dashboardIsVisible = !this.dashboardIsVisible;
     },
     onClickToolbarEditor() {
       this.editorIsVisible = !this.editorIsVisible;
+    },
+    onSelectPanel(panelName) {
+      if (this.activePanel === panelName)
+        this.$socket.emit("getUiPanel", panelName);
+      else this.activePanel = panelName;
     }
   }
 };
