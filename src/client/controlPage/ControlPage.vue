@@ -12,8 +12,8 @@ div
     :sidebarIsVisible="sidebarIsVisible",
     :dashboardIsVisible="dashboardIsVisible",
     :editorIsVisible="editorIsVisible",
-    :panels="panels",
-    :selected="activePanel",
+    :dashboardPanels="dashboardPanels",
+    :selectedDashboardPanel="activePanel",
     @selectPanel="onSelectPanel")    
 
   main
@@ -52,7 +52,7 @@ export default {
     editor: Editor
   },
   data: () => ({
-    panels: [
+    dashboardPanels: [
       // { icon: "subscriptions", title: "Dashboard", name: "Dashboard" },
       // { icon: "trending_up", title: "Editor", name: "Editor" }
     ],
@@ -77,10 +77,10 @@ export default {
   sockets: {
     getUiPanelsList(data) {
       console.log("getUiPanelsList: " + JSON.stringify(data));
-      this.panels = data;
+      this.dashboardPanels = data;
 
       //if active panel removed, close panel
-      if (!this.panels.some(x => x.name == this.activePanel))
+      if (!this.dashboardPanels.some(x => x.name == this.activePanel))
         this.activePanel = "";
 
       //for testing - open first panel
@@ -93,7 +93,7 @@ export default {
   },
   computed: {
     noPanelMessage: function() {
-      return !this.panels || this.panels.length == 0
+      return !this.dashboardPanels || this.dashboardPanels.length == 0
         ? "NO PANELS CREATED"
         : "SELECT THE PANEL FROM THE LIST";
     }

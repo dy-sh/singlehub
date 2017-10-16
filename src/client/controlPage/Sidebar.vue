@@ -3,11 +3,11 @@
     //- v-navigation-drawer(persistent clipped enable-resize-watcher v-model='drawer' app width=200)
     v-list(dense v-if="dashboardIsVisible")
       v-subheader.mt-3.grey--text.text--darken-1 DASHBOARD
-      v-list-tile(v-for='panel in panels' :key='panel.name' @click='onSelectPanel(panel.name)')
+      v-list-tile(v-for='panel in dashboardPanels' :key='panel.name' @click='onSelectPanel(panel.name)')
         v-list-tile-action.panel-icon
-          v-icon(:class="{'blue--text': panel.name==selected,'text--lighten-1':panel.name==selected }")  {{ panel.icon }}
+          v-icon(:class="{'blue--text': panel.name==selectedDashboardPanel,'text--lighten-1':panel.name==selectedDashboardPanel }")  {{ panel.icon }}
         v-list-tile-content
-          v-list-tile-title(:class="{'blue--text': panel.name==selected,'text--lighten-1':panel.name==selected }")  {{ panel.title }}
+          v-list-tile-title(:class="{'blue--text': panel.name==selectedDashboardPanel,'text--lighten-1':panel.name==selectedDashboardPanel }")  {{ panel.title }}
 
     v-list(dense v-if="editorIsVisible")
       v-subheader.mt-3.grey--text.text--darken-1 EDITOR
@@ -17,14 +17,14 @@
 <script>
 export default {
   props: [
-    "panels",
-    "selected",
+    "dashboardPanels",
+    "selectedDashboardPanel",
     "dashboardIsVisible",
     "editorIsVisible",
     "sidebarIsVisible"
   ],
   data: () => ({
-    // panels: [
+    // dashboardPanels: [
     //   { icon: "subscriptions", title: "Dashboard",name:"Dashboard" },
     //   { icon: "trending_up", title: "Editor",name:"Editor" }
     // ]
