@@ -59,6 +59,6 @@ export default {
 
 <style scoped>
 a {
-  color: gray;
+  color: grey;
 }
 </style>

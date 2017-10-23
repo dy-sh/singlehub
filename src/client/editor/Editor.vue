@@ -1,11 +1,22 @@
 <template lang='pug'>
   div.editor.elevation-5
     #main
+    v-toolbar(dense height="42px")
+      v-btn(icon v-if="selectedContainer && selectedContainer.id!=0" @click="editor.closeContainer()")
+        v-icon chevron_left
+      div(v-if="selectedContainer") {{selectedContainer.name}}
+      v-spacer  
+      v-btn(icon)
+        v-icon remove_red_eye
+      v-btn(icon v-if="started")
+        v-icon play_arrow
+      v-btn(icon v-if="!started")
+        v-icon pause
+      v-btn(icon v-if="!started" disabled="started")
+        v-icon skip_next                
     node-settings(ref="nodeSettings")
     div(v-for="node in nodesCustomComponents")
       component(:is="node", :ref="node")
-
-
 </template>
 
 
@@ -22,7 +33,8 @@ let components = Object.assign({}, NodesCustomComponents, {
 
 export default {
   props: [
-    "selectedContainer" //{id,name}
+    "selectedContainer", //{id,name}
+    "started"
   ],
   components: components,
   data: () => ({

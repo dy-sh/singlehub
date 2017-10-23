@@ -32,6 +32,8 @@ export class Renderer extends EventEmitter {
     editor: Editor;
     theme: RendererTheme;
 
+    BOTTOM_PADDING = 120;//80
+
     max_zoom: number;
     min_zoom: number;
     frame: number;
@@ -2233,7 +2235,7 @@ export class Renderer extends EventEmitter {
             //     height = (<any>parent).clientHeight - parseInt((<any>parent).style.paddingTop) - parseInt((<any>parent).style.paddingBottom);
 
             width = (<any>parent).clientWidth;
-            height = window.innerHeight - 80;
+            height = window.innerHeight - this.BOTTOM_PADDING;
         }
 
         // console.log(width, height)

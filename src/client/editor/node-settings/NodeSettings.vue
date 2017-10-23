@@ -7,7 +7,7 @@
             component(:is="setting.type", :setting="setting")
         v-card-actions
           v-spacer
-          v-btn(color="gray darken-1" flat @click='visible = false') Cancel
+          v-btn(color="grey darken-1" flat @click='visible = false') Cancel
           v-btn(color="blue darken-1" flat @click='save') Save
 </template>
 
