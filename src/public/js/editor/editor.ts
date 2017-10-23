@@ -85,6 +85,59 @@ export class Editor extends EventEmitter {
         Container.clear();
     }
 
+
+    openContainer(id: number) {
+        if (this.renderer.container.id == id)
+            return;
+
+        //todo search back in renderer._containers_stack
+
+        let cont = Container.containers[id];
+        if (!cont)
+            return log.error("Cant open. Container id [" + id + "] not found");
+
+        this.renderer.openContainer(cont);
+
+        this.socket.sendJoinContainerRoom(this.renderer.container.id);
+        this.updateNodesLabels();
+    }
+
+    closeContainer() {
+        if (this.renderer.container.id != 0) {
+            this.renderer.closeContainer(false);
+            this.socket.sendJoinContainerRoom(this.renderer.container.id);
+            this.updateNodesLabels();
+        }
+    }
+
+    onNodeCreated(node: Node) {
+        if (node.type == "main/container")
+            this.emit("changeContainer", this.renderer.container);
+    }
+
+    onNodeRemoved(node: Node) {
+        if (node.type == "main/container")
+            this.emit("changeContainer", this.renderer.container);
+    }
+
+    onNodeCloned(node: Node) {
+        if (node.type == "main/container")
+            this.emit("changeContainer", this.renderer.container);
+    }
+
+    onNodeSettingsChanged(node: Node) {
+        if (node.type == "main/container")
+            this.emit("changeContainer", this.renderer.container);
+    }
+
+    onNodesMovedToNewContainer(data) {
+        this.emit("changeContainer", this.renderer.container);
+    }
+
+    onConteinerImported(data) {
+        this.emit("changeContainer", this.renderer.container);
+    }
+
     addMiniWindow(w: number, h: number): void {
 
         if (minimap_opened)
@@ -121,7 +174,6 @@ export class Editor extends EventEmitter {
         });
         miniwindow.appendChild(close_button);
 
-        //derwiah added
         let reset_button = document.createElement("div");
         reset_button.className = "corner-button2";
         reset_button.innerHTML = "R";
@@ -651,29 +703,7 @@ export class Editor extends EventEmitter {
         // }
     }
 
-    openContainer(id: number) {
-        if (this.renderer.container.id == id)
-            return;
 
-        //todo search back in renderer._containers_stack
-
-        let cont = Container.containers[id];
-        if (!cont)
-            return log.error("Cant open. Container id [" + id + "] not found");
-
-        this.renderer.openContainer(cont);
-
-        this.socket.sendJoinContainerRoom(this.renderer.container.id);
-        this.updateNodesLabels();
-    }
-
-    closeContainer() {
-        if (this.renderer.container.id != 0) {
-            this.renderer.closeContainer(false);
-            this.socket.sendJoinContainerRoom(this.renderer.container.id);
-            this.updateNodesLabels();
-        }
-    }
 
     updateBrowserUrl() {
         //change browser url
@@ -690,6 +720,8 @@ export class Editor extends EventEmitter {
         this.socket.getContainerState();
 
         this.socket.getNodes((nodes) => {
+            this.emit("changeContainer", this.renderer.container);
+
             //open container from url
             // let cont_id = (<any>window).container_id;
             // if (cont_id && cont_id != 0) {
