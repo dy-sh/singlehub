@@ -24,22 +24,22 @@ export class EditorClientSocket {
         let socket = io('/editor');
         this.socket = socket;
 
-        let that = this;
 
-        setInterval(function () {
-            if (that.socket
-                && that.socket.connected
-                && editor.showNodesIOValues
-                && editor.isRunning)
-                that.sendGetSlotsValues();
+
+        setInterval(() => {
+            if (this.socket
+                && this.socket.connected
+                && this.editor.showNodesIOValues
+                && this.editor.isRunning)
+                this.sendGetSlotsValues();
         }, SLOTS_VALUES_INTERVAL);
 
 
-        socket.on('connect', function () {
+        socket.on('connect', () => {
             log.debug("Connected to socket");
 
-            that.sendJoinContainerRoom(editor.renderer.container.id);
-            editor.updateNodesLabels();
+            this.sendJoinContainerRoom(this.editor.renderer.container.id);
+            this.editor.updateNodesLabels();
         });
 
         //
@@ -66,7 +66,7 @@ export class EditorClientSocket {
         });
 
 
-        socket.on('node-create', function (n) {
+        socket.on('node-create', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't create node. Container id [${n.cid}] not found.`);
@@ -77,10 +77,11 @@ export class EditorClientSocket {
                 prop['properties'] = n.properties;
 
             let node = container.createNode(n.type, prop);
+            this.editor.onNodeCreated(node);
         });
 
 
-        socket.on('nodes-delete', function (data) {
+        socket.on('nodes-delete', (data) => {
             let container = Container.containers[data.cid];
             if (!container) {
                 log.error(`Can't delete node. Container id [${data.cid}] not found.`);
@@ -93,6 +94,7 @@ export class EditorClientSocket {
                     return;
                 }
                 container.remove(node);
+                this.editor.onNodeRemoved(node);
 
                 //if current container removed
                 // if (n.id == editor.renderer.container.id) {
@@ -102,7 +104,7 @@ export class EditorClientSocket {
         });
 
 
-        socket.on('node-add-input', function (n) {
+        socket.on('node-add-input', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't update node. Container id [${n.cid}] not found.`);
@@ -117,7 +119,7 @@ export class EditorClientSocket {
             node.setDirtyCanvas(true, true);
         });
 
-        socket.on('node-add-output', function (n) {
+        socket.on('node-add-output', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't update node. Container id [${n.cid}] not found.`);
@@ -132,7 +134,7 @@ export class EditorClientSocket {
             node.setDirtyCanvas(true, true);
         });
 
-        socket.on('node-remove-input', function (n) {
+        socket.on('node-remove-input', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't update node. Container id [${n.cid}] not found.`);
@@ -147,7 +149,7 @@ export class EditorClientSocket {
             node.setDirtyCanvas(true, true);
         });
 
-        socket.on('node-remove-output', function (n) {
+        socket.on('node-remove-output', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't update node. Container id [${n.cid}] not found.`);
@@ -162,7 +164,7 @@ export class EditorClientSocket {
             node.setDirtyCanvas(true, true);
         });
 
-        socket.on('node-update-position', function (n) {
+        socket.on('node-update-position', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't update node. Container id [${n.cid}] not found.`);
@@ -179,7 +181,7 @@ export class EditorClientSocket {
             }
         });
 
-        socket.on('node-update-size', function (n) {
+        socket.on('node-update-size', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't update node. Container id [${n.cid}] not found.`);
@@ -196,7 +198,7 @@ export class EditorClientSocket {
             }
         });
 
-        socket.on('nodeSettings', function (n) {
+        socket.on('nodeSettings', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't set node settings. Container id [${n.cid}] not found.`);
@@ -219,18 +221,21 @@ export class EditorClientSocket {
                 node['onAfterSettingsChange'](oldSettings);
 
             node.setDirtyCanvas(true, true);
+            this.editor.onNodeSettingsChanged(node);
         });
 
-        socket.on('nodes-move-to-new-container', function (data) {
+        socket.on('nodes-move-to-new-container', (data) => {
             let container = Container.containers[data.cid];
             if (!container) {
                 log.error(`Can't move nodes to container. Container id [${data.cid}] not found.`);
                 return;
             }
             container.moveNodesToNewContainer(data.ids, data.pos);
+            this.editor.onNodesMovedToNewContainer(data);
+
         });
 
-        socket.on('nodeMessageToEditorSide', function (n) {
+        socket.on('nodeMessageToEditorSide', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);
@@ -245,7 +250,7 @@ export class EditorClientSocket {
                 node['onGetMessageToEditorSide'](n.message);
         });
 
-        socket.on('nodeMessageToEditorSide', function (n) {
+        socket.on('nodeMessageToEditorSide', (n) => {
             let container = Container.containers[n.cid];
             if (!container) {
                 log.error(`Can't send node message. Container id [${n.cid}] not found.`);
@@ -261,7 +266,7 @@ export class EditorClientSocket {
         });
 
 
-        socket.on('link-create', function (data) {
+        socket.on('link-create', (data) => {
             let container = Container.containers[data.cid];
             if (!container) {
                 log.error(`Can't create link. Container id [${data.cid}] not found.`);
@@ -275,7 +280,7 @@ export class EditorClientSocket {
             node.connect(data.link.origin_slot, data.link.target_id, data.link.target_slot);
         });
 
-        socket.on('link-delete', function (data) {
+        socket.on('link-delete', (data) => {
             let container = Container.containers[data.cid];
             if (!container) {
                 log.error(`Can't delete link. Container id [${data.cid}] not found.`);
@@ -291,23 +296,23 @@ export class EditorClientSocket {
         });
 
 
-        socket.on('container-run', function (l) {
-            editor.onContainerRun();
+        socket.on('container-run', (l) => {
+            this.editor.onContainerRun();
         });
 
 
-        socket.on('container-run-step', function (l) {
-            editor.onContainerRunStep();
+        socket.on('container-run-step', (l) => {
+            this.editor.onContainerRunStep();
         });
 
-        socket.on('container-stop', function (l) {
-            editor.onContainerStop();
+        socket.on('container-stop', (l) => {
+            this.editor.onContainerStop();
         });
 
 
         let activeNodes = [];
         let activedNodes = [];
-        socket.on('nodes-active', function (data) {
+        socket.on('nodes-active', (data) => {
             // let container = Container.containers[data.cid];
             // if (!container) return;
             for (let id of data.ids) {
@@ -320,16 +325,16 @@ export class EditorClientSocket {
 
         //show nodes activity
         let activityState = false;
-        setInterval(function () {
+        setInterval(() => {
             activityState = !activityState;
 
             if (activityState && activeNodes.length > 0) {
-                let container = editor.renderer.container;
+                let container = this.editor.renderer.container;
                 for (let id of activeNodes) {
                     let node = container.getNodeById(id);
                     if (!node) continue;
                     // editor.renderer.showNodeActivity(node);
-                    node.boxcolor = editor.renderer.theme.NODE_ACTIVE_BOXCOLOR;
+                    node.boxcolor = this.editor.renderer.theme.NODE_ACTIVE_BOXCOLOR;
                     node.setDirtyCanvas(true, true);
                 }
                 activedNodes = activeNodes;
@@ -337,11 +342,11 @@ export class EditorClientSocket {
             }
 
             else if (!activityState && activedNodes.length > 0) {
-                let container = editor.renderer.container;
+                let container = this.editor.renderer.container;
                 for (let id of activedNodes) {
                     let node = container.getNodeById(id);
                     if (!node) continue;
-                    node.boxcolor = editor.renderer.theme.NODE_DEFAULT_BOXCOLOR;
+                    node.boxcolor = this.editor.renderer.theme.NODE_DEFAULT_BOXCOLOR;
                     node.setDirtyCanvas(true, true);
                 }
                 activedNodes = [];
@@ -349,8 +354,8 @@ export class EditorClientSocket {
         }, 125);
 
 
-        socket.on('nodes-io-values', function (slots_values) {
-            if (!that.editor.showNodesIOValues)
+        socket.on('nodes-io-values', (slots_values) => {
+            if (!this.editor.showNodesIOValues)
                 return;
 
             let container = Container.containers[slots_values.cid];
@@ -385,7 +390,7 @@ export class EditorClientSocket {
             }
         });
 
-        socket.on('nodes-clone', function (data) {
+        socket.on('nodes-clone', (data) => {
             let container = Container.containers[data.cid];
             if (!container) {
                 log.error(`Can't clone node. Container id [${data.cid}] not found.`);
@@ -399,10 +404,11 @@ export class EditorClientSocket {
                 }
 
                 node.clone();
+                this.editor.onNodeCloned(node);
             }
         });
 
-        socket.on('container-import', function (data) {
+        socket.on('container-import', (data) => {
             let container = Container.containers[data.cid];
             if (!container) {
                 log.error(`Can't import container. Container id [${data.cid}] not found.`);
@@ -410,6 +416,7 @@ export class EditorClientSocket {
             }
 
             container.importContainer(data.ser_node, data.pos);
+            this.editor.onConteinerImported(data);
 
         });
 
