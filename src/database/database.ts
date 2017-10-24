@@ -3,8 +3,8 @@
  */
 
 import { Container, SerializedContainer } from "../nodes/container";
-import { Node, SerializedNode } from "../../public/nodes/node";
-import { UiPanel } from "../../public/dashboard/dashboard";
+import { Node, SerializedNode } from "../nodes/node";
+import { UiPanel } from "../server/dashboard";
 import { User } from "./user";
 
 

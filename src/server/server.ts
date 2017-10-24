@@ -24,8 +24,7 @@ import app from "../app";
 let isDev = process.env.NODE_ENV !== 'production';
 
 
-// let config = require('../../config.json');
-import * as config from '../../config.json';
+let config = require('../../config.json');
 
 export class Server {
     express: express.Application;
