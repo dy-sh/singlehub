@@ -13,14 +13,11 @@ export class UiButtonNode extends UiNode {
 
     constructor() {
         super("Button", "UiButtonNode");
-
         this.descriprion = "";
 
         this.addOutput("output", "boolean");
-
         this.settings["button-text"] = { description: "Button Text", value: "ON", type: "string" };
-        this.properties['state'] = { buttonText: "ON" };
-
+        this.setState({ buttonText: "ON" }, false);
         this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
 
@@ -34,20 +31,12 @@ export class UiButtonNode extends UiNode {
     onAfterSettingsChange(oldSettings) {
         if (this.side == Side.server) {
             if (this.settings["button-text"].value != oldSettings["button-text"].value) {
-                this.properties['state'].buttonText = this.settings["button-text"].value;
-                this.sendMessageToDashboardSide({ state: this.properties['state'] });
-                this.updateDahboardElementState();
+                this.setState({ buttonText: this.settings["button-text"].value });
             }
         }
     }
 
     onGetMessageToServerSide(data) {
-
-        if (data.settings) {
-            console.log(data.settings);
-            return;
-        }
-
         this.isRecentlyActive = true;
         this.setOutputData(0, true);
         this.sendIOValuesToEditor();
