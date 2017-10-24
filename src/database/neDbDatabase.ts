@@ -31,10 +31,10 @@ class NeDbDatabase implements Database {
     }
 
     loadDatabase(callback?: (err: Error) => void) {
-        this.users = new NeDBDataStore('users.db');
-        this.nodes = new NeDBDataStore('nodes.db');
-        this.dashboard = new NeDBDataStore('dashboard.db');
-        this.app = new NeDBDataStore('app.db');
+        this.users = new NeDBDataStore('./db/users.db');
+        this.nodes = new NeDBDataStore('./db/nodes.db');
+        this.dashboard = new NeDBDataStore('./db/dashboard.db');
+        this.app = new NeDBDataStore('./db/app.db');
 
         let that = this;
         this.users.loadDatabase(function (err) {

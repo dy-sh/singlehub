@@ -24,7 +24,7 @@
 
 <script>
 // require("../../../dist/public/js/editor/editor.js");
-import { Editor } from "./editor";
+import { Editor } from "./editor.ts";
 import NodesCustomComponents from "./nodes-custom-components/list";
 import NodesSettings from "./node-settings/NodeSettings";
 

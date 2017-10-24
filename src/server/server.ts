@@ -48,7 +48,7 @@ export class Server {
     private connectWebPackLiveReload() {
         //webpack live-reloading
         var webpack = require('webpack');
-        var webpackConfig = require('../../../webpack.config');
+        var webpackConfig = require('../../webpack.config');
         var compiler = webpack(webpackConfig);
 
         // Attach the dev middleware to the compiler & the server
@@ -78,8 +78,8 @@ export class Server {
         this.express.use(cookieParser());
         this.express.use(expressValidator());
         //merge two static folders in root url
-        this.express.use("/", express.static(path.join(__dirname + "/../../public")));
-        this.express.use("/", express.static(__dirname + "/../../../public"));
+        this.express.use("/", express.static(__dirname + "/../../static-files"));
+        this.express.use("/", express.static(__dirname + "/../public"));
     }
 
     private routes() {
