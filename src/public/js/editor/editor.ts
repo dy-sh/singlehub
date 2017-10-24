@@ -64,10 +64,7 @@ export class Editor extends EventEmitter {
         //todo later
         //  this.addMiniWindow(200, 200);
 
-        this.addFullscreenButton();
-        this.addPlayButton();
-        this.addStepButton();
-        this.addSlotsValuesButton();
+
         this.updateContainersNavigation();
     }
 
@@ -109,6 +106,64 @@ export class Editor extends EventEmitter {
             this.updateNodesLabels();
         }
     }
+
+
+    showNodeSettings(node: Node): void {
+        (<any>window).vueEditor.$refs.nodeSettings.show(node);
+    }
+
+    run() {
+        this.socket.sendRunContainer();
+    }
+
+    stop() {
+        this.socket.sendStopContainer();
+    }
+
+    step() {
+        this.socket.sendStepContainer();
+    }
+
+    onContainerRun() {
+        this.isRunning = true;
+        this.emit("run");
+    }
+
+    onContainerRunStep() {
+        if (this.showNodesIOValues)
+            this.socket.sendGetSlotsValues();
+
+        this.emit("step");
+    }
+
+    onContainerStop() {
+        this.isRunning = false;
+        this.emit("stop");
+    }
+
+    displayNodesIOValues() {
+        this.showNodesIOValues = true;
+        this.updateNodesLabels();
+    }
+
+    hideNodesIOValues() {
+        this.showNodesIOValues = false;
+        this.updateNodesLabels();
+    }
+
+    updateNodesLabels() {
+        if (this.showNodesIOValues)
+            this.socket.sendGetSlotsValues();
+        else {
+            let container = this.renderer.container;
+            for (let id in container._nodes) {
+                let node = container._nodes[id];
+                node.updateInputsLabels();
+                node.updateOutputsLabels();
+            }
+        }
+    }
+
 
     onNodeCreated(node: Node) {
         if (node.type == "main/container")
@@ -188,39 +243,7 @@ export class Editor extends EventEmitter {
 
     }
 
-    addFullscreenButton() {
 
-        $("#fullscreen-button").click(
-            function () {
-                // editor.goFullscreen();
-
-                let elem = document.documentElement;
-
-                let fullscreenElement =
-                    document.fullscreenElement ||
-                    (<any>document).mozFullscreenElement ||
-                    document.webkitFullscreenElement;
-
-                if (fullscreenElement == null) {
-                    if (elem.requestFullscreen) {
-                        elem.requestFullscreen();
-                    } else if ((<any>elem).mozRequestFullScreen) {
-                        (<any>elem).mozRequestFullScreen();
-                    } else if (elem.webkitRequestFullscreen) {
-                        elem.webkitRequestFullscreen();
-                    }
-                } else {
-                    if ((<any>document).cancelFullScreen) {
-                        (<any>document).cancelFullScreen();
-                    } else if ((<any>document).mozCancelFullScreen) {
-                        (<any>document).mozCancelFullScreen();
-                    } else if (document.webkitCancelFullScreen) {
-                        document.webkitCancelFullScreen();
-                    }
-                }
-            }
-        )
-    }
 
     importContainerFromFile(position: [number, number]): void {
         let that = this;
@@ -486,164 +509,6 @@ export class Editor extends EventEmitter {
             }
         }).modal('setting', 'transition', 'fade up').modal('show');
 
-    }
-
-    showNodeSettings(node: Node): void {
-        // $('#node-settings-title').html(node.type);
-
-        (<any>window).vueEditor.$refs.nodeSettings.show(node);
-
-
-        // //clear old body
-        // let body = $('#node-settings-body');
-        // body.empty();
-
-        //add setting-elements from templates
-
-        //todo
-        // for (let s in node.settings) {
-
-        //     if (!node.settings[s].type || node.settings[s].type == "string") {
-        //         body.append(textSettingTemplate({ settings: node.settings[s], key: s }));
-        //         continue;
-        //     }
-
-        //     switch (node.settings[s].type) {
-        //         case "number":
-        //             body.append(numberSettingTemplate({ settings: node.settings[s], key: s }));
-        //             break;
-        //         case "boolean":
-        //             body.append(checkboxSettingTemplate({ settings: node.settings[s], key: s }));
-        //             if (node.settings[s].value)
-        //                 $('#node-setting-' + s).prop('checked', true);
-        //             break;
-        //         case "dropdown":
-        //             let settings = Utils.cloneObject(node.settings[s]);
-        //             //set selected element
-        //             for (let el of settings.config.elements)
-        //                 if (el.key == settings.value)
-        //                     el.selected = true;
-        //             body.append(dropdownSettingTemplate({ settings: settings, key: s }));
-        //             (<any>$('.ui.dropdown')).dropdown();
-        //             break;
-        //     }
-        // }
-
-
-        // //modal panel
-        // (<any>$('#node-settings-panel')).modal({
-        //     dimmerSettings: { opacity: 0.3 },
-        //     onApprove: function () {
-
-        //         //get settings from form
-        //         let data = [];
-        //         for (let s in node.settings) {
-
-        //             if (!node.settings[s].type || node.settings[s].type == "string") {
-        //                 data.push({ key: s, value: $('#node-setting-' + s).val() });
-        //                 continue;
-        //             }
-
-        //             switch (node.settings[s].type) {
-        //                 case "number":
-        //                     data.push({ key: s, value: +$('#node-setting-' + s).val() });
-        //                     break;
-        //                 case "boolean":
-        //                     data.push({ key: s, value: $('#node-setting-' + s).prop('checked') });
-        //                     break;
-        //                 case "dropdown":
-        //                     data.push({ key: s, value: $('#node-setting-' + s).val() });
-        //                     break;
-        //             }
-        //         }
-
-
-        //         //send settings
-        //         $.ajax({
-        //             url: "/api/editor/c/" + node.container.id + "/n/" + node.id + "/settings",
-        //             type: "PUT",
-        //             contentType: 'application/json',
-        //             data: JSON.stringify(data)
-        //         });
-        //     }
-        // }).modal('setting', 'transition', 'fade up').modal('show');
-    }
-
-
-
-    private addPlayButton() {
-        let that = this;
-        $("#play-button").click(function () {
-            if (that.isRunning)
-                that.socket.sendStopContainer();
-            else
-                that.socket.sendRunContainer();
-
-        });
-    }
-
-    private addStepButton() {
-        let that = this;
-        $("#step-button").click(function () {
-            that.socket.sendStepContainer();
-            // container.runStep();
-        });
-    }
-
-    onContainerRun() {
-        this.isRunning = true;
-        $("#step-button").fadeTo(200, 0.3);
-        $("#play-icon").addClass("stop");
-        $("#play-icon").removeClass("play");
-    }
-
-    onContainerRunStep() {
-        if (this.showNodesIOValues)
-            this.socket.sendGetSlotsValues();
-    }
-
-    onContainerStop() {
-        this.isRunning = false;
-        $("#step-button").fadeTo(200, 1);
-        $("#play-icon").removeClass("stop");
-        $("#play-icon").addClass("play");
-    }
-
-    private addSlotsValuesButton() {
-        let that = this;
-        $("#nodes-io-values-button").click(function () {
-            that.showNodesIOValues = !that.showNodesIOValues;
-            if (that.showNodesIOValues) {
-                $("#nodes-io-values-icon").addClass("hide");
-                $("#nodes-io-values-icon").removeClass("unhide");
-
-                that.socket.sendGetSlotsValues();
-
-            } else {
-                $("#nodes-io-values-icon").removeClass("hide");
-                $("#nodes-io-values-icon").addClass("unhide");
-
-                let container = that.renderer.container;
-                for (let id in container._nodes) {
-                    let node = container._nodes[id];
-                    node.updateInputsLabels();
-                    node.updateOutputsLabels();
-                }
-            }
-        });
-    }
-
-    updateNodesLabels() {
-        if (this.showNodesIOValues)
-            this.socket.sendGetSlotsValues();
-        else {
-            let container = this.renderer.container;
-            for (let id in container._nodes) {
-                let node = container._nodes[id];
-                node.updateInputsLabels();
-                node.updateOutputsLabels();
-            }
-        }
     }
 
     updateContainersNavigation() {

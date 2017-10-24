@@ -1,5 +1,5 @@
 <template lang='pug'>
- v-toolbar(dense fixed clipped-left app)
+ v-toolbar(dense fixed clipped-left app height="42px")
     v-toolbar-side-icon(@click.stop='onClickSidebar')
     v-toolbar-title(v-text='title')
     v-spacer

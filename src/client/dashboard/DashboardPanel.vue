@@ -1,6 +1,6 @@
 <template lang='pug'>
   v-card(color='grey darken-3')
-    v-toolbar(color='blue darken-2' dense)
+    v-toolbar(color='blue darken-2' dense height="45px")
       v-toolbar-title {{title}}
       v-spacer
       v-toolbar-side-icon

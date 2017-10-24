@@ -62,6 +62,6 @@ export default {
 
 <style>
 .panel-icon {
-  min-width: 30px;
+  min-width: 28px;
 }
 </style>
