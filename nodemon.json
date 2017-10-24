@@ -3,7 +3,9 @@
   "ignore": [
     "*.json",
     "*.db",
-    "dist/public/*"
+    "dist/public/*",
+    "src/client/*",
+    "dist/client/*"
   ],
   "delay": "500"
 }

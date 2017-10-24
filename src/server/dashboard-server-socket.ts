@@ -168,6 +168,57 @@ export class DashboardServerSocket {
             });
 
 
+            socket.on('dashboardElementGetNodeState', (n) => {
+                // console.log("nodeMessageToServerSide", n);
+
+                let cont = Container.containers[n.cid];
+                if (!cont) {
+                    log.error("Can't get dashboard element state. Container id [" + n.cid + "] does not exist");
+                    return;
+                }
+
+                let node = cont.getNodeById(n.id);
+                if (!node) {
+                    log.error("Can't get dashboard element state. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                    return;
+                }
+
+                //you can override get state logic 
+                if (node['onDashboardElementGetNodeState']) {
+                    node['onDashboardElementGetNodeState'](n.options);
+                } else {
+                    let m = { id: node.id, cid: node.container.id, state: node.properties["state"] };
+                    socket.emit("dashboardElementGetNodeState", m)
+                }
+            });
+
+
+            socket.on('dashboardElementSetNodeState', (n) => {
+                // console.log("nodeMessageToServerSide", n);
+
+                let cont = Container.containers[n.cid];
+                if (!cont) {
+                    log.error("Can't set node state from dashboard element. Container id [" + n.cid + "] does not exist");
+                    return;
+                }
+
+                let node = cont.getNodeById(n.id);
+                if (!node) {
+                    log.error("Can't set node state from dashboard element. Node id [" + n.cid + "/" + n.id + "] does not exist");
+                    return;
+                }
+
+                //you can override get state logic 
+                if (node['onDashboardElementSetNodeState']) {
+                    node['onDashboardElementSetNodeState'](n.state);
+                } else {
+                    node.properties["state"] = n.state;
+                    //send state back to all clients
+                    let m = { id: node.id, cid: node.container.id, state: node.properties["state"] };
+                    io.emit("dashboardElementGetNodeState", m);
+                }
+            });
+
             //----------------------- OLD API
 
 
