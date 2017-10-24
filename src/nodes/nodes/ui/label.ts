@@ -9,14 +9,6 @@ import Utils from "../../utils";
 import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
 
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <span id="nodeTitle-{{id}}"></span>\
-        <div class="ui right floated basic disabled button nonbutton">\
-            <span class="ui blue basic label" id="labelValue-{{id}}"></span>\
-        </div>\
-    </div>';
-
 
 export class UiLabelNode extends UiNode {
 
@@ -34,10 +26,6 @@ export class UiLabelNode extends UiNode {
 
     onAdded() {
         super.onAdded();
-
-        if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
-        }
     }
 
     onInputUpdated() {
@@ -47,11 +35,7 @@ export class UiLabelNode extends UiNode {
 
         this.isRecentlyActive = true;
 
-        this.sendMessageToDashboardSide({ value: this.properties['state'] });
-    };
-
-    onGetMessageToDashboardSide(data) {
-        $('#labelValue-' + this.id).html(data.value);
+        this.sendMessageToDashboardSide({ state: this.properties['state'] });
     };
 }
 
