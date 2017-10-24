@@ -1,5 +1,5 @@
 <template lang='pug'>
-  v-list-tile
+  v-list-tile(v-if="stateReceived")
     v-list-tile-content
       v-list-tile-title {{uiElement.title}}
       v-list-tile-sub-title {{uiElement.subtitle}}
@@ -10,31 +10,22 @@
 
 
 <script>
+import getNodeStateMixin from "./mixins/getNodeState";
+import sendMessageToNodeeMixin from "./mixins/sendMessageToNode";
+
 export default {
+  mixins: [getNodeStateMixin, sendMessageToNodeeMixin],
   props: ["uiElement"],
   data() {
     return {
-      state: this.uiElement.state
+      state: null,
+      stateReceived: false
     };
   },
   methods: {
     onClick() {
       this.state = !this.state;
-      // console.log("UiSwitchNode click " + this.id + " : " + this.state);
-
-      this.$socket.emit("nodeMessageToServerSide", {
-        cid: this.uiElement.cid,
-        id: this.uiElement.id,
-        message: { state: this.state }
-      });
-    }
-  },
-  sockets: {
-    nodeMessageToDashboardSide(data) {
-      // console.log("UiSwitchNode nodeMessageToDashboardSide", JSON.stringify(data));
-      if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
-        this.state = data.message.state;
-      }
+      this.sendMessageToNode({ state: this.state });
     }
   }
 };
