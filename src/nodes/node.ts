@@ -1384,10 +1384,7 @@ export class Node {
 
     sendMessageToDashboardSide(mess: any) {
         let m = { id: this.id, cid: this.container.id, message: mess };
-        if (this.side == Side.dashboard) {
-            log.warn("Node " + this.getReadableId() + " is trying to send message from dashboard side to dashboard side");
-        }
-        else if (this.side == Side.server) {
+        if (this.side == Side.server) {
             let socket = this.container.server_dashboard_socket;
             //todo subscribe from dashboard
             socket.in("" + this.container.id).emit('nodeMessageToDashboardSide', m);

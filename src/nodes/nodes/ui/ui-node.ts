@@ -5,6 +5,7 @@
 
 import { Node } from "../../node";
 import { Container, Side } from "../../container";
+const log = require('logplease').create('node', { color: 5 });
 
 
 export class UiNode extends Node {
@@ -74,7 +75,36 @@ export class UiNode extends Node {
             this.container.dashboard.onNodeRemoved(this);
     }
 
-    updateDahboardElementState() {
-        this.container.dashboard.updateElementStateForNode(this);
+    setState(state: any, sendToDashboard = true) {
+        this.properties["state"] = state;
+
+        if (sendToDashboard) {
+            let m = { id: this.id, cid: this.container.id, state: state };
+            if (this.side == Side.server) {
+                //send state to all clients
+                let socket = this.container.server_dashboard_socket;
+                socket.emit("dashboardElementGetNodeState", m);
+                //todo subscribe from dashboard
+                // socket.in("" + this.container.id).emit('nodeMessageToDashboardSide', m);
+            }
+            else {
+                this.container.clinet_socket.emit('dashboardElementGetNodeState', m);
+            }
+        }
     }
+
+    getState() {
+        return this.properties["state"];
+    }
+
+    // setDahboardElementState(state: any) {
+    //     let el = this.container.dashboard.getUiElementForNode(this);
+    //     el.state = state;
+    // }
+
+    // getDahboardElementState() {
+    //     let el = this.container.dashboard.getUiElementForNode(this);
+    //     return el.state;
+    // }
+
 }
