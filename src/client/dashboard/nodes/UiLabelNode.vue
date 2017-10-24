@@ -1,5 +1,5 @@
 <template lang='pug'>
-  v-list-tile
+  v-list-tile(v-if="stateReceived")
     v-list-tile-content
       v-list-tile-title {{uiElement.title}}
       v-list-tile-sub-title {{uiElement.subtitle}}
@@ -9,19 +9,16 @@
 
 
 <script>
+import getNodeStateMixin from "./mixins/getNodeState";
+
 export default {
+  mixins: [getNodeStateMixin],
   props: ["uiElement"],
   data() {
     return {
-      state: this.uiElement.state
+      state: null,
+      stateReceived: false
     };
-  },
-  sockets: {
-    nodeMessageToDashboardSide(data) {
-      if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
-        this.state = data.message.state;
-      }
-    }
   }
 };
 </script>

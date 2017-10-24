@@ -30,8 +30,10 @@ export interface UiElement {
     //link to node
     cid: number;
     id: number;
-    state?: any;
+    // state?: any;
 }
+
+
 
 
 
@@ -51,7 +53,6 @@ export class Dashboard {
             if (err) return console.log(err);
 
             this.uiPanels = docs || [];
-            this.updateElementsStates();
         })
     }
 
@@ -80,7 +81,7 @@ export class Dashboard {
             type: node.uiElementType,
             cid: node.container.id,
             id: node.id,
-            state: node.properties['state']
+            // state: node.properties['state']
         }
 
         var newPanel = this.getUiPanel(newPanelName);
@@ -144,30 +145,31 @@ export class Dashboard {
         }
     }
 
-    updateElementsStates() {
-        this.uiPanels.forEach(p => {
-            p.subPanels.forEach(s => {
-                s.uiElements.forEach(e => {
-                    let container = Container.containers[e.cid];
-                    if (container) {
-                        let node = container._nodes[e.id];
-                        if (node) {
-                            e.state = node.properties['state'];
-                        }
-                        else console.log("Can't update dashboard element state. Node [ " + e.cid + "/" + e.id + "] is not found");
-                    }
-                    else console.log("Can't update dashboard element state. Node container [" + e.cid + "] is not found");
-                })
-            })
-        });
-    }
+    // updateElementsStates() {
+    //     this.uiPanels.forEach(p => {
+    //         p.subPanels.forEach(s => {
+    //             s.uiElements.forEach(e => {
+    //                 let container = Container.containers[e.cid];
+    //                 if (container) {
+    //                     let node = container._nodes[e.id];
+    //                     if (node) {
+    //                         e.state = node.properties['state'];
+    //                     }
+    //                     else console.log("Can't update dashboard element state. Node [ " + e.cid + "/" + e.id + "] is not found");
+    //                 }
+    //                 else console.log("Can't update dashboard element state. Node container [" + e.cid + "] is not found");
+    //             })
+    //         })
+    //     });
+    // }
 
-    updateElementStateForNode(node: UiNode) {
-        let element = this.getUiElementForNode(node);
-        if (element)
-            element.state = node.properties['state'];
-        else console.log("Can't update dashboard element state. Element for node " + node.getReadableId() + " is not found");
-    }
+    // updateElementStateForNode(node: UiNode) {
+    //     let element = this.getUiElementForNode(node);
+    //     if (element)
+    //         element.state = node.properties['state'];
+    //     else console.log("Can't update dashboard element state. Element for node " + node.getReadableId() + " is not found");
+    // }
+
 
     getUiElementForNode(node: UiNode): UiElement {
         var panel = this.getUiPanel(node.settings["ui-panel"].value);

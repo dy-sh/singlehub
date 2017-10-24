@@ -14,28 +14,20 @@ export class UiLabelNode extends UiNode {
 
     constructor() {
         super("Label", "UiLabelNode");
-
         this.descriprion = "Show value of input";
-        this.properties['state'] = '-';
-
         this.addInput("input");
-
         this.UPDATE_INPUTS_INTERVAL = 100;
     }
-
 
     onAdded() {
         super.onAdded();
     }
 
     onInputUpdated() {
-        this.properties['state'] = Utils.formatAndTrimValue(this.getInputData(0));
-        if (this.properties['state'] == "")
-            this.properties['state'] = "-";
+        let state = Utils.formatAndTrimValue(this.getInputData(0));
+        this.setState(state);
 
         this.isRecentlyActive = true;
-
-        this.sendMessageToDashboardSide({ state: this.properties['state'] });
     };
 }
 
