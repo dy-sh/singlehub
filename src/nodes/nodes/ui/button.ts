@@ -3,17 +3,13 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-
 import { Node } from "../../node";
 import Utils from "../../utils";
 import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
 
 
-
 export class UiButtonNode extends UiNode {
-
-
 
     constructor() {
         super("Button", "UiButtonNode");
