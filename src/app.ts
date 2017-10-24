@@ -3,7 +3,7 @@
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-import { Emitter } from "./public/js/emitter/emitter";
+
 
 //source map for node typescript debug
 require('source-map-support').install();
@@ -12,11 +12,11 @@ console.log("----------------------------- SingleHub ---------------------------
 
 
 let config = require('../config.json');
-import { Server } from './modules/server/server';
-import { Container, Side } from './public/nodes/container'
-import { Database } from "./public/interfaces/database";
-import { Dashboard } from "./public/dashboard/dashboard";
-
+import { Server } from './server/server';
+import { Container, Side } from './nodes/container'
+import { Database } from "./database/database";
+import { Dashboard } from "./server/dashboard";
+import { EventEmitter } from 'events';
 //add app root dir to global
 import * as path from 'path';
 (<any>global).__rootdirname = path.resolve(__dirname);
@@ -25,7 +25,7 @@ import * as path from 'path';
 const log = require('logplease').create('app', { color: 2 });
 
 
-export class App extends Emitter {
+export class App extends EventEmitter {
     db: Database;
     dashboard: Dashboard;
     rootContainer: Container;
@@ -91,7 +91,7 @@ export class App extends Emitter {
     }
 
     registerNodes() {
-        require('./public/nodes/nodes/index');
+        require('./nodes/nodes/index');
         let types = Container.nodes_types ? Object.keys(Container.nodes_types).length : 0;
         log.debug("Registered " + types + " nodes types");
 
@@ -112,7 +112,7 @@ export class App extends Emitter {
     connectDatabase() {
         let db;
         if (config.dataBase.useInternalDb)
-            db = require("./modules/database/neDbDatabase").db;
+            db = require("./database/neDbDatabase").db;
         else
             throw ("External db not implementer yet");
 

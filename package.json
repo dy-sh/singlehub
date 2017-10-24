@@ -14,9 +14,7 @@
     "watch:ts": "tsc -w",
     "watch:server": "nodemon dist/app.js",
     "reset": "node bin/resetConfig.js",
-    "postinstall": "bower install --allow-root & npm run build",
-    "install:bower": "bower",
-    "check-updates": "ncu -u && ncu -m bower -u"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "body-parser": "^1.16.1",
@@ -28,6 +26,7 @@
     "lodash": "^4.17.4",
     "logplease": "^1.2.14",
     "miio": "^0.13.0",
+    "moment": "^2.19.1",
     "morgan": "^1.8.1",
     "mqtt": "^2.4.0",
     "nedb": "^1.8.0",
@@ -63,7 +62,6 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
-    "bower": "^1.8.0",
     "css-loader": "^0.28.7",
     "empty-module": "0.0.2",
     "file-loader": "^1.1.4",
