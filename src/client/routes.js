@@ -1,4 +1,4 @@
-import ControlPage from "./controlPage/ControlPage.vue"
+import ControlPage from "./control-page/ControlPage.vue"
 
 import Welcome from "./setup/Welcome.vue"
 import Database from "./setup/Database"
