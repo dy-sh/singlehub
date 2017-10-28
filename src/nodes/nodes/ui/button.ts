@@ -17,7 +17,7 @@ export class UiButtonNode extends UiNode {
 
         this.addOutput("output", "boolean");
         this.settings["button-text"] = { description: "Button Text", value: "ON", type: "string" };
-        this.setState({ buttonText: "ON" }, false);
+        this.setState({ buttonText: "ON" });
         this.contextMenu["configure"] = { title: "Configure", onClick: this.onConfigureClick }
     }
 

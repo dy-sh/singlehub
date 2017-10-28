@@ -13,7 +13,7 @@ export class UiSwitchNode extends UiNode {
         super("Switch", "UiSwitchNode");
 
         this.descriprion = "";
-        this.setState(false, false);
+        this.setState(false);
 
         this.addOutput("output", "boolean");
     }
