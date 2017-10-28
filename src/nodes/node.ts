@@ -139,11 +139,11 @@ export class Node {
     optional_outputs: {};
     order: string;
 
-    isDashboardNode: boolean;
 
     isUpdated: boolean;
     isRecentlyActive: boolean;
 
+    isDashboardNode?: boolean;
 
     //you can set this setting for prevent input flooding!
     UPDATE_INPUTS_INTERVAL?: number;
@@ -205,7 +205,6 @@ export class Node {
     //
     // onGetMessageToServerSide
     // onGetMessageToEditorSide
-    // onGetMessageToDashboardSide
     //
     // onRunContainer
     // onStopContainer
@@ -1382,18 +1381,7 @@ export class Node {
         }
     }
 
-    sendMessageToDashboardSide(mess: any) {
-        let m = { id: this.id, cid: this.container.id, message: mess };
-        if (this.side == Side.server) {
-            let socket = this.container.server_dashboard_socket;
-            //todo subscribe from dashboard
-            socket.in("" + this.container.id).emit('nodeMessageToDashboardSide', m);
-            socket.emit('nodeMessageToDashboardSide', m);
-        }
-        else {
-            this.container.clinet_socket.emit('nodeMessageToDashboardSide', m);
-        }
-    }
+
 
     sendIOValuesToEditor() {
         let inputs_values = [];
