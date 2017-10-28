@@ -14,6 +14,9 @@ export class UiNode extends Node {
     template: string;
     uiElementType: string;
 
+    // onGetMessageToDashboardSide
+    // onDashboardElementGetNodeState - this will override default logic in dashboard-server-socket
+    // onDashboardElementSetNodeState - this will override default logic in dashboard-server-socket
 
     constructor(titlePrefix: string, uiElementType: string) {
         super();
@@ -78,33 +81,38 @@ export class UiNode extends Node {
     setState(state: any, sendToDashboard = true) {
         this.properties["state"] = state;
 
+        //if called from constructor
+        if (this.container == null)
+            return;
+
         if (sendToDashboard) {
             let m = { id: this.id, cid: this.container.id, state: state };
             if (this.side == Side.server) {
-                //send state to all clients
+                //send state to all clients in the room
                 let socket = this.container.server_dashboard_socket;
-                socket.emit("dashboardElementGetNodeState", m);
-                //todo subscribe from dashboard
-                // socket.in("" + this.container.id).emit('nodeMessageToDashboardSide', m);
+                let panelName = this.settings["ui-panel"].value;
+                socket.in("" + panelName).emit('dashboardElementGetNodeState', m);
             }
             else {
-                this.container.clinet_socket.emit('dashboardElementGetNodeState', m);
+                //todo send from editor side
+                // this.container.clinet_socket.emit('dashboardElementGetNodeState', m);
             }
+        }
+    }
+
+    sendMessageToDashboardSide(mess: any) {
+        let m = { id: this.id, cid: this.container.id, message: mess };
+        if (this.side == Side.server) {
+            let socket = this.container.server_dashboard_socket;
+            let panelName = this.settings["ui-panel"].value;
+            socket.in("" + panelName).emit('nodeMessageToDashboardSide', m);
+        }
+        else {
+            this.container.clinet_socket.emit('nodeMessageToDashboardSide', m);
         }
     }
 
     getState() {
         return this.properties["state"];
     }
-
-    // setDahboardElementState(state: any) {
-    //     let el = this.container.dashboard.getUiElementForNode(this);
-    //     el.state = state;
-    // }
-
-    // getDahboardElementState() {
-    //     let el = this.container.dashboard.getUiElementForNode(this);
-    //     return el.state;
-    // }
-
 }
