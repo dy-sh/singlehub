@@ -631,7 +631,6 @@ export class EditorClientSocket {
 
     sendJoinContainerRoom(cont_id: number) {
         log.debug("Join to editor room [" + cont_id + "]");
-
         this.socket.emit('room', cont_id);
     }
 }
