@@ -53,10 +53,7 @@ export class DashboardServerSocket {
                 socket.emit("getUiPanelsList", app.dashboard.getUiPanelsList())
             });
 
-            socket.on('nodeData', function (data) {
-                log.debug("nodeData: " + JSON.stringify(data));
-                io.emit("nodeData", data)
-            });
+
 
 
             socket.on('nodeMessageToServerSide', (n) => {
@@ -215,17 +212,17 @@ export class DashboardServerSocket {
                     node.properties["state"] = n.state;
                     //send state back to all clients
                     let m = { id: node.id, cid: node.container.id, state: node.properties["state"] };
-                    io.emit("dashboardElementGetNodeState", m);
+                    let panelName = this.settings["ui-panel"].value;
+                    io.in("" + panelName).emit("dashboardElementGetNodeState", m);
                 }
             });
 
-            //----------------------- OLD API
 
 
-            //join client to container room
-            socket.on('room', function (room) {
+            //join client to dashboard room
+            socket.on('room', (room) => {
                 if ((<any>socket).room != null) {
-                    // log.debug("Leave dashboard room [" + (<any>socket).room + "]");
+                    log.debug("Leave dashboard room [" + (<any>socket).room + "]");
                     socket.leave((<any>socket).room);
                 }
 
@@ -233,10 +230,9 @@ export class DashboardServerSocket {
                 socket.join(room);
                 log.debug("Join to dashboard room [" + room + "]");
             });
-
-
         });
 
+        //todo
         // app.on('started', function () {
         //     let rootContainer = Container.containers[0];
         //     rootContainer.on('remove', function (node) {
