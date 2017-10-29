@@ -1,6 +1,6 @@
 <template lang='pug'>
   v-navigation-drawer(v-if="sidebarIsVisible" permanent clipped app width=170)
-    //- v-navigation-drawer(persistent clipped enable-resize-watcher v-model='drawer' app width=200)
+    //- v-navigation-drawer(persistent app clipped enable-resize-watcher v-model='sidebarIsVisible' width=170)
     v-list(dense v-if="dashboardIsVisible")
       v-subheader.mt-3.grey--text.text--darken-1 DASHBOARD
       v-list-tile(v-for='panel in dashboardPanels' :key='panel.name' @click='onSelectPanel(panel.name)')

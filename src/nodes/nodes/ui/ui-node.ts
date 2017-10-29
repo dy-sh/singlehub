@@ -31,7 +31,7 @@ export class UiNode extends Node {
     }
 
     onCreated() {
-        this.settings["ui-panel"].value = "Container" + this.container.id;
+        this.settings["ui-panel"].value = this.container.name;
 
         if (this.side == Side.server) {
             this.container.dashboard.onNodeChangePanelOrTitle(
