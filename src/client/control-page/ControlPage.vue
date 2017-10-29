@@ -120,9 +120,7 @@ export default {
       this.editorIsVisible = !this.editorIsVisible;
     },
     onSelectPanel(panelName) {
-      if (this.activePanel === panelName)
-        this.$socket.emit("getUiPanel", panelName);
-      else this.activePanel = panelName;
+      this.activePanel = this.activePanel === panelName ? "" : panelName;
     },
     onEditorChangeContainer(container, editor) {
       console.log("onEditorChangeContainer", container.name);

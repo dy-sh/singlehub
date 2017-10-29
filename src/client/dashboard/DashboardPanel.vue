@@ -36,13 +36,21 @@ export default {
   }),
   watch: {
     name() {
-      // console.log("watch name update", this.name);
-      this.$socket.emit("getUiPanel", this.name);
+      this.connect();
     }
   },
   components: Nodes,
+  methods: {
+    connect() {
+      //get state
+      this.$socket.emit("getUiPanel", this.name);
+      //join room
+      console.log("Join to dashboard room [" + this.name + "]");
+      this.$socket.emit("room", this.name);
+    }
+  },
   mounted() {
-    this.$socket.emit("getUiPanel", this.name);
+    this.connect();
   },
   sockets: {
     getUiPanel(panel) {
