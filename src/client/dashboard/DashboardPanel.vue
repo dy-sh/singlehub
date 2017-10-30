@@ -4,13 +4,10 @@
       v-toolbar-title {{title}}
       v-spacer
       v-toolbar-side-icon
-    v-divider
     div(v-for="subPanel in subPanels")
-      v-list(subheader)
-        //- v-subheader {{title}}
-        div(v-for="uiElement in subPanel.uiElements")
-          component(:is="uiElement.type", :uiElement="uiElement")
-      v-divider
+      //- v-subheader {{title}}
+      div(v-for="uiElement in subPanel.uiElements")
+        component(:is="uiElement.type", :uiElement="uiElement")
 
 </template>
 
