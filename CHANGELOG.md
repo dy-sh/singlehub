@@ -82,6 +82,9 @@ You can change some more node settings by calling the "Settings" in node context
   
 - **UI**:
   - **Button**. Change button text option.
+  - **Switch**. Now it has an input slot. 
+  - **State**.  It is no longer needed (due to the Switch), so it is removed.
+  - **Slider**. Now it has an input slot.
   - **Chart**. Changing settings in editor. Chart log realtime update.
    
 - **Numbers**:
