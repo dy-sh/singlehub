@@ -4,10 +4,9 @@
  */
 
 
-import { Node } from "../../node";
-import Utils from "../../utils";
-import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
+import { Side, Container } from "../../container";
+import Utils from "../../utils";
 
 
 export class UiLabelNode extends UiNode {
@@ -19,14 +18,9 @@ export class UiLabelNode extends UiNode {
         this.UPDATE_INPUTS_INTERVAL = 100;
     }
 
-    onAdded() {
-        super.onAdded();
-    }
-
     onInputUpdated() {
         let state = Utils.formatAndTrimValue(this.getInputData(0));
         this.setState(state);
-
         this.isRecentlyActive = true;
     };
 }
