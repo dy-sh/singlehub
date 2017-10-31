@@ -4,46 +4,19 @@
  */
 
 
-import { Node } from "../../node";
-import Utils from "../../utils";
-import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
-
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <span id="nodeTitle-{{id}}"></span>\
-        <div class="ui blue small progress" id="progressBar-{{id}}">\
-            <div class="bar">\
-                <div class="progress"></div>\
-            </div>\
-        </div>\
-    </div>';
+import { Side, Container } from "../../container";
+import Utils from "../../utils";
 
 
 export class UiProgressNode extends UiNode {
-    UPDATE_INTERVAL = 100;
-
-    dataUpdated = false;
 
     constructor() {
         super("Progress", "UiProgressNode");
-
         this.descriprion = "";
-        this.properties['state'] = 0;
-
         this.addInput("input", "number");
-    }
-
-
-    onAdded() {
-        super.onAdded();
-
-        if (this.side == Side.server)
-            this.startSendingToDashboard();
-
-        if (this.side == Side.dashboard) {
-            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
-        }
+        this.UPDATE_INPUTS_INTERVAL = 100;
+        this.setState(0);
     }
 
     onInputUpdated() {
@@ -52,27 +25,8 @@ export class UiProgressNode extends UiNode {
         if (val > 100) val = 100;
         if (val < 0) val = 0;
 
-        this.properties['state'] = val;
-        this.dataUpdated = true;
+        this.setState(val);
         this.isRecentlyActive = true;
-    };
-
-    startSendingToDashboard() {
-        let that = this;
-        setInterval(function () {
-            if (that.dataUpdated) {
-                that.dataUpdated = false;
-                that.sendMessageToDashboardSide({ value: that.properties['state'] });
-            }
-        }, this.UPDATE_INTERVAL);
-    }
-
-
-    onGetMessageToDashboardSide(data) {
-        (<any>$('#progressBar-' + this.id)).progress({
-            percent: data.value,
-            showActivity: false
-        });
     };
 }
 
