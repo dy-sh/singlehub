@@ -45,7 +45,6 @@ export class UiSliderNode extends UiNode {
         this.sendIOValuesToEditor();
         this.isRecentlyActive = true;
 
-
         if (this.getState() != val)//prevent loop sending
             this.setState(val);
     }

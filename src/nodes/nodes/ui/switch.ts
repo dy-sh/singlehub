@@ -15,6 +15,7 @@ export class UiSwitchNode extends UiNode {
         this.descriprion = "";
         this.setState(false);
 
+        this.addInput("input", "boolean");
         this.addOutput("output", "boolean");
     }
 
@@ -26,11 +27,22 @@ export class UiSwitchNode extends UiNode {
     }
 
     onGetMessageToServerSide(data) {
-        this.isRecentlyActive = true;
-        this.setOutputData(0, data.state);
-        this.sendIOValuesToEditor();
-        this.setState(data.state);
+        this.setValue(data.state);
     };
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        this.setValue(val);
+    };
+
+    setValue(val) {
+        this.setOutputData(0, val);
+        this.sendIOValuesToEditor();
+        this.isRecentlyActive = true;
+
+        if (this.getState() != val)//prevent loop sending
+            this.setState(val);
+    }
 }
 
 Container.registerNodeType("ui/switch", UiSwitchNode);
