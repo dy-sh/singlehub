@@ -4,43 +4,22 @@
  */
 
 
-import { Node } from "../../node";
-import Utils from "../../utils";
-import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
+import { Side, Container } from "../../container";
+import Utils from "../../utils";
 
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <span id="nodeTitle-{{id}}"></span>\
-        <br />\
-        <div id="slider-{{id}}-r" class="spacebottom"></div>\
-        <div id="slider-{{id}}-g" class="spacebottom"></div>\
-        <div id="slider-{{id}}-b" class="spacebottom"></div>\
-        <div id="slider-{{id}}-w"></div>\
-    </div>';
 
-declare let noUiSlider;
-
-export class UiRGBWSlidersNode extends UiNode {
-    UPDATE_INTERVAL = 100;
-
-    dataUpdated = false;
-
-    sliderR: HTMLElement;
-    sliderG: HTMLElement;
-    sliderB: HTMLElement;
-    sliderW: HTMLElement;
+export class UiRgbwSlidersNode extends UiNode {
 
 
     constructor() {
-        super("RGB Sliders", "UiRGBWSlidersNode");
+        super("RGBW Sliders", "UiRgbwSlidersNode");
 
         this.descriprion = "";
-        this.properties['r'] = 0;
-        this.properties['g'] = 0;
-        this.properties['b'] = 0;
-        this.properties['w'] = 0;
+        this.UPDATE_INPUTS_INTERVAL = 100;
+        this.setState({ r: 0, g: 0, b: 0, w: 0 });
 
+        this.addInput("output", "string");
         this.addOutput("output", "string");
     }
 
@@ -48,110 +27,39 @@ export class UiRGBWSlidersNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server) {
-            let hex = Utils.numsToRgbHex([
-                this.properties['r'],
-                this.properties['g'],
-                this.properties['b'],
-                this.properties['w']]);
+            let state = this.getState();
+            let hex = Utils.numsToRgbwHex([state.r, state.g, state.b, state.w]);
             this.setOutputData(0, hex);
         }
-
-        if (this.side == Side.dashboard) {
-
-            this.sliderR = $("#slider-" + this.id + "-r")[0];
-            this.sliderG = $("#slider-" + this.id + "-g")[0];
-            this.sliderB = $("#slider-" + this.id + "-b")[0];
-            this.sliderW = $("#slider-" + this.id + "-w")[0];
-
-            noUiSlider.create(this.sliderR, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-            noUiSlider.create(this.sliderG, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-            noUiSlider.create(this.sliderB, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-            noUiSlider.create(this.sliderW, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-
-
-            let that = this;
-            (<any>this.sliderR).noUiSlider.on('slide', function () {
-                that.properties['r'] = (<any>that.sliderR).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-            (<any>this.sliderG).noUiSlider.on('slide', function () {
-                that.properties['g'] = (<any>that.sliderG).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-            (<any>this.sliderB).noUiSlider.on('slide', function () {
-                that.properties['b'] = (<any>that.sliderB).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-            (<any>this.sliderW).noUiSlider.on('slide', function () {
-                that.properties['w'] = (<any>that.sliderW).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-
-            this.startSendingToServer();
-
-            this.onGetMessageToDashboardSide({
-                r: this.properties['r'],
-                g: this.properties['g'],
-                b: this.properties['b'],
-                w: this.properties['w'],
-            })
-        }
-    }
-
-
-    startSendingToServer() {
-        let that = this;
-        setInterval(function () {
-            if (that.dataUpdated) {
-                that.dataUpdated = false;
-                that.sendMessageToServerSide({
-                    r: that.properties['r'],
-                    g: that.properties['g'],
-                    b: that.properties['b'],
-                    w: that.properties['w'],
-                });
-            }
-        }, this.UPDATE_INTERVAL);
     }
 
     onGetMessageToServerSide(data) {
-        this.isRecentlyActive = true;
-        this.properties['r'] = data.r;
-        this.properties['g'] = data.r;
-        this.properties['b'] = data.r;
-        this.properties['w'] = data.r;
-        let hex = Utils.numsToRgbwHex([data.r, data.g, data.b, data.w]);
+        console.log(data);
+        if (data.state != null)
+            this.setRGBW(data.state.r, data.state.g, data.state.b, data.state.w);
+    };
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        this.setHex(val);
+    };
+
+    setHex(hex) {
+        let rgbw = Utils.rgbwHexToNums(hex);
+        this.setRGBW(rgbw[0], rgbw[1], rgbw[2], rgbw[3])
+    }
+
+    setRGBW(r, g, b, w) {
+        let hex = Utils.numsToRgbwHex([r, g, b, w]);
+
         this.setOutputData(0, hex);
         this.sendIOValuesToEditor();
-        this.sendMessageToDashboardSide(data);
-    };
+        this.isRecentlyActive = true;
 
-    onGetMessageToDashboardSide(data) {
-        (<any>this.sliderR).noUiSlider.set(data.r);
-        (<any>this.sliderG).noUiSlider.set(data.g);
-        (<any>this.sliderB).noUiSlider.set(data.b);
-        (<any>this.sliderW).noUiSlider.set(data.w);
-    };
+        let state = this.getState();
+        if (state.r != r || state.g != g || state.b != b || state.w != w)//prevent loop sending
+            this.setState({ r, g, b, w });
+    }
 }
 
-Container.registerNodeType("ui/rgbw-sliders", UiRGBWSlidersNode);
+Container.registerNodeType("ui/rgbw-sliders", UiRgbwSlidersNode);

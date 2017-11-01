@@ -4,6 +4,7 @@ import UiSwitchNode from "./UiSwitchNode.vue";
 import UiProgressNode from "./UiProgressNode.vue";
 import UiSliderNode from "./UiSliderNode.vue";
 import UiRgbSlidersNode from "./UiRgbSlidersNode.vue";
+import UiRgbwSlidersNode from "./UiRgbwSlidersNode.vue";
 
 export default {
     UiLabelNode,
@@ -11,5 +12,6 @@ export default {
     UiSwitchNode,
     UiProgressNode,
     UiSliderNode,
-    UiRgbSlidersNode
+    UiRgbSlidersNode,
+    UiRgbwSlidersNode
 }
