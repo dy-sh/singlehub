@@ -3,6 +3,7 @@ import UiButtonNode from "./UiButtonNode.vue";
 import UiSwitchNode from "./UiSwitchNode.vue";
 import UiProgressNode from "./UiProgressNode.vue";
 import UiSliderNode from "./UiSliderNode.vue";
+import UiRgbSlidersNode from "./UiRgbSlidersNode.vue";
 
 export default {
     UiLabelNode,
@@ -10,4 +11,5 @@ export default {
     UiSwitchNode,
     UiProgressNode,
     UiSliderNode,
+    UiRgbSlidersNode
 }

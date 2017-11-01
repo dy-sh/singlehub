@@ -1,5 +1,5 @@
 <template lang='pug'>
-  v-card(color='grey darken-3')
+  v-card
     v-toolbar(color='primary' dense height="45px")
       v-toolbar-title {{title}}
       v-spacer
