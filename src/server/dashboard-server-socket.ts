@@ -219,17 +219,34 @@ export class DashboardServerSocket {
 
 
 
-            //join client to dashboard room
-            socket.on('room', (room) => {
+            //client join to dashboard room
+            socket.on('join-room', (room) => {
+                //leave room
                 if ((<any>socket).room != null) {
                     log.debug("Leave dashboard room [" + (<any>socket).room + "]");
-                    socket.leave((<any>socket).room);
+                    socket.leave((<any>socket).room, () => {
+                        //join room
+                        (<any>socket).room = room;
+                        socket.join(room);
+                        log.debug("Join to dashboard room [" + room + "]");
+                    });
+                } else {
+                    //join room
+                    (<any>socket).room = room;
+                    socket.join(room);
+                    log.debug("Join to dashboard room [" + room + "]");
                 }
-
-                (<any>socket).room = room;
-                socket.join(room);
-                log.debug("Join to dashboard room [" + room + "]");
             });
+
+            //client leave to dashboard room
+            socket.on('leave-room', (room) => {
+                //leave room
+                log.debug("Leave dashboard room [" + room + "]");
+                socket.leave(room);
+                (<any>socket).room = null;
+            });
+
+
         });
 
         //todo
