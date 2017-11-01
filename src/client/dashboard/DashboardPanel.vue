@@ -32,22 +32,31 @@ export default {
     ]
   }),
   watch: {
-    name() {
-      this.connect();
+    name(val, oldVal) {
+      this.leaveRoom(oldVal);
+      this.joinRoom(val);
     }
   },
   components: Nodes,
   methods: {
-    connect() {
+    joinRoom(roomName) {
       //get state
-      this.$socket.emit("getUiPanel", this.name);
+      this.$socket.emit("getUiPanel", roomName);
       //join room
-      console.log("Join to dashboard room [" + this.name + "]");
-      this.$socket.emit("room", this.name);
+      console.log("Join to dashboard room [" + roomName + "]");
+      this.$socket.emit("join-room", roomName);
+    },
+    leaveRoom(roomName) {
+      //unsubsribe
+      console.log("Leave dashboard room [" + roomName + "]");
+      this.$socket.emit("leave-room", roomName);
     }
   },
+  beforeDestroy() {
+    this.leaveRoom(this.name);
+  },
   mounted() {
-    this.connect();
+    this.joinRoom(this.name);
   },
   sockets: {
     getUiPanel(panel) {

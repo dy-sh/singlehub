@@ -26,11 +26,11 @@ export default {
   },
   watch: {
     state(val) {
-      console.log("state", val);
+      // console.log("state", val);
       this.sliderValue = val;
     },
     sliderValue(val) {
-      console.log("sliderValue", val);
+      // console.log("sliderValue", val);
 
       //rpevent loop sending
       if (this.state != val) {
