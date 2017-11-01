@@ -9,7 +9,7 @@ import { Side, Container } from "../../container";
 import Utils from "../../utils";
 
 
-export class UiRGBSlidersNode extends UiNode {
+export class UiRgbSlidersNode extends UiNode {
 
 
     constructor() {
@@ -26,8 +26,11 @@ export class UiRGBSlidersNode extends UiNode {
     onAdded() {
         super.onAdded();
 
-        if (this.side == Side.server)
-            this.setOutputData(0, this.getState().hex);
+        if (this.side == Side.server) {
+            let state = this.getState();
+            let hex = Utils.numsToRgbHex([state.r, state.g, state.b]);
+            this.setOutputData(0, hex);
+        }
     }
 
     onGetMessageToServerSide(data) {
@@ -59,4 +62,4 @@ export class UiRGBSlidersNode extends UiNode {
     }
 }
 
-Container.registerNodeType("ui/rgb-sliders", UiRGBSlidersNode);
+Container.registerNodeType("ui/rgb-sliders", UiRgbSlidersNode);

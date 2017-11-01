@@ -59,5 +59,7 @@ export default {
 </script>
 
 <style scoped>
-
+.input-group.input-group--slider {
+  height: 45px;
+}
 </style>
