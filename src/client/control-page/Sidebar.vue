@@ -1,5 +1,5 @@
 <template lang='pug'>
-  v-navigation-drawer(v-if="sidebarIsVisible" permanent clipped app width=170)
+  v-navigation-drawer(v-if="sidebarIsVisible" permanent clipped app width=170 class="panel-dark")
     //- v-navigation-drawer(persistent app clipped enable-resize-watcher v-model='sidebarIsVisible' width=170)
     v-list(dense v-if="dashboardIsVisible")
       v-subheader.mt-3.grey--text.text--darken-1 DASHBOARD
