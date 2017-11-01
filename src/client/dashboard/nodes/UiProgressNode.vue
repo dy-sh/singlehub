@@ -6,7 +6,7 @@
           v-list-tile-title {{uiElement.title}}
           v-list-tile-sub-title {{uiElement.subtitle}}
         v-list-tile-content   
-          v-progress-linear(v-model="state")
+          v-progress-linear(v-model="state", color="primary")
 </template>
 
 

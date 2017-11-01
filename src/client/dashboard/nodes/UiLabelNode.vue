@@ -5,7 +5,7 @@
         v-list-tile-title {{uiElement.title}}
         v-list-tile-sub-title {{uiElement.subtitle}}
       v-spacer
-      v-chip(label outline color="blue") {{state}}   
+      v-chip(label outline color="primary") {{state}}   
 
   //- v-container(v-if="stateReceived" grid-list-xs)
   //-   v-layout(row wrap)

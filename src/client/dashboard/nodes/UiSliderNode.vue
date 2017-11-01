@@ -6,7 +6,7 @@
           v-list-tile-title {{uiElement.title}}
           v-list-tile-sub-title {{uiElement.subtitle}}
         v-list-tile-content.slider-parent
-          v-slider.slder(v-model="sliderValue")
+          v-slider.slder(v-model="sliderValue", color="primary")
 </template>
 
 

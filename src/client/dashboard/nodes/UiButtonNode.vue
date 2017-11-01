@@ -6,7 +6,7 @@
         v-list-tile-sub-title {{uiElement.subtitle}}
       v-spacer
       v-list-tile-action
-        v-btn(color='blue darken-2', @click='onClick') {{state.buttonText}}   
+        v-btn(color='primary', @click='onClick') {{state.buttonText}}   
 </template>
 
 
