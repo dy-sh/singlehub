@@ -4,135 +4,59 @@
  */
 
 
-import { Node } from "../../node";
-import Utils from "../../utils";
-import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
+import { Side, Container } from "../../container";
+import Utils from "../../utils";
 
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <span id="nodeTitle-{{id}}"></span>\
-        <br />\
-        <div id="slider-{{id}}-r" class="spacebottom"></div>\
-        <div id="slider-{{id}}-g" class="spacebottom"></div>\
-        <div id="slider-{{id}}-b"></div>\
-    </div>';
-
-declare let noUiSlider;
 
 export class UiRGBSlidersNode extends UiNode {
-    UPDATE_INTERVAL = 100;
-
-    dataUpdated = false;
-
-    sliderR: HTMLElement;
-    sliderG: HTMLElement;
-    sliderB: HTMLElement;
 
 
     constructor() {
-        super("RGB Sliders", "UiRGBSlidersNode");
+        super("RGB Sliders", "UiRgbSlidersNode");
 
         this.descriprion = "";
-        this.properties['r'] = 0;
-        this.properties['g'] = 0;
-        this.properties['b'] = 0;
+        this.UPDATE_INPUTS_INTERVAL = 100;
+        this.setState({ r: 0, g: 0, b: 0 });
 
+        this.addInput("output", "string");
         this.addOutput("output", "string");
     }
 
     onAdded() {
         super.onAdded();
 
-        if (this.side == Side.server) {
-            let hex = Utils.numsToRgbHex([
-                this.properties['r'],
-                this.properties['g'],
-                this.properties['b']]);
-            this.setOutputData(0, hex);
-        }
-
-        if (this.side == Side.dashboard) {
-
-            this.sliderR = $("#slider-" + this.id + "-r")[0];
-            this.sliderG = $("#slider-" + this.id + "-g")[0];
-            this.sliderB = $("#slider-" + this.id + "-b")[0];
-
-            noUiSlider.create(this.sliderR, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-            noUiSlider.create(this.sliderG, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-            noUiSlider.create(this.sliderB, {
-                start: 0,
-                connect: 'lower',
-                animate: false,
-                range: { 'min': 0, 'max': 255 }
-            });
-
-
-            let that = this;
-            (<any>this.sliderR).noUiSlider.on('slide', function () {
-                that.properties['r'] = (<any>that.sliderR).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-            (<any>this.sliderG).noUiSlider.on('slide', function () {
-                that.properties['g'] = (<any>that.sliderG).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-            (<any>this.sliderB).noUiSlider.on('slide', function () {
-                that.properties['b'] = (<any>that.sliderB).noUiSlider.get();
-                that.dataUpdated = true;
-            });
-
-            this.startSendingToServer();
-
-            this.onGetMessageToDashboardSide({
-                r: this.properties['r'],
-                g: this.properties['g'],
-                b: this.properties['b'],
-            })
-        }
-    }
-
-
-    startSendingToServer() {
-        let that = this;
-        setInterval(function () {
-            if (that.dataUpdated) {
-                that.dataUpdated = false;
-                that.sendMessageToServerSide({
-                    r: that.properties['r'],
-                    g: that.properties['g'],
-                    b: that.properties['b'],
-                });
-            }
-        }, this.UPDATE_INTERVAL);
+        if (this.side == Side.server)
+            this.setOutputData(0, this.getState().hex);
     }
 
     onGetMessageToServerSide(data) {
-        this.isRecentlyActive = true;
-        this.properties['r'] = data.r;
-        this.properties['g'] = data.r;
-        this.properties['b'] = data.r;
-        let hex = Utils.numsToRgbHex([data.r, data.g, data.b]);
-        this.setOutputData(0, hex);
-        this.sendIOValuesToEditor();
-        this.sendMessageToDashboardSide(data);
+        console.log(data);
+        if (data.state != null)
+            this.setRGB(data.state.r, data.state.g, data.state.b);
     };
 
-    onGetMessageToDashboardSide(data) {
-        (<any>this.sliderR).noUiSlider.set(data.r);
-        (<any>this.sliderG).noUiSlider.set(data.g);
-        (<any>this.sliderB).noUiSlider.set(data.b);
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        this.setHex(val);
     };
+
+    setHex(hex) {
+        let rgb = Utils.rgbHexToNums(hex);
+        this.setRGB(rgb[0], rgb[1], rgb[2])
+    }
+
+    setRGB(r, g, b) {
+        let hex = Utils.numsToRgbHex([r, g, b]);
+
+        this.setOutputData(0, hex);
+        this.sendIOValuesToEditor();
+        this.isRecentlyActive = true;
+
+        let state = this.getState();
+        if (state.r != r || state.g != g || state.b != b)//prevent loop sending
+            this.setState({ r, g, b });
+    }
 }
 
 Container.registerNodeType("ui/rgb-sliders", UiRGBSlidersNode);
