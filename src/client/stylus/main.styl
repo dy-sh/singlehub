@@ -1,2 +1,187 @@
 /** Stylus Styles */
+@require '../../../node_modules/vuetify/src/stylus/settings/_colors'
+
+$theme := {
+  primary: $blue.darken-2
+  accent: $red.accent-2
+  secondary: $grey.lighten-1
+  info: $blue.lighten-1
+  warning: $amber.darken-2
+  error: $red.accent-4
+  success: $green.lighten-2
+  panel-dark: #222528,
+  
+}
+
+
+$material-light := {
+  status-bar: {
+    regular: #E0E0E0,
+    lights-out: rgba(#fff, .7)
+  },
+  app-bar: #F5F5F5,
+  background: #FAFAFA,
+  cards: #FFFFFF,
+  chips: {
+    background: $grey.lighten-2,
+    color: rgba(#000, .87)
+  },
+  dividers: rgba(#000, .12),
+  text: {
+    theme: #fff,
+    primary: rgba(#000, .87),
+    secondary: rgba(#000, .54),
+    disabled: rgba(#000, .38),
+    link: $theme.primary,
+    link-hover: $grey.darken-3
+  },
+  icons: {
+    active: rgba(#000, .54),
+    inactive: rgba(#000, .38)
+  },
+  buttons: {
+    disabled: rgba(#000, .26),
+    focused: rgba(#000, .12),
+    focused-alt: rgba(#fff, .6),
+    pressed: rgba(#999, .4)
+  },
+  expansion-panels: {
+    focus: #EEEEEE
+  },
+  selection-controls: {
+    active: $teal.base,
+    thumb: {
+      inactive: $grey.lighten-5,
+      disabled: $grey.lighten-1
+    },
+    track: {
+      inactive: rgba(#000, .38),
+      disabled: rgba(#000, .12)
+    }
+  },
+  slider: {
+    active: rgba(#000, .38),
+    inactive: rgba(#000, .26),
+    disabled: rgba(#000, .26),
+    discrete: #000
+  },
+  tabs: {
+    active: $theme.primary,
+    inactive: rgba(#000, .70)
+  },
+  input-bottom-line: rgba(#000, .42),
+  stepper: {
+    active: rgba(#fff, 1),
+    completed: rgba(#000, 0.87),
+    hover: rgba(#000, 0.54)
+  },
+  table: {
+    active: $grey.lighten-4
+    hover: $grey.lighten-3
+  },
+  picker: {
+    buttons: #fff,
+    date: $theme.primary,
+    title: $theme.primary,
+    body: #fff,
+    clock: $grey.lighten-2
+  },
+  bg-color: #fff
+  fg-color: #000
+  text-color: #000
+  primary-text-percent: .87
+  secondary-text-percent: .54
+  disabledORhints-text-percent: .38
+  divider-percent: .12
+  active-icon-percent: .54
+  inactive-icon-percent: .38
+}
+
+
+$material-dark := {
+  status-bar: {
+    regular: #000000,
+    lights-out: rgba(#000, .2)
+  },
+  app-bar: #1c2023,
+  background: #222528,
+  cards: #363B3F,
+  chips: {
+    background: #FFF,
+    color: $material-light.text.primary
+  },
+  dividers: rgba(#fff, .12),
+  text: {
+    theme: #fff,
+    primary: #fff,
+    secondary: rgba(#fff, .70),
+    disabled: rgba(#fff, .50),
+    link: $theme.accent,
+    link-hover: $grey.lighten-3
+  },
+  icons: {
+    active: #fff,
+    inactive: rgba(#fff, .5)
+  },
+  buttons: {
+    disabled: rgba(#fff, .3),
+    focused: rgba(#fff, .12),
+    focused-alt: rgba(#fff, .1),
+    pressed: rgba(#ccc, .25)
+  },
+  expansion-panels: {
+    focus: rgba(#000, .70)
+  },
+  selection-controls: {
+    active: $teal.lighten-3,
+    thumb: {
+      inactive: $grey.lighten-1,
+      disabled: $grey.darken-3
+    },
+    track: {
+      inactive: rgba(#fff, .3),
+      disabled: rgba(#fff, .1)
+    }
+  },
+  slider: {
+    active: rgba(#fff, .3),
+    inactive: rgba(#fff, .2),
+    disabled: rgba(#fff, .2),
+    discrete: #fff
+  },
+  tabs: {
+    active: #fff,
+    inactive: rgba(#fff, .7)
+  },
+  input-bottom-line: rgba(#fff, .7),
+
+  stepper: {
+    active: rgba(#fff, 1),
+    completed: rgba(#fff, 0.87),
+    hover: rgba(#fff, 0.75)
+  },
+  table: {
+    active: #505050
+    hover: $grey.darken-2
+  },
+  picker: {
+    date: $theme.accent,
+    title: $grey.darken-2,
+    body: #424242,
+    clock: $grey.darken-2,
+    buttons: rgba(#000, .87)
+  },
+  bg-color: #303030
+  fg-color: #fff
+  text-color: #fff
+  primary-text-percent: 1
+  secondary-text-percent: .70
+  disabledORhints-text-percent: .50
+  divider-percent: .12
+  active-icon-percent: 1
+  inactive-icon-percent: .50
+}
+
+
+
 @import '../../../node_modules/vuetify/src/stylus/main'
