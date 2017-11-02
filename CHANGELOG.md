@@ -82,10 +82,12 @@ You can change some more node settings by calling the "Settings" in node context
   
 - **UI**:
   - **Button**. Change button text option.
-  - **Switch**. Now it has an input slot. 
+  - **Switch**. Now it has an input. 
   - **State**.  It is no longer needed (due to the Switch), so it is removed.
-  - **Slider**. Now it has an input slot.
+  - **Slider**. Now it has an input.
   - **Chart**. Changing settings in editor. Chart log realtime update.
+  - **RGB Sliders**. Now it has an input. Added a preview of the color.
+  - **RGBW Sliders**. Now it has an input. Added a preview of the color.
    
 - **Numbers**:
   - **Random**. Now you can set the number of digits after the decimal point.
