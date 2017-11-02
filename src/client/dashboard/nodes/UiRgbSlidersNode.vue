@@ -7,7 +7,10 @@
         div
           v-slider(v-model="r", color="red lighten-2", max=255,min=0, hide-details)
           v-slider(v-model="g", color="green lighten-2", max=255,min=0, hide-details)
-          v-slider(v-model="b", color="blue lighten-2", max=255,min=0, hide-details)  
+          v-slider(v-model="b", color="blue lighten-2", max=255,min=0, hide-details) 
+      v-flex(text-xs-right xs1)
+        v-card.mt-4(class="rgb-preview" flat)
+          v-card-media(height="110px" v-bind:style="{ background: `rgb(${r}, ${g}, ${b})` }")           
 </template>
 
 
@@ -61,5 +64,8 @@ export default {
 <style scoped>
 .input-group.input-group--slider {
   height: 45px;
+}
+.rgb-preview {
+  width: 5px;
 }
 </style>
