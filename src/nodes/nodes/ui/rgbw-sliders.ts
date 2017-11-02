@@ -34,7 +34,7 @@ export class UiRgbwSlidersNode extends UiNode {
     }
 
     onGetMessageToServerSide(data) {
-        console.log(data);
+        // console.log(data);
         if (data.state != null)
             this.setRGBW(data.state.r, data.state.g, data.state.b, data.state.w);
     };
@@ -45,8 +45,12 @@ export class UiRgbwSlidersNode extends UiNode {
     };
 
     setHex(hex) {
-        let rgbw = Utils.rgbwHexToNums(hex);
-        this.setRGBW(rgbw[0], rgbw[1], rgbw[2], rgbw[3])
+        try {
+            let rgbw = Utils.rgbwHexToNums(hex);
+            this.setRGBW(rgbw[0], rgbw[1], rgbw[2], rgbw[3])
+        } catch (e) {
+            this.debugErr(e);
+        }
     }
 
     setRGBW(r, g, b, w) {
