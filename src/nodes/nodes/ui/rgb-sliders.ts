@@ -34,7 +34,7 @@ export class UiRgbSlidersNode extends UiNode {
     }
 
     onGetMessageToServerSide(data) {
-        console.log(data);
+        // console.log(data);
         if (data.state != null)
             this.setRGB(data.state.r, data.state.g, data.state.b);
     };
@@ -45,8 +45,12 @@ export class UiRgbSlidersNode extends UiNode {
     };
 
     setHex(hex) {
-        let rgb = Utils.rgbHexToNums(hex);
-        this.setRGB(rgb[0], rgb[1], rgb[2])
+        try {
+            let rgb = Utils.rgbHexToNums(hex);
+            this.setRGB(rgb[0], rgb[1], rgb[2])
+        } catch (e) {
+            this.debugErr(e);
+        }
     }
 
     setRGB(r, g, b) {
