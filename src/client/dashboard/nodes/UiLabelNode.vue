@@ -17,11 +17,6 @@
 
 
 
-
-
-
-
-
 <script>
 import getNodeStateMixin from "./mixins/getNodeState";
 
