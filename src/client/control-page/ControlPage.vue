@@ -23,6 +23,7 @@ div
 
   main
     v-content.dash
+      root-nodes
       //- v-container(fluid)
       div(v-if="dashboardIsVisible && editorIsVisible")
         v-layout(row wrap)
@@ -52,13 +53,15 @@ import DashboardPanel from "../dashboard/DashboardPanel";
 import Toolbar from "./Toolbar";
 import Sidebar from "./Sidebar";
 import Editor from "../editor/Editor";
+import RootNodes from "./root-nodes/RootNodes";
 
 export default {
   components: {
     "dashboard-panel": DashboardPanel,
     toolbar: Toolbar,
     sidebar: Sidebar,
-    editor: Editor
+    editor: Editor,
+    "root-nodes": RootNodes
   },
   data: () => ({
     dashboardPanels: [
