@@ -88,6 +88,9 @@ You can change some more node settings by calling the "Settings" in node context
   - **Chart**. Changing settings in editor. Chart log realtime update.
   - **RGB Sliders**. Now it has an input. Added a preview of the color.
   - **RGBW Sliders**. Now it has an input. Added a preview of the color.
+  - **Audio**. Now it is not related to the any panel in the deshbord. This means that the sound will be played regardless of which panel is open.
+  - **Voice Chrome**. Now it is not related to the any panel in the deshbord. This means that the sound will be played regardless of which panel is open.
+  - **Voice Yandex**. Now it is not related to the any panel in the deshbord. This means that the sound will be played regardless of which panel is open.
    
 - **Numbers**:
   - **Random**. Now you can set the number of digits after the decimal point.
