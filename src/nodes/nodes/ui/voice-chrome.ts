@@ -9,18 +9,11 @@ import Utils from "../../utils";
 import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
 
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <span id="nodeTitle-{{id}}"></span>\
-    </div>';
 
-declare let SpeechSynthesisUtterance;
-
-
-export class UiVoiceChromeNode extends UiNode {
+export class UiVoiceChromeNode extends Node {
 
     constructor() {
-        super("Voice Chrome", "UiVoiceChromeNode");
+        super();
 
         this.descriprion = "This is a UI node. It can generate speech from the incoming text. <br/>" +
             "As the TTS engine is used built-in Google Chrome TTS, " +
@@ -31,25 +24,16 @@ export class UiVoiceChromeNode extends UiNode {
             // "If it is not connected, the message will be played as soon as the text has come to the Text input."
 
             this.addInput("text", "string");
-        // this.addInput("[play]", "boolean");
     }
 
-
-    onAdded() {
-        super.onAdded();
-    }
 
     onInputUpdated() {
         // if (this.getInputData(1) != false) {
         let text = this.getInputData(0);
-        this.sendMessageToDashboardSide({ text: text })
+        if (text != null && text != "")
+            this.container.server_dashboard_socket.emit("uiVoiceChromeNode", text);
         this.isRecentlyActive = true;
         // }
-    };
-
-    onGetMessageToDashboardSide(data) {
-        let msg = new SpeechSynthesisUtterance(data.text);
-        (<any>window).speechSynthesis.speak(msg);
     };
 }
 
