@@ -50,3 +50,9 @@ Feel free to join the development!
 **How to run for develop (watch mode):**
 -------------------
 - npm run watch
+
+
+**Issues:**
+-------------------
+If you get "Can't find Python executable C:\Python36\python.exe, you can set the PYTHON env variable." error when installing, try this:
+- npm install --global --production windows-build-tools
