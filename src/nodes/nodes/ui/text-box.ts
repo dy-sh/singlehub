@@ -29,14 +29,23 @@ export class UiTextBoxNode extends UiNode {
             this.setOutputData(0, this.getState());
     }
 
-
+    onGetMessageToServerSide(data) {
+        this.setValue(data.state);
+    };
 
     onInputUpdated() {
         let val = this.getInputData(0);
-        this.setState(val);
+        this.setValue(val);
     };
 
+    setValue(val) {
+        this.setOutputData(0, val);
+        this.sendIOValuesToEditor();
+        this.isRecentlyActive = true;
 
+        if (this.getState() != val)//prevent loop sending
+            this.setState(val);
+    }
 }
 
 Container.registerNodeType("ui/text-box", UiTextBoxNode);
