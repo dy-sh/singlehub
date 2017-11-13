@@ -9,19 +9,6 @@ import Utils from "../../utils";
 import { Side, Container } from "../../container";
 import { UiNode } from "./ui-node";
 
-let template =
-    '<div class="ui attached clearing segment" id="node-{{id}}">\
-        <span id="nodeTitle-{{id}}"></span>\
-        <div class="ui form text-box-form">\
-            <div class="ui field">\
-                <div class="ui small action input">\
-                    <input type="text" id="textBoxText-{{id}}">\
-                    <button type="button" class="ui small button" id="textBoxSend-{{id}}">Send</button>\
-                </div>\
-            </div>\
-        </div>\
-    </div>';
-
 
 export class UiTextBoxNode extends UiNode {
 
@@ -29,8 +16,9 @@ export class UiTextBoxNode extends UiNode {
         super("TextBox", "UiTextBoxNode");
 
         this.descriprion = "";
-        this.properties['state'] = null;
+        this.setState("");
 
+        this.addInput("input", "boolean");
         this.addOutput("output", "string");
     }
 
@@ -38,32 +26,17 @@ export class UiTextBoxNode extends UiNode {
         super.onAdded();
 
         if (this.side == Side.server)
-            this.setOutputData(0, this.properties['state']);
-
-        if (this.side == Side.dashboard) {
-            let that = this;
-            $('#textBoxSend-' + this.id).click(function () {
-                let value = $('#textBoxText-' + that.id).val();
-                that.sendMessageToServerSide({ value: value });
-            });
-
-            this.onGetMessageToDashboardSide({ value: this.properties['state'] })
-        }
+            this.setOutputData(0, this.getState());
     }
 
-    onGetMessageToServerSide(data) {
-        this.isRecentlyActive = true;
-        if (data.value == "")
-            data.value = null;
-        this.properties['state'] = data.value;
-        this.setOutputData(0, data.value);
-        this.sendMessageToDashboardSide(data);
-        this.sendIOValuesToEditor();
+
+
+    onInputUpdated() {
+        let val = this.getInputData(0);
+        this.setState(val);
     };
 
-    onGetMessageToDashboardSide(data) {
-        $('#textBoxText-' + this.id).val(data.value);
-    };
+
 }
 
 Container.registerNodeType("ui/text-box", UiTextBoxNode);
