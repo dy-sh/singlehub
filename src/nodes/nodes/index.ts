@@ -28,7 +28,7 @@ import "./ui/progress";
 import "./ui/slider";
 import "./ui/rgb-sliders";
 import "./ui/rgbw-sliders";
-// import "./ui/text-box";
+import "./ui/text-box";
 // import "./ui/log";
 import "./ui/audio";
 import "./ui/voice-chrome";
