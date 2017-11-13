@@ -1,12 +1,11 @@
 <template lang='pug'>
-  div
-    v-list(dense)
-      v-list-tile(v-if="stateReceived" height=300)
-        v-list-tile-content
-          v-list-tile-title {{uiElement.title}}
-          v-list-tile-sub-title {{uiElement.subtitle}}
-        v-list-tile-content   
-          v-progress-linear(v-model="state", color="primary")
+  v-list(dense)
+    v-list-tile(v-if="stateReceived" height=300)
+      v-list-tile-content
+        v-list-tile-title {{uiElement.title}}
+        v-list-tile-sub-title {{uiElement.subtitle}}
+      v-list-tile-content   
+        v-progress-linear(v-model="state", color="primary")
 </template>
 
 
