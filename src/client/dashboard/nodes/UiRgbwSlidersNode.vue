@@ -19,10 +19,10 @@
 
 <script>
 import getNodeStateMixin from "./mixins/getNodeState";
-import sendMessageToNodeeMixin from "./mixins/sendMessageToNode";
+import sendMessageToNodeMixin from "./mixins/sendMessageToNode";
 
 export default {
-  mixins: [getNodeStateMixin, sendMessageToNodeeMixin],
+  mixins: [getNodeStateMixin, sendMessageToNodeMixin],
   props: ["uiElement"],
   data() {
     return {
