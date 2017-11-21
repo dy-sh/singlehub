@@ -18,7 +18,7 @@ export class UiTextBoxNode extends UiNode {
         this.descriprion = "";
         this.setState("");
 
-        this.addInput("input", "boolean");
+        this.addInput("input", "string");
         this.addOutput("output", "string");
     }
 
