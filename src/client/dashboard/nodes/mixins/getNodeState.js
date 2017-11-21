@@ -12,7 +12,7 @@ export default {
         //subsribe events
         this.$options.sockets.dashboardElementGetNodeState = data => {
             if (this.uiElement.cid === data.cid && this.uiElement.id === data.id) {
-                console.log("state received", data);
+                // console.log("state received", data);
                 this.state = data.state;
                 this.stateReceived = true;
             }
