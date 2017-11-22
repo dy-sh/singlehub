@@ -1,10 +1,11 @@
 /**
  * Created by Derwish (derwish.pro@gmail.com) on 04.07.2016.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 
-import {Node} from "../node";
-import {Container} from "../container";
+import { Node } from "../node";
+import { Container } from "../container";
 
 
 class MathAbsNode extends Node {
@@ -349,7 +350,7 @@ class MathPowNode extends Node {
         let y = this.getInputData(1);
 
         if (x != null && y != null)
-            this.setOutputData(0, Math.pow(x,y));
+            this.setOutputData(0, Math.pow(x, y));
         else
             this.setOutputData(0, null);
     }

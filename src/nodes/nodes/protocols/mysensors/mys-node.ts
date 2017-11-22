@@ -1,3 +1,8 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 20.30.2017.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 import { Node } from "../../../node";
 import Utils from "../../../utils";
 import { Container, Side } from "../../../container";

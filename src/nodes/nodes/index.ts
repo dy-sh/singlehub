@@ -1,5 +1,5 @@
 /**
- * Created by Derwish (derwish.pro@gmail.com) on 25.02.17.
+ * Created by Derwish (derwish.pro@gmail.com) on 25.02.2017.
  * License: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
@@ -29,7 +29,7 @@ import "./ui/slider";
 import "./ui/rgb-sliders";
 import "./ui/rgbw-sliders";
 import "./ui/text-box";
-// import "./ui/log";
+import "./ui/log";
 import "./ui/audio";
 import "./ui/voice-chrome";
 import "./ui/voice-yandex";

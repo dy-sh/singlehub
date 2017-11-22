@@ -1,5 +1,5 @@
 /**
- * Created by Derwish (derwish.pro@gmail.com) on 11.02.17.
+ * Created by Derwish (derwish.pro@gmail.com) on 11.02.2017.
  */
 
 import { Node } from "../node";
