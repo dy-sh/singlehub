@@ -1,3 +1,8 @@
+/**
+ * Created by Derwish (derwish.pro@gmail.com) on 12.03.2017.
+ * License: http://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 import { IXiomiDeviceModel, XiaomiDeviceNode } from '../xiaomi-device';
 import { Side } from "../../../../container";
 
