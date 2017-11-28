@@ -1,6 +1,17 @@
 <template lang='pug'>
   div
-    v-text-field.log(name="input-1" :label="uiElement.title" textarea hide-details :value="logText")
+    v-list(dense)
+      v-list-tile
+        v-list-tile-content
+          v-list-tile-title {{uiElement.title}}
+          v-list-tile-sub-title {{uiElement.subtitle}}
+        v-spacer
+        v-list-tile-action
+          //- v-btn(small color="primary" @click="onClearClick") CLEAR
+
+    div.log(v-chat-scroll="{always: false}" style="overflow-y: scroll; height: 150px;")
+      ul(class="messages")
+        li(class="message" v-for="rec in log") {{ rec.date | moment("DD.MM.YYYY H:mm:ss.SSS") }}: {{rec.value}}
     v-btn(small color="primary" @click="onClearClick") CLEAR
 </template>
 
@@ -9,28 +20,23 @@
 <script>
 import onNodeMessageMixin from "./mixins/onNodeMessage";
 import sendMessageToNodeMixin from "./mixins/sendMessageToNode";
+import moment from "moment";
 
 export default {
   mixins: [onNodeMessageMixin, sendMessageToNodeMixin],
   props: ["uiElement"],
   data() {
     return {
-      logText: ""
+      log: []
     };
   },
   methods: {
     onNodeMessage(data) {
-      if (data.log != undefined) {
-        this.logText = "";
-        data.log.forEach(record => this.addLogRecord(record));
-      }
-      if (data.record != undefined) this.addLogRecord(data.record);
+      if (data.log != undefined) this.log = data.log;
+      if (data.record != undefined) this.log.push(data.record);
     },
     onClearClick() {
       this.sendMessageToNode("clearLog");
-    },
-    addLogRecord(record) {
-      this.logText += record.date + ": " + record.value + "\n";
     }
   },
   mounted() {
@@ -41,6 +47,6 @@ export default {
 
 <style>
 .log {
-  padding: 15px 5px 0px 5px;
+  margin: 0px 5px;
 }
 </style>
