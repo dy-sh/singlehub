@@ -5,12 +5,18 @@ import Vuetify from 'vuetify'
 import './stylus/main.styl'
 import Routes from "./routes"
 import VueSocketIO from 'vue-socket.io';
+import VueMoment from 'vue-moment';
+import VueChatScroll from 'vue-chat-scroll'
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
 Vue.use(VueSocketIO, '/dashboard');
+Vue.use(VueMoment);
+Vue.use(VueChatScroll)
 
-const router = new VueRouter({ routes: Routes });
+const router = new VueRouter({
+  routes: Routes
+});
 
 new Vue({
   el: '#app',
