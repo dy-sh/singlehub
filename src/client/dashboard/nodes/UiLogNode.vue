@@ -7,7 +7,7 @@
           v-list-tile-sub-title {{uiElement.subtitle}}
         v-spacer
         v-list-tile-action
-          v-btn(small @click="onClearClick") CLEAR
+          v-btn(small flat color="grey darken-2" @click="onClearClick") CLEAR
 
     div.log(v-chat-scroll="{always: false}" style="overflow-y: scroll; height: 150px;")
       ul
