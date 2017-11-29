@@ -27,13 +27,23 @@ export default {
   props: ["uiElement"],
   data() {
     return {
-      log: []
+      log: [],
+      maxRecords: 10
     };
   },
   methods: {
     onNodeMessage(data) {
       if (data.log != undefined) this.log = data.log;
-      if (data.record != undefined) this.log.push(data.record);
+
+      if (data.maxRecords != undefined) {
+        this.maxRecords = data.maxRecords;
+        this.log.splice(0, this.log.length - this.maxRecords);
+      }
+
+      if (data.record != undefined) {
+        this.log.push(data.record);
+        this.log.splice(0, this.log.length - this.maxRecords);
+      }
     },
     onClearClick() {
       this.sendMessageToNode("clearLog");
