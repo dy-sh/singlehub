@@ -7,12 +7,15 @@
           v-list-tile-sub-title {{uiElement.subtitle}}
         v-spacer
         v-list-tile-action
-          //- v-btn(small color="primary" @click="onClearClick") CLEAR
+          v-btn(small @click="onClearClick") CLEAR
 
     div.log(v-chat-scroll="{always: false}" style="overflow-y: scroll; height: 150px;")
-      ul(class="messages")
-        li(class="message" v-for="rec in log") {{ rec.date | moment("DD.MM.YYYY H:mm:ss.SSS") }}: {{rec.value}}
-    v-btn(small color="primary" @click="onClearClick") CLEAR
+      ul
+        li(v-for="rec in log") 
+          span.date
+            small {{ rec.date | moment("DD.MM.YYYY H:mm:ss.SSS") }}: 
+          span.value {{rec.value}}
+    //- v-btn(small color="primary" @click="onClearClick") CLEAR
 </template>
 
 
@@ -58,5 +61,11 @@ export default {
 <style>
 .log {
   margin: 0px 5px;
+}
+.date {
+  color: #666;
+}
+.value {
+  color: #bbb;
 }
 </style>
