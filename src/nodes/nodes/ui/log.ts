@@ -11,7 +11,6 @@ import { UiNode } from "./ui-node";
 
 
 export class UiLogNode extends UiNode {
-    MAX_MESS_PER_SEC = 11;
     messagesPerSec = 0;
 
     constructor() {
@@ -20,6 +19,7 @@ export class UiLogNode extends UiNode {
         this.descriprion = "";
         this.properties['log'] = [];
         this.settings['maxRecords'] = { description: "Max Records", value: 10, type: "number" };
+        this.settings['maxRecordsPerSec'] = { description: "Max records/sec limit", value: 11, type: "number" };
         this.settings['saveToDb'] = { description: "Save log to DB", value: false, type: "boolean" };
 
         this.addInput("input");
@@ -53,16 +53,15 @@ export class UiLogNode extends UiNode {
     }
 
     updateMessPerSec() {
-        let that = this;
-        setInterval(function () {
-            if (that.messagesPerSec > that.MAX_MESS_PER_SEC) {
-                let dropped = that.messagesPerSec - that.MAX_MESS_PER_SEC;
-                let record = { date: Date.now(), value: "Dropped " + dropped + " messages (data rate limitation)" };
-                that.properties['log'].push(record);
-                that.sendMessageToDashboardSide({ record: record });
+        setInterval(() => {
+            if (this.messagesPerSec > this.settings['maxRecordsPerSec'].value) {
+                let dropped = this.messagesPerSec - this.settings['maxRecordsPerSec'].value;
+                let record = { date: Date.now(), value: "Dropped " + dropped + " records (rec/sec limit)" };
+                this.properties['log'].push(record);
+                this.sendMessageToDashboardSide({ record: record });
             }
 
-            that.messagesPerSec = 0;
+            this.messagesPerSec = 0;
         }, 1000);
     }
 
@@ -75,8 +74,7 @@ export class UiLogNode extends UiNode {
         this.isRecentlyActive = true;
 
         this.messagesPerSec++;
-        if (this.messagesPerSec <= this.MAX_MESS_PER_SEC) {
-
+        if (this.messagesPerSec <= this.settings['maxRecordsPerSec'].value) {
             let record = { date: Date.now(), value: val };
             this.properties['log'].push(record);
 
