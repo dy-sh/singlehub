@@ -46,10 +46,18 @@ export class UiLogNode extends UiNode {
         }
     }
 
+    onDbReaded() {
+        //invert log
+        let log = [];
+        this.properties['log'].forEach(rec => log.unshift(rec));
+        this.properties['log'] = log;
+    }
+
     removeOldRecords() {
         let records = this.properties['log'];
         let max = this.settings['maxRecords'].value;
-        records.splice(0, records.length - max);
+        let del = records.length - max;
+        records.splice(records.length - del, del);
     }
 
     updateMessPerSec() {
@@ -57,7 +65,7 @@ export class UiLogNode extends UiNode {
             if (this.messagesPerSec > this.settings['maxRecordsPerSec'].value) {
                 let dropped = this.messagesPerSec - this.settings['maxRecordsPerSec'].value;
                 let record = { date: Date.now(), value: "Dropped " + dropped + " records (rec/sec limit)" };
-                this.properties['log'].push(record);
+                this.properties['log'].unshift(record);
                 this.sendMessageToDashboardSide({ record: record });
             }
 
@@ -76,7 +84,7 @@ export class UiLogNode extends UiNode {
         this.messagesPerSec++;
         if (this.messagesPerSec <= this.settings['maxRecordsPerSec'].value) {
             let record = { date: Date.now(), value: val };
-            this.properties['log'].push(record);
+            this.properties['log'].unshift(record);
 
             this.removeOldRecords();
 
