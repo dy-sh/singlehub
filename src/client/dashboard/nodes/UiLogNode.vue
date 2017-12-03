@@ -9,8 +9,7 @@
         v-list-tile-action
           v-btn(small flat color="grey darken-2" @click="onClearClick") CLEAR
 
-    div.log(v-chat-scroll="{always: false}" style="height: 150px;" 
-    v-bar="{preventParentScroll: true, scrollThrottle: 30}")
+    div.log(style="overflow-y: scroll; height: 150px;" v-bar="{preventParentScroll: true}")
       div
         ul
           li(v-for="rec in log") 
@@ -46,8 +45,9 @@ export default {
       }
 
       if (data.record != undefined) {
-        this.log.push(data.record);
-        this.log.splice(0, this.log.length - this.maxRecords);
+        this.log.unshift(data.record);
+        let del = this.log.length - this.maxRecords;
+        this.log.splice(this.log.length - del, del);
       }
     },
     onClearClick() {
