@@ -60,7 +60,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .panel-icon {
   min-width: 28px;
 }
