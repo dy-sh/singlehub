@@ -9,12 +9,14 @@
         v-list-tile-action
           v-btn(small flat color="grey darken-2" @click="onClearClick") CLEAR
 
-    div.log(v-chat-scroll="{always: false}" style="overflow-y: scroll; height: 150px;")
-      ul
-        li(v-for="rec in log") 
-          span.date
-            small {{ rec.date | moment("DD.MM.YYYY H:mm:ss.SSS") }}: 
-          span.value {{rec.value}}
+    div.log(v-chat-scroll="{always: false}" style="height: 150px;" 
+    v-bar="{preventParentScroll: true, scrollThrottle: 30}")
+      div
+        ul
+          li(v-for="rec in log") 
+            span.date
+              small {{ rec.date | moment("DD.MM.YYYY H:mm:ss.SSS") }}: 
+            span.value {{rec.value}}
     //- v-btn(small color="primary" @click="onClearClick") CLEAR
 </template>
 
