@@ -8,15 +8,15 @@
         v-spacer
         v-list-tile-action
           div
-            v-btn(small outline flat color="grey darken-2" @click="onClearClick") 
+            v-btn.chart-btn(small outline flat color="grey darken-2" @click="onClearClick") 
               small CLEAR
-            v-btn(small outline flat color="grey darken-2" @click="onStyleClick") 
+            v-btn.chart-btn(small outline flat color="grey darken-2" @click="onStyleClick") 
               small STYLE
-            v-btn(small outline flat color="grey darken-2" @click="onAllClick") 
+            v-btn.chart-btn(small outline flat color="grey darken-2" @click="onAllClick") 
               small ALL
-            v-btn(small outline flat color="grey darken-2" @click="onNowClick") 
+            v-btn.chart-btn(small outline flat color="grey darken-2" @click="onNowClick") 
               small NOW
-    div(v-if="showChart")
+    div.parrent(v-if="showChart")
       chart(:items="items" :options="options")
 </template>
 
@@ -86,11 +86,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "~vis/dist/vis.css";
 
-.btn {
-  min-width: 40px;
-  width: 40px;
+.chart-btn {
+  min-width: 40px !important;
+  width: 40px !important;
+}
+.parrent {
+  padding: 0px 15px;
 }
 </style>
