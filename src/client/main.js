@@ -7,12 +7,14 @@ import Routes from "./routes"
 import VueSocketIO from 'vue-socket.io';
 import VueMoment from 'vue-moment';
 import Vuebar from 'vuebar';
+import VueCookie from 'vue-cookie';
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
 Vue.use(VueSocketIO, '/dashboard');
 Vue.use(VueMoment);
 Vue.use(Vuebar);
+Vue.use(VueCookie);
 
 const router = new VueRouter({
   routes: Routes
