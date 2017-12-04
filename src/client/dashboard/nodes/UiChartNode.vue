@@ -48,6 +48,10 @@ export default {
       options: {
         //  start: '2017-12-10',
         // end: '2017-12-18'
+        height: "190px",
+        style: "bar",
+        drawPoints: false,
+        barChart: { width: 50, align: "right", sideBySide: false }
       }
     };
   },
