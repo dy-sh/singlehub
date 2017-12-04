@@ -76,29 +76,37 @@ export default {
     //   name: "TestPanel"
     // }
     dashboardIsVisible: true,
-    editorIsVisible: false,
+    editorIsVisible: true,
     sidebarIsVisible: true,
     editorContainers: [], //[{id,name},{id,name}]
     selectedEditorContainer: { id: 0, name: "Main" } //{id,name}
   }),
-  created() {
+  mounted() {
     this.$socket.emit("getUiPanelsList");
-    //for testing
-    setTimeout(() => {
-      this.editorIsVisible = true;
-    }, 700);
+
+    // setTimeout(() => {
+    //   this.editorIsVisible = true;
+    // }, 700);
+
+    if (this.$cookie.get("dashboardIsVisible"))
+      this.dashboardIsVisible =
+        this.$cookie.get("dashboardIsVisible") == "true";
+    if (this.$cookie.get("editorIsVisible"))
+      this.editorIsVisible = this.$cookie.get("editorIsVisible") == "true";
+    if (this.$cookie.get("sidebarIsVisible"))
+      this.sidebarIsVisible = this.$cookie.get("sidebarIsVisible") == "true";
   },
   sockets: {
     getUiPanelsList(data) {
       console.log("getUiPanelsList: " + JSON.stringify(data));
       this.dashboardPanels = data;
 
+      //open last panel
+      this.activePanel = this.$cookie.get("activePanel") || "";
+
       //if active panel removed, close panel
       if (!this.dashboardPanels.some(x => x.name == this.activePanel))
         this.activePanel = "";
-
-      //for testing - open first panel
-      // if (this.activePanel == "") this.activePanel = this.panels[0].name;
     },
     getUiPanel(panel) {
       if (panel) this.activePanel = panel.name;
@@ -115,15 +123,19 @@ export default {
   methods: {
     onClickToolbarSidebar() {
       this.sidebarIsVisible = !this.sidebarIsVisible;
+      this.$cookie.set("sidebarIsVisible", this.sidebarIsVisible, 365);
     },
     onClickToolbarDashboard() {
       this.dashboardIsVisible = !this.dashboardIsVisible;
+      this.$cookie.set("dashboardIsVisible", this.dashboardIsVisible, 365);
     },
     onClickToolbarEditor() {
       this.editorIsVisible = !this.editorIsVisible;
+      this.$cookie.set("editorIsVisible", this.editorIsVisible, 365);
     },
     onSelectPanel(panelName) {
       this.activePanel = this.activePanel === panelName ? "" : panelName;
+      this.$cookie.set("activePanel", this.activePanel, 365);
     },
     onEditorChangeContainer(container, editor) {
       console.log("onEditorChangeContainer", container.name);
