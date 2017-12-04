@@ -36,6 +36,7 @@ You can change some more node settings by calling the "Settings" in node context
 - Dashboard is now made in a modern dark style, with animated elements.
 - The application is now single-page. The dashboard and the node editor are now located on the same page. This made it possible to make a better interaction between the editor and the dashboard. Due to the fact that the entire application is now loaded entirely, the responsiveness of the interface is now very high.
 - Now the nodes that require a lot of settings have a nice and convenient configuration interface.
+- Dashboard remembers last opened panel
 
  
 **New nodes:**
@@ -88,9 +89,11 @@ You can change some more node settings by calling the "Settings" in node context
   - **Chart**. Changing settings in editor. Chart log realtime update.
   - **RGB Sliders**. Now it has an input. Added a preview of the color.
   - **RGBW Sliders**. Now it has an input. Added a preview of the color.
-  - **Audio**. Now it is not related to the any panel in the deshbord. This means that the sound will be played regardless of which panel is open.
-  - **Voice Chrome**. Now it is not related to the any panel in the deshbord. This means that the sound will be played regardless of which panel is open.
-  - **Voice Yandex**. Now it is not related to the any panel in the deshbord. This means that the sound will be played regardless of which panel is open.
+  - **Audio**. Now it is not related to the any panel in the dashbord. This means that the sound will be played regardless of which panel is open.
+  - **Voice Chrome**. Now it is not related to the any panel in the dashbord. This means that the sound will be played regardless of which panel is open.
+  - **Voice Yandex**. Now it is not related to the any panel in the dashbord. This means that the sound will be played regardless of which panel is open.
+  - **Log**. Now it has data rate limit setting.
+  
    
 - **Numbers**:
   - **Random**. Now you can set the number of digits after the decimal point.
