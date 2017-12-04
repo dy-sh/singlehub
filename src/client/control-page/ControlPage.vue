@@ -1,6 +1,5 @@
 <template lang='pug'>
 div
-
   toolbar(
     :dashboardIsVisible="dashboardIsVisible",
     :editorIsVisible="editorIsVisible",

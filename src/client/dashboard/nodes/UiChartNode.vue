@@ -16,14 +16,8 @@
               small ALL
             v-btn(small outline flat color="grey darken-2" @click="onNowClick") 
               small NOW
-    div.log(style="overflow-y: scroll; height: 150px;" v-bar="{preventParentScroll: true}")
-      div
-        ul
-          li(v-for="rec in log") 
-            span.date
-              small {{ rec.date | moment("DD.MM.YYYY H:mm:ss.SSS") }}: 
-            span.value {{rec.value}}
-    //- v-btn(small color="primary" @click="onClearClick") CLEAR
+    div(v-if="showChart")
+      chart(:items="items" :options="options")
 </template>
 
 
@@ -32,14 +26,29 @@
 import onNodeMessageMixin from "./mixins/onNodeMessage";
 import sendMessageToNodeMixin from "./mixins/sendMessageToNode";
 import moment from "moment";
+import { Graph2d } from "vue2vis";
 
 export default {
   mixins: [onNodeMessageMixin, sendMessageToNodeMixin],
   props: ["uiElement"],
+  components: {
+    chart: Graph2d
+  },
   data() {
     return {
-      log: [],
-      maxRecords: 10
+      showChart: true,
+      items: [
+        { x: "2017-12-11", y: 10 },
+        { x: "2017-12-12", y: 25 },
+        { x: "2017-12-13", y: 30 },
+        { x: "2017-12-14", y: 10 },
+        { x: "2017-12-15", y: 15 },
+        { x: "2017-12-16", y: 30 }
+      ],
+      options: {
+        //  start: '2017-12-10',
+        // end: '2017-12-18'
+      }
     };
   },
   methods: {
@@ -58,25 +67,24 @@ export default {
       }
     },
     onClearClick() {
-      this.sendMessageToNode("clearLog");
-    }
+      this.sendMessageToNode("clear");
+    },
+    onStyleClick() {},
+    onAllClick() {},
+    onNowClick() {}
   },
   mounted() {
-    this.sendMessageToNode("getLog");
+    // this.sendMessageToNode("getLog");
+    // setTimeout(() => {
+    //   this.showChart = true;
+    // }, 1000);
   }
 };
 </script>
 
 <style>
-.log {
-  margin: 0px 5px;
-}
-.date {
-  color: #666;
-}
-.value {
-  color: #bbb;
-}
+@import "~vis/dist/vis.css";
+
 .btn {
   min-width: 40px;
   width: 40px;
