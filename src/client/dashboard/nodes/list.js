@@ -7,6 +7,7 @@ import UiSliderNode from "./UiSliderNode.vue";
 import UiRgbSlidersNode from "./UiRgbSlidersNode.vue";
 import UiRgbwSlidersNode from "./UiRgbwSlidersNode.vue";
 import UiLogNode from "./UiLogNode.vue";
+import UiChartNode from "./UiChartNode.vue";
 
 export default {
     UiLabelNode,
@@ -17,5 +18,6 @@ export default {
     UiSliderNode,
     UiRgbSlidersNode,
     UiRgbwSlidersNode,
-    UiLogNode
+    UiLogNode,
+    UiChartNode
 }

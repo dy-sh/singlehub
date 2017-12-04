@@ -33,7 +33,7 @@ import "./ui/log";
 import "./ui/audio";
 import "./ui/voice-chrome";
 import "./ui/voice-yandex";
-// import "./ui/chart";
+import "./ui/chart";
 
 import "./protocols/mqtt/mqtt-client";
 import "./protocols/mysensors/mys-controller";
