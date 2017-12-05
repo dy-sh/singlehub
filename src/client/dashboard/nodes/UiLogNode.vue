@@ -9,7 +9,7 @@
         v-list-tile-action
           v-btn(small flat color="grey darken-2" @click="onClearClick") CLEAR
 
-    div.log(style="overflow-y: scroll; height: 150px;" v-bar="{preventParentScroll: true}")
+    div.log(style="height: 150px;" v-bar="{preventParentScroll: true}")
       div
         ul
           li(v-for="rec in log") 
