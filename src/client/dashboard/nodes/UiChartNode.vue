@@ -16,8 +16,10 @@
               small ALL
             v-btn.chart-btn(small outline flat color="grey darken-2" @click="onNowClick") 
               small NOW
+            v-btn.chart-btn(small outline flat color="grey darken-2" @click="onOpenClick") 
+              small OPEN
     div.parrent(v-if="showChart")
-      chart(:items="items" :options="options")
+      chart(:items="log" :options="options")
 </template>
 
 
@@ -37,7 +39,7 @@ export default {
   data() {
     return {
       showChart: true,
-      items: [
+      log: [
         { x: "2017-12-11", y: 10 },
         { x: "2017-12-12", y: 25 },
         { x: "2017-12-13", y: 30 },
@@ -52,7 +54,8 @@ export default {
         style: "bar",
         drawPoints: false,
         barChart: { width: 50, align: "right", sideBySide: false }
-      }
+      },
+      style: ""
     };
   },
   methods: {
@@ -65,9 +68,13 @@ export default {
       }
 
       if (data.record != undefined) {
-        this.log.unshift(data.record);
-        let del = this.log.length - this.maxRecords;
-        this.log.splice(this.log.length - del, del);
+        this.log.push(data.record);
+        this.log.splice(0, this.log.length - this.maxRecords);
+      }
+
+      if (data.style != undefined) {
+        this.style = data.style;
+        this.updateChartStyle();
       }
     },
     onClearClick() {
@@ -75,10 +82,11 @@ export default {
     },
     onStyleClick() {},
     onAllClick() {},
-    onNowClick() {}
+    onNowClick() {},
+    onOpenClick() {}
   },
   mounted() {
-    // this.sendMessageToNode("getLog");
+    this.sendMessageToNode("getLog");
     // setTimeout(() => {
     //   this.showChart = true;
     // }, 1000);
