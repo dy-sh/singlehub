@@ -139,44 +139,6 @@ export default {
           setTimeout(that.renderStep.bind(that), 1000);
           break;
       }
-    },
-
-    showNow() {
-      clearTimeout(this.zoomTimer);
-      this.autoscroll = "none";
-      let window = {
-        start: vis.moment().add(-30, "seconds"),
-        end: vis.moment()
-      };
-      this.graph2d.setWindow(window);
-      //timer needed for prevent zoomin freeze bug
-      this.zoomTimer = setTimeout(() => {
-        this.autoscroll = "continuous";
-      }, 1000);
-    },
-
-    showAll() {
-      clearTimeout(this.zoomTimer);
-      this.autoscroll = "none";
-      //   graph2d.fit();
-
-      let start, end;
-
-      if (this.dataset.length == 0) {
-        start = vis.moment().add(-1, "seconds");
-        end = vis.moment().add(60, "seconds");
-      } else {
-        let min = this.dataset.min("x");
-        let max = this.dataset.max("x");
-        start = vis.moment(min.x).add(-1, "seconds");
-        end = vis.moment(max.x).add(60, "seconds");
-      }
-
-      let window = {
-        start: start,
-        end: end
-      };
-      this.graph2d.setWindow(window);
     }
   },
   mounted() {
@@ -193,7 +155,7 @@ export default {
     //   );
     // }
 
-    this.showNow();
+    // this.showNow();
     this.renderStep();
   },
   beforeDestroy() {
