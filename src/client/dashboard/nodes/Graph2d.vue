@@ -139,6 +139,20 @@ export default {
           setTimeout(that.renderStep.bind(that), 1000);
           break;
       }
+    },
+
+    showNow() {
+      clearTimeout(this.zoomTimer);
+      this.autoscroll = "none";
+      let window = {
+        start: vis.moment().add(-30, "seconds"),
+        end: vis.moment()
+      };
+      this.graph2d.setWindow(window);
+      //timer needed for prevent zoomin freeze bug
+      this.zoomTimer = setTimeout(() => {
+        this.autoscroll = "continuous";
+      }, 1000);
     }
   },
   mounted() {
@@ -155,7 +169,7 @@ export default {
     //   );
     // }
 
-    // this.showNow();
+    this.showNow();
     this.renderStep();
   },
   beforeDestroy() {
