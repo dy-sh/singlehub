@@ -28,7 +28,7 @@
 import onNodeMessageMixin from "./mixins/onNodeMessage";
 import sendMessageToNodeMixin from "./mixins/sendMessageToNode";
 import moment from "moment";
-import { Graph2d } from "vue2vis";
+import Graph2d from "./Graph2d";
 
 export default {
   mixins: [onNodeMessageMixin, sendMessageToNodeMixin],
@@ -80,7 +80,32 @@ export default {
     onClearClick() {
       this.sendMessageToNode("clear");
     },
-    onStyleClick() {},
+    onStyleClick() {
+      let val;
+      switch (this.style) {
+        case "bars":
+          val = "splines";
+          break;
+        case "splines":
+          val = "shadedsplines";
+          break;
+        case "shadedsplines":
+          val = "lines";
+          break;
+        case "lines":
+          val = "shadedlines";
+          break;
+        case "shadedlines":
+          val = "dots";
+          break;
+        case "dots":
+          val = "bars";
+          break;
+        default:
+          break;
+      }
+      this.sendMessageToNode({ style: val });
+    },
     onAllClick() {},
     onNowClick() {},
     onOpenClick() {}
