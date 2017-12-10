@@ -153,6 +153,30 @@ export default {
       this.zoomTimer = setTimeout(() => {
         this.autoscroll = "continuous";
       }, 1000);
+    },
+
+    showAll() {
+      clearTimeout(this.zoomTimer);
+      this.autoscroll = "none";
+      //   graph2d.fit();
+
+      let start, end;
+
+      if (this.dataset.length == 0) {
+        start = vis.moment().add(-1, "seconds");
+        end = vis.moment().add(60, "seconds");
+      } else {
+        let min = this.dataset.min("x");
+        let max = this.dataset.max("x");
+        start = vis.moment(min.x).add(-1, "seconds");
+        end = vis.moment(max.x).add(60, "seconds");
+      }
+
+      let window = {
+        start: start,
+        end: end
+      };
+      this.graph2d.setWindow(window);
     }
   },
   mounted() {
