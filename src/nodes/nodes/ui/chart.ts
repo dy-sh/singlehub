@@ -184,63 +184,6 @@ export class UiChartNode extends UiNode {
     // }
 
 
-    // updateChartStyle() {
-    //     switch (this.settings['style'].value) {
-    //         case 'bars':
-    //             this.options = {
-    //                 height: this.CHART_HEIGHT,
-    //                 style: 'bar',
-    //                 drawPoints: false,
-    //                 barChart: { width: 50, align: 'right', sideBySide: false }
-    //             };
-    //             break;
-    //         case 'splines':
-    //             this.options = {
-    //                 height: this.CHART_HEIGHT,
-    //                 style: 'line',
-    //                 drawPoints: { style: 'circle', size: 6 },
-    //                 shaded: { enabled: false },
-    //                 interpolation: { enabled: true }
-    //             };
-    //             break;
-    //         case 'shadedsplines':
-    //             this.options = {
-    //                 style: 'line',
-    //                 height: this.CHART_HEIGHT,
-    //                 drawPoints: { style: 'circle', size: 6 },
-    //                 shaded: { enabled: true, orientation: 'bottom' },
-    //                 interpolation: { enabled: true }
-    //             };
-    //             break;
-    //         case 'lines':
-    //             this.options = {
-    //                 height: this.CHART_HEIGHT,
-    //                 style: 'line',
-    //                 drawPoints: { style: 'square', size: 6 },
-    //                 shaded: { enabled: false },
-    //                 interpolation: { enabled: false }
-    //             };
-    //             break;
-    //         case 'shadedlines':
-    //             this.options = {
-    //                 height: this.CHART_HEIGHT,
-    //                 style: 'line',
-    //                 drawPoints: { style: 'square', size: 6 },
-    //                 shaded: { enabled: true, orientation: 'bottom' },
-    //                 interpolation: { enabled: false }
-    //             };
-    //             break;
-    //         case 'dots':
-    //             this.options = {
-    //                 height: this.CHART_HEIGHT,
-    //                 style: 'points',
-    //                 drawPoints: { style: 'circle', size: 10 }
-    //             };
-    //             break;
-    //         default:
-    //             break;
-    //     }
-
 
     //     //setOptions cause a bug when switching to dots!!!
     //     this.graph2d.setOptions(this.options);
@@ -259,80 +202,7 @@ export class UiChartNode extends UiNode {
     // }
 
 
-    // zoomTimer: any;
 
-    // showNow() {
-    //     let that = this;
-    //     clearTimeout(this.zoomTimer);
-    //     this.settings['autoscroll'].value = "none";
-    //     let window = {
-    //         start: vis.moment().add(-30, 'seconds'),
-    //         end: vis.moment()
-    //     };
-    //     this.graph2d.setWindow(window);
-    //     //timer needed for prevent zoomin freeze bug
-    //     this.zoomTimer = setTimeout(function (parameters) {
-    //         that.settings['autoscroll'].value = "continuous";
-    //     }, 1000);
-
-    // }
-
-    // showAll() {
-    //     clearTimeout(this.zoomTimer);
-    //     this.settings['autoscroll'].value = "none";
-    //     //   graph2d.fit();
-
-    //     let start, end;
-
-    //     if (this.dataset.length == 0) {
-    //         start = vis.moment().add(-1, 'seconds');
-    //         end = vis.moment().add(60, 'seconds');
-    //     } else {
-    //         let min = this.dataset.min('x');
-    //         let max = this.dataset.max('x');
-    //         start = vis.moment(min.x).add(-1, 'seconds');
-    //         end = vis.moment(max.x).add(60, 'seconds');
-    //     }
-
-    //     let window = {
-    //         start: start,
-    //         end: end
-    //     };
-    //     this.graph2d.setWindow(window);
-    // }
-
-
-    // changeStyle() {
-    //     let val;
-    //     switch (this.settings['style'].value) {
-    //         case 'bars':
-    //             val = 'splines';
-    //             break;
-    //         case 'splines':
-    //             val = 'shadedsplines';
-    //             break;
-    //         case 'shadedsplines':
-    //             val = 'lines';
-    //             break;
-    //         case 'lines':
-    //             val = 'shadedlines';
-    //             break;
-    //         case 'shadedlines':
-    //             val = 'dots';
-    //             break;
-    //         case 'dots':
-    //             val = 'bars';
-    //             break;
-    //         default:
-    //             break;
-    //     }
-
-    //     this.settings['style'].value = val;
-
-    //     this.updateChartStyle();
-
-    //     this.sendMessageToServerSide({ style: val });
-    // }
 
     // onDashboardGetRequest(req, res) {
     //     //render log page
