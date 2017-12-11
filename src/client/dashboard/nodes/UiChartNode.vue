@@ -108,7 +108,64 @@ export default {
     },
     onAllClick() {},
     onNowClick() {},
-    onOpenClick() {}
+    onOpenClick() {},
+    updateChartStyle() {
+      switch (this.style) {
+        case "bars":
+          this.options = {
+            height: this.CHART_HEIGHT,
+            style: "bar",
+            drawPoints: false,
+            barChart: { width: 50, align: "right", sideBySide: false }
+          };
+          break;
+        case "splines":
+          this.options = {
+            height: this.CHART_HEIGHT,
+            style: "line",
+            drawPoints: { style: "circle", size: 6 },
+            shaded: { enabled: false },
+            interpolation: { enabled: true }
+          };
+          break;
+        case "shadedsplines":
+          this.options = {
+            style: "line",
+            height: this.CHART_HEIGHT,
+            drawPoints: { style: "circle", size: 6 },
+            shaded: { enabled: true, orientation: "bottom" },
+            interpolation: { enabled: true }
+          };
+          break;
+        case "lines":
+          this.options = {
+            height: this.CHART_HEIGHT,
+            style: "line",
+            drawPoints: { style: "square", size: 6 },
+            shaded: { enabled: false },
+            interpolation: { enabled: false }
+          };
+          break;
+        case "shadedlines":
+          this.options = {
+            height: this.CHART_HEIGHT,
+            style: "line",
+            drawPoints: { style: "square", size: 6 },
+            shaded: { enabled: true, orientation: "bottom" },
+            interpolation: { enabled: false }
+          };
+          break;
+        case "dots":
+          this.options = {
+            height: this.CHART_HEIGHT,
+            style: "points",
+            drawPoints: { style: "circle", size: 10 }
+          };
+          break;
+        default:
+          break;
+      }
+    }
   },
   mounted() {
     this.sendMessageToNode("getLog");
