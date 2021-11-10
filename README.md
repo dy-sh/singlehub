@@ -1,7 +1,7 @@
 
 SingleHub v0.9
 
-Home automation controller with node-based visual programming (Node.js port of MyNodes.NET).
+Home automation controller with node-based visual programming (Node.js port of [MyNodes.NET](https://github.com/derwish-pro/MyNodes.NET)).
 
 To be aware of all the changes, look at the [changelog](https://github.com/derwish-pro/singlehub/blob/master/CHANGELOG.md).
 
@@ -56,3 +56,5 @@ Feel free to join the development!
 -------------------
 If you get "Can't find Python executable C:\Python36\python.exe, you can set the PYTHON env variable." error when installing, try this:
 - npm install --global --production windows-build-tools
+
+Find out more on the <a href="https://www.youtube.com/channel/UCZtlGnAmCMFgmkRptiKAT-g/videos"> YouTube channel</a>.
