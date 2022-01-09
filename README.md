@@ -53,7 +53,7 @@ npm run build
 ### How to run for develop (watch mode):
 
 ```bash
-npm run watch`
+npm run watch
 ```
 
 ### Issues:
